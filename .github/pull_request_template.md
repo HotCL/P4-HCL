@@ -13,7 +13,7 @@ add these with the respective key as HCLANG-1 (as an example)
  - HCLANG-[number]
 
 ### Issues opened as a result of this 
-Add something here if new issues arise because of this. For instance if new features-requests or bugs arise from this PR. If this is not the cause, then remove this section.
+Add something here if new issues arise because of this. For instance if new features-requests or bugs arise from this PR. If this is not the case, then remove this section.
 
 ## FOR REVIEWER [Do not remove]
 A small checklist of things to note when you are doing a review. Make sure these things apply before going into master.
