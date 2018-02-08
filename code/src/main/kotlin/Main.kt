@@ -1,3 +1,4 @@
 fun main(args: Array<String>) {
-    println("Awesome HCL compiler soon to be!")
+    val age = 5
+    println("Awesome HCL compiler soon to be! $age")
 }
