@@ -1,4 +1,5 @@
 fun main(args: Array<String>) {
-    val age = 5
-    println("Awesome HCL compiler soon to be! $age")
+    val MyVar = 5
+    println("Awesome HCL compiler soon to be! $MyVar")
 }
+
