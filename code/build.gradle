@@ -11,6 +11,7 @@ buildscript {
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.15"
         classpath "gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC6-3"
+        classpath 'com.palantir:jacoco-coverage:0.4.0'
     }
 }
 
@@ -27,6 +28,7 @@ apply plugin: 'jacoco'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: "io.gitlab.arturbosch.detekt"
+apply plugin: 'com.palantir.jacoco-coverage'
 
 detekt {
     version = "1.0.0.RC6-3"
@@ -74,6 +76,10 @@ dokka {
 jacoco {
     toolVersion = '0.7.9'
     applyTo junitPlatformTest
+}
+
+jacocoCoverage {
+    reportThreshold 0.8
 }
 
 jacocoTestReport {
