@@ -23,6 +23,7 @@ ext.log4jVersion = '2.9.0'
 apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'application'
+apply plugin: 'jacoco'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: "io.gitlab.arturbosch.detekt"
@@ -46,6 +47,47 @@ detekt {
 dokka {
     outputFormat = 'html'
     outputDirectory = "$buildDir/javadoc"
+
+    kotlinTasks {
+        defaultKotlinTasks()
+    }
+
+    jdkVersion = 8 // Used for linking to JDK
+
+    impliedPlatforms = ["JVM"] // See platforms section of documentation
+
+        // Specifies the location of the project source code on the Web.
+    // If provided, Dokka generates "source" links for each declaration.
+    // Repeat for multiple mappings
+    linkMapping {
+        // Source directory
+        dir = "src/main/kotlin"
+
+        // URL showing where the source code can be accessed through the web browser
+        url = "https://github.com/HotCL/P4-HCL/blob/master/code/src/main/kotlin/"
+
+        // Suffix which is used to append the line number to the URL. Use #L for GitHub
+        suffix = "#L"
+    }
+}
+
+jacoco {
+    toolVersion = '0.7.9'
+    applyTo junitPlatformTest
+}
+
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['**/Main*'])
+        })
+    }
+}
+
+junitPlatformTest {
+    jacoco {
+        destinationFile = file("${buildDir}/jacoco/test.exec")
+    }
 }
 
 junitPlatform {
