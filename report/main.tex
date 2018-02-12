@@ -1,0 +1,32 @@
+\input{preamb}
+\input{config}
+
+\begin{document}
+
+\begin{titlingpage}
+    \include{titlepage}
+    \input{Titelblad.tex}
+\end{titlingpage}
+
+\input{1.Introduction/0.PrefaceCtrl}
+\tableofcontents*
+\input{1.Introduction/1.IntroductionCtrl}
+\input{2.Analysis/0.AnalysisCtrl}
+\input{3.Theory/0.TheoryCtrl}
+\input{4.Solution/0.SolutionCtrl}
+\input{5.Conclusion/0.ConclusionCtrl}
+
+\begingroup
+  \raggedright
+  %\bibliographystyle{bibtex/harvard}
+  \bibliographystyle{bibtex/IEEEtran}
+  \bibliography{bibtex/litteratur}
+\endgroup
+\cleardoublepage
+
+\begin{appendices}
+
+\input{Appendix/0.AppendixCtrl}
+
+\end{appendices}
+\end{document}
