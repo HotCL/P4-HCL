@@ -1,20 +1,19 @@
-sendes til
+Goddag.
 
-https://aatg.dk/
-http://www.eucnord.dk/htx/
+Mit navn er Jonas Hansen og jeg repræsenterer studiegruppe sw407f18, på fjerde semester af software studiet på Aalborg Universitet.
 
-Kære [Navn]
+På dette semester skal min studiegruppe og jeg, udvikle et nyt programmeringssprog.
+Vi tænkte at vi i denne kontekst ville fokusere på teknik-fag fra vores HTX dage, hvor vi havde el-teknik, meka-tronik (Faget har forskellige navne forskellige steder), hvor vi skulle lære at programmere på Arduino platformen. 
 
-Mit navn er Casper, og jeg studerer til Software Ingeniør på Aalborg Universitet på 4. Semester. Dette semester skal min studiegruppe og jeg udvikle et programmeringssprog. 
+Vi vil derfor rigtig gerne i kontakt med en underviser som har undervist, eller underviser i dette fag. Vi vil også rigtig gerne i kontakt med elever, som snart skal igang med deres eksamensprojekt eller blot har modtaget undervisning i dette fag. 
 
-Vi tænkte at vi i denne kontekst ville fokusere på teknik-fag fra vores HTX dage, hvor vi havde el-teknik eller meka-tronik (Faget har forskellige navne forskellige steder), hvor vi skulle lære at programmere på Arduino platformen. Vi vil derfor rigtig gerne i kontakt med en underviser som har undervist eller underviser i dette fag, og eventuelt nogle elever, som sikkert snart skal igang med deres eksamensprojekt. Her vil vi gerne stille både underviser og elever nogle spørgsmål, for at undersøge hvilke udfordringer og erfaringer de har dannet sig. Slutresultat, for os, bliver at udvikle et programmeringssprog der forhåbentligt vil være mere lærevenligt end det nuværende sprog de bruger. 
+Vi vil gerne stille både underviser og elever nogle spørgsmål, for at undersøge hvilke udfordringer og erfaringer de har dannet sig.
 
-Vil dette være muligt? I så fald kan du videresende denne mail til den relevante underviser?
+Hensigten med vores projekt er at løse eventuelle problemer der opstår i undervisning på grund af indlæringsvanskeligheder omkring Arduino platformen. Vi er især interesseret i at høre hvilke problemer der opstår direkte på grund af programmeringssproget som benyttes i undervisning.
 
-Tusind tak.
+Hvis alt dette lyder som en mulighed fra jeres side, så kan i blot melde tilbage til mig på denne mail. Herefter kan vi aftale nærmere.
 
-Mvh.
-Casper Weiss Bang
-Software 4.
-Aalborg Universitet.
+På forhånd tak. Vi ser frem til at høre fra jer.
 
+Mvh. Jonas Hansen, Software 4 semester, Aau.
+	På vegne af studiegruppe sw407f18.
