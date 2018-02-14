@@ -1,0 +1,20 @@
+sendes til
+
+https://aatg.dk/
+http://www.eucnord.dk/htx/
+
+Kære [Navn]
+
+Mit navn er Casper, og jeg studerer til Software Ingeniør på Aalborg Universitet på 4. Semester. Dette semester skal min studiegruppe og jeg udvikle et programmeringssprog. 
+
+Vi tænkte at vi i denne kontekst ville fokusere på teknik-fag fra vores HTX dage, hvor vi havde el-teknik eller meka-tronik (Faget har forskellige navne forskellige steder), hvor vi skulle lære at programmere på Arduino platformen. Vi vil derfor rigtig gerne i kontakt med en underviser som har undervist eller underviser i dette fag, og eventuelt nogle elever, som sikkert snart skal igang med deres eksamensprojekt. Her vil vi gerne stille både underviser og elever nogle spørgsmål, for at undersøge hvilke udfordringer og erfaringer de har dannet sig. Slutresultat, for os, bliver at udvikle et programmeringssprog der forhåbentligt vil være mere lærevenligt end det nuværende sprog de bruger. 
+
+Vil dette være muligt? I så fald kan du videresende denne mail til den relevante underviser?
+
+Tusind tak.
+
+Mvh.
+Casper Weiss Bang
+Software 4.
+Aalborg Universitet.
+
