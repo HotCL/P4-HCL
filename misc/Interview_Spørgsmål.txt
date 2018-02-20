@@ -1,4 +1,4 @@
-Spørgsmål til Kasper Winther:
+﻿Spørgsmål til Kasper Winther:
 	
 	1) Undervisning i programmering:
 		* Hvilke aspekter af programmering har ført til de største problemer. Sagt på en anden måde. Hvilke aspekter har elleverne haft sværets ved at forstå og hvorfor?
@@ -17,7 +17,7 @@ Spørgsmål til Kasper Winther:
 		* Hvilke tidenser ser du i kurset? Uddyb gerne
 
 	3) Fagets indhold:
-		* Underises der i:
-			- INDSÆT LISTE AF TERMER OG KONSTRUKTIONER.
+		* Undervises der i:
+			- abstrahering -> funktioner/metoder/klasser.
 
 		* Er high-order functions for komplekst eller ikke relevant nok for kurset?
