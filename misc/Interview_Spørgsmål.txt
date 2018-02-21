@@ -3,21 +3,28 @@
 	1) Undervisning i programmering:
 		* Hvilke aspekter af programmering har ført til de største problemer. Sagt på en anden måde. Hvilke aspekter har elleverne haft sværets ved at forstå og hvorfor?
 
-		* Hvilke apsekter har været de sværeste at fomidle og hvorfor?
+		* Hvilke aspekter har været de sværeste at fomidle og hvorfor?
 
-		* Har du, som resultat af disse vanskilligheder (hvis nogen), selv prøvet på et abstrakt plan at omstrukturerer sproget eller platformen. Sagt med andre ord. Er du tit nødsaget til at skulle abstraherer over aspekter inden for faget alene på grund af at elleverne har nemmere ved at forstå abstrahering? Hvis ja hvilke og hvordan?
+		* Har du, som resultat af disse vanskeligheder (hvis nogen), selv prøvet på et abstrakt plan at omstrukturerer sproget eller platformen. Sagt med andre ord. Er du tit nødsaget til at skulle abstraherer over aspekter inden for faget alene på grund af at elleverne har nemmere ved at forstå abstrahering? Hvis ja hvilke og hvordan?
 
 	2) Interesse for programmering:
-		* Er faget i høj kurs hos ellever der ikke tidligere har programmeret?
+		* Er faget i høj kurs hos elever der ikke tidligere har programmeret?
 
-		* Er faget i høj kurs hos ellever der har haft tidligere erfaringer med programmering?
+		* Er faget i høj kurs hos elever der har haft tidligere erfaringer med programmering?
 
 		* Tror du at interresse niveauet bliver påvirket at sproget som benyttets i faget? Hvorfor tror du at det er tilfældet?
 
-		* Hvilke tidenser ser du i kurset? Uddyb gerne
+		* Hvilke tendenser ser du i kurset? Uddyb gerne
 
 	3) Fagets indhold:
 		* Undervises der i:
 			- abstrahering -> funktioner/metoder/klasser.
 
 		* Er high-order functions for komplekst eller ikke relevant nok for kurset?
+		
+Til eleverne:
+	Kig spørgsmål over:
+	Derudover:
+		*Hvad tror du disse stumper kode returnere
+		var 5 + 3 * 2 // 16, uden operator precedence, 11 med operator precedence
+		var 10 * 10 + 10 * 10 // 1100 uden operator precedence, 200 med operator precedence
