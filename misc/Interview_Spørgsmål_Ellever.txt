@@ -1,5 +1,34 @@
 Til eleverne:
-	Kig sp�rgsm�l over:
+		*Hvad har I haft størst problemer med at forstå i forhold til det at lære programmering?
+		
+		*Har I programmeret før?
+			*Hvis ja:
+				*Kan I lide faget?
+				
+				*Hvad forventede I af faget?
+				
+				*Kunne I ønske at blive udfordret mere?
+				
+				*Hvad har I tidligere programmeret?
+					*Sprog
+					
+					*Projekter
+				
+				*Har I lyst til at kigge på programmering I jeres senere uddannelse?
+				
+			*Hvis nej
+				*Kan I lide faget?
+				
+				*Hvorfor valgte I faget?
+				
+				*Hvad forventede I af faget?
+				
+				*Kunne I ønske at blive udfordret mere?
+				
+				*Har I fået mere lyst til at kigge på programmering?
+				
+				*Har I lyst til at kigge på programmering I jeres senere uddannelse?
+	
 	Derudover:
 		*Hvad tror du disse stumper kode returnere
 		var 5 + 3 * 2 // 16, uden operator precedence, 11 med operator precedence
