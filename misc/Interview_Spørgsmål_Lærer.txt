@@ -1,7 +1,7 @@
 ﻿Spørgsmål til Kasper Winther:
 	
 	1) Undervisning i programmering:
-		* Hvilke aspekter af programmering har ført til de største problemer. Sagt på en anden måde. Hvilke aspekter har elleverne haft sværets ved at forstå og hvorfor?
+		* Hvilke aspekter af programmering har ført til de største problemer. Sagt på en anden måde. Hvilke aspekter har eleverne haft sværest ved at forstå og hvorfor?
 
 		* Hvilke aspekter har været de sværeste at fomidle fra din side og hvorfor?
 
@@ -18,10 +18,10 @@
 
 	3) Fagets indhold:
 		* Undervises der i:
-			- abstrahering -> funktioner/metoder/klasser.
-			- typer.
-			- kontrolstrukturer.
-			- termonologi.
-			- Generel syntaks og semantik.
+			- Abstrahering -> funktioner/metoder/klasser.
+			- Typer
+			- Kontrolstrukturer
+			- Terminologi
+			- Generel syntaks og semantik
 
 		* Er high-order functions for komplekst eller ikke relevant nok for kurset?
