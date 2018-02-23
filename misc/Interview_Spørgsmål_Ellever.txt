@@ -28,6 +28,10 @@ Til eleverne:
 				*Har I fået mere lyst til at kigge på programmering?
 				
 				*Har I lyst til at kigge på programmering I jeres senere uddannelse?
+				
+		*Hvad syntes I om Arduino
+		
+		*Hvad syntes I om sproget?
 	
 	Derudover:
 		*Hvad tror du disse stumper kode returnere
