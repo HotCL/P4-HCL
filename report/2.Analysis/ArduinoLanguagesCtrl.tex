@@ -1,0 +1,92 @@
+\section{Existing languages}
+Before doing any work on HCL, the project group decided to research how many high-level languages already exist for the Arduino platform, and what distinguishes them from each other.
+Surprisingly, despite the popularity of the platform, there are not many options available.
+Some available languages are:
+
+\begin{itemize}
+	\item The official Arduino language
+	\item Occam-pi
+	\item NanoVM
+\end{itemize}
+
+% Source: arduino.cc
+\textbf{The official Arduino language} is, in fact, not its own language. % maybe cite arduino.cc/FAQ here because that is where this info is from
+That is, it has not been built from scratch by the developers at Arduino.
+It is a subset of the C++ language with its own libraries.
+Because of this, it is compatible with the C and C++ languages.
+There are a few changes made to the language, such as the absence of function prototypes, and the \texttt{setup}- \& \texttt{loop} functions replacing the \texttt{main} function.
+However, the basic functionality and syntax of C and C++ are still present, meaning users are able to use both the imperative- and the object-oriented paradigms of C and C++ respectively to program the Arduino.
+
+A typical program written in the Arduino language is set up like this:
+
+\begin{lstlisting}[language=C++,label=lis:arduinoExample,caption=An example program written in the Arduino language.,firstnumber=1]
+/*
+ * Preprocessor directives
+ */
+
+const int PIN13 = 13;
+
+void setup() {
+    // Setup code
+    pinMode(PIN13, OUTPUT); // Set digital pin 13 to output
+}
+
+void loop() {
+    // Loop code is looped infinitely
+    digitalWrite(PIN13, HIGH); // Set output for pin 13 to high
+    delay(500);                // Delay for 500 milliseconds
+    digitalWrite(PIN13, LOW);  // Set output for pin 13 to low
+    delay(500);                // Delay for 500 milliseconds
+}
+
+\end{lstlisting}
+
+% Source: concurrency.cc
+\textbf{Occam-pi} is a language that focuses on making parallel programming easy for programmers.
+It is based on Occam that first appeared in 1983.
+The full documentation of Occam-pi can be read on the official website of the language, \url{concurrency.cc}, but here is a short description of some of the syntax.
+
+Functions in Occam-pi are declared using the keyword \texttt{PROC} followed by a name and the function parameters enclosed in parentheses.
+Unlike C, Occam-pi doesn't use curly-brackets to encapsulate the body.
+Instead, the body is indented using a tab, similar to the Python language.
+The end of the function is marked using a colon.
+One of the key features of Occam-pi is the fact that it separates expressions that are evaluated sequentially and ones that are evaluated concurrently using the \texttt{SEQ} and \texttt{PAR} keywords.
+Comments are prefixed with \texttt{"{-}{-}"}.
+
+A typical program written in Occam-pi is set up like this:
+
+\begin{lstlisting}[,label=lis:occamExample,caption=An example program written in Occam-pi,firstnumber=1]
+--Include any needed modules
+#INCLUDE "plumbing.module"
+
+PROC main ()
+	SEQ --Expressions are evaluated sequentially
+		x := 4 + 3
+		y := x * 5
+	PAR --Expressions are evaluated concurrently
+		blink(12, 1000) --a function from the plumbing module
+		blink(13, 1000)
+:
+\end{lstlisting}
+
+% Source: http://www.harbaum.org/till/nanovm/index.shtml
+\textbf{NanoVM} is a virtual machine (VM) for the Atmel AVR ATMega8 CPU.
+It allows programmers to write code in a subset of Java that can be run by Arduino and similar microcomputers.
+The VM includes many of the features that have made the Java VM (JVM) popular such as object-oriented programming, automatic dynamic memory allocation, and garbage collection.
+It comes packaged with native classes such as Object, System, and PrintStream.
+
+The downsides of using NanoVM instead of the Arduino language is, as stated on the official website of NanoVM\footnote{http://www.harbaum.org/till/nanovm/index.shtml} that the VM's interpreter doesn't perform as well as C compiled to AVR code, and it reserves some of the RAM used for applications to run the VM.
+NanoVM also has to be installed on the CPU's flash memory, which will overwrite the bootloader.
+
+A typical program written in Java is set up like this:
+\begin{lstlisting}[language=Java,label=lis:javaExample,caption=An example program written in Java,firstnumber=1]
+public class HelloWorld {
+	public static void main(String[] args) {
+		System.out.println("Hello World!");
+	}
+}
+\end{lstlisting}
+
+% Source: https://code.google.com/archive/p/dk-basic/
+These are, of course, not all the available languages for programming for Arduino.
+The project group is also aware of a language called DK-BASIC, a subset of BASIC designed to work on Arduino, but that language is still in its alpha stage, so it won't get more than a mention here.
