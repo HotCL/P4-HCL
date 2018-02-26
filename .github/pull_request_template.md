@@ -22,6 +22,11 @@ A small checklist of things to note when you are doing a review. Make sure these
  - Make sure this is ready for exams if this is going into master
  - It's always a good idea having another reviewer look at a PR as well, if it's major. get a buddy.
 
+### Regarding filenames
+- all .tex files use pascal case
+- all other files [except in /code/] use snake case
+
+
 ### Regarding code [if applicable]
 - Check [coding conventions](https://kotlinlang.org/docs/reference/coding-conventions.html)
 - Are public methods documented? 
