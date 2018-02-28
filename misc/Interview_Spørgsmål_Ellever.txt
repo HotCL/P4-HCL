@@ -1,39 +1,49 @@
-Til eleverne:
-		*Hvad har I haft størst problemer med at forstå i forhold til det at lære programmering?
+Til elevinterview:
+
+Spørgsmålene betegnet nedenunder er ikke beregnet til brug i interview men nærmere en samtale med en større gruppe ellever. 
+
+	2) Interesse og erfaring
+		* Har I programmeret før?
+			- Hvis ja:
+				* Kan I lide faget?
+				* Hvad forventede I af faget i forhold til programmering?
+				* Kunne I ønske at blive udfordret mere?
+				* Hvilke sprog har i tidligere erfaringer med?
+				* Har i lavet nogle lidt større programmeringsprojekter?
+				* Har I lyst til at kigge på programmering I jeres senere uddannelse?
+			- Hvis nej
+				* Kan I lide faget?
+				* Hvorfor valgte I faget?
+				* Hvad forventede I af faget?
+				* Kunne I ønske at blive udfordret mere?
+				* Har I fået mere lyst til at kigge på programmering?
+				* Har I lyst til at kigge på programmering I jeres senere uddannelse?
+				* Er der noget der skræmmer jer i forhodl til programmering på en videregående uddanelse?
+
+		* Hvad syntes I om Arduino
 		
-		*Har I programmeret før?
-			*Hvis ja:
-				*Kan I lide faget?
-				
-				*Hvad forventede I af faget?
-				
-				*Kunne I ønske at blive udfordret mere?
-				
-				*Hvad har I tidligere programmeret?
-					*Sprog
-					
-					*Projekter
-				
-				*Har I lyst til at kigge på programmering I jeres senere uddannelse?
-				
-			*Hvis nej
-				*Kan I lide faget?
-				
-				*Hvorfor valgte I faget?
-				
-				*Hvad forventede I af faget?
-				
-				*Kunne I ønske at blive udfordret mere?
-				
-				*Har I fået mere lyst til at kigge på programmering?
-				
-				*Har I lyst til at kigge på programmering I jeres senere uddannelse?
-				
-		*Hvad syntes I om Arduino
-		
-		*Hvad syntes I om sproget?
-	
-	Derudover:
-		*Hvad tror du disse stumper kode returnere
+		* Hvad syntes I om sproget?
+
+	2) Undervisning i programmering:
+		* Hvilke aspekter har I haft størst problemer med at forstå i forhold til det at lære programmering og hvorfor?
+
+		* Har vanskelighederne været som resultat af formidlingsbesvær fra jeres lærers side?
+
+		* Hvad mener i om det sprog i bruger lige nu til arduino platform?
+			- Uddyb gerne jeres mening.
+			- Kender i til programmeringstermonologi?
+				* Hvis ja:
+					- Kender i det fra faget?
+					- Kender i det andet steds fra?
+				* Hvis Nej:
+					//Giv en hurtig forklaring af hvad termonologi betyder.
+					- Hvordan syntes i om den måde at lære på?
+					- Ville i foretrække at andre fag fks. matematik lærte jer at bruge formler uden at forklare præcist hvordan de fungere?
+
+		* Hvordan syntes i at jeres lærer har abstraheret over svært stof mht programmering? 
+
+	) Simple associringsregler.
+
+		* Hvad tror du disse stumper kode returnere
 		var 5 + 3 * 2 // 16, uden operator precedence, 11 med operator precedence
 		var 10 * 10 + 10 * 10 // 1100 uden operator precedence, 200 med operator precedence
