@@ -1,0 +1,45 @@
+num ledBlue = 13
+num ledRed = 12
+
+fun setup() {
+    ledBlue pinMode OUTPUT
+    ledRed pinMode OUTPUT
+}
+
+fun loop() {
+    if 2 toThePowerOf 3 lessThan 10 {
+        ledBlue digitalWrite HIGH
+    }
+    else {
+        ledRed digitalWrite HIGH
+    }
+}
+
+fun toThePowerOf(a: num, b: num): num {
+    return a ** b
+}
+
+fun lessThan(a: num, b: num): bool {
+    return a < b
+}
+
+***************************************
+
+num led = 13
+
+fun setup() {
+    led pinMode OUTPUT
+}
+
+fun loop() {
+    for chr c in "HelloWorld" {
+        led blink 250
+    }
+}
+
+fun blink(pin: num, millis: num) {
+    pin digitalWrite HIGH
+    millis delay
+    pin digitalWrite LOW
+    millis delay
+}
