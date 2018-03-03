@@ -1,0 +1,45 @@
+num ledBlue = 13
+num ledRed = 12
+
+setup() {
+    pinMode <- (ledBlue, OUTPUT)
+    pinMode <- (ledRed, OUTPUT)
+}
+
+loop() {
+    if (lessThan <- (powerOf <- (2, 3), 10)) {
+        digitalWrite <- (ledBlue, HIGH)
+    }
+    else {
+        digitalWrite <- (ledRed, HIGH)
+    }
+}
+
+num <- powerOf(a: num, b: num) {
+    <- pow <- (a, b)
+}
+
+int lessThan(a: num, b: num) {
+    <- a < b
+}
+
+***************************************
+
+num led = 13
+
+setup() {
+    pinMode <- (led, OUTPUT)
+}
+
+loop() {
+    for (chr c in "HelloWorld") {
+        blink <- (led, 250)
+    }
+}
+
+blink(pin: num, millis: num) {
+    digitalWrite <- (pin, HIGH)
+    delay <- (millis)
+    digitalWrite <- (pin, LOW)
+    delay <- (millis)
+}
