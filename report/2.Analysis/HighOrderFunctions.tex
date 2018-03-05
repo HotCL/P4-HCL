@@ -36,21 +36,21 @@ The fold function will have an accumulator and the current element as function p
 In the example, the numbers in the list are accumulated.
 
 \subsection{Benefits of high-order functions}
-The major benefit from the high-order functions is the ability to create abstract functions, that will have its behaviour defined through the input function. 
-The map, filter and reduce functions are by themselves very useful, but they are also often used to create a lot more concrete functions. 
+The major benefit from the high-order functions is the ability to create abstract functions that will have their behaviour defined through the input function. 
+The map, filter, and reduce functions are by themselves very useful, but they are also often used to create a lot more concrete functions. 
 For instance a "sum by" function, which is a combination of the reduce and map function. 
 
 Another common example is for sorting. 
-A generic sorting algorithm can be implemented, and then a comparator function can be passed to the sorting algorithm to tell it how to compare the different elements.
+A generic sorting algorithm can be implemented, and a comparator function can then be passed to the sorting algorithm to tell it how to compare the different elements.
 This could be useful; for instance when comparing a person class. 
 The developer may want to sort the persons in alphabetical order, based upon their age or something else. 
-The only thing that the sorting function needs, is a function that can compare the persons that are to be sorted.
+The only thing that the sorting function needs is a function that can compare the persons that are to be sorted.
 
 \subsection{High-order functions in HCL}
-Although some of the use cases of high-order functions may be a bit too complex for the new users, who are the target group of HCL, the high-order functions are still valued an important feature.
-This is due to serveral reasons.
+Although some of the use cases of high-order functions may be too complex for the new users, who are the target group of HCL, the high-order functions are still valued an important feature.
+This is due to several reasons.
 
 First of all, new users will often tend to do some basic mathematical computations. 
 The high-order functions like map, reduce and filter will make these computations a lot easier when dealing with collections. 
 
-Secondly, high-order functions are a useful programming concept, that HCL should strive to make intuitive and understandable for new users, so that they will be able to use and understand it in their next language.
+Secondly, high-order functions are a useful programming concept that HCL should strive to make intuitive and understandable for new users, so that they will be able to use and understand it in their next language.
