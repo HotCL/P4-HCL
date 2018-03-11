@@ -1,0 +1,47 @@
+#include <math.h>
+
+int ledBlue = 13;
+int ledRed = 12;
+
+void setup() {
+    pinMode(ledBlue, OUTPUT);
+    pinMode(ledRed, OUTPUT);
+}
+
+void loop() {
+    if (lessThan(powerOf(2, 3), 10)) {
+        digitalWrite(ledBlue, HIGH);
+    }
+    else {
+        digitalWrite(ledRed, HIGH);
+    }
+}
+
+int powerOf(double a, double b) {
+    return pow(a, b);
+}
+
+int lessThan(double a, double b) {
+    return a < b;
+}
+
+***************************************
+
+int led = 13;
+
+void setup() {
+    pinMode(led, OUTPUT);
+}
+
+void loop() {
+    for (int i = 0; i < strlen("HelloWorld"); i++) {
+        blink(led, 250);
+    }
+}
+
+void blink(int pin, int millis) {
+    digitalWrite(pin, HIGH);
+    delay(millis);
+    digitalWrite(pin, LOW);
+    delay(millis);
+}
