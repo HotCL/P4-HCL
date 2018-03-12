@@ -7,16 +7,8 @@ something:    1 occurrence of something
 [something]:  something 0 or 1 times
 {something}:  something 0 or more times
 {something}+: something 1 or more times
-@x-y: Any Unicode character from x to y
 
 ***********************************************************************************
-
-AnyPrintableChar --> @a-z
-                   | @A-Z
-                   | @0-9
-                   | **FINISH THIS**
-
-Digits --> @0-9 [Digits]
 
 Operator --> BracketL
            | BracketR
@@ -43,56 +35,45 @@ Type --> number
        | dict
        | char
        | none
+       | lambda
 
 Linebreak --> \r\n
             | ;
-
-VarIdentifier   --> IdentifierStart AnyPrintableChar
-IdentifierStart --> @a-z
-                  | @A-Z
-                  | **FINISH THIS**
 
 Expression --> FunctionCall
              | Value
 
 Value --> Literal
-        | VarIdentifier
+        | identifier
 
-Literal --> LiteralNumber
-          | LiteralText
-          | LiteralChar
-          | LiteralTuple
-          | LiteralList
-          | LiteralDict
-
-LiteralNumber --> Digits [. Digits]
-LiteralText   --> "{AnyPrintableChar}"
-LiteralChar   --> 'AnyPrintableChar'
-LiteralTuple  --> ParenL Literal, Literal {, Literal} ParenR            (1, 2, "hello")
-LiteralList   --> BracketL Literal {, Literal} BracketR                 [1, 2, 3, 4]
-LiteralDict   --> 
+Literal --> literalNumber
+          | literalText
+          | literalChar
+          | literalTuple
+          | literalList
+          | literalDict
+          | LambdaExpression
 
 Statements --> {Statement}+
 Statement  --> VarDcl
              | VarAssign
-             | FunctionCall
+             | Expression
              | FunctionDcl
 
-VarDcl    --> Type VarIdentifier [= Expression] Linebreak
-VarAssign --> VarIdentifier = Expression Linebreak
+VarDcl    --> Type identifier [= Expression] Linebreak
+VarAssign --> identifier = Expression Linebreak
 
-FunctionIdentifier --> IdentifierStart {AnyPrintableChar}
-FunctionDcl     --> func FunctionIdentifier = ParenL [FunDclParamList] ParenR -> Type CurlyL Statements CurlyR
+FunctionDcl     --> func identifier = LambdaExpression
 FunDclParamList --> Parameter [, FunDclParamList]
-Parameter       --> Type (VarIdentifier | FunctionIdentifier)
+Parameter       --> Type identifier
 
-FunctionCall --> FunctionIdentifier
-               | FunCallParameter FunctionIdentifier
-               | FunCallParameter FunctionIdentifier FunCallParamList
+FunctionCall --> identifier
+               | FunCallParameter identifier
+               | FunCallParameter identifier FunCallParamList
 FunCallParamList --> {FunCallParameter}+
                    | ParenL {FunCallParameter}+ ParenR
 FunCallParameter --> Value
-                   | ::FunctionIdentifier
+                   | ::identifier
                    | LambdaExpression
 
-LambdaExpression --> CurlyL Statements CurlyR
+LambdaExpression --> ParenL [FunDclParamList] ParenR -> Type CurlyL Statements CurlyR
