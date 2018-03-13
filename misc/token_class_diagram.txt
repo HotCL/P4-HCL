@@ -1,0 +1,36 @@
+token -> literal | keyword | id
+
+token.init(str input): self.value = input;
+
+literal -> bool | str | num
+
+Keyword -> Assign | Arrow | { | } ( | ) [ | ] | newline | \
+
+Keyword.init(str input):pass
+
+newline -> \n | ; 
+
+
+
+IParser(ILexer(Stream))
+
+CompilationError -> LexerError | ParserError:
+	- linenumber
+	- index
+	- Line
+	- Message
+
+ErrorPrinter:
+	- PrintCompilationError(CompilationError)
+
+Ilexer:
+	- ILexer(Stream)
+	- Stream
+	- index
+	- GetNextToken() : throws LexerError
+
+IParser:
+	- IParser(ILexer(Stream))
+	- 
+	- GetAbstractSyntaxTree(ILexer) : throws ParserError | LexerError
+	- 
