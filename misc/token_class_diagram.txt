@@ -1,16 +1,19 @@
+### tokens
+
 token -> literal | keyword | id
 
 token.init(str input): self.value = input;
 
 literal -> bool | str | num
 
-Keyword -> Assign | Arrow | { | } ( | ) [ | ] | newline | \
+Keyword -> Assign | Arrow | { | } ( | ) [ | ] | newline | \ | :: 
+
 
 Keyword.init(str input):pass
 
 newline -> \n | ; 
 
-
+#### lexer etc
 
 IParser(ILexer(Stream))
 
