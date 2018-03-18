@@ -12,7 +12,7 @@ something:    1 occurrence of something
 
 Program --> Start $
 
-Start --> {FunctionDcl}
+Start --> {FunctionDcl | VarDcl}
 
 Operator --> BracketL
            | BracketR

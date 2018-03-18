@@ -5,6 +5,7 @@ CFG
 Program --> Start $
 
 Start --> FunctionDcl Start
+        | VarDcl Start
         | EPSILON
 
 Operator --> BracketL
