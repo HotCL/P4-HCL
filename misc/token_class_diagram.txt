@@ -1,16 +1,19 @@
+### tokens
+
 token -> literal | keyword | id
 
 token.init(str input): self.value = input;
 
 literal -> bool | str | num
 
-Keyword -> Assign | Arrow | { | } ( | ) [ | ] | newline | \
+Keyword -> Assign | Arrow | { | } ( | ) [ | ] | newline | \ | :: 
+
 
 Keyword.init(str input):pass
 
 newline -> \n | ; 
 
-
+#### lexer etc
 
 IParser(ILexer(Stream))
 
@@ -34,3 +37,43 @@ IParser:
 	- 
 	- GetAbstractSyntaxTree(ILexer) : throws ParserError | LexerError
 	- 
+
+
+# lexer is made via switch cases. pseudocode made with python for parts of it
+
+
+class Stream:
+	def __init__(self,input):
+		self._str = input
+
+	def pop(self):
+		self._str.pop()
+
+	def re_add(self,input):
+		self._str += input
+
+
+def popString(stream: Stream, cur_token:str = "") -> Token:
+	nxt_char = stream.pop()
+	if nxt_char != '"':
+		return popString(stream,cur_token+nxt_char)
+	else:
+		return StringToken(cur_token) # so we don't get the quotation mark
+
+
+def GetNextSymbol(stream: Stream, cur_token:str = "") -> Token:
+	nxt_char = stream3.pop()
+	new_str = cur_token + nxt_char
+	if new_str == '"':
+		return popString(stream,cur_token)
+	if new_str regIn ["txt","num","func","var","bool","tuple"]:
+		return getType(new_str)
+	if next_char in [" ","[","]","-",";","\n","\"]:
+		if cur_token == "":
+			return GetSpecialChar(next_char)
+		else:
+			stream.re_add(next_char) #then we handle the special char in next iteraton
+			return GetIdentifier(cur_token)
+		
+	if next_char in "a-zA-Z0-9+-/%$@£$": #etc create regex
+		GetNextSymbol()

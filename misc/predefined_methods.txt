@@ -1,0 +1,51 @@
+WHAT IS T? 
+
+
+#builtins
+[str] import -> looks at the path [str] and copypastes the content of file into the line. [str] HAS to be a string literal 
+
+[str] rawcpp -> inputs the [str] as raw c++ into the line/location of the command. [str] HAS to be a string literal
+
+#stdlib.hcl
+
+var foreach (List<T> l,Func<T,None> method) {
+	"for(auto i = l.begin(); i < l.end(); i++) {
+		method(i);
+	}" rawcpp
+}
+
+var + = (num x,num y) -> num {
+	"return x + y" rawcpp	
+}
+
+var - = (num x,num y) -> num {
+	"return x - y" rawcpp	
+}
+
+var / = (num x,num y) -> num {
+	"return x / y" rawcpp	
+}
+
+var * = (num x,num y) -> num {
+	"return x * y" rawcpp	
+}
+
+var % = (num x,num y) -> num {
+	"return x % y" rawcpp	
+}
+
+var + = (txt x,txt y) -> txt {
+	"return x + y" rawcpp	
+}
+
+var concat = ::+
+
+
+var to = (num x,num y) -> List<num> {
+	"
+	list l = [];
+	for(int i = x; i < y; i++) {
+		l.add(i);
+	}" rawcpp
+
+}

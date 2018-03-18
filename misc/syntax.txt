@@ -1,0 +1,204 @@
+NTH = NICE TO HAVE
+
+1) semicolon:
+	- line ending -> \r\n | ;
+		- Nice to have: required ";" can be enforced by compiler settings.
+
+3) method call
+	- first parameter: left side
+	- secondary parameters are space seperated with optional parenteser around secondary parameters.
+	- passed methods prefixed with "::"
+	- no parameters is just "methodName"
+	- space is needed between parameters and method
+	Example
+		["casper","jesper"] where {value is "casper"}
+
+		(["casper","is","cool"] join_by " ") print;
+
+
+
+	def writetext
+4) types
+	- assignment => 
+		var x = 5\n | [type] x = 5\n | [type] x\n
+		bool x = True
+	- type static
+
+	- types:
+		number -> double 
+		text
+		bool
+			var b = True 
+			b = False
+		tuple
+			tuple<number,number,text> t = (1,2,"horse")
+		list
+			list<number> l = [1,2,3]
+		[dict] NTH
+		func -> lambda
+		None -> void
+	- generics:
+		- list<tuple<str,int>>
+5) method declaration
+	- types: input + return type is specified
+	- all versions:
+		### EXPLICIT TYPE OF THE BELOW
+		func<text,number,number,text> foo = (text x,number y, number z)->text {}
+		### 	
+		func foo = (text x,number y,number z)->text {}
+
+		var foo = (text x,number y, number z)->text {}
+	- example: 
+		var where = (list<T> x, func<T,bool> t)->list<T> {
+			var output = []
+			x foreach {
+				{ output add x } if arg t
+			}
+		}
+
+		[1,2,3] where {value isPositive}
+
+		
+		var +- = (number before, number after)-> tuple<number,number> {return (before+after,before-after)} 
+
+		var fish = ()-> None {"i like eating fish" print}
+	
+	- partial function domain:
+		sounds hard.
+
+6) if statements
+	
+	x == 5 then {1} then {2} else {3} <-> x == 5 then {1,2} else {3}
+	x == 5 else {}
+
+	y else {x = x/2}
+
+	var then = (bool expr, func value)-> bool {if(expr) value(); return expr}
+
+	var else = (bool expr, func value)-> None {if !(expr) value();}
+
+	can be defined:
+
+		var then_else = (bool expr, func value, func value2)-> None {expr then value else value2}
+
+	x == 5 then { "hello" print } else { "no" print };
+
+	x == 5 thenElse { "hello" print} {"no" print };
+
+	x == 5 else { "no" print }
+
+	x == 5 then 
+	{
+		x = x*2 
+	};
+	x == 5 else 
+	{
+		x = x/2
+	};
+	Alternative:
+
+	{ "fish" print } if Goat else { "No Goat?" print}
+
+6.1) ternary
+	var txt = IsHappy either ("im happy","im not happy")
+7) loops
+	x = 1 to 10 
+	1 to 10 foreach {value print}
+	x foreach {value print}
+	foreach | do | 
+
+8) inline lambda
+	- default parameter is: "value"
+	- value | value, value2, value3 ...
+	(if multiple parameters)
+
+
+	1 to 5 foreach { value print}
+	x foreach (foo) { foo print }
+	#
+	x fold [(value,acc) { 
+	 	return value + acc 
+	 }]
+	#
+	x fold { 
+	 	return value + value2 
+	 }
+
+	var fold = (List<number> l, Func<number,number->number> foldMethod) -> number {
+		var acc = 0
+		l foreach {
+			acc = acc foldMethod value
+		}
+		return acc
+	}
+
+
+9) variable
+	- letters+numbers+[selected chars] has to start with letter or [selected char]
+
+10) value passing
+	PASS BY VALUE - no side effects
+
+11) operators
+	= 
+	[ ]
+	( )
+	{ }
+	everything else is a function
+
+12) operator precedence association
+	1) ( )
+	2) methods
+
+	5 plus 5 times 5 = 50 
+	5 + (5 * 5) = 30
+
+13) indexing
+	zero-index
+	list[5]
+	[1,2] at 0 <- std.lib
+
+14) how to implement the loop method
+	everything in "outer scope" goes into setup
+	buildin has a method called "loop" which has one parameter; a func<>
+	if loop is called multiple times then MultipleLoopError
+	### EXAMPLE
+		15 LedSetup OUTPUT 
+
+		"fisk" print
+
+		{
+		var led1 = 15 
+		led1 SetLedPower HIGH;
+		led1 SetLedPower (HIGH if happy else LOW)
+		(HIGH if happy else LOW) OnLED led1 
+		1000 delay
+		led1 SetLedPower LOW
+		 1000 delay
+		} loop
+
+		"hest" print 
+		###
+
+		void setup() {
+		  // initialize digital pin LED_BUILTIN as an output.
+		  pinMode(15, OUTPUT);
+		  print("fisk");
+		  print("hest");
+		}
+
+		// the loop function runs over and over again forever
+		void loop() {
+		  digitalWrite(15, HIGH);   // turn the LED on (HIGH is the voltage level)
+		  delay(1000);                       // wait for a second
+		  digitalWrite(15, LOW);    // turn the LED off by making the voltage LOW
+		  delay(1000);                       // wait for a second
+		}
+		###
+
+15)
+	how do we do generic?
+
+
+16)
+	overloading is possible with different TYPE of input - but not different lengths of input.
