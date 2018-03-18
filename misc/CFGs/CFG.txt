@@ -1,18 +1,11 @@
-HCLANG - EBNF
-
-Notation:
-Terminal: lowercase
-Non-terminal: PascalCase
-something:    1 occurrence of something
-[something]:  something 0 or 1 times
-{something}:  something 0 or more times
-{something}+: something 1 or more times
-
-***********************************************************************************
+**************************************************************
+CFG
+**************************************************************
 
 Program --> Start $
 
-Start --> {FunctionDcl}
+Start --> FunctionDcl Start
+        | EPSILON
 
 Operator --> BracketL
            | BracketR
@@ -58,20 +51,23 @@ Literal --> literalNumber
           | literalDict
           | LambdaExpression
 
-Statements --> {Statement}+
+Statements --> Statement LineBreak Statements
+             | EPSILON
 
 Statement --> VarDcl
             | VarAssign
             | Expression
             | ReturnStatement
 
-VarDcl --> Type identifier [= Expression] Linebreak
+VarDcl --> Type identifier
+         | Type VarAssign
 
-VarAssign --> identifier = Expression Linebreak
+VarAssign --> identifier = Expression
 
 FunctionDcl --> func identifier = LambdaExpression
 
-FunDclParamList --> Parameter [, FunDclParamList]
+FunDclParamList --> FunDclParameter
+                  | FunDclParameter, FunDclParamList
 
 FunDclParameter --> Type identifier
 
@@ -79,13 +75,14 @@ FunctionCall --> identifier
                | FunCallParameter identifier
                | FunCallParameter identifier FunCallParamList
 
-FunCallParamList --> {FunCallParameter}+
-                   | ParenL {FunCallParameter}+ ParenR
+FunCallParamList --> FunCallParameter FunCallParameterList
+                   | ParenL FunCallParameter FunCallParameterList ParenR
 
 FunCallParameter --> Value
                    | ::identifier
                    | LambdaExpression
 
-LambdaExpression --> ParenL [FunDclParamList] ParenR -> Type CurlyL Statements CurlyR
+LambdaExpression --> ParenL FunDclParamList ParenR -> Type CurlyL Statements CurlyR
+		   | ParenL ParenR -> Type CurlyL Statements CurlyR
 
 ReturnStatement --> return Expression
