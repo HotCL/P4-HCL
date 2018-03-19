@@ -19,8 +19,8 @@ IParser(ILexer(Stream))
 
 CompilationError -> LexerError | ParserError:
 	- linenumber
-	- index
-	- Line
+	- index_of_char
+	- Line_txt
 	- Message
 
 ErrorPrinter:
@@ -30,6 +30,7 @@ Ilexer:
 	- ILexer(Stream)
 	- Stream
 	- index
+	- linenumber (etc) (data bout input file)
 	- GetNextToken() : throws LexerError
 
 IParser:
@@ -62,13 +63,13 @@ def popString(stream: Stream, cur_token:str = "") -> Token:
 
 
 def GetNextSymbol(stream: Stream, cur_token:str = "") -> Token:
-	nxt_char = stream3.pop()
+	nxt_char = stream.pop()
 	new_str = cur_token + nxt_char
 	if new_str == '"':
 		return popString(stream,cur_token)
-	if new_str regIn ["txt","num","func","var","bool","tuple"]:
+	if new_str in ["txt","num","func","var","bool","tuple"]:
 		return getType(new_str)
-	if next_char in [" ","[","]","-",";","\n","\"]:
+	if next_char in [" ","[","]","-",";","(",")","\n","\","{","}"]:
 		if cur_token == "":
 			return GetSpecialChar(next_char)
 		else:
