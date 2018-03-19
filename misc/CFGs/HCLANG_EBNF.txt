@@ -10,39 +10,27 @@ something:    1 occurrence of something
 
 ***********************************************************************************
 
-Program --> Start $
+Program --> Commands $
 
-Start --> {FunctionDcl | VarDcl}
+Commands --> {FunctionDcl | VarDcl | VarAssign | Expression}
 
-Operator --> BracketL
-           | BracketR
-           | ParenL
-           | ParenR
-           | CurlyL
-           | CurlyR
-           | =
-           | ::
-           | <
-           | >
-
-CurlyL   --> {
-CurlyR   --> }
-ParenL   --> (
-ParenR   --> )
-BracketL --> [
-BracketR --> ]
+Operator --> bracketL
+           | bracketR
+           | parenL
+           | parenR
+           | curlyL
+           | curlyR
+           | assign
+           | functionPassOp
+           | arrow
 
 Type --> number
        | text
        | tuple
        | list
        | dict
-       | char
        | none
-       | lambda
-
-Linebreak --> \r\n
-            | ;
+       | var
 
 Expression --> FunctionCall
              | Value
@@ -52,26 +40,25 @@ Value --> Literal
 
 Literal --> literalNumber
           | literalText
-          | literalChar
           | literalTuple
           | literalList
           | literalDict
           | LambdaExpression
 
-Statements --> {Statement}+
+Statements --> {Statement}
 
-Statement --> VarDcl
-            | VarAssign
-            | Expression
-            | ReturnStatement
+Statement --> VarDcl linebreak
+            | VarAssign linebreak
+            | Expression linebreak
+            | ReturnStatement linebreak
 
-VarDcl --> Type identifier [= Expression] Linebreak
+VarDcl --> Type identifier [assign Expression]
 
-VarAssign --> identifier = Expression Linebreak
+VarAssign --> identifier assign Expression
 
-FunctionDcl --> func identifier = LambdaExpression
+FunctionDcl --> func identifier assign parenL [FunDclParamList] parenR arrow Type curlyL Statements curlyR
 
-FunDclParamList --> Parameter [, FunDclParamList]
+FunDclParamList --> Parameter [comma FunDclParamList]
 
 FunDclParameter --> Type identifier
 
@@ -79,13 +66,12 @@ FunctionCall --> identifier
                | FunCallParameter identifier
                | FunCallParameter identifier FunCallParamList
 
-FunCallParamList --> {FunCallParameter}+
-                   | ParenL {FunCallParameter}+ ParenR
+FunCallParamList --> {FunCallParameter}
+                   | parenL {FunCallParameter} parenR
 
 FunCallParameter --> Value
-                   | ::identifier
-                   | LambdaExpression
+                   | functionPassOp identifier
 
-LambdaExpression --> ParenL [FunDclParamList] ParenR -> Type CurlyL Statements CurlyR
+LambdaExpression --> [parenL [FunDclParamList] parenR arrow Type] curlyL Statements curlyR
 
 ReturnStatement --> return Expression
