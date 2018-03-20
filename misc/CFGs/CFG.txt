@@ -4,34 +4,26 @@ CFG
 
 Program --> Commands $
 
-Commands --> FunctionDcl Commands
-         | VarDcl Commands
-         | VarAssign Commands
-         | Expression Commands
+Commands --> Command Commands
          | EPSILON
 
-Operator --> bracketL
-           | bracketR
-           | parenL
-           | parenR
-           | curlyL
-           | curlyR
-           | assign
-           | functionPassOp
-           | arrow
-
+Command --> Declaration
+          | Assignment
+          | Expression
 
 Type --> number
        | text
        | tuple
        | list
        | dict
+       | bool
        | none
        | func
        | var
 
 Expression --> FunctionCall
              | Value
+             | LambdaExpression
 
 Value --> Literal
         | identifier
@@ -41,7 +33,7 @@ Literal --> literalNumber
           | literalTuple
           | literalList
           | literalDict
-          | LambdaExpression
+          | literalBool
 
 Statements --> Statement linebreak Statements
              | EPSILON
@@ -51,37 +43,31 @@ Statement --> VarDcl
             | Expression
             | ReturnStatement
 
-VarDcl --> Type identifier
-         | Type VarAssign
+Declaration --> Type identifier
+              | Type Assignment
 
-VarAssign --> identifier assign Expression
-
-FunctionDcl --> FunDclStart identifier assign LambdaParams curlyL Statements curlyR
-
-FunDclStart --> func
-              | var
-
-FunDclParamList --> FunDclParameter FunDclSecondaryParameter
-                  | EPSILON
-
-FunDclSecondaryParameter --> comma FunDclParameter FunDclSecondaryParameter
-                           | EPSILON
-
-FunDclParameter --> Type identifier
-
-FunctionCall --> identifier
-               | FunCallParameter identifier FunCallParamList
-
-FunCallParamList --> FunCallParameter FunCallParameterList
-                   | parenL FunCallParameter FunCallParameterList parenR
-                   | EPSILON
-
-FunCallParameter --> Value
-                   | functionPassOp identifier
+Assignment --> identifier equals Expression
 
 LambdaExpression --> curlyL Statements curlyR
                    | LambdaParams curlyL Statements curlyR
 
 LambdaParams --> parenL FunDclParamList parenR arrow Type
+
+FunDclParamList --> FunDclParameter FunDclSecondaryParameter
+                  | EPSILON
+
+FunDclParameter --> Type identifier
+
+FunDclSecondaryParameter --> comma FunDclParameter FunDclSecondaryParameter
+                           | EPSILON
+
+FunctionCall --> FunCallParameter identifier FunCallParamList
+
+FunCallParamList --> FunCallParameter FunCallParameterList
+                   | parenL FunCallParameter FunCallParameterList parenR
+                   | EPSILON
+
+FunCallParameter --> Expression
+                   | EPSILON
 
 ReturnStatement --> return Expression
