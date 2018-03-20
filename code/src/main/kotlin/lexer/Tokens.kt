@@ -1,23 +1,34 @@
 package lexer
 
-sealed class Token {
-    data class Identifier(val value: String) : Token()
+sealed class Token(var lineNumber: Int? = null, var lineIndex: Int? = null) {
+    class Identifier(val value: String) : Token()
     sealed class Literal : Token()  {
-        data class Text(val value: String) : Token()
-        data class Number(val value: Double) : Token()
-        data class Bool(val value: Boolean) : Token()
+        class Text(val value: String) : Literal()
+        class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal()
+        class Bool(strValue: String, val value: Boolean = strValue.toBoolean()) : Literal()
     }
     sealed class SpecialChar : Token() {
-        class BlockStart : Token()
-        class BlockEnd : Token()
-        class SquareBracketStart : Token()
-        class SquareBracketEnd : Token()
-        class ParenthesesStart : Token()
-        class ParenthesesEnd : Token()
-        class EndOfLine : Token()
-        class ListSeparator : Token()
-        class LineContinue : Token()
-        class Equals : Token()
-        class Arrow : Token()
+        class BlockStart : SpecialChar()
+        class BlockEnd : SpecialChar()
+        class SquareBracketStart : SpecialChar()
+        class SquareBracketEnd : SpecialChar()
+        class ParenthesesStart : SpecialChar()
+        class ParenthesesEnd : SpecialChar()
+        class EndOfLine : SpecialChar()
+        class ListSeparator : SpecialChar()
+        class LineContinue : SpecialChar()
+        class Equals : SpecialChar()
+        class Arrow : SpecialChar()
     }
+    sealed class Type : Token() {
+        class Var : Type()
+        class None : Type()
+        class Text : Type()
+        class Number : Type()
+        class Bool : Type()
+        class Tuple : Type()
+        class List : Type()
+        class Func : Type()
+    }
+    class Return : Token()
 }
