@@ -3,6 +3,8 @@ package lexer
 /**
  * The default implementation of the ILexer interface
  */
-class Lexer : ILexer {
-    override fun lexStuff(string: String) = string.split(" ")
+class Lexer(private val inputContent: String) : ILexer {
+    override fun nextToken(): Token {
+        TODO("not implemented")
+    }
 }

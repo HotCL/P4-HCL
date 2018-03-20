@@ -1,5 +1,8 @@
 package lexer
 
+/**
+ * Lexical tokens emitted by the lexer
+ */
 sealed class Token(var lineNumber: Int? = null, var lineIndex: Int? = null) {
     class Identifier(val value: String) : Token()
     sealed class Literal : Token()  {

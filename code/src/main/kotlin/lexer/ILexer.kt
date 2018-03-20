@@ -5,8 +5,7 @@ package lexer
  */
 interface ILexer {
     /**
-     * Tokenize the string.
-     * @param string String to split into tokens
+     * Gets the next lexical token.
      */
-    fun lexStuff(string: String): List<String>
+    fun nextToken(): Token
 }
