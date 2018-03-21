@@ -7,7 +7,7 @@ import kotlin.coroutines.experimental.buildSequence
  */
 class Lexer(private val inputContent: String) : ILexer {
     override fun tokens(): Sequence<PositionalToken> = buildSequence {
-        // Yield tokens for string "var x = 5 + 7" to satisfy testcase
+        // Yield getNextToken for string "var x = 5 + 7" to satisfy testcase
         yieldAll(
             listOf(
                 PositionalToken(Token.Type.Var(), 0, 0),

@@ -1,7 +1,7 @@
 package lexer
 
 /**
- * Lexical tokens emitted by the lexer
+ * Lexical getNextToken emitted by the lexer
  */
 sealed class Token {
     class Identifier(val value: String) : Token()
