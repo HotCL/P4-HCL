@@ -56,7 +56,7 @@ var addNumbers = (num a, num b) -> none {
 A more explicit declaration of the same method can be seen in the snippet below:
 \begin{lstlisting}
 func<num,num,none> addNumbers = (num a, num b) -> none {
-a + b print
+	a + b print
 }
 \end{lstlisting}
 
@@ -73,3 +73,20 @@ The \textbf{where} method in this example returns an entry in the list based on 
 \end{lstlisting}
 
 \textbf{Loops}\\
+Loops in the language are structured around iterations on lists.
+Loops are created using either of the predefined methods \textbf{\textit{foreach}} or \textbf{\textit{do}} that takes a \textbf{\textit{list}} as first parameter and \textbf{\textit{func}} as second parameter.
+When creating ranges the predefined \textbf{\textit{to}} method, that returns a list, can be used. 
+
+Following is a small example that prints numbers using the \textbf{\textit{do}} method:
+\begin{lstlisting}
+1 to 10 do {value print}
+\end{lstlisting}
+There are no \textbf{\textit{while}} loop structures in the language.
+
+\textbf{Operators}\\
+Mostly all operators in the language are used as functions.
+This means that all arithmetic operators are infix-functions that takes two numbers as parameters. 
+The only operators that remains operators are the assign-operator (\textbf{=}) and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
+
+Not having operators for arithmetic operations also means that there are no native operator precedence in the language.
+This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parenthesis. 
