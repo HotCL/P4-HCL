@@ -5,8 +5,13 @@ package lexer
  */
 interface ILexer {
     /**
-     * Tokenize the string.
-     * @param string String to split into tokens
+     * Gets the next lexical token.
      */
-    fun lexStuff(string: String): List<String>
+    fun getNextToken(): Sequence<PositionalToken>
+
+    /**
+     * Gets a line from the input text that is being analyzed.
+     * @param lineNumber line number from the source code file
+     */
+    fun inputLine(lineNumber: Int): String
 }
