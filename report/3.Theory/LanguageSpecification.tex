@@ -1,0 +1,75 @@
+\section{Language Specification}
+This section will describe the language designed for this project together with an explanation of which functionality and features the language will include.
+
+During the analysis face of the project it was decided that the language designed would be used as a preliminary introduction to programming.
+The language designed should therefore reflect this decision by being useful and understandable by users who are not advanced in programming and programming fundamentals.
+This decision causes both restrictions in designing the language, but also gives the freedom of designing a language for users who has no biased opinions on already established languages. 
+
+It was decided that the syntax of the language should reflect the spoken English language to some extend.
+The idea of drawing inspiration from the spoken English language is supposed to give the users of the language an easier time expressing what they want the code to do.
+In conjunction to designed after the spoken English language and the interest in utilizing high-order functions, the language design also draws inspiration from the functional programming paradigm.
+
+Since the language is supposed to be used in correlation with the Arduino platform, it is nessecary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account.
+In order to follow this convention, a method called \textbf{\textit{loop}}, which takes a function body as a parameter, is established. 
+The code within this body is mapped to the Arduino's \textbf{\textit{loop}} method.
+Everything outside of the loop method, expressed as the "outer scope", is subsequently mapped to the Arduino's \textbf{\textit{setup}} method.
+
+Following is a rundown of the features and conventions of the languages syntax that is planned for implementation:
+
+\textbf{Types}\\
+The language include only three primitive types, namely numbers (\textbf{\textit{num}}), text-strings (\textbf{\textit{txt}}) and the boolean type (\textbf{\textit{bool}}).\\
+numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
+Booleans are represented using \textbf{true} or \textbf{false}.
+
+The collection types of the language are \textbf{\textit{toubles}} and \textbf{\textit{lists}} where:\\
+\textbf{\textit{toubles}} are collections of multiple types and \textbf{\textit{lists}} are collections of a single type.
+Dictionaries that functions as a collection of key-value pairs are deemed NTH and are not planned for implementation. 
+
+The language also includes the type \textbf{\textit{func}} which is a rename of the \textbf{\textit{lamda}} type.
+Also included is the type \textbf{\textit{none}} which is a rename of the \textbf{\textit{void}} type. 
+
+\textbf{Type Declaration}\\
+Types can be declared in the language in different ways.
+Firstly, types can be declared using the keyword \textbf{\textit{var}} (short for \textbf{variable\textit{}}) prefixed an assignment(line 1).
+Declarations can also be explicit by prefixing the type of the variable before an assignment(line 2), or by prefixing the type before the variable without an assignment(line 3).
+The three methods of declaration are seen in snippet below.
+\begin{lstlisting}
+var x = 5
+txt s = "string"
+bool b
+\end{lstlisting}
+
+Using the prefix \textbf{\textit{var}} enables the use of type-inference, where the type of the variable is automatically set during compile time \cite{typeinf}.
+Types in the language are type-static, meaning that once a type is set, it cannot be overwritten without an explicit valid type cast.
+
+\textbf{Method Declaration}\\
+The type of a methods parameters as well as its return type are explicitly declared when a method is declared. 
+The declaration is structured as an assignment where the methods name is declared on the left-hand-side prefixed by either \textbf{\textit{var}} or \textbf{\textit{func}}. 
+The parameters of the method is declared on the right-hand-side inside parenthesis followed by an arrow (\textbf{\textit{->}}) expressing the return type. 
+
+An example method that adds two numbers together and prints the value is shown below:
+\begin{lstlisting}
+var addNumbers = (num a, num b) -> none {
+	a + b print
+}
+\end{lstlisting} 
+A more explicit declaration of the same method can be seen in the snippet below:
+\begin{lstlisting}
+func<num,num,none> addNumbers = (num a, num b) -> none {
+a + b print
+}
+\end{lstlisting}
+
+\textbf{Method Call}\\
+In order to better reflect the spoken English language, method calls are structured in a way where the first parameter to a method is written before the method-call itself.
+All subsequent parameters are written after the method-call and are delimited by the use of white-spacing and can be optionally grouped inside parenthesis.
+When methods are passed in as parameters, they shall always be prefixed with '::' characters to differentiate between methods as parameters and other method calls. 
+Lambdas can be used as parameters by encapsulation with curly-brackets. 
+
+Below is an example of method calls where the program prints a name from a list:
+The \textbf{where} method in this example returns an entry in the list based on a lambda expression.
+\begin{lstlisting}
+["john", "frank"] where {value is "frank"} print
+\end{lstlisting}
+
+\textbf{Loops}\\
