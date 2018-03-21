@@ -8,6 +8,6 @@ package exceptions
  * @param lineText The textual representation of the line in which the compilation error occurred
  */
 open class CompilationException(val errorMessage: String,
-                                val lineNumber: Int? = null,
-                                val lineIndex: Int? = null,
-                                val lineText: String? = null): Exception()
+                                val lineNumber: Int,
+                                val lineIndex: Int,
+                                val lineText: String): Exception()

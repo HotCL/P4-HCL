@@ -6,16 +6,16 @@ import kotlin.coroutines.experimental.buildSequence
  * The default implementation of the ILexer interface
  */
 class Lexer(private val inputContent: String) : ILexer {
-    override fun tokens(): Sequence<Token> = buildSequence {
+    override fun tokens(): Sequence<PositionalToken> = buildSequence {
         // Yield tokens for string "var x = 5 + 7" to satisfy testcase
         yieldAll(
             listOf(
-                Token.Type.Var(),
-                Token.Identifier("x"),
-                Token.SpecialChar.Equals(),
-                Token.Literal.Number("5"),
-                Token.Identifier("+"),
-                Token.Literal.Number("7")
+                PositionalToken(Token.Type.Var(), 0, 0),
+                PositionalToken(Token.Identifier("x"), 0, 4),
+                PositionalToken(Token.SpecialChar.Equals(), 0, 6),
+                PositionalToken(Token.Literal.Number("5"), 0, 8),
+                PositionalToken(Token.Identifier("+"), 0, 10),
+                PositionalToken(Token.Literal.Number("7"), 0, 12)
             )
         )
     }
