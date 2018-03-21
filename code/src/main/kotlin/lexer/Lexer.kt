@@ -6,7 +6,7 @@ import kotlin.coroutines.experimental.buildSequence
  * The default implementation of the ILexer interface
  */
 class Lexer(private val inputContent: String) : ILexer {
-    override fun tokens(): Sequence<PositionalToken> = buildSequence {
+    override fun getNextToken(): Sequence<PositionalToken> = buildSequence {
         // Yield getNextToken for string "var x = 5 + 7" to satisfy testcase
         yieldAll(
             listOf(
