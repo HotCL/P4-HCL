@@ -1,69 +1,72 @@
 \section{Language Specification}
-This section will describe the language designed for this project together with an explanation of which functionality and features the language will include.
+This section will describe the language designed for this project together with an explanation of the functionality and features the language will include.
 
-During the analysis face of the project it was decided that the language designed would be used as a preliminary introduction to programming.
-The language designed should therefore reflect this decision by being useful and understandable by users who are not advanced in programming and programming fundamentals.
-This decision causes both restrictions in designing the language, but also gives the freedom of designing a language for users who has no biased opinions on already established languages. 
+During the analysis phase of the project, it was decided that the language, would be designed to be used as a preliminary introduction to programming.
+The language designed should therefore reflect this decision, by being useful, approachable and easy to understand for users that might not know programming and programming fundamentals.
+This decision puts restrictions on the design of the language, however it also gives a degree of freedom in the design, as the users have no previous experience with other languages.
+
 
 It was decided that the syntax of the language should reflect the spoken English language to some extend.
-The idea of drawing inspiration from the spoken English language is supposed to give the users of the language an easier time expressing what they want the code to do.
+The idea of drawing inspiration from the spoken English language is supposed to give the users of the language an easier time expressing what they want the code to do, giving the language an almost "pseudo-code-like" syntax.
 In conjunction to designed after the spoken English language and the interest in utilizing high-order functions, the language design also draws inspiration from the functional programming paradigm.
 
-Since the language is supposed to be used in correlation with the Arduino platform, it is nessecary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account.
-In order to follow this convention, a method called \textbf{\textit{loop}}, which takes a function body as a parameter, is established. 
+Since the language is supposed to be used in correlation with the Arduino platform, it is nessecary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account, which are explained in section \ref{arduinoC}.
+In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter, is established. 
 The code within this body is mapped to the Arduino's \textbf{\textit{loop}} method.
 Everything outside of the loop method, expressed as the "outer scope", is subsequently mapped to the Arduino's \textbf{\textit{setup}} method.
 
-Following is a rundown of the features and conventions of the languages syntax that is planned for implementation:
+The following is a rundown of the features and conventions of the language's syntax, that is planned for implementation:
 
 \textbf{Types}\\
-The language include only three primitive types, namely numbers (\textbf{\textit{num}}), text-strings (\textbf{\textit{txt}}) and the boolean type (\textbf{\textit{bool}}).\\
-numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
+The language includes only three primitive types, namely numbers (\textbf{\textit{num}}), text-strings (\textbf{\textit{txt}}) and the boolean type (\textbf{\textit{bool}}).\\
+Numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
 Booleans are represented using \textbf{true} or \textbf{false}.
 
 The collection types of the language are \textbf{\textit{toubles}} and \textbf{\textit{lists}} where:\\
-\textbf{\textit{toubles}} are collections of multiple types and \textbf{\textit{lists}} are collections of a single type.
-Dictionaries that functions as a collection of key-value pairs are deemed NTH and are not planned for implementation. 
+\textbf{\textit{tubles}} are collections of multiple types and \textbf{\textit{lists}} are collections of a single type.
+Dictionaries are collections of key-value pairs, are deemed NTH and are not planned for implementation. 
 
-The language also includes the type \textbf{\textit{func}} which is a rename of the \textbf{\textit{lamda}} type.
-Also included is the type \textbf{\textit{none}} which is a rename of the \textbf{\textit{void}} type. 
+The language also includes the type \textbf{\textit{func}} which in some languages, particularly C\#, is known as the \textbf{\textit{lamda}} type.
+Also included is the type \textbf{\textit{none}} which in some languages, particularly C\# and java, is known as the \textbf{\textit{void}} keyword. 
 
 \textbf{Type Declaration}\\
-Types can be declared in the language in different ways.
-Firstly, types can be declared using the keyword \textbf{\textit{var}} (short for \textbf{variable\textit{}}) prefixed an assignment(line 1).
+Types can be declared in a few different ways. The teacher from the preliminary interviews, mentioned that sometimes, he wanted to teach types, while other times, it didn't matter.
+Therefore, types can be declared using the keyword \textbf{\textit{var}} (short for \textbf{variable\textit{}}) prefixed to an assignment(line 1).
 Declarations can also be explicit by prefixing the type of the variable before an assignment(line 2), or by prefixing the type before the variable without an assignment(line 3).
 The three methods of declaration are seen in snippet below.
+A  \textbf{\textit{num}} example is also shown.
 \begin{lstlisting}
 var x = 5
 txt s = "string"
 bool b
+num y = 10
 \end{lstlisting}
 
 Using the prefix \textbf{\textit{var}} enables the use of type-inference, where the type of the variable is automatically set during compile time \cite{typeinf}.
 Types in the language are type-static, meaning that once a type is set, it cannot be overwritten without an explicit valid type cast.
 
-\textbf{Method Declaration}\\
-The type of a methods parameters as well as its return type are explicitly declared when a method is declared. 
-The declaration is structured as an assignment where the methods name is declared on the left-hand-side prefixed by either \textbf{\textit{var}} or \textbf{\textit{func}}. 
-The parameters of the method is declared on the right-hand-side inside parenthesis followed by an arrow (\textbf{\textit{->}}) expressing the return type. 
+\textbf{Function Declaration}\\
+The type of a methods parameters, as well as its return type, are explicitly declared when a function is defined. 
+The declaration is structured as an assignment, where the functions name is declared on the left-hand-side, prefixed by either \textbf{\textit{var}} or \textbf{\textit{func}}. 
+The parameters of the method is declared on the right-hand-side inside parentheses, followed by an arrow (\textbf{\textit{->}}), which declares the return type. 
 
-An example method that adds two numbers together and prints the value is shown below:
+An example function that adds two numbers together and prints the value is shown below:
 \begin{lstlisting}
 var addNumbers = (num a, num b) -> none {
 	a + b print
 }
 \end{lstlisting} 
-A more explicit declaration of the same method can be seen in the snippet below:
+A more explicit declaration of the same function can be seen in the snippet below:
 \begin{lstlisting}
 func<num,num,none> addNumbers = (num a, num b) -> none {
 	a + b print
 }
 \end{lstlisting}
 
-\textbf{Method Call}\\
-In order to better reflect the spoken English language, method calls are structured in a way where the first parameter to a method is written before the method-call itself.
-All subsequent parameters are written after the method-call and are delimited by the use of white-spacing and can be optionally grouped inside parenthesis.
-When methods are passed in as parameters, they shall always be prefixed with '::' characters to differentiate between methods as parameters and other method calls. 
+\textbf{Function Calls}\\
+In order to better reflect the spoken English language, function calls are structured in a way where the first parameter to a function is written before the function call itself.
+All subsequent parameters are written after the function call and are delimited by the use of white-spacing and can be optionally grouped inside parentheses.
+When functions are passed in as parameters, they will be prefixed with '::' characters to differentiate between functions as parameters and other function calls. 
 Lambdas can be used as parameters by encapsulation with curly-brackets. 
 
 Below is an example of method calls where the program prints a name from a list:
@@ -74,17 +77,17 @@ The \textbf{where} method in this example returns an entry in the list based on 
 
 \textbf{Loops}\\
 Loops in the language are structured around iterations on lists.
-Loops are created using either of the predefined methods \textbf{\textit{foreach}} or \textbf{\textit{do}} that takes a \textbf{\textit{list}} as first parameter and \textbf{\textit{func}} as second parameter.
-When creating ranges the predefined \textbf{\textit{to}} method, that returns a list, can be used. 
+Loops are created using either of the predefined methods \textbf{\textit{foreach}} or \textbf{\textit{do}} that takes a \textbf{\textit{list}} as its first parameter and \textbf{\textit{func}} as its second parameter.
+When creating ranges the predefined \textbf{\textit{to}} function, that returns a list, can be used. 
 
-Following is a small example that prints numbers using the \textbf{\textit{do}} method:
+Following is a small example that prints numbers using the \textbf{\textit{do}} function:
 \begin{lstlisting}
 1 to 10 do {value print}
 \end{lstlisting}
-There are no \textbf{\textit{while}} loop structures in the language.
+There are no \textbf{\textit{while}} actual loop structures in the language, and all looping will actually be done with iterations.
 
 \textbf{Operators}\\
-Mostly all operators in the language are used as functions.
+Most of the operators in the language are defined as functions.
 This means that all arithmetic operators are infix-functions that takes two numbers as parameters. 
 The only operators that remains operators are the assign-operator (\textbf{=}) and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
