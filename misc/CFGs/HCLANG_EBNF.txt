@@ -1,0 +1,67 @@
+HCLANG - EBNF
+
+Notation:
+Terminal: lowercase
+Non-terminal: PascalCase
+something:    1 occurrence of something
+[something]:  something 0 or 1 times
+{something}:  something 0 or more times
+{something}+: something 1 or more times
+
+***********************************************************************************
+
+Program --> Commands $
+
+Commands --> {Declaration | Assignment | Expression}
+
+Type --> number
+       | text
+       | tuple
+       | list
+       | dict
+       | bool
+       | func
+       | none
+       | var
+
+Expression --> FunctionCall
+             | Value
+             | LambdaExpression
+
+Value --> Literal
+        | identifier
+
+Literal --> literalNumber
+          | literalText
+          | literalTuple
+          | literalList
+          | literalDict
+
+Statements --> {Statement}
+
+Statement --> VarDcl linebreak
+            | Assignment linebreak
+            | Expression linebreak
+            | ReturnStatement linebreak
+
+Declaration --> Type identifier [equals Expression]
+
+Assignment --> identifier equals Expression
+
+LambdaExpression --> [parenL [FunDclParamList] parenR arrow Type] curlyL Statements curlyR
+
+FunDclParamList --> Parameter [comma FunDclParamList]
+
+FunDclParameter --> Type identifier
+
+FunctionCall --> identifier
+               | FunCallParameter identifier
+               | FunCallParameter identifier FunCallParamList
+
+FunCallParamList --> {FunCallParameter}
+                   | parenL {FunCallParameter} parenR
+
+FunCallParameter --> Value
+                   | functionPassOp identifier
+
+ReturnStatement --> return Expression
