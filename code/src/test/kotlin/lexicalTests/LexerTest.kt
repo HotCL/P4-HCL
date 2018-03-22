@@ -11,6 +11,7 @@ class LexerTest {
     fun lexerTestTokenGeneration() {
         val lex = Lexer("var x = 5 + 7")
         val tokensPositional = lex.tokens().toList()
+        tokensPositional.onEach { println(it.token) }
         val tokens = tokensPositional.map { it.token }
         assertThat(tokens[0], isA<lexer.Token.Type.Var>())
         assertThat(tokensPositional[0].lineIndex, equalTo(0))
