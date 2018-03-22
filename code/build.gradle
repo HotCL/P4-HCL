@@ -79,13 +79,15 @@ jacoco {
 }
 
 jacocoCoverage {
+    reportThreshold 0.5, BRANCH
+    reportThreshold 0.5, COMPLEXITY
     reportThreshold 0.8
 }
 
 jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/Main*', '**/Token*'])
+            fileTree(dir: it, exclude: ['**/Main*'])
         })
     }
 }
@@ -145,6 +147,12 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
 }
 
 jar {
