@@ -6,8 +6,7 @@ token.init(str input): self.value = input;
 
 literal -> bool | str | num
 
-Keyword -> Assign | Arrow | { | } ( | ) [ | ] | newline | \ | :: 
-
+Keyword -> Assign | Arrow | { | } ( | ) [ | ] | newline | \
 
 Keyword.init(str input):pass
 
@@ -20,7 +19,7 @@ IParser(ILexer(Stream))
 CompilationError -> LexerError | ParserError:
 	- linenumber
 	- index_of_char
-	- Line_txt
+	- line
 	- Message
 
 ErrorPrinter:
