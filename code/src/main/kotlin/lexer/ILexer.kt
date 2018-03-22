@@ -7,7 +7,7 @@ interface ILexer {
     /**
      * Gets the next lexical token.
      */
-    fun tokens(): Sequence<PositionalToken>
+    fun getTokenSequence(): Sequence<PositionalToken>
 
     /**
      * Gets a line from the input text that is being analyzed.

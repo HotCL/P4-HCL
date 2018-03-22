@@ -12,7 +12,7 @@ class Lexer(private val inputContent: String) : ILexer {
     var lineNumber = 0
     var charNumber = 0
     // TODO make this less shitty
-    override fun tokens(): Sequence<PositionalToken> = buildSequence {
+    override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
         var remainingChars = inputContent.substring(charNumber)
         // sets token when we have a match. otherwise it keeps popping.
         // first iteration nothing happens as current_string is empty. this is done to be DRY.
