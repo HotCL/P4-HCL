@@ -2,6 +2,7 @@ package lexicalTests
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import lexer.PositionalToken
 import lexer.Token
 
 class TokenTest {
@@ -36,12 +37,11 @@ class TokenTest {
                 ";" -> Token.SpecialChar.LineContinue()
                 "=" -> Token.SpecialChar.Equals()
                 else -> throw Exception("Unexpected lexeme '$lexeme' in token test")
-            }.apply {
-                lineIndex = 0
-                lineNumber = index
+            }.let {
+                PositionalToken(it, index, 0)
             }
         }
-        tokens.forEach {
+        tokens.map { it.token }.forEach {
             when(it) {
                 is Token.Identifier     -> assertThat(it.value, equalTo("Identifier"))
                 is Token.Literal.Text   -> assertThat(it.value, equalTo("Text"))
@@ -49,6 +49,6 @@ class TokenTest {
                 is Token.Literal.Bool   -> assertThat(it.value, equalTo(true))
             }
         }
-        assertThat(tokens.sumBy { it.lineNumber!! }, equalTo((0 until tokens.size).sum()))
+        assertThat(tokens.sumBy { it.lineNumber }, equalTo((0 until tokens.size).sum()))
     }
 }
