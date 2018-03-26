@@ -79,6 +79,8 @@ jacoco {
 }
 
 jacocoCoverage {
+    reportThreshold 0.5, BRANCH
+    reportThreshold 0.5, COMPLEXITY
     reportThreshold 0.8
 }
 
@@ -145,6 +147,12 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
 }
 
 jar {
