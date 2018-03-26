@@ -18,7 +18,6 @@ Type --> number
        | text
        | tuple
        | list
-       | dict
        | bool
        | func
        | none
@@ -35,7 +34,6 @@ Literal --> literalNumber
           | literalText
           | literalTuple
           | literalList
-          | literalDict
 
 Statements --> {Statement}
 
