@@ -1,8 +1,5 @@
 package lexer
 
-import com.natpryce.hamkrest.matches
-import com.natpryce.hamkrest.startsWith
-import java.util.regex.Pattern.matches
 import kotlin.coroutines.experimental.buildSequence
 
 /**
@@ -12,27 +9,33 @@ class Lexer(private val inputContent: String) : ILexer {
     var lineIndex = 0
     var lineNumber = 0
     var charNumber = 0
-    var remainingChars = inputContent
+    var inputBuffer = ""
     // TODO make this less shitty
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
+        // resets relevat values in case of running multiple times.
+        lineIndex = 0
+        lineNumber = 0
+        charNumber = 0
+        inputBuffer = inputContent
 
-        // sets token when we have a match. otherwise it keeps popping.
-        // first iteration nothing happens as current_string is empty. this is done to be DRY.
-        while(remainingChars.isNotEmpty()) {
+        //keeps popping tokens until the inputbuffer is empty.
+        while(inputBuffer.isNotEmpty()) {
             var currentString = ""
             var token:Token? = null
+            // first iteration nothing happens as current_string is empty. this is done to be DRY.
+            // sets token when we have a match. otherwise it keeps popping.
             while (token == null) {
-                if (remainingChars.take(1) == " " && currentString == "") {
-                    popRemaingChars()
+                //ignore spaces
+                if (inputBuffer.take(1) == " " && currentString == "") {
+                    popInputBuffer()
                     continue
                 }
                 // if the next chars is a specialChar then the current string must be a literal
                 token = getSpecialCharOrNull(currentString)
-                // if token is null AND the next char is either a space or the one or two next chars are a special char
-                // then what is currently in the buffer is a separate token.
-                // for instance with currentString == "bool" and 3next 2 chars being "->" then we need bool to be a token and then "yield" here.
-                // if however the next char is not a special char (for instance just an "f" then we need to continue popping.
-                if (token == null && currentString != "" && isNextCharsSpecialChar(remainingChars)) {
+
+                // if token is null AND currentString is not empty, we check whether the remaningChars begins with
+                // a keyword. if it does, then the current read chars must be a token.
+                if (token == null && currentString != "" && isNextCharsSpecialChar(inputBuffer)) {
 
                     token = with(currentString){
                         when {
@@ -60,11 +63,15 @@ class Lexer(private val inputContent: String) : ILexer {
                 }
 
                 if (token == null) {
-                    currentString += remainingChars.take(1)
-                    popRemaingChars()
+                    currentString += inputBuffer.take(1)
+                    popInputBuffer()
                 }
             }
+
+            // yield/return current positionalToken
             yield(PositionalToken(token,lineNumber,lineIndex-currentString.length))
+
+            // change linenumber and reset lineIndex if token is EndOfLine
             if(token is lexer.Token.SpecialChar.EndOfLine){
                 lineNumber++
                 lineIndex = 0
@@ -76,8 +83,8 @@ class Lexer(private val inputContent: String) : ILexer {
 
     override fun inputLine(lineNumber: Int) = inputContent.split("\n")[lineNumber]
 
-    private fun popRemaingChars(){
-        remainingChars = inputContent.substring(++charNumber)
+    private fun popInputBuffer(){
+        inputBuffer = inputContent.substring(++charNumber)
         lineIndex++
     }
 
@@ -88,7 +95,7 @@ class Lexer(private val inputContent: String) : ILexer {
     }
 
     private fun getSpecialCharOrNull(current_string: String): Token? {
-        val endlines = arrayListOf("\n","\r\n",";")
+        val endOfLines = arrayListOf("\n","\r\n",";")
         return when(current_string)
         {
             "=" -> Token.SpecialChar.Equals()
@@ -98,7 +105,7 @@ class Lexer(private val inputContent: String) : ILexer {
             "}" -> Token.SpecialChar.BlockEnd()
             "(" -> Token.SpecialChar.ParenthesesStart()
             ")" -> Token.SpecialChar.ParenthesesEnd()
-            in endlines -> return Token.SpecialChar.EndOfLine()
+            in endOfLines -> return Token.SpecialChar.EndOfLine()
             "," -> Token.SpecialChar.ListSeparator()
             "\\" -> Token.SpecialChar.LineContinue()
             "->" -> Token.SpecialChar.Arrow()

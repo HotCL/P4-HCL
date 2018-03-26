@@ -14,31 +14,58 @@ class LexerTest {
         val lex = Lexer("var x = 5 + 7\nx = x times 10;")
 
         val tokensPositional = lex.getTokenSequence().toList()
-        tokensPositional.onEach { println(it.token) }
 
         assertPositionalToken(tokensPositional[0],
                 { token -> token is lexer.Token.Type.Var },
-                0,0)
+                0, 0)
 
         assertPositionalToken(tokensPositional[1],
                 { token -> token is lexer.Token.Identifier && token.value == "x" },
-                4,0)
+                4, 0)
 
         assertPositionalToken(tokensPositional[2],
                 { token -> token is lexer.Token.SpecialChar.Equals },
-                6,0)
+                6, 0)
 
         assertPositionalToken(tokensPositional[3],
                 { token -> token is lexer.Token.Literal.Number && token.value == 5.0 },
-                8,0)
+                8, 0)
 
         assertPositionalToken(tokensPositional[4],
                 {token -> token is lexer.Token.Identifier && token.value == "+" },
-                10,0)
+                10, 0)
 
         assertPositionalToken(tokensPositional[5],
                 { token -> token is lexer.Token.Literal.Number && token.value == 7.0 },
-                12,0)
+                12, 0)
+
+        assertPositionalToken(tokensPositional[6],
+                { token -> token is lexer.Token.SpecialChar.EndOfLine },
+                13, 0)
+
+        assertPositionalToken(tokensPositional[7],
+                { token -> token is lexer.Token.Identifier && token.value == "x" },
+                0, 1)
+
+        assertPositionalToken(tokensPositional[8],
+                { token -> token is lexer.Token.SpecialChar.Equals },
+                2, 1)
+
+        assertPositionalToken(tokensPositional[9],
+                { token -> token is lexer.Token.Identifier && token.value == "x" },
+                4, 1)
+
+        assertPositionalToken(tokensPositional[10],
+                { token -> token is lexer.Token.Identifier && token.value == "times" },
+                6, 1)
+
+        assertPositionalToken(tokensPositional[11],
+                { token -> token is lexer.Token.Literal.Number && token.value == 10.0 },
+                12, 1)
+        assertPositionalToken(tokensPositional[12],
+                { token -> token is lexer.Token.SpecialChar.EndOfLine },
+                14, 1)
+
     }
 
     fun assertPositionalToken(positionalToken: PositionalToken, validationExpression: (lexer.Token) -> Boolean,
