@@ -79,8 +79,8 @@ class LexerTest {
     @org.junit.jupiter.api.Test
     fun lexerTestGetLine() {
         val lexer = Lexer("Hej\nMed\nDig!")
-        assertThat(lexer.inputLine(0), equalTo("Hej"))
-        assertThat(lexer.inputLine(1), equalTo("Med"))
-        assertThat(lexer.inputLine(2), equalTo("Dig!"))
+        assertThat(lexer.inputLine(0), equalTo("Hej\n"))
+        assertThat(lexer.inputLine(1), equalTo("Med\n"))
+        assertThat(lexer.inputLine(2), equalTo("Dig!\n"))
     }
 }
