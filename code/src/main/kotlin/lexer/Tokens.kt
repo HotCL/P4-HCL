@@ -19,8 +19,6 @@ sealed class Token {
         class SquareBracketEnd : SpecialChar()
         class ParenthesesStart : SpecialChar()
         class ParenthesesEnd : SpecialChar()
-        class SharpBracketStart : SpecialChar()
-        class SharpBracketEnd : SpecialChar()
         class EndOfLine : SpecialChar()
         class ListSeparator : SpecialChar()
         class LineContinue : SpecialChar()

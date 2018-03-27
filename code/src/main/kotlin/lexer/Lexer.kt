@@ -73,8 +73,6 @@ class Lexer(private val inputContent: String) : ILexer {
         ")" -> Token.SpecialChar.ParenthesesEnd()
         "," -> Token.SpecialChar.ListSeparator()
         "\\" -> Token.SpecialChar.LineContinue()
-        "<" -> Token.SpecialChar.SharpBracketStart()
-        ">" -> Token.SpecialChar.SharpBracketEnd()
         "->" -> Token.SpecialChar.Arrow()
         in endLines -> Token.SpecialChar.EndOfLine()
         else -> null
