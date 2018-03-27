@@ -6,7 +6,6 @@ import kotlin.coroutines.experimental.buildSequence
  * The default implementation of the ILexer interface
  */
 class Lexer(private val inputContent: String) : ILexer {
-
     private val endLines = listOf("\n","\r\n",";")
     private val specialChars = listOf("=", "[", "]", "(", ")", "{", "}", ",", "\\", "->", "<", ">", "\\") + endLines
     private val endOfLineRegex = "\\r\\n|\\n|\\r".toRegex()

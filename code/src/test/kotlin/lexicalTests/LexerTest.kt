@@ -74,7 +74,6 @@ class LexerTest {
         assertTrue(positionalToken.token.let { token -> validationExpression(token) })
         assertThat(positionalToken.lineIndex, equalTo(expectedLineIndex))
         assertThat(positionalToken.lineNumber, equalTo(ExpectedLineNumber))
-
     }
 
     @org.junit.jupiter.api.Test
