@@ -200,15 +200,24 @@ NTH = NICE TO HAVE
 	how do we do generic?
 
 	usecase:
+<<<<<<< HEAD
 		func map = (List[T1] input,Func[T1,T3] f) -> T3 = {
 			List[T3] output
+=======
+		func map = (List<T1> input,Func<T1,T3> f) -> T3 = {
+			List<T3> output
+>>>>>>> develop
 			T3 a
 			{output = output add (value f)} forEachIn input
 
 			return output
 		}
 
+<<<<<<< HEAD
 		func[List[T1],Func[T1,T3],T3] 
+=======
+		func<List<T1>,Func<T1,T3>,T3> 
+>>>>>>> develop
 
 		T1 = identifier
 
