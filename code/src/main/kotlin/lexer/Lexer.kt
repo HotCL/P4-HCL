@@ -13,7 +13,7 @@ class Lexer(private val inputContent: String) : ILexer {
 
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
         val currentString = StringBuilder()
-        inputContent.split("\\r\\n|\\n|\\r".toRegex()).forEachIndexed { lineNumber, line ->
+        inputContent.split(endOfLineRegex).forEachIndexed { lineNumber, line ->
             (line + "\n").forEachIndexed { indexNumber, char ->
                 if (char !in listOf(' ', '\t')) currentString.append(char)
                 with(currentString.toString()) {
