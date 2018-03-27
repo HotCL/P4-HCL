@@ -199,6 +199,30 @@ NTH = NICE TO HAVE
 15)
 	how do we do generic?
 
+	usecase:
+		func map = (List<T1> input,Func<T1,T3> f) -> T3 = {
+			List<T3> output
+			T3 a
+			{output = output add (value f)} forEachIn input
+
+			return output
+		}
+
+		func<List<T1>,Func<T1,T3>,T3> 
+
+		T1 = identifier
 
 16)
+	txt holdning = "jeg elsker" + " fisse"
+	num hest = 15 + 1.2
+
+	func + = (txt,txt) -> txt {
+		[DEFINERET]
+	}
+
+	func + = (num,num) -> num {
+		[DEFINERET]
+	}
+
 	overloading is possible with different TYPE of input - but not different lengths of input.
+

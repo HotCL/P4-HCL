@@ -4,8 +4,8 @@ package lexer
  * Lexical getTokenSequence emitted by the lexer
  */
 sealed class Token {
-    class Identifier(val value: String) : Token(){
-    }
+    class Identifier(val value: String) : Token()
+
     sealed class Literal : Token() {
         class Text(val value: String) : Literal()
         class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal()
@@ -19,6 +19,8 @@ sealed class Token {
         class SquareBracketEnd : SpecialChar()
         class ParenthesesStart : SpecialChar()
         class ParenthesesEnd : SpecialChar()
+        class SharpBracketStart : SpecialChar()
+        class SharpBracketEnd : SpecialChar()
         class EndOfLine : SpecialChar()
         class ListSeparator : SpecialChar()
         class LineContinue : SpecialChar()
