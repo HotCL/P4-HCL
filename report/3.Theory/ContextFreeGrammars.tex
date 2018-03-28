@@ -88,14 +88,16 @@ Figure \ref{fig:AmbiguousGrammarEx1} and figure \ref{fig:AmbiguousGrammarEx2} sh
 	\label{fig:AmbiguousGrammarEx2}
 \end{figure}
 
-\textbf{Backus-Naur Form} (BNF) is another way to write CFGs, although it is almost identical to the previous way. The only notable difference is the notation for non-terminals, which are enclosed in brackets:
+\textbf{Backus-Naur Form} (BNF) is another way to write CFGs, although it is almost identical to the previous way.
+The only notable difference is the notation for non-terminals, which are enclosed in brackets:
 \begin{align*}
 	\texttt{<Sentence>}\to & \texttt{ <StringOfWords> \$}\\
 	\texttt{<StringOfWords>}\to & \texttt{ "word" <StringOfWords>}\\
 	| & \texttt{ }\lambda
 \end{align*}
 
-\textbf{Extended BNF} (EBNF) is yet another way to write CFGs. As the name suggests it adds new "features" to the BNF.
+\textbf{Extended BNF} (EBNF) is yet another way to write CFGs.
+As the name suggests it adds new "features" to the BNF.
 It is designed to be more concise than BNF.
 In BNF, if a non-terminal is structured in two or more different ways, each way has to be noted with a new rule (like the \texttt{Expression} non-terminal from earlier).
 In EBNF the number of rules can be reduces.
