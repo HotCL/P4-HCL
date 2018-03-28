@@ -135,44 +135,49 @@ Læse videre:
 - Sidste gruppe var rimelig god, men stadig lidt tvivl om associering.
 
 \section{Extended Backus-Naur Form of HCL grammar}
+\label{AppendixEBNF}
 \begin{align*}
-	\texttt{<Program>}\to & \texttt{ \{Declaration | Assignment | Expression\}}\\
+	\texttt{<Program>}\to & \texttt{ \{Dcl | Assign | Expr\}}\\
 	\texttt{<Type>}\to & \texttt{ number}\\
 	| & \texttt{ text}\\
 	| & \texttt{ tuple}\\
-	| & \texttt{ list}\\
+	| & \texttt{ list squareBracketL [<Type>] squareBracketR}\\
 	| & \texttt{ bool}\\
-	| & \texttt{ func}\\
+	| & \texttt{ func squareBracketL [<Types>] squareBracketR}\\
 	| & \texttt{ none}\\
 	| & \texttt{ var}\\
-	\texttt{<Expression>}\to & \texttt{ <FunctionCall>}\\
+	\texttt{<Types>}\to & \texttt{ <Type> [comma <Types>]}\\
+	\texttt{<ImplicitType>}\to & \texttt{ <Type>}\\
+	| & \texttt{ func}\\
+	\texttt{<Expr>}\to & \texttt{ <FunctionCall>}\\
 	| & \texttt{ <Value>}\\
-	| & \texttt{ <LambdaExpression>}\\
 	\texttt{<Value>}\to & \texttt{ <Literal>}\\
 	| & \texttt{ identifier}\\
 	\texttt{<Literal>}\to & \texttt{ literalNumber}\\
 	| & \texttt{ literalText}\\
 	| & \texttt{ literalTuple}\\
 	| & \texttt{ literalList}\\
-	| & \texttt{ literalDict}\\
-	\texttt{<Statements>}\to & \texttt{ \{Statement\}+}\\
-	\texttt{<Statement>}\to & \texttt{ <VarDcl> linebreak}\\
-	| & \texttt{ <Assignment> linebreak}\\
-	| & \texttt{ <Expression> linebreak}\\
-	| & \texttt{ <ReturnStatement> linebreak}\\
-	\texttt{<Declaration>}\to & \texttt{ <Type> identifier [equals <Expression>]}\\
-	\texttt{<Assignment>}\to & \texttt{ identifier equals <Expression>}\\
-	\texttt{<LambdaExpression>}\to & \texttt{ [parenL [<FunDclParamList>] parenR}\\
-								   & \texttt{ arrow <Type>] curlyL <Statements> curlyR}\\
-	\texttt{<FunDclParamList>}\to & \texttt{ <Parameter> [comma <FunDclParamList>]}\\
-	\texttt{<FunDclParameter>}\to & \texttt{ <Type> identifier}\\
-	\texttt{FunctionCall}\to & \texttt{ identifier}\\
-	| & \texttt{ <FunCallParameter> identifier}\\
-	| & \texttt{ <FunCallParameter> identifier <FunCallParamList>}
-\end{align*}
-\begin{align*}
-\texttt{<FunCallParamList>}\to & \texttt{ \{<FunCallParameter>\}}\\
-| & \texttt{ parenL \{<FunCallParameter>\} parenR}\\
-\texttt{<FunCallParameter>}\to & \texttt{ <Expression>}\\
-\texttt{<ReturnStatement>}\to & \texttt{ return <Expression>}
+	\texttt{<Stmts>}\to & \texttt{ \{<Stmt>\}}\\
+	\texttt{<Stmt>}\to & \texttt{ <VarDcl> linebreak}\\
+	| & \texttt{ <Assign> linebreak}\\
+	| & \texttt{ <Expr> linebreak}\\
+	| & \texttt{ <ReturnStmt> linebreak}\\
+	\texttt{<DclValue>}\to & \texttt{ <Expr>}\\
+	| & \texttt{ <LambdaExpr>}\\
+	\texttt{<Dcl>}\to & \texttt{ <ImplicitType> identifier [equals <DclValue>]}\\
+	\texttt{<Assign>}\to & \texttt{ identifier equals <Expr>}\\
+	\texttt{<LambdaExpr>}\to & \texttt{ parenL [<FunDclParams>] parenR arrow <Type> LambdaBody}\\
+	\texttt{<LambdaBody>}\to & \texttt{ curlyL <Stmts> curlyR}\\
+	\texttt{<FunDclParams>}\to & \texttt{ <Param> [comma <FunDclParams>]}\\
+	\texttt{<FunDclParam>}\to & \texttt{ <Type> identifier}\\
+	\end{align*}
+	\begin{align*}
+	\texttt{<FunctionCall>}\to & \texttt{ identifier}\\
+	| & \texttt{ <FunCallParam> identifier [<FunCallParams>]}\\
+	\texttt{<FunCallParams>}\to & \texttt{ \{<FunCallParam>\}+}\\
+	| & \texttt{ parenL \{<FunCallParam>\}+ parenR}\\
+	\texttt{<FunCallParam>}\to & \texttt{ <Value>}\\
+	| & \texttt{ <LambdaExpr>}\\
+	| & \texttt{ <LambdaBody>}\\
+	\texttt{<ReturnStmt>}\to & \texttt{ return <Expr>}
 \end{align*}
