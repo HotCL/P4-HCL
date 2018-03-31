@@ -3,7 +3,13 @@ package logger
 import exceptions.CompilationException
 import exceptions.ErrorTypes
 
+/**
+ * The logger class, used for all output from the compiler.
+ */
 class Logger: ILogger {
+    /**
+     * Function used to log all compilation errors from the compiler.
+     */
     override fun logCompilationError(error: CompilationException) {
         print("- ERROR: ")
         when(error.errorType){
@@ -20,7 +26,6 @@ class Logger: ILogger {
         println(" |" + " " * error.lineIndex + "^--")
         println(" | ${error.errorMessage}.")
         if (error.helpText != "") println(" | -->help: ${error.helpText}.")
-
     }
     private operator fun String.times (num: Int) = (0 .. num).joinToString("") { this }
 }

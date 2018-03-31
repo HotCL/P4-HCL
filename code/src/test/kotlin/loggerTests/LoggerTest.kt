@@ -12,7 +12,6 @@ class TokenTest {
         val logger = Logger()
         logger.logCompilationError(lexicalError)
     }
-
     @org.junit.jupiter.api.Test
     fun testUndeclaredError() {
         val error = ParserException(ErrorTypes.UNDECLARED_IDENTIFIER_ERROR, 12, 8, "identifier 'textString' undeclared", "txt s = textString")
