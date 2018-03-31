@@ -1,0 +1,15 @@
+%This section describes the Lexer
+\section{Lexer}
+The first part of the compiler handles the syntax analysis phase. 
+The point of this phase is to verify whether a given input string, which will often be a source code file, is syntactically correct.
+Syntactical correctness is defined according to predefined rules, most often according to a context free grammar (CFG), often as a Extended Backus-Naur form (EBNF). 
+The CFG for HCL, is defined as an EBNF in section  \ref{<InsertContextFreeGrammarRefHere>}.
+Should the input string be syntactically correct, the string is broken down into tokens. According to the EBNF, the tokens in HCL will represent:
+\begin{itemize}
+	\item Keywords
+	\item Literals
+	\item Identifiers
+	\item Type declarations
+	\item Seperators, special characters
+	\item Line terminnators
+\end{itemize}
