@@ -94,3 +94,70 @@ The only operators that remains operators are the assign-operator (\textbf{=}) a
 
 Not having operators for arithmetic operations also means that there are no native operator precedence in the language.
 This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parenthesis. 
+
+\textbf{Overloading}\\
+
+The language will include function overloading. 
+This means that multiple functions can share the same name and have different implementations based on the different parameters that the function accepts. 
+An example could be the plus function. 
+The plus function could accept two numbers or two strings, but the implementation of the plus function would depend on the type.
+If two numbers were passed, the obvious result should be the sum of the two numbers.
+If on the other hand two strings were passed, the function could be implemented in such a way that the result would be the concatenation of the two strings.
+
+The function overloading in HCL is however a bit limited in that functions can not be overloaded with different amounts of parameters, only different parameter types. 
+This is due to the nature of the syntax in HCL where function parameters are not directly coupled to a function. 
+Therefore it would be impossible for the compiler to figure out what is parameters and what is functions.
+Consider this example:
+
+\begin{lstlisting}
+1 to 10 sum print
+\end{lstlisting}
+
+Obviously the sum function accepts a list that should be summed. 
+However, if the sum function could potentially also accept a modifier function, that were to alter the result of the sum function, it would be impossible for compiler to figure out whether print was that modifier function, or the sum should be passed as a parameter to the print function.
+
+Function overloading requires nothing special of the user, just declare two functions with the same amount of parameters, but with different types. 
+
+\begin{lstlisting}
+var isAwesome = (string name) -> bool {
+	return name equals "HCL" thenElse {true} {false}
+}
+var isAwesome = (num number) -> bool {
+	return number equals 42 thenElse {true} {false}
+}
+
+42 isAwesome // True
+"Java" isAwesome // False
+\end{lstlisting}
+
+The main reasoning for including function overloading is simplicity for the user.
+For instance for printing. 
+The print function should be able to print all basic types, so that the user does not have to worry about what type he is about to print.
+
+
+\textbf{Generics}\\
+
+The language will include simple generics into the language.
+Generics are used to abstract away types, and handle whatever type in a generic way, that should work no matter what the type is.
+With HCL being a language with a great focus on high order functions, this functionality becomes a must have.
+This is due to some of the fundamental high order functions, like the map function.
+Recall that the map function is a function that takes a list with elements of an arbitrary type along with a modifier function and returns the mapped value of each element in the list.
+In essence this means given an element of type T1 have a function that maps the element to an element of type T2.
+
+In theory this problem could be solved with overloading. However, this would require an overloading of a lot of functions with all the possible types within HCL. 
+Since tuples are distinguished by the types within it, there are an infinite amount of types within HCL, which in turn makes overloading for this case impossible.
+
+To get a better grasp of how generics are used in HCL, consider the following implementation of the map function:
+\begin{lstlisting}
+var map = (list[T1] elementsToMap, func[T1, T2] mapFunction) -> list[T2] {
+	list[T2] mappedValues = []
+	elementsToMap onEach {mappedValues add (value mapFunction)}
+	return mappedValues
+}
+\end{lstlisting}
+
+Generic types in the above example is T1 and T2. 
+Since nothing type specific ever happens with these types, we can handle all types the same, whether that be a string, a number or some other type will not matter.
+
+
+% Should the above textbf be sub sub sections?
