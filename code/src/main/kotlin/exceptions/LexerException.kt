@@ -1,7 +1,8 @@
 package exceptions
 
 class LexerException(errorType: ErrorTypes,
-                     errorMessage: String,
-                      lineNumber: Int,
+                     lineNumber: Int,
                      lineIndex: Int,
-                      lineText: String): CompilationException(errorType, errorMessage, lineNumber, lineIndex, lineText)
+                     errorMessage: String,
+                     lineText: String,
+                     helpText: String = ""): CompilationException(errorType, lineNumber, lineIndex, errorMessage, lineText, helpText)
