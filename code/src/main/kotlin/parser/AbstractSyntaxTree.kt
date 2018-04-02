@@ -1,11 +1,10 @@
 package parser
 
-data class AbstractSyntaxTree(val childs: MutableList<TreeNode.Command> = mutableListOf())
+data class AbstractSyntaxTree(val children: MutableList<TreeNode.Command> = mutableListOf())
 
 sealed class TreeNode {
     sealed class Command: TreeNode() {
-        data class Declaration(val type: Type, val identifier: Expression.Value.Identifier, val expression: Expression?): Command()
-        data class Assignment(val identifier: Expression.Value.Identifier, val expression: Expression): Command()
+        data class Declaration(val type: Type, val identifier: Expression.Value.Identifier, val expression: Expression? = null): Command()
         sealed class Expression: Command() {
             sealed class Value: Expression() {
                 data class Identifier(val name: String): Value()
@@ -23,6 +22,7 @@ sealed class TreeNode {
         data class Return(val expression: Expression): Command()
     }
     sealed class Type {
+        class Number: Type()
         class Text: Type()
         class Bool: Type()
         class None: Type()
