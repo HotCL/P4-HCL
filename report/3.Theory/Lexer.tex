@@ -38,11 +38,19 @@ As one of the primary design decisions of is simplicity over complexity, as well
 ANTLR has official plugins for both Intellij, NetBeans and Eclipse, which improves the user experience, by supporting syntax highlighting, formatting and error detection.
 %Maybe add example syntax?
 
-\textbf{Flex}\\
-At the 4th semester,
-
-\textbf{JavaCC}\\
-
+\textbf{Lex}\\
+At the 4th semester, the Crafting a compiler uses Lex as an example of a Lexer generator\cite{CraftingACompiler}.
+Lex is by many deemed the standard lexer generator, and it comes default on many unix systems.
+Lex outputs to C, however there are many different forks which allow for output to different languages.
+A Lex file is comprised of 3 distinct sections\cite{Lex}.
+\begin{itemize}
+	\item \textbf{Definition}, in which will import header files and allows for definition of macros. Code can also be written here, which will be put in the generated file.
+	\item \textbf{Rules}, which associates regular expressions with C statements.
+	\item \textbf{C code}, which contains C code that will be copied into the generated file.
+\end{itemize}
+Lex is often used with the Yacc parser, which is very similar in structure and usage.
+The primary advantage of Lex is that it is widely used, which means that it is well documented.
+Many different options for output language exist, java included in Jlex\cite{JLex}, which can be used with Kotlin.
 
 \subsection{Writing by hand}
 Another option when writing the scanner is to simply write it by hand.
@@ -53,7 +61,7 @@ The main advantage here would be total control of the process, and being aware o
 A disadvantage is that writing a lexer is often quite monotonous work, and if the language is large, it can quickly become very overwhelming.
 Another disadvantage is the fact that writing the lexer by hand, can potentially result in inefficient code, especially compared to the generated lexers, as the lexer generators are often quite optimized.
 
-\subsection{Lexer choice choice}
+\subsection{Lexer choice}
 \label{LexerChoice}
 The group decided that a hand-written approach would be the best.
 The main reason was that the HCL language is relatively simple, with not too many rules.
