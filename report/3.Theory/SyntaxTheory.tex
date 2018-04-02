@@ -9,6 +9,48 @@
 % - Conclusion.
 \section{Mathematical Syntax Theory}
 
+\subsection{Regularity of HCL}
+Now that it has been concluded that HCl is as CFL recognized by the CFG described in the previous subsections.
+It is now relevant to investigate whether HCl is a regular language. If that would be the case, it would be possible to utilize finite state automatons to recognize the language.
+Since the set of regular languages is a subset of the context free languages, this might be the case.
+The finite state automatons are more trivial to implement than a NPDA. 
+Since the HCL language is a relatively complex language, it would be unrealistic to sequentially go through the entire language while trying to construct a finite state automaton, that recognizes HCL.
+
+Considering the fact that the regular languages are closed under the union, concatenation and the star operations. 
+It would be sufficient to locate a subset of HCL that is not a regular language.
+The transition rules described in the EBNF, state that a subset of HCL might consists of an arbitrary number of equal amounts of left and right parentheses.
+This subset, referred to as $HCL_{subset}$ can be described as the set:
+\begin{center}
+	$HCL_{subset} = \{a^nbc^n | a \in \{(\} \wedge b \in P \wedge c \in \{)\}\}$
+\end{center}
+
+where P is an arbitrary set containing elements legal in the context.
+
+To prove that HCL is not a regular language the pumping lemma will be utilized.
+The pumping lemma states that:
+\begin{center}
+	If A is a regular language, there exists a number $p>0$ so all strings $s \in A $, where $|s| \geq p$ can be divided $s = xyz$ so the following properties withhold:
+	\begin{itemize}
+		\item $xy^iz \in A$ for $i \geq 0$
+		\item $|y| > 0$
+		\item $|xy| leq p$
+	\end{itemize}
+\end{center}
+
+First the division is chosen for s.
+$s = xyz$, where $s = (((...b)))...$.
+Meaning that x consists only of left parentheses, y consists of a concatenation of left parentheses and elements from P and finally z consists only of right parentheses.
+
+The length of the string is $p < |s| < (p3)/2$, since $s = a^nbc^n$, where $n = p/2$ and $0 < |b| \leq p/2$.
+
+This means that the third condition is upheld since $|xy|$ cannot be greater than p.
+The second condition is also upheld since y consist of at least some left parentheses. If the string does contain right parentheses, which it does. Y cannot be of the length 0.
+
+The first condition is not upheld since if $i = 0$ the new string cannot contain an equal amount of left and right parentheses because of the same reason as to why the second condition is upheld.
+
+This concludes the proof by contradiction.
+Since HCl does not uphold the required property for it to be a regular language, it it not and the only automaton capable of recognizing the language is the NDPA described in the previous sections.
+
 \subsection{Types and Identifiers}
 So far the syntax of HCL has been properly defined as a CFL. 
 Meaning that all Variables, terminals and the transition rules for recognizing HCl has been described in a computational model as seen on page 
