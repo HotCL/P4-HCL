@@ -1,0 +1,15 @@
+%This section covers the implementation of the lexer
+\section{Lexer implementation}
+As described in section \ref{LexerChoice}, it was decided that the lexer (and therefore the parser), would be written by hand.
+As mentioned in section \ref{REFTOPROGRAMLANGUAGECHOICE}, the compiler for HCL will be written in kotlin.
+Below is an explanation of the implementation of the lexer.
+\begin{lstlisting}[language=java,label=lis:Lexer,caption=The Lexer .,firstnumber=1]
+
+
+\end{lstlisting}
+The lexer class implements the ILexer interface and accepts an input string, which is expected to be text.
+The ILexer defines a getTokenSequence function, which will give the token sequence and an inputLine function
+
+\begin{lstlisting}[language=java,label=lis:Lexer,caption=The Lexer .,firstnumber=8]
+class Lexer(private val inputContent: String) : ILexer {
+\end{lstlisting}

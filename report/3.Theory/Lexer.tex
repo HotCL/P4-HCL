@@ -1,15 +1,63 @@
 %This section describes the Lexer
+%I have used lexer, tho I have described that a scanner is also valid wording
+%I possibly might need some reference to the EBNF section
 \section{Lexer}
-The first part of the compiler handles the syntax analysis phase. 
-The point of this phase is to verify whether a given input string, which will often be a source code file, is syntactically correct.
-Syntactical correctness is defined according to predefined rules, most often according to a context free grammar (CFG), often as a Extended Backus-Naur form (EBNF). 
-The CFG for HCL, is defined as an EBNF in section  \ref{<InsertContextFreeGrammarRefHere>}.
-Should the input string be syntactically correct, the string is broken down into tokens. According to the EBNF, the tokens in HCL will represent:
-\begin{itemize}
-	\item Keywords
-	\item Literals
-	\item Identifiers
-	\item Type declarations
-	\item Seperators, special characters
-	\item Line terminnators
-\end{itemize}
+The first part of the compiler is concerned with the syntax analysis phase.
+This portion of the compiler is often called a lexer or a scanner.
+The two words can be used interchangeably 
+The point of the lexer is to transform a given input character stream, often a source code file, and transform it into a stream of tokens.
+
+The scanner will do this by breaking the character stream down into individual words, known in language theory as a lexeme.
+A lexeme is simply the smallest unit in a language, that still has a meaning.
+Some examples of lexemes in programming languages are \textbf{identifiers}, \textbf{keywords} or \textbf{operators}.
+
+The output of the scanner will be a stream of tokens.
+A token simply corresponds to indivual symbols in a given programming language.
+The scanner will attempt to match every lexeme to a token.
+Sometimes several lexemes can be matched by the same token.
+In the case of identifiers, two different variables might be named \textit{Employee} and \textit{Customer}, but they would both be matched to the identifier token.
+Some tokens can only match a single, very specific, lexeme.
+An example of this would be parentheses, where the left parentheses character, \textbf{(}, would only match the left parentheses token, and likewise for the right parentheses character.
+
+The point here is to illustrate the importance of knowing when a parentheses starts or ends, compared to just knowing that there is an identifier, but not which identifier
+
+
+Creating a lexer can be done in a number of ways.
+%Possibly insert a section here about Regular Expressions? Jones)
+Below the different options will be explored.
+\subsection{Lexer Generators}
+The primary advantage for all Lexer generators, is that they allow for easy modification of the language, without having to  rewrite the lexer yourself, as it is usually as simple as adding the rule to the CFG, and running the generator.
+Below we will briefly describe ANTLR and Flex, two of the most well-known and used Lexer/Parser generators.
+
+\textbf{ANTLR}\\
+ANTLR is a scanner/parser generator, which when given a context-free grammar, expressed using Extended Backus-Naur form (EBNF), can generate lexers, parsers and lexer-parsers\cite{ANTLR}.
+ANTLR can output to Java, C\#, Python2 and Python3, Javascript, Go, C++ and Swift\cite{ANTLRDocsTargets}.
+One of the primary advantages of ANTLR is that it uses a single notation for both lexers and parsers\cite{ANTLRDocs}.
+This means that after the lexer has been implemented, it would be extremely easy to implement the parser afterwards, as it would be as simple as specifying that a parser needs to be generated.
+As one of the primary design decisions of is simplicity over complexity, as well as the fact that ANTLR is often used in academia, it would be a good choice for a lexer/parser generator.
+ANTLR has official plugins for both Intellij, NetBeans and Eclipse, which improves the user experience, by supporting syntax highlighting, formatting and error detection.
+%Maybe add example syntax?
+
+\textbf{Flex}\\
+At the 4th semester,
+
+\textbf{JavaCC}\\
+
+
+\subsection{Writing by hand}
+Another option when writing the scanner is to simply write it by hand.
+Writing the compiler by hand, would also mean that the parser should be written by hand
+
+The main advantage here would be total control of the process, and being aware of everything that goes on in the compiler, which allows for more flexibility, as it is easier to modify code written by hand.
+
+A disadvantage is that writing a lexer is often quite monotonous work, and if the language is large, it can quickly become very overwhelming.
+Another disadvantage is the fact that writing the lexer by hand, can potentially result in inefficient code, especially compared to the generated lexers, as the lexer generators are often quite optimized.
+
+\subsection{Lexer choice choice}
+\label{LexerChoice}
+The group decided that a hand-written approach would be the best.
+The main reason was that the HCL language is relatively simple, with not too many rules.
+Therefore complexity and writing a long complex lexer was not of concern.
+On top of that, the group prefers the level of control, that writing the lexer by hand offers.
+
+
