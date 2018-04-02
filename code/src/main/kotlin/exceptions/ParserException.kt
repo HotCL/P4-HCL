@@ -1,8 +1,6 @@
 package exceptions
 
-class ParserException(errorType: ErrorTypes,
-                      lineNumber: Int,
-                      lineIndex: Int,
-                      errorMessage: String,
-                      lineText: String,
-                      helpText: String = ""): CompilationException(errorType, lineNumber, lineIndex, errorMessage, lineText, helpText)
+abstract class ParserException(lineNumber: Int,
+                           lineIndex: Int,
+                           lineText: String): CompilationException(lineNumber, lineIndex, lineText){
+}

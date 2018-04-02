@@ -1,32 +1,44 @@
 package loggerTests
-
-import exceptions.CompilationException
-import exceptions.ErrorTypes
-import exceptions.ParserException
-import logger.Logger
+import logger.*
 
 class TokenTest {
+
     @org.junit.jupiter.api.Test
     fun testTypeError() {
-        val lexicalError = CompilationException(ErrorTypes.TYPE_ERROR, 4, 10, "Operator '<' cannot be applied on operands 'num' and 'txt'", "var b = 4 < \"5\"", "Try casting to 'int'")
+        val error = TypeError(4, 10, "var b = 4 < \"5\"", "<", listOf("num", "txt", "bool"))
         val logger = Logger()
-        logger.logCompilationError(lexicalError)
+        logger.logCompilationError(error)
     }
+
     @org.junit.jupiter.api.Test
     fun testUndeclaredError() {
-        val error = ParserException(ErrorTypes.UNDECLARED_IDENTIFIER_ERROR, 12, 8, "identifier 'textString' undeclared", "txt s = textString")
+        val error = UndeclaredError(12, 8, "txt s = textString", "textString")
         val logger = Logger()
         logger.logCompilationError(error)
     }
+
     @org.junit.jupiter.api.Test
     fun testUnitializedError() {
-        val error = ParserException(ErrorTypes.UNINITIALIZED_ERROR, 12, 4, "Use of uninitialized variable 'someUninitializedVariable'", "x = someUninitializedVariable + 10")
+        val error = UninitializedError(12, 4, "x = someUninitializedVariable + 10", "someUninitializedVariable")
+        val logger = Logger()
+        logger.logCompilationError(error)
+    }
+
+    @org.junit.jupiter.api.Test
+    fun testZeroDivisionError() {
+        val error = ZeroDivisionError(7, 6, "x = 42/0")
         val logger = Logger()
         logger.logCompilationError(error)
     }
     @org.junit.jupiter.api.Test
-    fun testZeroDivisionError() {
-        val error = ParserException(ErrorTypes.ZERO_DIVISION, 7, 6, "Division by 0 found", "x = 42/0")
+    fun testMissingArgumentError() {
+        val error = MissingArgumentError(11, 2, "2 someFunction", "someFunction")
+        val logger = Logger()
+        logger.logCompilationError(error)
+    }
+    @org.junit.jupiter.api.Test
+    fun testMissingEncapsulation() {
+        val error = MissingEncapsulationError(30, 0, "({()}")
         val logger = Logger()
         logger.logCompilationError(error)
     }
