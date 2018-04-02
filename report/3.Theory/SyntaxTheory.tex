@@ -8,6 +8,7 @@
 % - Description of identifiers and types in HCL using computational models or Regex.
 % - Conclusion.
 \section{Mathematical Syntax Theory}
+This section concerns with the concise definitions of HCL's syntax. First the proper CFG recognizing HCL will be presented, which will be used to proof that HCL is a CFL. Afterwards the most specific computational model for describing HCL will be identified and presented. Lastly the token categories will be described in a computational model. The conclusions of this section will provide the bases for implementing and testing the parser of the HCL compiler. The majority of this section will be based on the EBNF details touched upon in the previous chapter.
 
 \subsection{Regularity of HCL}
 Now that it has been concluded that HCl is as CFL recognized by the CFG described in the previous subsections.
@@ -123,6 +124,10 @@ The resulting regular expressions are shown in Table 3.3.
 	\end{tabular}
 	\caption{Regular Expressions describing the type and identifier languages.}
 \end{table}
+
+In conclusion HCL is a context free language, meaning that it can be described by a non-deterministic pushdown automaton.
+A subset of HCL is non-regular, meaning that HCL cannot be a regular language.
+The token category languages are all regular languages. These can therefore be described using regular expressions as presented in this chapter.
 
 
 
