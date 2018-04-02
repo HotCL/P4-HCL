@@ -144,8 +144,8 @@ This is due to some of the fundamental high order functions, like the map functi
 Recall that the map function is a function that takes a list with elements of an arbitrary type along with a modifier function and returns the mapped value of each element in the list.
 In essence this means given an element of type T1 have a function that maps the element to an element of type T2.
 
-In theory this problem could be solved with overloading. However, this would require an overloading of a lot of functions with all the possible types within HCL. 
-Since tuples are distinguished by the types within it, there are an infinite amount of types within HCL, which in turn makes overloading for this case impossible.
+In theory this problem could be solved with overloading. However, this would require overloading of a lot of functions with all the possible types within HCL. 
+Since tuples are distinguished by the types within it, there are a theoretical infinite amount of types within HCL, which in turn makes overloading for this case impossible.
 
 To get a better grasp of how generics are used in HCL, consider the following implementation of the map function:
 \begin{lstlisting}
