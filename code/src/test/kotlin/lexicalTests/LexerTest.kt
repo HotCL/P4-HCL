@@ -5,14 +5,13 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.isA
 import lexer.PositionalToken
-import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import java.lang.reflect.Type
 
 class LexerTest {
     @org.junit.jupiter.api.Test
     fun lexerTestTokenGeneration() {
-        val lex = Lexer("var x = 5 + 7\nx = x times\\\n10;")
+        val lex = Lexer("var x = 5 + 7\nx = x times\\\n10.0;")
 
         val tokensPositional = lex.getTokenSequence().toList()
 
@@ -71,8 +70,48 @@ class LexerTest {
                 0, 2)
         assertPositionalToken(tokensPositional[14],
                 { token -> token is lexer.Token.SpecialChar.EndOfLine },
-                2, 2)
+                4, 2)
 
+    }
+
+    @org.junit.jupiter.api.Test
+    fun lexerTestIgnoreComments() {
+        val lex = Lexer("var x = 5# fem er et ret cool tal tbh\nx = 4")
+
+        val tokensPositional = lex.getTokenSequence().toList()
+
+        assertPositionalToken(tokensPositional[0],
+                { token -> token is lexer.Token.Type.Var },
+                0, 0)
+
+        assertPositionalToken(tokensPositional[1],
+                { token -> token is lexer.Token.Identifier && token.value == "x" },
+                4, 0)
+
+        assertPositionalToken(tokensPositional[2],
+                { token -> token is lexer.Token.SpecialChar.Equals },
+                6, 0)
+
+        assertPositionalToken(tokensPositional[3],
+                { token -> token is lexer.Token.Literal.Number && token.value == 5.0 },
+                8, 0)
+
+        assertPositionalToken(tokensPositional[4],
+                { token -> token is lexer.Token.SpecialChar.EndOfLine},
+                9, 0)
+
+        assertPositionalToken(tokensPositional[5],
+                { token -> token is lexer.Token.Identifier && token.value == "x" },
+                0, 1)
+
+        assertPositionalToken(tokensPositional[6],
+                { token -> token is lexer.Token.SpecialChar.Equals },
+                2, 1)
+
+        assertPositionalToken(tokensPositional[7],
+                { token -> token is lexer.Token.Literal.Number && token.value == 4.0 },
+                4, 1)
+        assertEquals(9,tokensPositional.count())
     }
 
     private fun assertPositionalToken(positionalToken: PositionalToken, validationExpression: (lexer.Token) -> Boolean,
@@ -88,8 +127,6 @@ class LexerTest {
         assertThrows(Exception::class.java,{Lexer("\"hej").getTokenSequence().toList()})
         assertThrows(Exception::class.java,{Lexer("'hej").getTokenSequence().toList()})
     }
-
-
 
     @org.junit.jupiter.api.Test
     fun lexerTestGetLine() {

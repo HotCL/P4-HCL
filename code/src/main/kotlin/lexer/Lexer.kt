@@ -1,6 +1,5 @@
 package lexer
 
-import exceptions.LexerException
 import kotlin.coroutines.experimental.buildSequence
 
 /**
@@ -14,13 +13,19 @@ class Lexer(private val inputContent: String) : ILexer {
 
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
         val currentString = StringBuilder()
-        inputContent.split(endOfLineRegex).forEachIndexed { lineNumber, line ->
+        inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->
             (line + '\n').forEachIndexed { indexNumber, char ->
                 if (char !in listOf(' ', '\t')) currentString.append(char)
+                if (char == '#'){
+                    yield(PositionalToken(Token.SpecialChar.EndOfLine(), lineNumber, indexNumber))
+                    currentString.setLength(0)
+                    return@lineIterator
+                }
+
                 with(currentString.toString()) {
                     when {
                         isNotEmpty() -> when { char.isSpecialChar() -> char.getSpecialCharTokenOrNull()
-                            upcomingSpecialCharOrWhiteSpace(lineNumber, indexNumber) -> when (this) {
+                            isNextSpecialCharWhiteSpaceOrComment(lineNumber, indexNumber) -> when (this) {
 
                             // types
                                 "var" -> Token.Type.Var()
@@ -34,6 +39,7 @@ class Lexer(private val inputContent: String) : ILexer {
                             //bool
                                 "true" -> Token.Literal.Bool(true)
                                 "false" -> Token.Literal.Bool(false)
+                                "return" -> Token.Return()
                                 else -> getLiteralOrIdentifier()
                             }
                             else -> null
@@ -52,10 +58,11 @@ class Lexer(private val inputContent: String) : ILexer {
         }
     }
 
-    private fun upcomingSpecialCharOrWhiteSpace(lineNumber: Int, indexNumber: Int) = with(inputLine(lineNumber)) {
-        val nextCharIndex = indexNumber + 1
-        nextCharIndex < length && specialChars.any { get(nextCharIndex) == it } || get(nextCharIndex).isWhitespace()
-    }
+    private fun isNextSpecialCharWhiteSpaceOrComment(lineNumber: Int, indexNumber: Int) = with(inputLine(lineNumber)) {
+                val nextCharIndex = indexNumber + 1
+                nextCharIndex < length && specialChars.any { get(nextCharIndex) == it }
+                        || get(nextCharIndex).isWhitespace() || get(nextCharIndex) == '#'
+            }
 
     override fun inputLine(lineNumber: Int) = inputContent.split(endOfLineRegex)[lineNumber] + '\n'
 

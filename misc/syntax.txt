@@ -65,6 +65,8 @@ NTH = NICE TO HAVE
 	- partial function domain:
 		sounds hard.
 
+	- if method only contains ONE statement (as with inline lambda) then return is implied. otherwise it has to be explicit.
+
 6) if statements
 	
 	x == 5 then {1} then {2} else {3} <: x == 5 then {1,2} else {3}
