@@ -18,7 +18,7 @@ The majority of this section will be based on the EBNF details touched upon in t
 \subsection{HCL as an CFL}
 This subsection will investigate whether HCL is a CFL. 
 To do this it is necessary to construct a PDA.
-The reason being that the set of context free languages is equivalent to the set of languages recognized by push down automata.
+The reason being that the set of CFL's is equivalent to the set of languages recognized by a PDA.
 To construct the PDA the following rules will be utilized:
 \begin{center}
 	\begin{itemize}
@@ -89,7 +89,9 @@ If the string does contain right parentheses, which it does, y cannot be of the 
 The first condition is not upheld since if $i = 0$ the new string cannot contain an equal amount of left and right parentheses because of the same reason as to why the second condition is upheld.
 
 This concludes the proof by contradiction.
-Since HCL does not uphold the required property for it to be a regular language, it is not, and the only automaton capable of recognizing the language is the NDPA described in the previous sections.
+Since HCL does not uphold the required property for it to be a regular language, it is not.
+%I did not like this part: and the only automaton capable of recognizing the language is the NDPA described in the previous sections.
+% If it should be in, please rephrase it to emphasize that there is a difference between regular and context free grammar. 
 
 \subsection{Types and Identifiers}
 So far the syntax of HCL has been properly defined as a CFL. 

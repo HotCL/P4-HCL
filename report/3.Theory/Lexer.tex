@@ -12,7 +12,7 @@ A lexeme is simply the smallest unit in a language, that still has a meaning.
 Some examples of lexemes in programming languages are \textbf{identifiers}, \textbf{keywords} or \textbf{operators}.
 
 The output of the scanner will be a stream of tokens.
-A token simply corresponds to indivual symbols in a given programming language.
+A token simply corresponds to individual symbols in a given programming language.
 The scanner will attempt to match every lexeme to a token.
 Sometimes several lexemes can be matched by the same token.
 In the case of identifiers, two different variables might be named \textit{Employee} and \textit{Customer}, but they would both be matched to the identifier token.
@@ -27,7 +27,7 @@ The one that will be used in this project is described in section \ref{MathTheor
 Below the different options will be explored.
 \subsection{Lexer Generators}
 The primary advantage for all Lexer generators, is that they allow for easy modification of the language, without having to  rewrite the lexer yourself, as it is usually as simple as adding the rule to the CFG, and running the generator.
-Below we will briefly describe ANTLR and Flex, two of the most well-known and used Lexer/Parser generators.
+Below we will briefly describe ANTLR and Lex, two of the most well-known and used Lexer/Parser generators.
 
 \textbf{ANTLR}\\
 ANTLR is a scanner/parser generator, which when given a context-free grammar expressed using Extended Backus-Naur form (EBNF), can generate lexers, parsers and lexer-parsers\cite{ANTLR}.
@@ -38,7 +38,7 @@ As one of the primary design decisions of ANTLR is "simplicity over complexity",
 ANTLR has official plugins for both Intellij, NetBeans and Eclipse, which improves the user experience, by supporting syntax highlighting, formatting and error detection.
 
 \textbf{Lex}\\
-At the 4th semester, the \textit{Crafting a compiler} uses Lex as an example of a Lexer generator\cite{CraftingACompiler}.
+At the 4th semester, the \textit{Crafting a compiler} book uses Lex as an example of a Lexer generator\cite{CraftingACompiler}.
 Lex is deemed the standard lexer generator, and it comes default on many unix systems.
 Lex outputs to C, however there are many different forks which allow for output to different languages.
 A Lex file is comprised of 3 distinct sections\cite{Lex}.
