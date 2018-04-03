@@ -16,7 +16,7 @@ class Lexer(private val inputContent: String) : ILexer {
         inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->
             (line + '\n').forEachIndexed { indexNumber, char ->
                 if (char !in listOf(' ', '\t')) currentString.append(char)
-                if (char == '#'){
+                if (char == '#') {
                     yield(PositionalToken(Token.SpecialChar.EndOfLine(), lineNumber, indexNumber))
                     currentString.setLength(0)
                     return@lineIterator

@@ -12,9 +12,15 @@ A sealed class in Kotlin, simply specifies that a value can have one specific ty
 It is essentially an extended enum.
 \begin{lstlisting}[language=java,label=lis:tokenClass,caption=A snippet from the token class .,firstnumber=9]
 sealed class Literal : Token() {
-class Text(val value: String) : Literal()
-class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal()
-class Bool(val value: Boolean) : Literal()
+	class Text(val value: String) : Literal() {
+	override fun toString() = super.toString() + "[$value]"
+	}
+	class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal() {
+	override fun toString() = super.toString() + "[$value]"
+	}
+	class Bool(val value: Boolean) : Literal() {
+	override fun toString() = super.toString() + "[$value]"
+	}
 }
 \end{lstlisting}
 
@@ -34,38 +40,41 @@ class Lexer(private val inputContent: String) : ILexer {
 The ILexer defines a getTokenSequence function, which will give the token sequence and an inputLine function.
 The getTokenSequence function will split the text string.
 \begin{lstlisting}[language=java,label=lis:LexerStringSplit,caption=The string is being split and new lines are added to the string .,firstnumber=8]
-class Lexer(private val inputContent: String) : ILexer { 
-        val currentString = StringBuilder()
-inputContent.split(endOfLineRegex).forEachIndexed { lineNumber, line ->
-	(line + "\n").forEachIndexed { indexNumber, char ->
-		if (char !in listOf(' ', '\t')) currentString.append(char)
-		with(currentString.toString()) {
+override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
+	val currentString = StringBuilder()
+	inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->
+		(line + '\n').forEachIndexed { indexNumber, char ->
+			if (char !in listOf(' ', '\t')) currentString.append(char)
+			if (char == '#') {
+				// rest of line is comment
+				...
+			}
+	with(currentString.toString()) {
 \end{lstlisting}		
 It will then match the characters to either a type, a boolean value, a special character, an identifier or a number literal.
 If this is not possible, it can be assumed that the split string, meaning the current line, is done.
 \begin{lstlisting}[language=java,label=lis:LexerStringMatcher,caption=The split string is being matched to a token,firstnumber=19]
+
 when {
-	// types
-	equals("var") -> Token.Type.Var()
-	equals("none") -> Token.Type.None()
-	equals("txt") -> Token.Type.Text()
-	equals("num") -> Token.Type.Number()
-	equals("bool") -> Token.Type.Bool()
-	equals("tuple") -> Token.Type.Tuple()
-	equals("list") -> Token.Type.List()
-	equals("func") -> Token.Type.Func()
-	//bool
-	equals("true") -> Token.Literal.Bool(true)
-	equals("false") -> Token.Literal.Bool(false)
 	// special char
-	isSpecialChar() -> getSpecialCharTokenOrNull()
-	// identifier or number literal
-	upcomingSpecialCharOrWhiteSpace(lineNumber, indexNumber + 1) && isNotEmpty() -> getLiteralOrIdentifier()
-	else -> null
-}.let {
-	if (it != null) {
-		yield(PositionalToken(it, lineNumber, indexNumber - (length - 1)))
-		currentString.setLength(0)
+	char.isSpecialChar() -> char.getSpecialCharTokenOrNull()
+	isNextSpecialCharWhiteSpaceOrComment(lineNumber, indexNumber) -> when (this) {
+		// types
+		"var" -> Token.Type.Var()
+		"none" -> Token.Type.None()
+		"txt" -> Token.Type.Text()
+		"num" -> Token.Type.Number()
+		"bool" -> Token.Type.Bool()
+		"tuple" -> Token.Type.Tuple()
+		"list" -> Token.Type.List()
+		"func" -> Token.Type.Func()
+		//bool
+		"true" -> Token.Literal.Bool(true)
+		"false" -> Token.Literal.Bool(false)
+		"return" -> Token.Return()
+		// identifier or number literal
+		else -> getLiteralOrIdentifier()
 	}
+	else -> null
 }
 \end{lstlisting}

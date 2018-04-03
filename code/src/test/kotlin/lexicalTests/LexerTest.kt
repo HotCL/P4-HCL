@@ -130,6 +130,17 @@ class LexerTest {
     }
 
     @org.junit.jupiter.api.Test
+    fun multiWordString() {
+        val rawString = "hej med dig"
+        val tokensPositional = Lexer("\"$rawString\"").getTokenSequence().toList()
+
+        assertPositionalToken(tokensPositional[0],
+                { token -> token is lexer.Token.Literal.Text && token.value == rawString},
+                0, 0)
+        assertEquals(1, tokensPositional.count())
+    }
+
+    @org.junit.jupiter.api.Test
     fun lexerTestGetLine() {
         val lexer = Lexer("Hej\nMed\nDig!")
         assertThat(lexer.inputLine(0), equalTo("Hej\n"))
