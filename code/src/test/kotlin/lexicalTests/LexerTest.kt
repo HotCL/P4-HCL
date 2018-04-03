@@ -111,21 +111,22 @@ class LexerTest {
         assertPositionalToken(tokensPositional[7],
                 { token -> token is lexer.Token.Literal.Number && token.value == 4.0 },
                 4, 1)
-        assertEquals(9,tokensPositional.count())
+
+        assertEquals(9, tokensPositional.count())
     }
 
     private fun assertPositionalToken(positionalToken: PositionalToken, validationExpression: (lexer.Token) -> Boolean,
                                       expectedLineIndex:Int, ExpectedLineNumber:Int)
     {
-        assertTrue(positionalToken.token.let { token -> validationExpression(token) },"Failed on: ${positionalToken.token}")
+        assertTrue(positionalToken.token.let { token -> validationExpression(token) }, "Failed on: ${positionalToken.token}")
         assertThat(positionalToken.lineIndex, equalTo(expectedLineIndex))
         assertThat(positionalToken.lineNumber, equalTo(ExpectedLineNumber))
     }
 
     @org.junit.jupiter.api.Test
     fun lexerUnfinishedStringFails() {
-        assertThrows(Exception::class.java,{Lexer("\"hej").getTokenSequence().toList()})
-        assertThrows(Exception::class.java,{Lexer("'hej").getTokenSequence().toList()})
+        assertThrows(Exception::class.java, {Lexer("\"hej").getTokenSequence().toList()})
+        assertThrows(Exception::class.java, {Lexer("'hej").getTokenSequence().toList()})
     }
 
     @org.junit.jupiter.api.Test

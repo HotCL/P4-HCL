@@ -23,10 +23,11 @@ class Lexer(private val inputContent: String) : ILexer {
                 }
 
                 with(currentString.toString()) {
-                    when {
-                        isNotEmpty() -> when { char.isSpecialChar() -> char.getSpecialCharTokenOrNull()
+                    (if(isNotEmpty())
+                        when {
+                            // special char
+                            char.isSpecialChar() -> char.getSpecialCharTokenOrNull()
                             isNextSpecialCharWhiteSpaceOrComment(lineNumber, indexNumber) -> when (this) {
-
                             // types
                                 "var" -> Token.Type.Var()
                                 "none" -> Token.Type.None()
@@ -40,29 +41,27 @@ class Lexer(private val inputContent: String) : ILexer {
                                 "true" -> Token.Literal.Bool(true)
                                 "false" -> Token.Literal.Bool(false)
                                 "return" -> Token.Return()
+                            // identifier or number literal
                                 else -> getLiteralOrIdentifier()
                             }
                             else -> null
                         }
-                        else -> null
-                    // special char
-                    // identifier or number literal
-                    }.let {
-                        if (it != null) {
-                            yield(PositionalToken(it, lineNumber, indexNumber - (length - 1)))
-                            currentString.setLength(0)
-                        }
-                    }
+                    else null).let {
+                                if (it != null) {
+                                    yield(PositionalToken(it, lineNumber, indexNumber - (length - 1)))
+                                    currentString.setLength(0)
+                                }
+                            }
                 }
             }
         }
     }
 
     private fun isNextSpecialCharWhiteSpaceOrComment(lineNumber: Int, indexNumber: Int) = with(inputLine(lineNumber)) {
-                val nextCharIndex = indexNumber + 1
-                nextCharIndex < length && specialChars.any { get(nextCharIndex) == it }
-                        || get(nextCharIndex).isWhitespace() || get(nextCharIndex) == '#'
-            }
+        val nextCharIndex = indexNumber + 1
+        nextCharIndex < length && specialChars.any { get(nextCharIndex) == it }
+                || get(nextCharIndex).isWhitespace() || get(nextCharIndex) == '#'
+    }
 
     override fun inputLine(lineNumber: Int) = inputContent.split(endOfLineRegex)[lineNumber] + '\n'
 

@@ -69,7 +69,7 @@ NTH = NICE TO HAVE
 
 6) if statements
 	
-	x == 5 then {1} then {2} else {3} <: x == 5 then {1,2} else {3}
+	x == 5 then {1} then {2} else {3} <-> x == 5 then {1,2} else {3}
 	x == 5 else {}
 
 	y else {x = x/2}
