@@ -1,7 +1,7 @@
 NTH = NICE TO HAVE
 
 1) semicolon:
-	- line ending -> \r\n | ;
+	- line ending : \r\n | ;
 		- Nice to have: required ";" can be enforced by compiler settings.
 
 3) method call
@@ -24,7 +24,7 @@ NTH = NICE TO HAVE
 	- type static
 
 	- types:
-		number -> double 
+		number : double 
 		text
 		bool
 			var b = True 
@@ -34,21 +34,21 @@ NTH = NICE TO HAVE
 		list
 			list[number] l = [1,2,3]
 		[dict] NTH
-		func -> lambda
-		None -> void
+		func : lambda
+		None : void
 	- generics:
 		- list[tuple[str,int]]
 5) method declaration
 	- types: input + return type is specified
 	- all versions:
 		### EXPLICIT TYPE OF THE BELOW
-		func[text,number,number,text] foo = (text x,number y, number z)->text {}
+		func[text,number,number,text] foo = (text x,number y, number z):text {}
 		### 	
-		func foo = (text x,number y,number z)->text {}
+		func foo = (text x,number y,number z):text {}
 
-		var foo = (text x,number y, number z)->text {}
+		var foo = (text x,number y, number z):text {}
 	- example: 
-		var where = (list[T] x, func[T,bool] t)->list[T] {
+		var where = (list[T] x, func[T,bool] t):list[T] {
 			var output = []
 			x foreach {
 				{ output add x } if arg t
@@ -58,27 +58,27 @@ NTH = NICE TO HAVE
 		[1,2,3] where {value isPositive}
 
 		
-		var +- = (number before, number after)-> tuple[number,number] {return (before+after,before-after)} 
+		var +- = (number before, number after): tuple[number,number] {return (before+after,before-after)} 
 
-		var fish = ()-> None {"i like eating fish" print}
+		var fish = (): None {"i like eating fish" print}
 	
 	- partial function domain:
 		sounds hard.
 
 6) if statements
 	
-	x == 5 then {1} then {2} else {3} <-> x == 5 then {1,2} else {3}
+	x == 5 then {1} then {2} else {3} <: x == 5 then {1,2} else {3}
 	x == 5 else {}
 
 	y else {x = x/2}
 
-	var then = (bool expr, func value)-> bool {if(expr) value(); return expr}
+	var then = (bool expr, func value): bool {if(expr) value(); return expr}
 
-	var else = (bool expr, func value)-> None {if !(expr) value();}
+	var else = (bool expr, func value): None {if !(expr) value();}
 
 	can be defined:
 
-		var then_else = (bool expr, func value, func value2)-> None {expr then value else value2}
+		var then_else = (bool expr, func value, func value2): None {expr then value else value2}
 
 	x == 5 then { "hello" print } else { "no" print };
 
@@ -123,7 +123,7 @@ NTH = NICE TO HAVE
 	 	return value + value2 
 	 }
 
-	var fold = (List[number] l, Func[number,number,number] foldMethod) -> number {
+	var fold = (List[number] l, Func[number,number,number] foldMethod) : number {
 		var acc = 0
 		l foreach {
 			acc = acc foldMethod value
@@ -204,7 +204,7 @@ NTH = NICE TO HAVE
 	how do we do generic?
 
 	usecase:
-		func map = (List[T1] input,Func[T1,T3] f) -> T3 = {
+		func map = (List[T1] input,Func[T1,T3] f) : T3 = {
 			List[T3] output
 			T3 a
 			{output = output add (value f)} forEachIn input
@@ -220,11 +220,11 @@ NTH = NICE TO HAVE
 	txt holdning = "jeg elsker" + " fisse"
 	num hest = 15 + 1.2
 
-	func + = (txt,txt) -> txt {
+	func + = (txt,txt) : txt {
 		[DEFINERET]
 	}
 
-	func + = (num,num) -> num {
+	func + = (num,num) : num {
 		[DEFINERET]
 	}
 

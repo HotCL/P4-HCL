@@ -7,7 +7,7 @@ import kotlin.coroutines.experimental.buildSequence
  */
 class Lexer(private val inputContent: String) : ILexer {
     private val endLines = listOf("\n","\r\n",";")
-    private val specialChars = listOf("=", "[", "]", "(", ")", "{", "}", ",", "\\", "->", "\\") + endLines
+    private val specialChars = listOf("=", "[", "]", "(", ")", "{", "}", ",", "\\", ":") + endLines
     private val endOfLineRegex = "\\r\\n|\\n|\\r".toRegex()
 
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
@@ -73,7 +73,7 @@ class Lexer(private val inputContent: String) : ILexer {
         ")" -> Token.SpecialChar.ParenthesesEnd()
         "," -> Token.SpecialChar.ListSeparator()
         "\\" -> Token.SpecialChar.LineContinue()
-        "->" -> Token.SpecialChar.Arrow()
+        ":" -> Token.SpecialChar.Arrow()
         in endLines -> Token.SpecialChar.EndOfLine()
         else -> null
     }
