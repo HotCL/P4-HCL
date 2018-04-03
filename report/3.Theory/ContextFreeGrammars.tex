@@ -2,7 +2,7 @@
 \label{CFGdescription}
 Context-free grammars (CFGs) are a method for describing syntactical composition of sentences in a language.
 It does not describe the meaning (semantics) of the sentences, hence the name, "context-free".
-CFGs split sentences into "terminals" and "non-terminals" (also known as variables).
+CFGs split sentences into "terminals" and "non-terminals".
 A terminal is the most basic structure of a sentence, and consists only of characters from the language's alphabet.
 Terminals are most often written using camelCase.
 A non-terminal is a superstructure that can consist of both terminals and non-terminals, or an empty string.
@@ -30,7 +30,7 @@ The rules of the grammar are as follows:
 
 Sentence consists of one StringOfWords. 
 A StringOfWords consists of the string "word" followed by another StringOfWords, or an empty string.
-As StringOfWords appears on the right-hand side of the arrow in its own definition, it is recursive.
+StringOfWords appears on the right-hand side of the arrow in its own definition, and it is therefore recursive.
 
 \textbf{Parse trees} can be used to see if a string is in the language described by a CFG.
 If a parse tree can be constructed from a string using the rules of the CFG, that string is in the language described by the CFG. 
@@ -100,7 +100,7 @@ The only notable difference is the notation for non-terminals, which are enclose
 As the name suggests it adds new "features" to the BNF.
 It is designed to be more concise than BNF.
 In BNF, if a non-terminal is structured in two or more different ways, each way has to be noted with a new rule (like the \texttt{Expression} non-terminal from earlier).
-In EBNF the number of rules can be reduces.
+In EBNF the number of rules can be reduced.
 This is done by marking repetitive and optional arguments as well as choice of arguments within that one rule.
 \cite{SebestaEBNF}
 %Ovenstående sætning er vildt svær at formulere :(

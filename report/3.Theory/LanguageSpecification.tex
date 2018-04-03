@@ -76,7 +76,6 @@ The \texttt{<DclValue>} non-terminal refers to both \texttt{<Expr>} (expression)
 \textbf{Function Calls}\\
 In order to better reflect the spoken English language, function calls are structured in a way where the first parameter to a function is written before the function call itself.
 All subsequent parameters are written after the function call and are delimited by the use of white-spacing and can be optionally grouped inside parentheses.
-%When functions are passed in as parameters, they will be prefixed with '::' characters to differentiate between functions as parameters and function invoking. 
 Lambdas can be used as parameters by encapsulation with curly-brackets. 
 
 Below is an example of function calls where the program prints a name from a list:
@@ -86,11 +85,13 @@ The \textbf{where} function in this example returns an entry in the list based o
 \end{lstlisting}
 
 \textbf{Grammar for function calls}\\
-There are three different ways to call a function depending on how many parameters must be passed with the function:
+Function calls are done with infix notation, meaning that if a given method is defined with parameters, the first argument has to appear before of the function identifier, while all remaining arguments must appear after, in sequence.
+
+The following examples showcase this:
 \begin{itemize}
-	\item If no parameters must be passed, then invoking the function identifier is a call in and of itself.
-	\item If one parameter must be passed, then the parameter must appear on the left-hand side of the function identifier.
-	\item If more than one parameter must be passed, the first parameter must appear on the left-hand side of the function identifier, and the rest must appear, in order, on the right-hand side of the function.
+	\item \texttt{printHelloWorld}
+	\item \texttt{"Hello World !!" print}
+	\item \texttt{"Hello" printWords "World" "!!"}
 \end{itemize}
 With this in mind, the grammar for function calls has been specified as follows:
 \begin{align*}
