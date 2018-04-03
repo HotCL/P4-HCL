@@ -19,7 +19,7 @@ class Bool(val value: Boolean) : Literal()
 \end{lstlisting}
 
 The positional token class is a wrapper class from a token, and simply contains additional information regarding linenumer and line index.
-The positional token is mainly implemented to help with error reporting. %Is this correct
+The positional token is mainly implemented to help with error reporting.
 \begin{lstlisting}[language=java,label=lis:PositionalTokenClass,caption=A snippet from the token class .,firstnumber=10]
 class PositionalToken(val token: Token, val lineNumber: Int, val lineIndex: Int)
 \end{lstlisting}
