@@ -16,7 +16,6 @@ NTH = NICE TO HAVE
 		(["casper","is","cool"] join_by " ") print;
 
 
-
 	def writetext
 4) types
 	- assignment => 
