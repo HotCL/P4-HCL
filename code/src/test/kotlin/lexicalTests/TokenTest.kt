@@ -15,7 +15,7 @@ class TokenTest {
                 "Identifier" -> Token.Identifier(lexeme)
                 "\"Text\"" -> Token.Literal.Text(lexeme.drop(1).dropLast(1))
                 "5"      -> Token.Literal.Number(lexeme)
-                "true"   -> Token.Literal.Bool(lexeme)
+                "true"   -> Token.Literal.Bool(true)
                 "return" -> Token.Return()
                 "tuple" -> Token.Type.Tuple()
                 "bool" -> Token.Type.Bool()
