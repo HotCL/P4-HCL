@@ -12,20 +12,23 @@ something:    1 occurrence of something
 
 Program --> Commands $
 
-Commands --> {Declaration | Assignment | Expression}
 
 Type --> number
        | text
-       | tuple
-       | list
+       | tuple squareBracketStart [Types] squareBracketStop
+       | list squareBracketStart [Type] squareBracketStop
        | bool
-       | func
+       | func squareBracketStart [Types] squareBracketStop
        | none
        | var
 
+TypeImplicit --> Type
+       | func
+
+Types --> Type [, Types]
+
 Expression --> FunctionCall
              | Value
-             | LambdaExpression
 
 Value --> Literal
         | identifier
@@ -35,18 +38,33 @@ Literal --> literalNumber
           | literalTuple
           | literalList
 
-Statements --> {Statement}
+Values --> Value [, Values]
 
-Statement --> VarDcl linebreak
+literalTuple --> (Values)
+literalList --> [Values]
+
+Commands --> {Command}
+
+Command --> VarDcl linebreak
             | Assignment linebreak
             | Expression linebreak
-            | ReturnStatement linebreak
+            | ReturnCommand linebreak
 
-Declaration --> Type identifier [equals Expression]
+DeclarationValue --> Expression
+                    | LambdaExpression
 
-Assignment --> identifier equals Expression
+Declaration --> TypeImplicit identifier [equals DeclarationValue]
 
-LambdaExpression --> [parenL [FunDclParamList] parenR arrow Type] curlyL Statements curlyR
+
+Assignment --> identifier equals DeclarationValue
+
+
+
+LambdaExpression --> parenL [FunDclParamList] parenR arrow Type LambdaBody
+
+LambdaBody --> curlyL Statements curlyR
+
+
 
 FunDclParamList --> Parameter [comma FunDclParamList]
 
@@ -60,6 +78,8 @@ FunCallParamList --> {FunCallParameter}
                    | parenL {FunCallParameter} parenR
 
 FunCallParameter --> Value
-                   | functionPassOp identifier
+                   | identifier
+                   | LambdaExpression
+                   | LambdaBody
 
-ReturnStatement --> return Expression
+ReturnCommand --> return Expression
