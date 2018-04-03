@@ -9,7 +9,7 @@ interface ILexer {
      */
     fun getTokenSequence(): Sequence<PositionalToken>
 
-    /**
+    /** TODO rename
      * Gets a line from the input text that is being analyzed.
      * @param lineNumber line number from the source code file
      */

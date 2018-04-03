@@ -23,11 +23,11 @@ The language includes only three primitive types, numbers (\textbf{\textit{num}}
 Numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
 Booleans are represented using \textbf{true} or \textbf{false}.
 
-The collection types of the language are \textbf{\textit{toubles}} and \textbf{\textit{lists}} where:\\
-\textbf{\textit{tubles}} are collections of multiple types and \textbf{\textit{lists}} are collections of a single type.
+The collection types of the language are \textbf{\textit{tuples}} and \textbf{\textit{lists}} where:\\
+\textbf{\textit{tuples}} are collections of multiple types and \textbf{\textit{lists}} are collections of a single type.
 Dictionaries, which are collections of key-value pairs, are deemed NTH and are not planned for implementation. 
 
-The language also includes the type \textbf{\textit{func}} which in some languages, particularly C\#, is known as the \textbf{\textit{lamda}} type.
+The language also includes the type \textbf{\textit{func}} which in some languages, particularly C\#, is known as the \textbf{\textit{lambda}} type.
 Also included is the type \textbf{\textit{none}} which in some languages, particularly C\# and java, is known as the \textbf{\textit{void}} type. 
 
 \textbf{Type Declaration}\\
@@ -64,10 +64,18 @@ func<num,num,none> addNumbers = (num a, num b) -> none {
 }
 \end{lstlisting}
 
+\textbf{Grammar for declarations}\\
+The grammar for declarations in HCL (specified in Appendix \ref{AppendixEBNF}) acknowledges that type declarations and function declarations are very similar by describing them with the same non-terminal, \texttt{<Dcl>}.
+\begin{align*}
+	\texttt{<Dcl>}\to & \texttt{ <ImplicitType> identifier [equals <DclValue>]}
+\end{align*}
+The \texttt{<ImplicitType>} non-terminal, unlike the <Type> non-terminal, refers to all type productions, including the \texttt{func} production that allows programmers to declare functions without having to specify the parameter- and return types.
+
+The \texttt{<DclValue>} non-terminal refers to both \texttt{<Expr>} (expression) for type declarations and \texttt{<LambdaExpr>} (function parameters and body) for function declarations.
+
 \textbf{Function Calls}\\
 In order to better reflect the spoken English language, function calls are structured in a way where the first parameter to a function is written before the function call itself.
 All subsequent parameters are written after the function call and are delimited by the use of white-spacing and can be optionally grouped inside parentheses.
-When functions are passed in as parameters, they will be prefixed with '::' characters to differentiate between functions as parameters and function invoking. 
 Lambdas can be used as parameters by encapsulation with curly-brackets. 
 
 Below is an example of function calls where the program prints a name from a list:
@@ -75,6 +83,29 @@ The \textbf{where} function in this example returns an entry in the list based o
 \begin{lstlisting}
 ["john", "frank"] where {value is "frank"} print
 \end{lstlisting}
+
+\textbf{Grammar for function calls}\\
+Function calls are done with infix notation, meaning that if a given method is defined with parameters, the first argument has to appear before of the function identifier, while all remaining arguments must appear after, in sequence.
+
+The following examples showcase this:
+\begin{itemize}
+	\item \texttt{printHelloWorld}
+	\item \texttt{"Hello World !!" print}
+	\item \texttt{"Hello" printWords "World" "!!"}
+\end{itemize}
+With this in mind, the grammar for function calls has been specified as follows:
+\begin{align*}
+	\texttt{<FunctionCall>}\to & \texttt{ identifier}\\
+	| & \texttt{ <FunCallParam> identifier [<FunCallParams>]}
+\end{align*}
+As it is not allowed to have parameters on the right-hand side of the identifier without also having one on the left-hand side, this rule cannot accurately be described with only one production.
+
+The first production shows how the function is called if it has no parameters.
+The second production shows that if the function has parameters, there must always be exactly one parameter on the left-hand side of the identifier, and optionally a sequence of parameters on the right-hand side.
+
+The non-terminal \texttt{<FunCallParam>} refers to any legal parameter for function calls, including identifiers, literals, lambda expressions, and other function calls.
+
+The non-terminal \texttt{<FunCallParams>} refers to a sequence of at least one \texttt{<FunCallParam>}, optionally enclosed in parentheses.
 
 \textbf{Loops}\\
 Loops in the language are structured around iterations on lists.
@@ -94,3 +125,68 @@ The only operators that remains operators are the assign-operator (\textbf{=}) a
 
 Not having operators for arithmetic operations also means that there are no native operator precedence in the language.
 This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parenthesis. 
+
+\textbf{Overloading}\\
+
+The language will include function overloading. 
+This means that multiple functions can share the same name and have different implementations based on the different parameters that the function accepts. 
+An example could be the plus function. 
+The plus function could accept two numbers or two strings, but the implementation of the plus function would depend on the type.
+If two numbers were passed, the obvious result should be the sum of the two numbers.
+If on the other hand two strings were passed, the function could be implemented in such a way that the result would be the concatenation of the two strings.
+
+The function overloading in HCL is however a bit limited in that functions can not be overloaded with different amounts of parameters, only different parameter types. 
+This is due to the nature of the syntax in HCL where function parameters are not directly coupled to a function. 
+Therefore it would be impossible for the compiler to determine what is parameters and what is functions.
+Consider this example:
+
+\begin{lstlisting}
+1 to 10 sum print
+\end{lstlisting}
+
+Obviously the sum function accepts a list that should be summed. 
+However, if the sum function could potentially also accept a modifier function, that were to alter the result of the sum function, it would be impossible for the compiler to determine whether print was that modifier function, or the sum should be passed as a parameter to the print function.
+
+Function overloading requires nothing special of the user, just declare two functions with the same amount of parameters, but with different types. 
+See listings below for example
+
+\begin{lstlisting}
+var isAwesome = (string name) -> bool {
+	return name equals "HCL" thenElse {true} {false}
+}
+var isAwesome = (num number) -> bool {
+	return number equals 42 thenElse {true} {false}
+}
+
+42 isAwesome // True
+"Java" isAwesome // False
+\end{lstlisting}
+
+The main reasoning for including function overloading is simplicity for the user.
+For instance for printing. 
+The print function should be able to print all basic types, so that the user does not have to worry about the type of what he is about to print.
+
+
+\textbf{Generics}\\
+The language will include simple generics into the language.
+Generics are used to abstract away types, and handle whatever type in a generic way, that should work no matter what the type is.
+With HCL being a language with a great focus on high order functions, this functionality becomes a must have.
+This is due to some of the fundamental high order functions, like the map function.
+Recall that the map function is a function that takes a list with elements of an arbitrary type along with a modifier function and returns the mapped value of each element in the list.
+In essence this means given an element of type T1 have a function that maps the element to an element of type T2.
+
+In theory this problem could be solved with overloading. 
+However, this would require overloading of a lot of functions with all the possible types within HCL. 
+Since tuples are distinguished by the types within it, there are a theoretical infinite amount of types within HCL, which in turn makes overloading for this case impossible.
+
+To get a better grasp of how generics are used in HCL, consider the following implementation of the map function:
+\begin{lstlisting}
+var map = (list[T1] elementsToMap, func[T1, T2] mapFunction) -> list[T2] {
+	list[T2] mappedValues = []
+	elementsToMap onEach {mappedValues add (value mapFunction)}
+	return mappedValues
+}
+\end{lstlisting}
+
+Generic types in the above example is T1 and T2. 
+Since nothing type specific ever happens with these types, we can handle all types the same, whether that be a string, a number or some other type will not matter.

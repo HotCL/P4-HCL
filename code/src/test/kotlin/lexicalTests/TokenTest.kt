@@ -9,13 +9,13 @@ class TokenTest {
     @org.junit.jupiter.api.Test
     fun testTokens() {
         val tokens = listOf("Identifier", "\"Text\"", "5", "true", "var", "num", "bool", "text", "func",
-                                       "tuple", "list", "{", "}", "\n", "[", "]", "(", ")", ",", ";", "->", "=",
+                                       "tuple", "list", "{", "}", "\n", "[", "]", "(", ")", ",", ";", ":", "=",
                                        "return").mapIndexed { index, lexeme ->
             when(lexeme) {
                 "Identifier" -> Token.Identifier(lexeme)
                 "\"Text\"" -> Token.Literal.Text(lexeme.drop(1).dropLast(1))
                 "5"      -> Token.Literal.Number(lexeme)
-                "true"   -> Token.Literal.Bool(lexeme)
+                "true"   -> Token.Literal.Bool(true)
                 "return" -> Token.Return()
                 "tuple" -> Token.Type.Tuple()
                 "bool" -> Token.Type.Bool()
@@ -26,7 +26,7 @@ class TokenTest {
                 "var" -> Token.Type.Var()
                 "num" -> Token.Type.Number()
                 "\n" -> Token.SpecialChar.EndOfLine()
-                "->" -> Token.SpecialChar.Arrow()
+                ":" -> Token.SpecialChar.Colon()
                 "{" -> Token.SpecialChar.BlockStart()
                 "}" -> Token.SpecialChar.BlockEnd()
                 "[" -> Token.SpecialChar.SquareBracketStart()
