@@ -25,7 +25,8 @@ To construct the PDA the following rules will be utilized:
 		\item The marker symbol \$ will first be placed on the stack.
 		\item Second, the following steps will be repeated until all production rules have been treated.
 		\begin{itemize}
-			\item If the top of the stack is a variable symbol V. The machine will non deterministically select one of the right production rules of V and replace V with that.   
+			\item If the top of the stack is a variable symbol V. 
+			The machine will non deterministically select one of the right production rules of V and replace V with that.   
 			\item If the top of stack is a terminal symbol t. 
 			The next character on the input string is read and compared to t. 
 			If matched, repeat. 
