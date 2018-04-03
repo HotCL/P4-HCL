@@ -4,12 +4,12 @@ package lexer
  * Lexical getTokenSequence emitted by the lexer
  */
 sealed class Token {
-    class Identifier(val value: String) : Token()
+    data class Identifier(val value: String) : Token()
 
     sealed class Literal : Token() {
-        class Text(val value: String) : Literal()
+        data class Text(val value: String) : Literal()
         class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal()
-        class Bool(val value: Boolean) : Literal()
+        data class Bool(val value: Boolean) : Literal()
     }
 
     sealed class SpecialChar : Token() {

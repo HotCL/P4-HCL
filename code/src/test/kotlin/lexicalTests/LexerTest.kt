@@ -71,7 +71,7 @@ class LexerTest {
     private fun assertPositionalToken(positionalToken: PositionalToken, validationExpression: (lexer.Token) -> Boolean,
                                       expectedLineIndex:Int, ExpectedLineNumber:Int)
     {
-        assertTrue(positionalToken.token.let { token -> validationExpression(token) })
+        assertTrue(positionalToken.token.let { token -> validationExpression(token) },"Failed on: ${positionalToken.token}")
         assertThat(positionalToken.lineIndex, equalTo(expectedLineIndex))
         assertThat(positionalToken.lineNumber, equalTo(ExpectedLineNumber))
     }
