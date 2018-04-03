@@ -41,7 +41,7 @@ Literal --> literalNumber
 Values --> Value [, Values]
 
 literalTuple --> (Values)
-literalTuple --> (Values)
+literalList --> [Values]
 
 Statements --> {Statement}
 
