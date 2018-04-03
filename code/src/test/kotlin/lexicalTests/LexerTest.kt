@@ -172,6 +172,37 @@ class LexerTest {
     }
 
     @org.junit.jupiter.api.Test
+    fun lexerTestEqualsGetsIdentifiersCorrectly() {
+        val lex = Lexer("x=y[0]")
+
+        val tokens = lex.getTokenSequence().toList()
+
+        assertPositionalToken(tokens[0],
+                { token -> token is lexer.Token.Identifier && token.value == "x" },
+                0, 0)
+
+        assertPositionalToken(tokens[1],
+                { token -> token is lexer.Token.SpecialChar.Equals },
+                1, 0)
+
+        assertPositionalToken(tokens[2],
+                { token -> token is lexer.Token.Identifier && token.value == "y" },
+                2, 0)
+
+        assertPositionalToken(tokens[3],
+                { token -> token is lexer.Token.SpecialChar.SquareBracketStart },
+                3, 0)
+
+        assertPositionalToken(tokens[4],
+                { token -> token is lexer.Token.Literal.Number && token.value == 0.0 },
+                4, 0)
+
+        assertPositionalToken(tokens[5],
+                { token -> token is lexer.Token.SpecialChar.SquareBracketEnd },
+                5, 0)
+    }
+
+    @org.junit.jupiter.api.Test
     fun lexerTestInlineLambdaExpression() {
         val lex = Lexer("x = 1 to 10 map {value * 2}")
 
