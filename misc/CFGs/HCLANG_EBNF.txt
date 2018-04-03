@@ -10,13 +10,12 @@ something:    1 occurrence of something
 
 ***********************************************************************************
 
-Program --> Commands $
+Program --> Statements $
 
-Commands --> {Declaration | Assignment | Expression}
 
 Type --> number
        | text
-       | tuple
+       | tuple squareBracketStart [Types] squareBracketStop
        | list squareBracketStart [Type] squareBracketStop
        | bool
        | func squareBracketStart [Types] squareBracketStop
@@ -38,6 +37,11 @@ Literal --> literalNumber
           | literalText
           | literalTuple
           | literalList
+
+Values --> Value [, Values]
+
+literalTuple --> (Values)
+literalTuple --> (Values)
 
 Statements --> {Statement}
 
