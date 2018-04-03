@@ -35,13 +35,14 @@ Value --> Literal
 
 Literal --> literalNumber
           | literalText
-          | literalTuple
-          | literalList
+          | LiteralTuple
+          | LiteralList
+          | literalBool
 
 Values --> Value [, Values]
 
-literalTuple --> (Values)
-literalList --> [Values]
+LiteralTuple --> (Values)
+LiteralList --> [Values]
 
 Commands --> {Command}
 
@@ -62,24 +63,22 @@ Assignment --> identifier equals DeclarationValue
 
 LambdaExpression --> parenL [FunDclParamList] parenR colon Type LambdaBody
 
-LambdaBody --> curlyL Statements curlyR
+LambdaBody --> curlyL Commands curlyR
 
 
 
-FunDclParamList --> Parameter [comma FunDclParamList]
+FunDclParamList --> FunDclParameter [comma FunDclParamList]
 
 FunDclParameter --> Type identifier
 
 FunctionCall --> identifier
-               | FunCallParameter identifier
-               | FunCallParameter identifier FunCallParamList
+               | Arg identifier [Args]
 
-FunCallParamList --> {FunCallParameter}
-                   | parenL {FunCallParameter} parenR
+Args --> {Arg}
+        | parenL {Arg} parenR
 
-FunCallParameter --> Value
-                   | identifier
-                   | LambdaExpression
-                   | LambdaBody
+Arg --> Value
+        | LambdaExpression
+        | LambdaBody
 
 ReturnCommand --> return Expression

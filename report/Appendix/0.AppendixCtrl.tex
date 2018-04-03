@@ -139,10 +139,10 @@ Læse videre:
 \section{Extended Backus-Naur Form of HCL grammar}
 \label{AppendixEBNF}
 \begin{align*}
-	\texttt{<Program>}\to & \texttt{ \{Dcl | Assign | Expr\}}\\
+	\texttt{<Program>}\to & \texttt{ <Cmds> \$}\\
 	\texttt{<Type>}\to & \texttt{ number}\\
 	| & \texttt{ text}\\
-	| & \texttt{ tuple}\\
+	| & \texttt{ tuple sqBracketL [<Types>] sqBracketR}\\
 	| & \texttt{ list sqBracketL [<Type>] sqBracketR}\\
 	| & \texttt{ bool}\\
 	| & \texttt{ func sqBracketL [<Types>] sqBracketR}\\
@@ -160,29 +160,30 @@ Læse videre:
 	| & \texttt{ literalBool}\\
 	| & \texttt{ <LiteralTuple>}\\
 	| & \texttt{ <LiteralList>}\\
-	\texttt{<LiteralTuple>}\to & \texttt{ parenL <Expr> \{comma <Expr>\} parenR}\\
-	\texttt{<LiteralList>}\to & \texttt{ sqBracketL <Expr> \{comma <Expr>\} sqBracketR}\\
-	\texttt{<Stmts>}\to & \texttt{ \{<Stmt>\}}\\
-	\texttt{<Stmt>}\to & \texttt{ <VarDcl> linebreak}\\
+	\texttt{<Values>}\to & \texttt{ <Value> [comma <Values>]}\\
+	\texttt{<LiteralTuple>}\to & \texttt{ parenL <Values> parenR}\\
+	\texttt{<LiteralList>}\to & \texttt{ sqBracketL <Values> sqBracketR}\\
+	\texttt{<Cmds>}\to & \texttt{ \{<Cmd>\}}\\
+	\texttt{<Cmd>}\to & \texttt{ <VarDcl> linebreak}\\
 	| & \texttt{ <Assign> linebreak}\\
 	| & \texttt{ <Expr> linebreak}\\
-	| & \texttt{ <ReturnStmt> linebreak}\\
+	| & \texttt{ <ReturnCmd> linebreak}\\
 	\texttt{<DclValue>}\to & \texttt{ <Expr>}\\
 	| & \texttt{ <LambdaExpr>}\\
 	\texttt{<Dcl>}\to & \texttt{ <ImplicitType> identifier [equals <DclValue>]}\\
-	\texttt{<Assign>}\to & \texttt{ identifier equals <Expr>}\\
-	\texttt{<LambdaExpr>}\to & \texttt{ parenL [<FunDclParams>] parenR colon <Type> LambdaBody}\\
-	\texttt{<LambdaBody>}\to & \texttt{ curlyL <Stmts> curlyR}\\
+	\texttt{<Assign>}\to & \texttt{ identifier equals <DclValue>}\\
+	\texttt{<LambdaExpr>}\to & \texttt{ parenL [<FunDclParams>] parenR colon <Type> <LambdaBody>}\\
+	\texttt{<LambdaBody>}\to & \texttt{ curlyL <Cmds> curlyR}\\
 \end{align*} %pagebreak
 \begin{align*}
 	\texttt{<FunDclParams>}\to & \texttt{ <FunDclParam> [comma <FunDclParams>]}\\
 	\texttt{<FunDclParam>}\to & \texttt{ <Type> identifier}\\
 	\texttt{<FunctionCall>}\to & \texttt{ identifier}\\
-	| & \texttt{ <FunCallParam> identifier [<FunCallParams>]}\\
-	\texttt{<FunCallParams>}\to & \texttt{ \{<FunCallParam>\}+}\\
-	| & \texttt{ parenL \{<FunCallParam>\}+ parenR}\\
-	\texttt{<FunCallParam>}\to & \texttt{ <Value>}\\
+	| & \texttt{ <Arg> identifier [<Args>]}\\
+	\texttt{<Args>}\to & \texttt{ \{<Arg>\}+}\\
+	| & \texttt{ parenL \{<Arg>\}+ parenR}\\
+	\texttt{<Arg>}\to & \texttt{ <Value>}\\
 	| & \texttt{ <LambdaExpr>}\\
 	| & \texttt{ <LambdaBody>}\\
-	\texttt{<ReturnStmt>}\to & \texttt{ return <Expr>}
+	\texttt{<ReturnCmd>}\to & \texttt{ return <Expr>}
 \end{align*}
