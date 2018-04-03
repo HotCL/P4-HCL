@@ -13,7 +13,7 @@ class TokenTest {
                              " | var b = 4 < \"5\"\n" +
                              " |           ^--\n" +
                              " | Function '<' not defined for types: 'num', 'txt' and 'bool'.\n" +
-                             " | -->help: Try casting your types to match eachother.", logger.buffer.toString())
+                             " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -25,7 +25,7 @@ class TokenTest {
                              " | txt s = textString\n" +
                              " |         ^--\n" +
                              " | Undeclared identifier 'textString' found.\n" +
-                             " | -->help: Declare identifier before use.", logger.buffer.toString())
+                             " | -->help: Declare identifier before use.\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -37,7 +37,7 @@ class TokenTest {
                              " | x = someUninitializedVariable + 10\n" +
                              " |     ^--\n" +
                              " | Use of uninitialized variable 'someUninitializedVariable' found.\n" +
-                             " | -->help: Try initializing variable before use.", logger.buffer.toString())
+                             " | -->help: Try initializing variable before use.\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -49,7 +49,7 @@ class TokenTest {
                              " | x = 42/0\n" +
                              " |       ^--\n" +
                              " | Division by 0 found\n" +
-                             " | -->help: Check your variables", logger.buffer.toString())
+                             " | -->help: Check your variables\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testMissingArgumentError() {
@@ -60,7 +60,7 @@ class TokenTest {
                              " | 2 someFunction\n" +
                              " |   ^--\n" +
                              " | Missing argument for function 'someFunction'.\n" +
-                             " | -->help: Have you included all arguments for function?", logger.buffer.toString())
+                             " | -->help: Have you included all arguments for function?\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testMissingEncapsulation() {
@@ -71,6 +71,6 @@ class TokenTest {
                              " | ({()}\n" +
                              " | ^--\n" +
                              " | Missing closing character for '('\n" +
-                             " | -->help: Remember to always close encapsulations.", logger.buffer.toString())
+                             " | -->help: Remember to always close encapsulations.\n", logger.buffer.toString())
     }
 }
