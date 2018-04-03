@@ -154,10 +154,10 @@ class LexerTest {
                 27, 0)
         assertPositionalToken(tokens[8],
                 { token -> token is lexer.Token.Type.None },
-                30, 0)
+                29, 0)
         assertPositionalToken(tokens[9],
                 { token -> token is lexer.Token.SpecialChar.EndOfLine },
-                34, 0)
+                33, 0)
         assertPositionalToken(tokens[10],
                 { token -> token is lexer.Token.SpecialChar.BlockStart },
                 0, 1)
