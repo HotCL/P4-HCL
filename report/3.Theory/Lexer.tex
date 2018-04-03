@@ -30,8 +30,8 @@ The primary advantage for all Lexer generators, is that they allow for easy modi
 Below we will briefly describe ANTLR and Flex, two of the most well-known and used Lexer/Parser generators.
 
 \textbf{ANTLR}\\
-ANTLR is a scanner/parser generator, which when given a context-free grammar, expressed using Extended Backus-Naur form (EBNF), can generate lexers, parsers and lexer-parsers\cite{ANTLR}.
-ANTLR can output to Java, C\#, Python2 and Python3, Javascript, Go, C++ and Swift\cite{ANTLRDocsTargets}.
+ANTLR is a scanner/parser generator, which when given a context-free grammar expressed using Extended Backus-Naur form (EBNF), can generate lexers, parsers and lexer-parsers\cite{ANTLR}.
+ANTLR can output to Java, C\#, Python2, Python3, Javascript, Go, C++ and Swift\cite{ANTLRDocsTargets}.
 One of the primary advantages of ANTLR is that it uses a single notation for both lexers and parsers\cite{ANTLRDocs}.
 This means that after the lexer has been implemented, it would be extremely easy to implement the parser afterwards, as it would be as simple as specifying that a parser needs to be generated.
 As one of the primary design decisions of ANTLR is "simplicity over complexity", as well as the fact that ANTLR is often used in academia, it would be a good choice for a lexer/parser generator, as it can be assumed that it is easy to use.
@@ -48,17 +48,19 @@ A Lex file is comprised of 3 distinct sections\cite{Lex}.
 	\item \textbf{Rules}, which associates regular expressions with C statements.
 	\item \textbf{C code}, which contains C code that will be copied into the generated file.
 \end{itemize}
-Lex is often used with the Yacc parser, which is very similar in structure and usage.
+Lex is often used with the YACC parser generator, which is very similar in structure and usage.
 The primary advantage of Lex is that it is widely used, which means that it is well documented.
-Many different options for output language exist, java included in Jlex\cite{JLex}, which can be used with Kotlin.
+Many different options for output languages exist as forks of lex.
+One of them is Jlex\cite{JLex}, which outputs to java and can be used with Kotlin.
 
 \subsection{Writing by hand}
 Another option when writing the scanner is to simply write it by hand.
-Writing the compiler by hand, would also mean that the parser should be written by hand
+Writing the compiler by hand, would also mean that the parser should be written by hand.
 
-The main advantage here would be total control of the process, and being aware of everything that goes on in the compiler, which allows for more flexibility, as it is easier to modify code written by hand.
+The main advantage here would be total control of the process and being aware of everything that goes on in the compiler. 
+This allows for more flexibility, as it is easier to modify code written by hand.
 
-A disadvantage is that writing a lexer is often quite monotonous work, and if the language is large, it can quickly become very overwhelming.
+A disadvantage is that writing a lexer is often quite monotonous work and it can quickly become very overwhelming, if the language is large.
 Another disadvantage is the fact that writing the lexer by hand, can potentially result in inefficient code, especially compared to the generated lexers, as the lexer generators are often quite optimized.
 
 \subsection{Lexer choice}
