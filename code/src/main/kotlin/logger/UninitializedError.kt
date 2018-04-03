@@ -2,13 +2,13 @@ package logger
 
 import exceptions.ParserException
 
-class UninitializedError(lineNumber: Int, lineIndex: Int, lineText: String, nameOfUnit: String = "variable")
+/**
+ * Class used to log uninitialized errors.
+ * @param nameOfVar The name of the variable that is uninitialized
+ */
+class UninitializedError(lineNumber: Int, lineIndex: Int, lineText: String, private val nameOfVar: String)
                         : ParserException(lineNumber, lineIndex, lineText){
-    private val nameOfUnitialized = nameOfUnit
-    override val errorType: String
-        get() = "UNINITIALIZED-ERROR"
-    override val errorMessage: String
-        get() = "Use of uninitialized variable '$nameOfUnitialized' found."
-    override val helpText: String
-        get() = "Try initializing variable before use."
+    override val errorType = "UNINITIALIZED-ERROR"
+    override val errorMessage = "Use of uninitialized variable '$nameOfVar' found."
+    override val helpText = "Try initializing variable before use."
 }

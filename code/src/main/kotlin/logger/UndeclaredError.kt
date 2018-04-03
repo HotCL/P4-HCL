@@ -2,14 +2,13 @@ package logger
 
 import exceptions.ParserException
 
-class UndeclaredError(lineNumber: Int, lineIndex: Int, lineText: String, nameOfUnit: String = "variable")
+/**
+ * Class used to log undeclared variables errors.
+ * @param nameOfVar The name of the identifier that is undeclared
+ */
+class UndeclaredError(lineNumber: Int, lineIndex: Int, lineText: String, private val nameOfVar: String)
     : ParserException(lineNumber, lineIndex, lineText){
-
-    private val nameOfUnitialized = nameOfUnit
-    override val errorType: String
-        get() = "UNDECLARED-ERROR"
-    override val errorMessage: String
-        get() = "Undeclared identifier '$nameOfUnitialized' found."
-    override val helpText: String
-        get() = "Declare identifier before use."
+    override val errorType = "UNDECLARED-ERROR"
+    override val errorMessage = "Undeclared identifier '$nameOfVar' found."
+    override val helpText = "Declare identifier before use."
 }

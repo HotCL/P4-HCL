@@ -31,25 +31,25 @@ NTH = NICE TO HAVE
 			var b = True 
 			b = False
 		tuple
-			tuple[number,number,text] t = (1,2,"horse")
+			tuple<number,number,text> t = (1,2,"horse")
 		list
-			list[number] l = [1,2,3]
+			list<number> l = [1,2,3]
 		[dict] NTH
 		func -> lambda
 		None -> void
 	- generics:
-		- list[tuple[str,int]]
+		- list<tuple<str,int>>
 5) method declaration
 	- types: input + return type is specified
 	- all versions:
 		### EXPLICIT TYPE OF THE BELOW
-		func[text,number,number,text] foo = (text x,number y, number z)->text {}
+		func<text,number,number,text> foo = (text x,number y, number z)->text {}
 		### 	
 		func foo = (text x,number y,number z)->text {}
 
 		var foo = (text x,number y, number z)->text {}
 	- example: 
-		var where = (list[T] x, func[T,bool] t)->list[T] {
+		var where = (list<T> x, func<T,bool> t)->list<T> {
 			var output = []
 			x foreach {
 				{ output add x } if arg t
@@ -59,7 +59,7 @@ NTH = NICE TO HAVE
 		[1,2,3] where {value isPositive}
 
 		
-		var +- = (number before, number after)-> tuple[number,number] {return (before+after,before-after)} 
+		var +- = (number before, number after)-> tuple<number,number> {return (before+after,before-after)} 
 
 		var fish = ()-> None {"i like eating fish" print}
 	
@@ -124,7 +124,7 @@ NTH = NICE TO HAVE
 	 	return value + value2 
 	 }
 
-	var fold = (List[number] l, Func[number,number,number] foldMethod) -> number {
+	var fold = (List<number> l, Func<number,number->number> foldMethod) -> number {
 		var acc = 0
 		l foreach {
 			acc = acc foldMethod value
@@ -165,7 +165,7 @@ NTH = NICE TO HAVE
 
 14) how to implement the loop method
 	everything in "outer scope" goes into setup
-	buildin has a method called "loop" which has one parameter; a func[]
+	buildin has a method called "loop" which has one parameter; a func<>
 	if loop is called multiple times then MultipleLoopError
 	### EXAMPLE
 		15 LedSetup OUTPUT 

@@ -2,13 +2,13 @@ package logger
 
 import exceptions.ParserException
 
-class MissingArgumentError(lineNumber: Int, lineIndex: Int, lineText: String, functionName: String)
+/**
+ * Class used to log missing arguments.
+ * @param functionName The name of the function which needs arguemts
+ */
+class MissingArgumentError(lineNumber: Int, lineIndex: Int, lineText: String, private val functionName: String)
     : ParserException(lineNumber, lineIndex, lineText){
-    private val _functionName = functionName
-    override val errorType: String
-        get() = "MISSING-ARGUMENT-ERROR"
-    override val errorMessage: String
-        get() = "Missing argument for function '$_functionName'."
-    override val helpText: String
-        get() = "Have you included all arguments for function?"
+    override val errorType = "MISSING-ARGUMENT-ERROR"
+    override val errorMessage  = "Missing argument for function '$functionName'."
+    override val helpText = "Have you included all arguments for function?"
 }

@@ -18,17 +18,13 @@ Type --> number
        | tuple squareBracketStart [Types] squareBracketStop
        | list squareBracketStart [Type] squareBracketStop
        | bool
-       | func squareBracketStart [Types] squareBracketStop
+       | func
        | none
        | var
 
-TypeImplicit --> Type
-       | func
-
-Types --> Type [, Types]
-
 Expression --> FunctionCall
              | Value
+             | LambdaExpression
 
 Value --> Literal
         | identifier
@@ -50,11 +46,15 @@ Command --> VarDcl linebreak
             | Expression linebreak
             | ReturnCommand linebreak
 
-DeclarationValue --> Expression
-                    | LambdaExpression
+literalTuple --> (Values)
+literalList --> [Values]
 
-Declaration --> TypeImplicit identifier [equals DeclarationValue]
+Commands --> {Command}
 
+Command --> VarDcl linebreak
+            | Assignment linebreak
+            | Expression linebreak
+            | ReturnCommand linebreak
 
 Assignment --> identifier equals DeclarationValue
 
@@ -64,7 +64,9 @@ LambdaExpression --> parenL [FunDclParamList] parenR arrow Type LambdaBody
 
 LambdaBody --> curlyL Statements curlyR
 
+Assignment --> identifier equals DeclarationValue
 
+LambdaExpression --> [parenL [FunDclParamList] parenR arrow Type] curlyL Statements curlyR
 
 FunDclParamList --> Parameter [comma FunDclParamList]
 
@@ -78,8 +80,6 @@ FunCallParamList --> {FunCallParameter}
                    | parenL {FunCallParameter} parenR
 
 FunCallParameter --> Value
-                   | identifier
-                   | LambdaExpression
-                   | LambdaBody
+                   | functionPassOp identifier
 
 ReturnCommand --> return Expression
