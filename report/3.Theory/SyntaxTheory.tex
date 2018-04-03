@@ -16,9 +16,9 @@ The conclusions of this section will provide the bases for implementing and test
 The majority of this section will be based on the EBNF details touched upon in the previous chapter.
 
 \subsection{HCL as an CFL}
-
-To proof that HCL is a CFL, it is necessary to construct a pushdown automaton (PDA).
-The reason being that the set of context free languages is equivalent to the set of languages recognized by push down automatons.
+This subsection will investigate whether HCL is a CFL. 
+To do this it is necessary to construct a PDA.
+The reason being that the set of context free languages is equivalent to the set of languages recognized by push down automata.
 To construct the PDA the following rules will be utilized:
 \begin{center}
 	\begin{itemize}
@@ -37,26 +37,24 @@ To construct the PDA the following rules will be utilized:
 	\end{itemize}
 \end{center}
 
-To create the automaton firstly a start state needs to be added at the beginning of the automaton. 
-Secondly a transition rule on the form $\epsilon,\epsilon->S\$$ needs to be add between the start state and a new state called the loop state.
+To create the automaton, a start state needs to be added at the beginning of the automaton. 
+A transition rule on the form $\epsilon,\epsilon->S\$$ needs to be added between the start state and a new state called the loop state.
 Here S is a variable.
-From the loop state to the finale accept state there needs to be a transition rule on the form $\epsilon,\$->\epsilon$.
+From the loop state to the accept state there needs to be a transition rule on the form $\epsilon,\$->\epsilon$.
 To convert the EBNF's production rules to a PDA, two conversion rules needs to be followed.
 
 For each production rule on the form $A->w$, where A is a variable and w is a string the transition rule $\epsilon,A->w$ needs to be added to the automaton from the loop state back to the loop state.
 For each terminal a transition rule $a,a->\epsilon$ needs to be added to the automaton from the loop state back to the loop state.
-
-The finale non deterministic pushdown automaton (NPDA) can be seen in Appendix %Tilføj reference når lortet er i appendix.
-
-HCL is therefore a CFL recognized by the NPDA in Appendix %indsæt blah blah...
+The final NPDA can be seen in Appendix 2 on page \pageref{NPDA}.
+Thus concludes the proof.
 
 \subsection{Regularity of HCL}
-Now that it has been concluded that HCl is as CFL recognized by the CFG described in the previous subsections.
-It is now relevant to investigate whether HCl is a regular language. 
-If that would be the case, it would be possible to utilize finite state automatons to recognize the language.
+Now that it has been concluded that HCL is as CFL recognized by the CFG described in the previous subsections.
+It is now relevant to investigate whether HCL is a regular language. 
+if that is the case, it is possible to create a FSA that recognizes the language. 
 Since the set of regular languages is a subset of the context free languages, this might be the case.
-The finite state automatons are more trivial to implement than a NPDA. 
-Since the HCL language is a relatively complex language, it would be unrealistic to sequentially go through the entire language while trying to construct a finite state automaton, that recognizes HCL.
+An FSA is more trivial to implement than a NPDA. 
+Since the HCL language is a relatively complex language, it would be unrealistic to sequentially go through the entire language while trying to construct a FSA, that recognizes HCL.
 
 Considering the fact that the regular languages are closed under the union, concatenation and the star operations. 
 It would be sufficient to locate a subset of HCL that is not a regular language.
@@ -93,14 +91,11 @@ Y cannot be of the length 0.
 The first condition is not upheld since if $i = 0$ the new string cannot contain an equal amount of left and right parentheses because of the same reason as to why the second condition is upheld.
 
 This concludes the proof by contradiction.
-Since HCl does not uphold the required property for it to be a regular language, it it not and the only automaton capable of recognizing the language is the NDPA described in the previous sections.
+Since HCL does not uphold the required property for it to be a regular language, it is not, and the only automaton capable of recognizing the language is the NDPA described in the previous sections.
 
 \subsection{Types and Identifiers}
 So far the syntax of HCL has been properly defined as a CFL. 
-Meaning that all Variables, terminals and the transition rules for recognizing HCl has been described in a computational model as seen on page 
-%Indsæt sidetal for HCL CFG definition.
-and in appendix.
-%Indæst reference til appendix hvor NPDA for HCL er beskrevet.
+Meaning that all variables, terminals and the transition rules for recognizing HCL has been described in a computational model as seen in appendix 2 on page \pageref{NPDA}.
 It is now relevant to define how the types and identifiers in HCL can be described or recognized by a computational model.
 The goal is to formally describe the languages $L_{none}$, $L_{bool}$, $L_{number}$, $L_{text}$ which are the type languages and the identifier language $L_{identifiers}$.
 
@@ -113,8 +108,8 @@ These can be seen in Table 3.1.
 	\begin{tabular}{|l|l|}
 		\hline
 		\textbf{Alphabet} & \textbf{Set}                            \\ \hline
-		T                 & \{true\}                                \\ \hline
-		F                 & \{false\}                               \\ \hline
+		T                 & \{True\}                                \\ \hline
+		F                 & \{False\}                               \\ \hline
 		$Z^+$             & The set of all positive integers        \\ \hline
 		$Z^-$             & The set of all negative integers        \\ \hline
 		R                 & The set of all real numbers             \\ \hline
@@ -123,7 +118,7 @@ These can be seen in Table 3.1.
 		$L_l$             & The set of all lower-case letters       \\ \hline
 		$L_u$             & The set of all upper-case letters       \\ \hline
 		C                 & $S_p \cup L_l \cup L_u \cup D$          \\ \hline
-		$R_{eserved}$     & The set of all reserved keywords in HCL \\ \hline
+		$R_{eserved}$     & The set of all reserved keywords, specialchars and types \\ \hline
 	\end{tabular}
 	\caption{Table containing all utility alphabets used to formally describe the type and identifier languages}
 \end{table}
@@ -136,7 +131,7 @@ By using the set construction method, the languages can now be defined as shown 
 	\begin{tabular}{|l|l|}
 		\hline
 		\textbf{Name}     & \textbf{Set}                                    \\ \hline
-		$L_{none}$        & \{w | w $\in$ \{none\}\}                        \\ \hline
+		$L_{none}$        & \{w | w $\in$ \{None\}\}                        \\ \hline
 		$L_{bool}$        & \{w | w $\in$ (T $\cup$ F)\}                    \\ \hline
 		$L_{number}$      & \{w | w $\in$ R\}                               \\ \hline
 		$L_{text}$        & \{"w" | all strings from arbitrary alphabets\}  \\ \hline
@@ -145,9 +140,9 @@ By using the set construction method, the languages can now be defined as shown 
 	\caption{Table containing the type and identifier alphabets described by the set builder construction}
 \end{table}
 
-Intuitively it is trivial that all of the languages defined above are regular languages.
+Intuitively it is trivial that all of the languages defined above are regular languages, except for $L_{identifiers}$ since it would need to make sure that no strings are an element of $S_p$.
 This is the case since a regular language cannot keep track of more than one symbol in terms of counting and iterations.
-Since all of the languages in Table 3.2 consists only of arbitrary concatenations of elements of various alphabets, this means that they are indeed regular. 
+Since all of the languages in Table 3.2(except for $L_{identifiers}$) consists only of arbitrary concatenations of elements of various alphabets, this means that they are indeed regular. 
 Now that it has been determined that the languages are regular, a computational model can now be chosen to describe them more specifically.
 A regular expression for each of the languages will now be constructed.
 
@@ -164,14 +159,13 @@ The resulting regular expressions are shown in Table 3.3.
 		$L_{bool}$        & true $\cup$ false                   \\ \hline
 		$L_{number}$      & $D^+(.D^+)^*$                       \\ \hline
 		$L_{text}$        & $"C^*"$                               \\ \hline
-		$L_{identifiers}$ & $C^+(R_{eserved} \cup \epsilon)C^+$ \\ \hline
 	\end{tabular}
 	\caption{Regular Expressions describing the type and identifier languages}
 \end{table}
 
-In conclusion HCL is a context free language, meaning that it can be described by a non-deterministic pushdown automaton.
-A subset of HCL is non-regular, meaning that HCL cannot be a regular language.
-The token category languages are all regular languages. 
+In conclusion HCL is a context free language, meaning that it can be described by a NPDA.
+Some subsets of HCL is non-regular, meaning that HCL cannot be a regular language.
+The token category type languages are all regular languages. 
 These can therefore be described using regular expressions as presented in this chapter.
 
 
