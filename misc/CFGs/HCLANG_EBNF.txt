@@ -60,7 +60,7 @@ Assignment --> identifier equals DeclarationValue
 
 
 
-LambdaExpression --> parenL [FunDclParamList] parenR arrow Type LambdaBody
+LambdaExpression --> parenL [FunDclParamList] parenR colon Type LambdaBody
 
 LambdaBody --> curlyL Statements curlyR
 
