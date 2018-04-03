@@ -23,7 +23,7 @@ sealed class Token {
         class ListSeparator : SpecialChar()
         class LineContinue : SpecialChar()
         class Equals : SpecialChar()
-        class Arrow : SpecialChar()
+        class Colon : SpecialChar()
     }
 
     sealed class Type : Token() {

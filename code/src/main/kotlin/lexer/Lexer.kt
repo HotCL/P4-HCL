@@ -6,8 +6,8 @@ import kotlin.coroutines.experimental.buildSequence
  * The default implementation of the ILexer interface
  */
 class Lexer(private val inputContent: String) : ILexer {
-    private val endLines = listOf("\n","\r\n",";")
-    private val specialChars = listOf("=", "[", "]", "(", ")", "{", "}", ",", "\\", ":") + endLines
+    private val endLines = listOf('\n',"\r\n",';')
+    private val specialChars = listOf('=', '[', ']', '(', ')', '{', '}', ',', '\\', ':') + endLines
     private val endOfLineRegex = "\\r\\n|\\n|\\r".toRegex()
 
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
@@ -46,7 +46,7 @@ class Lexer(private val inputContent: String) : ILexer {
     }
 
     private fun upcomingSpecialCharOrWhiteSpace(lineNumber: Int, indexNumber: Int) = with(inputLine(lineNumber)) {
-        indexNumber < length && specialChars.any { substring(indexNumber).startsWith(it) } || get(indexNumber).isWhitespace()
+        indexNumber < length && specialChars.any { get(indexNumber) == it } || get(indexNumber).isWhitespace()
     }
 
     override fun inputLine(lineNumber: Int) = inputContent.split(endOfLineRegex)[lineNumber] + "\n"
@@ -73,7 +73,7 @@ class Lexer(private val inputContent: String) : ILexer {
         ")" -> Token.SpecialChar.ParenthesesEnd()
         "," -> Token.SpecialChar.ListSeparator()
         "\\" -> Token.SpecialChar.LineContinue()
-        ":" -> Token.SpecialChar.Arrow()
+        ":" -> Token.SpecialChar.Colon()
         in endLines -> Token.SpecialChar.EndOfLine()
         else -> null
     }
