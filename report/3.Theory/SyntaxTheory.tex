@@ -54,11 +54,10 @@ It is now relevant to investigate whether HCL is a regular language.
 if that is the case, it is possible to create a FSA that recognizes the language. 
 Since the set of regular languages is a subset of the context free languages, this might be the case.
 An FSA is more trivial to implement than a NPDA. 
-Since the HCL language is a relatively complex language, it would be unrealistic to sequentially go through the entire language while trying to construct a FSA, that recognizes HCL.
+Since the HCL language is a relatively complex language, it would be unrealistic to sequentially go through the entire language while trying to construct a FSA that recognizes HCL.
 
-Considering the fact that the regular languages are closed under the union, concatenation and the star operations. 
-It would be sufficient to locate a subset of HCL that is not a regular language.
-The transition rules described in the EBNF, state that a subset of HCL might consists of an arbitrary number of equal amounts of left and right parentheses.
+Considering the fact that the regular languages are closed under the union, concatenation, and the star operations, it would be sufficient to locate a subset of HCL that is not a regular language.
+The transition rules described in the EBNF, state that a subset of HCL might consist of an arbitrary number of equal amounts of left and right parentheses.
 This subset, referred to as $HCL_{subset}$ can be described as the set:
 \begin{center}
 	$HCL_{subset} = \{a^nbc^n | a \in \{(\} \wedge b \in P \wedge c \in \{)\}\}$
@@ -85,8 +84,7 @@ The length of the string is $p < |s| < (p3)/2$, since $s = a^nbc^n$, where $n = 
 
 This means that the third condition is upheld since $|xy|$ cannot be greater than p.
 The second condition is also upheld since y consist of at least some left parentheses. 
-If the string does contain right parentheses, which it does. 
-Y cannot be of the length 0.
+If the string does contain right parentheses, which it does, y cannot be of the length 0.
 
 The first condition is not upheld since if $i = 0$ the new string cannot contain an equal amount of left and right parentheses because of the same reason as to why the second condition is upheld.
 
