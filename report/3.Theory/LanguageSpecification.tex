@@ -116,7 +116,8 @@ Consider this example:
 Obviously the sum function accepts a list that should be summed. 
 However, if the sum function could potentially also accept a modifier function, that were to alter the result of the sum function, it would be impossible for the compiler to determine whether print was that modifier function, or the sum should be passed as a parameter to the print function.
 
-Function overloading requires nothing special of the user, just declare two functions with the same amount of parameters, but with different types. See listings below for example
+Function overloading requires nothing special of the user, just declare two functions with the same amount of parameters, but with different types. 
+See listings below for example
 
 \begin{lstlisting}
 var isAwesome = (string name) -> bool {
