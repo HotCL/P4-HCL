@@ -37,7 +37,7 @@ The lexer class implements the ILexer interface.
 class Lexer(private val inputContent: String) : ILexer {
 \end{lstlisting}
 
-The ILexer defines a getTokenSequence function, which will give the token sequence and an inputLine function.
+The ILexer defines a getTokenSequence function, which will give the token sequence, and an inputLine function.
 The getTokenSequence function will split the text string.
 \begin{lstlisting}[language=java,label=lis:LexerStringSplit,caption=The string is being split and new lines are added to the string .,firstnumber=8]
 override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
