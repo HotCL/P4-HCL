@@ -26,7 +26,7 @@ class TokenTest {
                 "var" -> Token.Type.Var()
                 "num" -> Token.Type.Number()
                 "\n" -> Token.SpecialChar.EndOfLine()
-                "->" -> Token.SpecialChar.Arrow()
+                "->" -> Token.SpecialChar.Colon()
                 "{" -> Token.SpecialChar.BlockStart()
                 "}" -> Token.SpecialChar.BlockEnd()
                 "[" -> Token.SpecialChar.SquareBracketStart()

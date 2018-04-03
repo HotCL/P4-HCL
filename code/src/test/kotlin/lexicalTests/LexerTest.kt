@@ -3,10 +3,8 @@ package lexicalTests
 import lexer.Lexer
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import com.natpryce.hamkrest.isA
 import lexer.PositionalToken
 import org.junit.jupiter.api.Assertions.assertTrue
-import java.lang.reflect.Type
 
 class LexerTest {
     @org.junit.jupiter.api.Test
@@ -126,7 +124,7 @@ class LexerTest {
 
     @org.junit.jupiter.api.Test
     fun lexerTestFunctionDeclaration() {
-        val lex = Lexer("func print = (txt message) -> none\n{ }")
+        val lex = Lexer("func print = (txt message) : none\n{ }")
 
         val tokens = lex.getTokenSequence().toList()
 
@@ -152,7 +150,7 @@ class LexerTest {
                 { token -> token is lexer.Token.SpecialChar.ParenthesesEnd },
                 25, 0)
         assertPositionalToken(tokens[7],
-                { token -> token is lexer.Token.SpecialChar.Arrow },
+                { token -> token is lexer.Token.SpecialChar.Colon },
                 27, 0)
         assertPositionalToken(tokens[8],
                 { token -> token is lexer.Token.Type.None },
