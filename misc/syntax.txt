@@ -130,7 +130,7 @@ NTH = NICE TO HAVE
 			acc = acc foldMethod value
 		}
 		return acc
-	}T
+	}
 
 
 9) variable
