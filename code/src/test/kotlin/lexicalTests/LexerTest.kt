@@ -4,9 +4,8 @@ import lexer.Lexer
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import lexer.PositionalToken
-import logger.StringDoesntEndError
+import exceptions.StringDoesntEndError
 import org.junit.jupiter.api.Assertions.*
-import java.lang.reflect.Type
 
 class LexerTest {
     @org.junit.jupiter.api.Test

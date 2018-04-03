@@ -1,6 +1,6 @@
 package lexer
 
-import logger.StringDoesntEndError
+import exceptions.StringDoesntEndError
 import kotlin.coroutines.experimental.buildSequence
 
 /**

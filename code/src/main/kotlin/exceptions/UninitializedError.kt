@@ -1,6 +1,4 @@
-package logger
-
-import exceptions.ParserException
+package exceptions
 
 /**
  * Class used to log uninitialized errors.
