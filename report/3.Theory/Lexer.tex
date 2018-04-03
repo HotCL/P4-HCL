@@ -4,8 +4,8 @@
 \section{Lexer}
 The first part of the compiler is concerned with the syntax analysis phase.
 This portion of the compiler is often called a lexer or a scanner.
-The two words can be used interchangeably 
-The point of the lexer is to transform a given input character stream, often a source code file, and transform it into a stream of tokens.
+The two words can be used interchangeably. 
+The point of the lexer is to transform a given input character stream, often a source code file, into a stream of tokens.
 
 The scanner will do this by breaking the character stream down into individual words, known in language theory as a lexeme.
 A lexeme is simply the smallest unit in a language, that still has a meaning.
@@ -19,11 +19,11 @@ In the case of identifiers, two different variables might be named \textit{Emplo
 Some tokens can only match a single, very specific, lexeme.
 An example of this would be parentheses, where the left parentheses character, \textbf{(}, would only match the left parentheses token, and likewise for the right parentheses character.
 
-The point here is to illustrate the importance of knowing when a parentheses starts or ends, compared to just knowing that there is an identifier, but not which identifier
+The point here is to illustrate the importance of knowing when a parentheses starts or ends, compared to just knowing that there is an identifier, but not which identifier.
 
 
 Creating a lexer can be done in a number of ways.
-%Possibly insert a section here about Regular Expressions? Jones)
+The one that will be used in this project is described in section \ref{MathTheory}.
 Below the different options will be explored.
 \subsection{Lexer Generators}
 The primary advantage for all Lexer generators, is that they allow for easy modification of the language, without having to  rewrite the lexer yourself, as it is usually as simple as adding the rule to the CFG, and running the generator.
@@ -34,13 +34,12 @@ ANTLR is a scanner/parser generator, which when given a context-free grammar, ex
 ANTLR can output to Java, C\#, Python2 and Python3, Javascript, Go, C++ and Swift\cite{ANTLRDocsTargets}.
 One of the primary advantages of ANTLR is that it uses a single notation for both lexers and parsers\cite{ANTLRDocs}.
 This means that after the lexer has been implemented, it would be extremely easy to implement the parser afterwards, as it would be as simple as specifying that a parser needs to be generated.
-As one of the primary design decisions of is simplicity over complexity, as well as the fact that ANTLR is often used in academia, it would be a good choice for a lexer/parser generator.
+As one of the primary design decisions of ANTLR is "simplicity over complexity", as well as the fact that ANTLR is often used in academia, it would be a good choice for a lexer/parser generator, as it can be assumed that it is easy to use.
 ANTLR has official plugins for both Intellij, NetBeans and Eclipse, which improves the user experience, by supporting syntax highlighting, formatting and error detection.
-%Maybe add example syntax?
 
 \textbf{Lex}\\
-At the 4th semester, the Crafting a compiler uses Lex as an example of a Lexer generator\cite{CraftingACompiler}.
-Lex is by many deemed the standard lexer generator, and it comes default on many unix systems.
+At the 4th semester, the \textit{Crafting a compiler} uses Lex as an example of a Lexer generator\cite{CraftingACompiler}.
+Lex is deemed the standard lexer generator, and it comes default on many unix systems.
 Lex outputs to C, however there are many different forks which allow for output to different languages.
 A Lex file is comprised of 3 distinct sections\cite{Lex}.
 \begin{itemize}
@@ -65,8 +64,8 @@ Another disadvantage is the fact that writing the lexer by hand, can potentially
 \subsection{Lexer choice}
 \label{LexerChoice}
 The group decided that a hand-written approach would be the best.
-The main reason was that the HCL language is relatively simple, with not too many rules.
-Therefore complexity and writing a long complex lexer was not of concern.
+The primary reason is that the HCL language is relatively simple, with not too many rules.
+Therefore complexity and potentially writing a long and complex lexer was not of concern.
 On top of that, the group prefers the level of control, that writing the lexer by hand offers.
 
 
