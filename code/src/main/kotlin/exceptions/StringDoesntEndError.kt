@@ -1,6 +1,4 @@
-package logger
-
-import exceptions.ParserException
+package exceptions
 
 /**
  * Error thrown when string lacks end encapsulation
