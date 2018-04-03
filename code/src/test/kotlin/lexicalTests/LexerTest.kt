@@ -5,13 +5,14 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.isA
 import lexer.PositionalToken
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import java.lang.reflect.Type
 
 class LexerTest {
     @org.junit.jupiter.api.Test
     fun lexerTestTokenGeneration() {
-        val lex = Lexer("var x = 5 + 7\nx = x times 10;")
+        val lex = Lexer("var x = 5 + 7\nx = x times\\\n10;")
 
         val tokensPositional = lex.getTokenSequence().toList()
 
@@ -58,13 +59,19 @@ class LexerTest {
         assertPositionalToken(tokensPositional[10],
                 { token -> token is lexer.Token.Identifier && token.value == "times" },
                 6, 1)
-
         assertPositionalToken(tokensPositional[11],
-                { token -> token is lexer.Token.Literal.Number && token.value == 10.0 },
-                12, 1)
+                { token -> token is lexer.Token.SpecialChar.LineContinue },
+                11, 1)
         assertPositionalToken(tokensPositional[12],
                 { token -> token is lexer.Token.SpecialChar.EndOfLine },
-                14, 1)
+                12, 1)
+
+        assertPositionalToken(tokensPositional[13],
+                { token -> token is lexer.Token.Literal.Number && token.value == 10.0 },
+                0, 2)
+        assertPositionalToken(tokensPositional[14],
+                { token -> token is lexer.Token.SpecialChar.EndOfLine },
+                2, 2)
 
     }
 
@@ -75,6 +82,14 @@ class LexerTest {
         assertThat(positionalToken.lineIndex, equalTo(expectedLineIndex))
         assertThat(positionalToken.lineNumber, equalTo(ExpectedLineNumber))
     }
+
+    @org.junit.jupiter.api.Test
+    fun lexerUnfinishedStringFails() {
+        assertThrows(Exception::class.java,{Lexer("\"hej").getTokenSequence().toList()})
+        assertThrows(Exception::class.java,{Lexer("'hej").getTokenSequence().toList()})
+    }
+
+
 
     @org.junit.jupiter.api.Test
     fun lexerTestGetLine() {

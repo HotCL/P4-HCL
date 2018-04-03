@@ -1,11 +1,13 @@
 package lexer
 
+import exceptions.LexerException
 import kotlin.coroutines.experimental.buildSequence
 
 /**
  * The default implementation of the ILexer interface
  */
 class Lexer(private val inputContent: String) : ILexer {
+    // we don't need to add \r\n as every line ending is removed and then each line is appended with \n
     private val endLines = listOf('\n',';')
     private val specialChars = listOf('=', '[', ']', '(', ')', '{', '}', ',', '\\', ':') + endLines
     private val endOfLineRegex = "\\r\\n|\\n|\\r".toRegex()
@@ -13,33 +15,35 @@ class Lexer(private val inputContent: String) : ILexer {
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
         val currentString = StringBuilder()
         inputContent.split(endOfLineRegex).forEachIndexed { lineNumber, line ->
-            (line + "\n").forEachIndexed { indexNumber, char ->
+            (line + '\n').forEachIndexed { indexNumber, char ->
                 if (char !in listOf(' ', '\t')) currentString.append(char)
                 with(currentString.toString()) {
                     when {
-                        isNotEmpty() && isSpecialChar() -> getSpecialCharTokenOrNull()
-                        upcomingSpecialCharOrWhiteSpace(lineNumber, indexNumber+1) && isNotEmpty() -> when (this) {
+                        isNotEmpty() -> when { char.isSpecialChar() -> char.getSpecialCharTokenOrNull()
+                            upcomingSpecialCharOrWhiteSpace(lineNumber, indexNumber) -> when (this) {
 
-                        // types
-                            "var" -> Token.Type.Var()
-                            "none" -> Token.Type.None()
-                            "txt" -> Token.Type.Text()
-                            "num" -> Token.Type.Number()
-                            "bool" -> Token.Type.Bool()
-                            "tuple" -> Token.Type.Tuple()
-                            "list" -> Token.Type.List()
-                            "func" -> Token.Type.Func()
-                        //bool
-                            "true" -> Token.Literal.Bool(true)
-                            "false" -> Token.Literal.Bool(false)
-                            else -> getLiteralOrIdentifier()
+                            // types
+                                "var" -> Token.Type.Var()
+                                "none" -> Token.Type.None()
+                                "txt" -> Token.Type.Text()
+                                "num" -> Token.Type.Number()
+                                "bool" -> Token.Type.Bool()
+                                "tuple" -> Token.Type.Tuple()
+                                "list" -> Token.Type.List()
+                                "func" -> Token.Type.Func()
+                            //bool
+                                "true" -> Token.Literal.Bool(true)
+                                "false" -> Token.Literal.Bool(false)
+                                else -> getLiteralOrIdentifier()
+                            }
+                            else -> null
                         }
+                        else -> null
                     // special char
                     // identifier or number literal
-                        else -> null
                     }.let {
                         if (it != null) {
-                            yield(PositionalToken(it, lineNumber, indexNumber - (length-1)))
+                            yield(PositionalToken(it, lineNumber, indexNumber - (length - 1)))
                             currentString.setLength(0)
                         }
                     }
@@ -49,24 +53,26 @@ class Lexer(private val inputContent: String) : ILexer {
     }
 
     private fun upcomingSpecialCharOrWhiteSpace(lineNumber: Int, indexNumber: Int) = with(inputLine(lineNumber)) {
-        indexNumber < length && specialChars.any { get(indexNumber) == it } || get(indexNumber).isWhitespace()
+        val nextCharIndex = indexNumber + 1
+        nextCharIndex < length && specialChars.any { get(nextCharIndex) == it } || get(nextCharIndex).isWhitespace()
     }
 
-    override fun inputLine(lineNumber: Int) = inputContent.split(endOfLineRegex)[lineNumber] + "\n"
+    override fun inputLine(lineNumber: Int) = inputContent.split(endOfLineRegex)[lineNumber] + '\n'
 
-    private fun String.isSpecialChar() = specialChars.any { it == this[0] }
+    private fun Char.isSpecialChar() = specialChars.any { it == this }
 
     private fun String.getLiteralOrIdentifier() = when {
     // Number literal
         matches("-?\\d+(\\.\\d+)?".toRegex()) -> Token.Literal.Number(this)
     // string/txt literal
-        startsWith("'") && endsWith("'") -> Token.Literal.Text(this)
-        startsWith("\"") && endsWith("\"") -> Token.Literal.Text(this)
+        startsWith('\'') && endsWith('\'') -> Token.Literal.Text(this)
+        startsWith('"') && endsWith('"') -> Token.Literal.Text(this)
     // Identifier
+        startsWith('\'') || startsWith('"') -> throw Exception("TODO make this a lexer exception") // TODO make this a lexer exception
         else -> Token.Identifier(this)
     }
 
-    private fun String.getSpecialCharTokenOrNull(): Token? = when(this[0]) {
+    private fun Char.getSpecialCharTokenOrNull(): Token? = when(this) {
         '=' -> Token.SpecialChar.Equals()
         '[' -> Token.SpecialChar.SquareBracketStart()
         ']' -> Token.SpecialChar.SquareBracketEnd()
