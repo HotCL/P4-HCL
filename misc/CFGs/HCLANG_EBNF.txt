@@ -10,7 +10,7 @@ something:    1 occurrence of something
 
 ***********************************************************************************
 
-Program --> Statements $
+Program --> Commands $
 
 
 Type --> number
@@ -43,9 +43,9 @@ Values --> Value [, Values]
 literalTuple --> (Values)
 literalList --> [Values]
 
-Statements --> {Statement}
+Commands --> {Command}
 
-Statement --> VarDcl linebreak
+Command --> VarDcl linebreak
             | Assignment linebreak
             | Expression linebreak
             | ReturnStatement linebreak
