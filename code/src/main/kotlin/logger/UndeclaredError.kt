@@ -2,6 +2,10 @@ package logger
 
 import exceptions.ParserException
 
+/**
+ * Class used to log undeclared variables errors.
+ * @param nameOfVar The name of the identifier that is undeclared
+ */
 class UndeclaredError(lineNumber: Int, lineIndex: Int, lineText: String, private val nameOfVar: String)
     : ParserException(lineNumber, lineIndex, lineText){
     override val errorType = "UNDECLARED-ERROR"

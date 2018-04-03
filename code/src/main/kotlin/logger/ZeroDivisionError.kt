@@ -2,6 +2,9 @@ package logger
 
 import exceptions.ParserException
 
+/**
+ * Class used to log zero division errors.
+ */
 class ZeroDivisionError(lineNumber: Int, lineIndex: Int, lineText: String)
     : ParserException(lineNumber, lineIndex, lineText){
     override val errorType = "ZERO-DIVISION-ERROR"

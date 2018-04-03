@@ -2,6 +2,11 @@ package logger
 
 import exceptions.ParserException
 
+/**
+ * Class used to log type errors.
+ * @param operator The function in which error occurred
+ * @param operands A list of types that are non-compatible
+ */
 class TypeError(lineNumber: Int, lineIndex: Int, lineText: String, private val operator: String, private val operands: List<String>)
     : ParserException(lineNumber, lineIndex, lineText) {
     private val types: String = findTypes()
