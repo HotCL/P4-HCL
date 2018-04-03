@@ -6,10 +6,11 @@ import kotlin.coroutines.experimental.buildSequence
 /**
  * The default implementation of the ILexer interface
  */
-class Lexer(private val inputContent: String) : ILexer {
+class Lexer(private val inputContent: String) : ILexer { 
     // we don't need to add \r\n as every line ending is removed and then each line is appended with \n
     private val endLines = listOf('\n',';')
     private val specialChars = listOf('=', '[', ']', '(', ')', '{', '}', ',', '\\', ':') + endLines
+
     private val endOfLineRegex = "\\r\\n|\\n|\\r".toRegex()
 
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
@@ -98,7 +99,7 @@ class Lexer(private val inputContent: String) : ILexer {
         ',' -> Token.SpecialChar.ListSeparator()
         '\\' -> Token.SpecialChar.LineContinue()
         ':' -> Token.SpecialChar.Colon()
-        in endLines.apply { toString() } -> Token.SpecialChar.EndOfLine()
+        in endLines -> Token.SpecialChar.EndOfLine()
         else -> null
     }
 }
