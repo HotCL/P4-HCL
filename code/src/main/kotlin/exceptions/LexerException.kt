@@ -1,6 +1,8 @@
 package exceptions
 
-class LexerException(errorMessage: String,
-                      lineNumber: Int,
-                      lineIndex: Int,
-                      lineText: String): CompilationException(errorMessage, lineNumber, lineIndex, lineText)
+/**
+ * Abstract class for exceptions thrown from the lexer
+ */
+abstract class LexerException(lineIndex: Int,
+                     lineNumber: Int,
+                     lineText: String): CompilationException(lineNumber, lineIndex, lineText)
