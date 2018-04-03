@@ -133,8 +133,13 @@ NTH = NICE TO HAVE
 	}
 
 
-9) variable
-	- letters+numbers+[selected chars] has to start with letter or [selected char]
+9) variable / identifier
+	- anything that's not something else
+	- 1hej
+	- hej1
+	- fisk
+	- varfisk
+	- +-
 
 10) value passing
 	PASS BY VALUE - no side effects
@@ -200,15 +205,15 @@ NTH = NICE TO HAVE
 	how do we do generic?
 
 	usecase:
-		func map = (List<T1> input,Func<T1,T3> f) -> T3 = {
-			List<T3> output
+		func map = (List[T1] input,Func[T1,T3] f) -> T3 = {
+			List[T3] output
 			T3 a
 			{output = output add (value f)} forEachIn input
 
 			return output
 		}
 
-		func<List<T1>,Func<T1,T3>,T3> 
+		func[List[T1],Func[T1,T3],T3]
 
 		T1 = identifier
 
@@ -226,3 +231,5 @@ NTH = NICE TO HAVE
 
 	overloading is possible with different TYPE of input - but not different lengths of input.
 
+
+17) "#" hashtag is comment. one line comment. can be placed anywhere. (fx end of line)

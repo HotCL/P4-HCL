@@ -12,12 +12,11 @@ something:    1 occurrence of something
 
 Program --> Commands $
 
-Commands --> {Declaration | Assignment | Expression}
 
 Type --> number
        | text
-       | tuple
-       | list
+       | tuple squareBracketStart [Types] squareBracketStop
+       | list squareBracketStart [Type] squareBracketStop
        | bool
        | func
        | none
@@ -35,16 +34,21 @@ Literal --> literalNumber
           | literalTuple
           | literalList
 
-Statements --> {Statement}
+Values --> Value [, Values]
 
-Statement --> VarDcl linebreak
+literalTuple --> (Values)
+literalList --> [Values]
+
+Commands --> {Command}
+
+Command --> VarDcl linebreak
             | Assignment linebreak
             | Expression linebreak
-            | ReturnStatement linebreak
+            | ReturnCommand linebreak
 
 Declaration --> Type identifier [equals Expression]
 
-Assignment --> identifier equals Expression
+Assignment --> identifier equals DeclarationValue
 
 LambdaExpression --> [parenL [FunDclParamList] parenR arrow Type] curlyL Statements curlyR
 
@@ -62,4 +66,4 @@ FunCallParamList --> {FunCallParameter}
 FunCallParameter --> Value
                    | functionPassOp identifier
 
-ReturnStatement --> return Expression
+ReturnCommand --> return Expression
