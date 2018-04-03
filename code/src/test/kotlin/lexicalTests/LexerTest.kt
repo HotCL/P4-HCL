@@ -172,7 +172,7 @@ class LexerTest {
     }
 
     @org.junit.jupiter.api.Test
-    fun lexerTestEqualsGetsIdentifiersCorrectly() {
+    fun lexerTestDoesntRequireWhitespaces() {
         val lex = Lexer("x=y[0]")
 
         val tokens = lex.getTokenSequence().toList()
