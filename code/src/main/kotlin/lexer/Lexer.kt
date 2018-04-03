@@ -1,5 +1,6 @@
 package lexer
 
+import logger.StringDoesntEndError
 import kotlin.coroutines.experimental.buildSequence
 
 /**
@@ -74,7 +75,7 @@ class Lexer(private val inputContent: String) : ILexer {
         startsWith('\'') && endsWith('\'') -> Token.Literal.Text(this)
         startsWith('"') && endsWith('"') -> Token.Literal.Text(this)
     // Identifier
-        startsWith('\'') || startsWith('"') -> throw Exception("TODO make this a lexer exception") // TODO make this a lexer exception
+        startsWith('\'') || startsWith('"') -> throw StringDoesntEndError(0,0,this) // TODO use correct linenumber, index etc
         else -> Token.Identifier(this)
     }
 

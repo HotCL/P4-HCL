@@ -5,6 +5,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.isA
 import lexer.PositionalToken
+import logger.StringDoesntEndError
 import org.junit.jupiter.api.Assertions.*
 import java.lang.reflect.Type
 
@@ -125,8 +126,8 @@ class LexerTest {
 
     @org.junit.jupiter.api.Test
     fun lexerUnfinishedStringFails() {
-        assertThrows(Exception::class.java, {Lexer("\"hej").getTokenSequence().toList()})
-        assertThrows(Exception::class.java, {Lexer("'hej").getTokenSequence().toList()})
+        assertThrows(StringDoesntEndError::class.java, {Lexer("\"hej").getTokenSequence().toList()})
+        assertThrows(StringDoesntEndError::class.java, {Lexer("'hej").getTokenSequence().toList()})
     }
 
     @org.junit.jupiter.api.Test
