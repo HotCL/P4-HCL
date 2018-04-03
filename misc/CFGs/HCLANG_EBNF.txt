@@ -52,7 +52,7 @@ DeclarationValue --> Expression
 Declaration --> TypeImplicit identifier [equals DeclarationValue]
 
 
-Assignment --> identifier equals Expression
+Assignment --> identifier equals DeclarationValue
 
 
 
