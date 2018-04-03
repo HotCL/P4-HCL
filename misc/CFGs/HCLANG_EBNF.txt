@@ -48,7 +48,7 @@ Commands --> {Command}
 Command --> VarDcl linebreak
             | Assignment linebreak
             | Expression linebreak
-            | ReturnStatement linebreak
+            | ReturnCommand linebreak
 
 DeclarationValue --> Expression
                     | LambdaExpression
@@ -82,4 +82,4 @@ FunCallParameter --> Value
                    | LambdaExpression
                    | LambdaBody
 
-ReturnStatement --> return Expression
+ReturnCommand --> return Expression
