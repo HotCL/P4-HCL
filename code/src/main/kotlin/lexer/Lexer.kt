@@ -16,6 +16,15 @@ class Lexer(private val inputContent: String) : ILexer {
         val currentString = StringBuilder()
         inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->
             (line + '\n').forEachIndexed { indexNumber, char ->
+                // handle if we are reading string literal
+                if (currentString.isNotEmpty() && currentString[0] in listOf('\'', '"') &&
+                    (char !in listOf('\'', '"') || currentString.last() == '\\')) {
+                    if (char == '\n') {
+                        throw StringDoesntEndError(lineNumber, indexNumber, currentString.toString())
+                    }
+                    currentString.append(char)
+                    return@forEachIndexed
+                }
                 if (char !in listOf(' ', '\t')) currentString.append(char)
                 if (char == '#') {
                     yield(PositionalToken(Token.SpecialChar.EndOfLine(), lineNumber, indexNumber))
@@ -24,9 +33,9 @@ class Lexer(private val inputContent: String) : ILexer {
                 }
 
                 with(currentString.toString()) {
-                    (if(isNotEmpty())
+                    (if (isNotEmpty())
                         when {
-                            // special char
+                        // special char
                             char.isSpecialChar() -> char.getSpecialCharTokenOrNull()
                             isNextSpecialCharWhiteSpaceOrComment(lineNumber, indexNumber) -> when (this) {
                             // types
@@ -48,11 +57,11 @@ class Lexer(private val inputContent: String) : ILexer {
                             else -> null
                         }
                     else null).let {
-                                if (it != null) {
-                                    yield(PositionalToken(it, lineNumber, indexNumber - (length - 1)))
-                                    currentString.setLength(0)
-                                }
-                            }
+                        if (it != null) {
+                            yield(PositionalToken(it, lineNumber, indexNumber - (length - 1)))
+                            currentString.setLength(0)
+                        }
+                    }
                 }
             }
         }
@@ -72,10 +81,9 @@ class Lexer(private val inputContent: String) : ILexer {
     // Number literal
         matches("-?\\d+(\\.\\d+)?".toRegex()) -> Token.Literal.Number(this)
     // string/txt literal
-        startsWith('\'') && endsWith('\'') -> Token.Literal.Text(this)
-        startsWith('"') && endsWith('"') -> Token.Literal.Text(this)
+        startsWith('\'') && endsWith('\'') -> Token.Literal.Text(this.drop(1).dropLast(1))
+        startsWith('"') && endsWith('"') -> Token.Literal.Text(this.drop(1).dropLast(1))
     // Identifier
-        startsWith('\'') || startsWith('"') -> throw StringDoesntEndError(0,0,this) // TODO use correct linenumber, index etc
         else -> Token.Identifier(this)
     }
 
