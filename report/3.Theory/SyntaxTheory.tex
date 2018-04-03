@@ -10,6 +10,35 @@
 \section{Mathematical Syntax Theory}
 This section concerns with the concise definitions of HCL's syntax. First the proper CFG recognizing HCL will be presented, which will be used to proof that HCL is a CFL. Afterwards the most specific computational model for describing HCL will be identified and presented. Lastly the token categories will be described in a computational model. The conclusions of this section will provide the bases for implementing and testing the parser of the HCL compiler. The majority of this section will be based on the EBNF details touched upon in the previous chapter.
 
+\subsection{HCL as an CFL}
+
+To proof that HCL is a CFL, it is necessary to construct a pushdown automaton (PDA).
+The reason being that the set of context free languages is equivalent to the set of languages recognized by push down automatons.
+To construct the PDA the following rules will be utilized:
+\begin{center}
+	\begin{itemize}
+		\item The marker symbol \$ will first be placed on the stack.
+		\item Second. The following steps will be repeated until all production rules have been treated.
+		\begin{itemize}
+			\item If the top of the stack is a variable symbol V. The machine will non deterministically select one of the right production rules of V and replace V with that.
+			\item If the top of stack is a terminal symbol t. The next character on the input string is read and compared to t. If matched, repeat. If not, reject the branch.
+			\item If the top of stack is the marker symbol \$, enter the accept state of the automaton. This will accept the input string.
+		\end{itemize}
+	\end{itemize}
+\end{center}
+
+To create the automaton firstly a start state needs to be added at the beginning of the automaton. Secondly a transition rule on the form $\epsilon,\epsilon->S\$$ needs to be add between the start state and a new state called the loop state.
+Here S is a variable.
+From the loop state to the finale accept state there needs to be a transition rule on the form $\epsilon,\$->\epsilon$.
+To convert the EBNF's production rules to a PDA, two conversion rules needs to be followed.
+
+For each production rule on the form $A->w$, where A is a variable and w is a string the transition rule $\epsilon,A->w$ needs to be added to the automaton from the loop state back to the loop state.
+For each terminal a transition rule $a,a->\epsilon$ needs to be added to the automaton from the loop state back to the loop state.
+
+The finale non deterministic pushdown automaton (NPDA) can be seen in Appendix %Tilføj reference når lortet er i appendix.
+
+HCL is therefore a CFL recognized by the NPDA in Appendix %indsæt blah blah...
+
 \subsection{Regularity of HCL}
 Now that it has been concluded that HCl is as CFL recognized by the CFG described in the previous subsections.
 It is now relevant to investigate whether HCl is a regular language. If that would be the case, it would be possible to utilize finite state automatons to recognize the language.
