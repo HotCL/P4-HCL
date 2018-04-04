@@ -52,8 +52,30 @@ class Parser: IParser {
 
     private fun BufferedLaabStream<PositionalToken>.parseType() = when (current.token) {
         is Token.Type.Number -> TreeNode.Type.Number()
+        is Token.Type.Text -> TreeNode.Type.Text()
+        is Token.Type.Bool -> TreeNode.Type.Bool()
+        is Token.Type.None -> TreeNode.Type.None()
+        is Token.Type.Func -> parseFuncType()
         else -> throw Exception("Make this an expected type but found token type T")
     }.also { moveNext() }
+
+    private fun BufferedLaabStream<PositionalToken>.parseFuncType(): TreeNode.Type.Func {
+        val parameters = mutableListOf<TreeNode.Type>()
+        if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
+            moveNext()
+            while (true) {
+                if (current.token is Token.Type) parameters.add(parseType())
+                else throw Exception("Make this an expected token type T1 but found token type T2")
+                if (current.token is Token.SpecialChar.ListSeparator) moveNext()
+                else break
+            }
+            if (current.token !is Token.SpecialChar.SquareBracketEnd)
+                throw Exception("Make this an expected token type T1 but found token type T2")
+        }
+        else throw NotImplementedError()
+        val returnType = parameters.last()
+        return TreeNode.Type.Func(parameters.dropLast(1), returnType)
+    }
 
     private fun BufferedLaabStream<PositionalToken>.parseExpression(): TreeNode.Command.Expression {
         // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
