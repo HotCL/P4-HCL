@@ -4,6 +4,7 @@ import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
 import utils.BufferedLaabStream
+import java.beans.Expression
 
 class Parser: IParser {
     override fun generateAbstractSyntaxTree(lexer: ILexer) = AbstractSyntaxTree().apply {
@@ -36,6 +37,8 @@ class Parser: IParser {
         val litToken = accept<Token.Literal>()
         return when (litToken) {
             is Token.Literal.Number -> TreeNode.Command.Expression.Value.Literal.Number(litToken.value)
+            is Token.Literal.Text -> TreeNode.Command.Expression.Value.Literal.Text(litToken.value)
+            is Token.Literal.Bool -> TreeNode.Command.Expression.Value.Literal.Bool(litToken.value)
             else -> throw Exception("Make this an expected literal but found token T instead error")
         }
     }
@@ -116,7 +119,25 @@ class Parser: IParser {
     private fun BufferedLaabStream<PositionalToken>.parseExpression(): TreeNode.Command.Expression {
         // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
         // the token will be a literal, but it could also be an identifier.
-        if (peek().token is Token.SpecialChar.EndOfLine) return acceptLiteral()
+        when(current.token){
+            is Token.SpecialChar.ParenthesesStart -> return parseTupleDeclaration()
+        }
+       // if (peek().token is Token.SpecialChar.EndOfLine) return acceptLiteral()
         TODO("Make this parse function valid...")
+    }
+    private fun BufferedLaabStream<PositionalToken>.parseTupleDeclaration(): TreeNode.Command.Expression{
+        val elements = mutableListOf<TreeNode.Command.Expression>()
+        moveNext()
+        while (true){
+            if (current.token is Token.Literal) elements.add(acceptLiteral())
+            else if (current.token is Token.Identifier) elements.add(acceptIdentifier())
+            else throw Exception("Make this an expected token type T1 but found token type T2")
+            if (current.token is Token.SpecialChar.ListSeparator) moveNext()
+                else break
+        }
+        if (current.token !is Token.SpecialChar.ParenthesesEnd)
+            throw Exception("Make this an expected token type T1 but found token type T2")
+        moveNext()
+        return TreeNode.Command.Expression.Value.Literal.Tuple(elements)
     }
 }
