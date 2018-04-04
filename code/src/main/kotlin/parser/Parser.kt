@@ -56,6 +56,8 @@ class Parser: IParser {
         is Token.Type.Bool -> TreeNode.Type.Bool()
         is Token.Type.None -> TreeNode.Type.None()
         is Token.Type.Func -> parseFuncType()
+        is Token.Type.Tuple -> parseTupleType()
+        is Token.Type.List -> parseListType()
         else -> throw Exception("Make this an expected type but found token type T")
     }.also { moveNext() }
 
@@ -75,6 +77,36 @@ class Parser: IParser {
         else throw NotImplementedError()
         val returnType = parameters.last()
         return TreeNode.Type.Func(parameters.dropLast(1), returnType)
+    }
+
+    private fun BufferedLaabStream<PositionalToken>.parseTupleType(): TreeNode.Type.Tuple {
+        val elementTypes = mutableListOf<TreeNode.Type>()
+        if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
+            moveNext()
+            while (true) {
+                if (current.token is Token.Type) elementTypes.add(parseType())
+                else throw Exception("Make this an expected token type T1 but found token type T2")
+                if (current.token is Token.SpecialChar.ListSeparator) moveNext()
+                else break
+            }
+            if (current.token !is Token.SpecialChar.SquareBracketEnd)
+                throw Exception("Make this an expected token type T1 but found token type T2")
+        }
+        else throw NotImplementedError()
+        return TreeNode.Type.Tuple(elementTypes)
+    }
+
+    private fun BufferedLaabStream<PositionalToken>.parseListType(): TreeNode.Type.List {
+        val elementType: TreeNode.Type
+        if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
+            moveNext()
+            if (current.token is Token.Type) elementType = parseType()
+            else throw Exception("Make this an expected token type T1 but found token type T2")
+            if (current.token !is Token.SpecialChar.SquareBracketEnd)
+                throw Exception("Make this an expected token type T1 but found token type T2")
+        }
+        else throw NotImplementedError()
+        return TreeNode.Type.List(elementType)
     }
 
     private fun BufferedLaabStream<PositionalToken>.parseExpression(): TreeNode.Command.Expression {
