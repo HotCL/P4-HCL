@@ -11,7 +11,7 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: TYPE-ERROR found at line 4 index 10:\n" +
+                "- ERROR: TypeError found at line 4 index 10:\n" +
                         " | var b = 4 < \"5\"\n" +
                         " |           ^--\n" +
                         " | Function '<' not defined for types: 'num', 'txt' and 'bool'.\n" +
@@ -24,7 +24,7 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: UNDECLARED-ERROR found at line 12 index 8:\n" +
+                "- ERROR: UndeclaredError found at line 12 index 8:\n" +
                         " | txt s = textString\n" +
                         " |         ^--\n" +
                         " | Undeclared identifier 'textString' found.\n" +
@@ -37,7 +37,7 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: UNINITIALIZED-ERROR found at line 12 index 4:\n" +
+                "- ERROR: UninitializedError found at line 12 index 4:\n" +
                         " | x = someUninitializedVariable + 10\n" +
                         " |     ^--\n" +
                         " | Use of uninitialized variable 'someUninitializedVariable' found.\n" +
@@ -50,7 +50,7 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: ZERO-DIVISION-ERROR found at line 7 index 6:\n" +
+                "- ERROR: ZeroDivisionError found at line 7 index 6:\n" +
                         " | x = 42/0\n" +
                         " |       ^--\n" +
                         " | Division by 0 found\n" +
@@ -62,7 +62,7 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: MISSING-ARGUMENT-ERROR found at line 11 index 2:\n" +
+                "- ERROR: MissingArgumentError found at line 11 index 2:\n" +
                         " | 2 someFunction\n" +
                         " |   ^--\n" +
                         " | Missing argument for function 'someFunction'.\n" +
@@ -74,7 +74,7 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: MISSING-ENCAPSULATION-ERROR found at line 30 index 0:\n" +
+                "- ERROR: MissingEncapsulationError found at line 30 index 0:\n" +
                         " | ({()}\n" +
                         " | ^--\n" +
                         " | Missing closing character for '('\n" +
