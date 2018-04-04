@@ -10,7 +10,6 @@ class TypeError(lineNumber: Int, lineIndex: Int, lineText: String,
                 : ParserException(lineNumber, lineIndex, lineText) {
     private val types: String = findTypes()
 
-    override val errorType = "TYPE-ERROR"
     override val errorMessage = "Function '$operator' not defined for types: $types."
     override val helpText = "Try casting your types to match eachother."
 
