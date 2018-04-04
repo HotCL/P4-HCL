@@ -66,7 +66,11 @@ class Parser: IParser {
         if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
             moveNext()
             while (true) {
-                if (current.token is Token.Type) parameters.add(parseType())
+                if (current.token is Token.Type) {
+                    if (current.token is Token.Type.None && peek().token !is Token.SpecialChar.SquareBracketEnd)
+                        throw Exception("Function parameters can't be of type None")
+                    else parameters.add(parseType())
+                }
                 else throw Exception("Make this an expected token type T1 but found token type T2")
                 if (current.token is Token.SpecialChar.ListSeparator) moveNext()
                 else break
@@ -84,7 +88,7 @@ class Parser: IParser {
         if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
             moveNext()
             while (true) {
-                if (current.token is Token.Type) elementTypes.add(parseType())
+                if (current.token is Token.Type && current.token !is Token.Type.None) elementTypes.add(parseType())
                 else throw Exception("Make this an expected token type T1 but found token type T2")
                 if (current.token is Token.SpecialChar.ListSeparator) moveNext()
                 else break
@@ -100,7 +104,7 @@ class Parser: IParser {
         val elementType: TreeNode.Type
         if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
             moveNext()
-            if (current.token is Token.Type) elementType = parseType()
+            if (current.token is Token.Type && current.token !is Token.Type.None) elementType = parseType()
             else throw Exception("Make this an expected token type T1 but found token type T2")
             if (current.token !is Token.SpecialChar.SquareBracketEnd)
                 throw Exception("Make this an expected token type T1 but found token type T2")
