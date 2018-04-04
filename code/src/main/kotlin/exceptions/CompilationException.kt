@@ -9,7 +9,7 @@ package exceptions
 abstract class CompilationException(val lineNumber: Int,
                                     val lineIndex: Int,
                                     val lineText: String): Exception(){
-    abstract val errorType: String
+    val errorType = this::class.simpleName
     abstract val errorMessage: String
     abstract val helpText: String
 }

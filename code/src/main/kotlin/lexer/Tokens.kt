@@ -4,12 +4,22 @@ package lexer
  * Lexical getTokenSequence emitted by the lexer
  */
 sealed class Token {
-    class Identifier(val value: String) : Token()
+    data class Identifier(val value: String) : Token() {
+        override fun toString() = super.toString() + "[$value]"
+    }
+
+    override fun toString() = this::class.simpleName!!
 
     sealed class Literal : Token() {
-        class Text(val value: String) : Literal()
-        class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal()
-        class Bool(val value: Boolean) : Literal()
+        class Text(val value: String) : Literal() {
+            override fun toString() = super.toString() + "[$value]"
+        }
+        class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal() {
+            override fun toString() = super.toString() + "[$value]"
+        }
+        class Bool(val value: Boolean) : Literal() {
+            override fun toString() = super.toString() + "[$value]"
+        }
     }
 
     sealed class SpecialChar : Token() {
@@ -23,7 +33,7 @@ sealed class Token {
         class ListSeparator : SpecialChar()
         class LineContinue : SpecialChar()
         class Equals : SpecialChar()
-        class Arrow : SpecialChar()
+        class Colon : SpecialChar()
     }
 
     sealed class Type : Token() {
