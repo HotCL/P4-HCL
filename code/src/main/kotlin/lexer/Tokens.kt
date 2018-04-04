@@ -8,7 +8,7 @@ sealed class Token {
         override fun toString() = super.toString() + "[$value]"
     }
 
-    override fun toString() = this.javaClass.name!!
+    override fun toString() = this::class.simpleName!!
 
     sealed class Literal : Token() {
         class Text(val value: String) : Literal() {
