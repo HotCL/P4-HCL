@@ -12,16 +12,25 @@ class Parser(val lexer: ILexer): IParser {
     override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
         with(BufferedLaabStream(lexer.getTokenSequence())) {
             while (hasNext()) {
-                val token = current.token
-                when (token) {
-                    is Token.Type -> parseDeclaration()
-                    is Token.SpecialChar.EndOfLine -> null
-                    else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                            current.token)
-                }.let { if (it != null) this@apply.children.add(it) }
+                if (current.token !is Token.SpecialChar.EndOfLine) {
+                    this@apply.children.add(parseCommand())
+                }
             }
         }
     }
+
+    private fun BufferedLaabStream<PositionalToken>.parseCommand(): TreeNode.Command {
+        val command: TreeNode.Command
+        when (current.token) {
+            is Token.Type -> {
+                command = parseDeclaration()
+                acceptEndOfLines()
+                return command
+            }
+            else -> throw Exception("Make this a unexpected token exception once that is implemented...")
+        }
+    }
+
     private inline fun<reified T> BufferedLaabStream<PositionalToken>.accept(): T {
         val token = current.token
         val currentLineNumber = current.lineNumber
@@ -32,6 +41,11 @@ class Parser(val lexer: ILexer): IParser {
         } else {
             throw WrongTokenTypeError(currentLineNumber, currentIndex, lexer.inputLine(currentLineNumber), T::class as Token, token)
         }
+    }
+
+    private fun BufferedLaabStream<PositionalToken>.acceptEndOfLines() {
+        while (current.token is Token.SpecialChar.EndOfLine && hasNext())
+            accept<Token.SpecialChar.EndOfLine>()
     }
 
     private fun BufferedLaabStream<PositionalToken>.acceptIdentifier() =
@@ -55,6 +69,7 @@ class Parser(val lexer: ILexer): IParser {
         } else null
         return TreeNode.Command.Declaration(type, identifier, expression)
     }
+
 //region Type declarations
     private fun BufferedLaabStream<PositionalToken>.parseType() = when (current.token) {
         is Token.Type.Number -> TreeNode.Type.Number()
@@ -118,6 +133,7 @@ class Parser(val lexer: ILexer): IParser {
             moveNext()
             accept<Token.SpecialChar.Colon>()
             returnType = parseType()
+            acceptEndOfLines()
             body = parseLambdaBody()
             return TreeNode.Command.Expression.LambdaExpression(parameters, returnType, body)
         }
@@ -126,10 +142,13 @@ class Parser(val lexer: ILexer): IParser {
     }
 
     private fun BufferedLaabStream<PositionalToken>.parseLambdaBody(): List<TreeNode.Command> {
-        while (current.token !is Token.SpecialChar.BlockEnd)
-            accept<Token>()
-        moveNext()
-        return listOf()
+        val commands = mutableListOf<TreeNode.Command>()
+        accept<Token.SpecialChar.BlockStart>()
+        while (current.token !is Token.SpecialChar.BlockEnd) {
+            commands.add(parseCommand())
+        }
+        accept<Token.SpecialChar.BlockEnd>()
+        return commands
     }
 
     private fun BufferedLaabStream<PositionalToken>.parseTupleType(): TreeNode.Type.Tuple {
@@ -165,6 +184,7 @@ class Parser(val lexer: ILexer): IParser {
         return TreeNode.Type.List(elementType)
     }
 //endregion
+
 //region ExpressionParsing
     private fun BufferedLaabStream<PositionalToken>.parseExpression(): TreeNode.Command.Expression {
         // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
@@ -198,11 +218,13 @@ class Parser(val lexer: ILexer): IParser {
         }
         throw Exception("Unrecognized expression")
     }
+
     private fun isLiteral(token: Token): Boolean{
         if (token is Token.SpecialChar.EndOfLine || token is Token.SpecialChar.ListSeparator
                 || token is Token.SpecialChar.ParenthesesEnd) return true
         return false
     }
+
     private fun BufferedLaabStream<PositionalToken>.parseTupleExpression(): TreeNode.Command.Expression{
         val elements = mutableListOf<TreeNode.Command.Expression>()
         moveNext()

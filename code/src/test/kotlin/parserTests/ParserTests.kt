@@ -246,7 +246,7 @@ class ParserTests {
     }
 
     @org.junit.jupiter.api.Test
-    fun testParserFuncDclAndAssignmentZeroParameters() {
+    fun testParserFuncDclAndAssignmentWithoutBodyZeroParameters() {
         val lexer = DummyLexer(buildSequence {
             yield(Token.Type.Func())
             yield(Token.SpecialChar.SquareBracketStart())
@@ -263,6 +263,7 @@ class ParserTests {
             yield(Token.SpecialChar.EndOfLine())
         })
         val ast = Parser(lexer).generateAbstractSyntaxTree()
+        println(ast)
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
 
@@ -277,6 +278,51 @@ class ParserTests {
         assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).returnType
                 is TreeNode.Type.None)
         assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body.isEmpty())
+    }
+
+    @org.junit.jupiter.api.Test
+    fun testParserFuncDclAndAssignmentWithBody() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.Type.Func())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Identifier("myFunc"))
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.ParenthesesStart())
+            yield(Token.SpecialChar.ParenthesesEnd())
+            yield(Token.SpecialChar.Colon())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.BlockStart())
+            yield(Token.Type.Number())
+            yield(Token.Identifier("myNum"))
+            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.Type.Text())
+            yield(Token.Identifier("myText"))
+            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.BlockEnd())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
+        println(ast)
+        assertThat(ast.children.size, equalTo(1))
+        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
+
+        val declaration = ast.children[0] as TreeNode.Command.Declaration
+        assertTrue(declaration.type is TreeNode.Type.Func)
+        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myFunc")))
+        assertThat((declaration.type as TreeNode.Type.Func).paramTypes.size, equalTo(0))
+        assertTrue((declaration.type as TreeNode.Type.Func).returnType is TreeNode.Type.None)
+
+        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations.size,
+                equalTo(0))
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).returnType
+                is TreeNode.Type.None)
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body[0] is TreeNode.Command.Declaration)
     }
     //endregion LambdaExpression
 
