@@ -1,13 +1,13 @@
 package parser
 
+import exceptions.WrongTokenTypeError
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
 import utils.BufferedLaabStream
-import java.beans.Expression
 
-class Parser: IParser {
-    override fun generateAbstractSyntaxTree(lexer: ILexer) = AbstractSyntaxTree().apply {
+class Parser(val lexer: ILexer): IParser {
+    override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
         with(BufferedLaabStream(lexer.getTokenSequence())) {
             while (hasNext()) {
                 val token = current.token
@@ -19,14 +19,15 @@ class Parser: IParser {
             }
         }
     }
-
     private inline fun<reified T> BufferedLaabStream<PositionalToken>.accept(): T {
         val token = current.token
+        val currentLineNumber = current.lineNumber
+        val currentIndex = current.lineIndex
         moveNext()
         if (token is T) {
             return token
         } else {
-            throw Exception("Make this an expected token type T1 but found token type T2")
+            throw WrongTokenTypeError(currentLineNumber, currentIndex, lexer.inputLine(currentLineNumber), T::class as Token, token)
         }
     }
 
@@ -39,7 +40,6 @@ class Parser: IParser {
             is Token.Literal.Number -> TreeNode.Command.Expression.Value.Literal.Number(litToken.value)
             is Token.Literal.Text -> TreeNode.Command.Expression.Value.Literal.Text(litToken.value)
             is Token.Literal.Bool -> TreeNode.Command.Expression.Value.Literal.Bool(litToken.value)
-            else -> throw Exception("Make this an expected literal but found token T instead error")
         }
     }
 
@@ -126,7 +126,7 @@ class Parser: IParser {
             moveNext()
             while (true) {
                 if (current.token is Token.Type && current.token !is Token.Type.None) elementTypes.add(parseType())
-                else throw Exception("Make this an expected token type T1 but found token type T2")
+                else
                 if (current.token is Token.SpecialChar.ListSeparator) moveNext()
                 else break
             }

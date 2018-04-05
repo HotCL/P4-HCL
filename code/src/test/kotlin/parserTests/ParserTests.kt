@@ -22,7 +22,7 @@ class ParserTests {
             yield(Token.Literal.Number("5"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -44,7 +44,7 @@ class ParserTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -67,7 +67,7 @@ class ParserTests {
             yield(Token.SpecialChar.EndOfLine())
         })
         //val ast = Parser().generateAbstractSyntaxTree(lexer)
-        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
     }
 
@@ -81,7 +81,7 @@ class ParserTests {
             yield(Token.SpecialChar.EndOfLine())
         })
         //val ast = Parser().generateAbstractSyntaxTree(lexer)
-        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
     }
 
@@ -95,7 +95,7 @@ class ParserTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -112,7 +112,7 @@ class ParserTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        assertThrows(NotImplementedError::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        assertThrows(NotImplementedError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test
@@ -129,7 +129,7 @@ class ParserTests {
             yield(Token.SpecialChar.EndOfLine())
         })
         //val ast = Parser().generateAbstractSyntaxTree(lexer)
-        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
     }
     //endregion FuncTypeDcl
@@ -161,7 +161,7 @@ class ParserTests {
             yield(Token.SpecialChar.BlockEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
 
@@ -209,7 +209,7 @@ class ParserTests {
             yield(Token.SpecialChar.BlockEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
 
@@ -248,7 +248,7 @@ class ParserTests {
             yield(Token.SpecialChar.BlockEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
 
@@ -279,7 +279,7 @@ class ParserTests {
             yield(Token.Identifier("myTuple"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -310,7 +310,7 @@ class ParserTests {
             yield(Token.SpecialChar.ParenthesesEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -342,7 +342,7 @@ class ParserTests {
             yield(Token.SpecialChar.ParenthesesEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -373,7 +373,7 @@ class ParserTests {
             yield(Token.SpecialChar.ParenthesesEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         assertEquals("Unrecognized expression", exception.message)
     }
 
@@ -396,7 +396,7 @@ class ParserTests {
             yield(Token.SpecialChar.ParenthesesEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
     }
     //endregion TupleTypeDcl
@@ -412,7 +412,7 @@ class ParserTests {
             yield(Token.Identifier("myList"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -437,7 +437,7 @@ class ParserTests {
             yield(Token.SpecialChar.SquareBracketEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
         val declaration = ast.children[0] as TreeNode.Command.Declaration
@@ -462,7 +462,7 @@ class ParserTests {
             yield(Token.SpecialChar.SquareBracketEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
 
     }
@@ -483,7 +483,7 @@ class ParserTests {
             yield(Token.SpecialChar.SquareBracketEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
     }
 
