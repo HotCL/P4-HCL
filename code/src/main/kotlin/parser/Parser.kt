@@ -1,5 +1,7 @@
 package parser
 
+import exceptions.NoneAsInputError
+import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
 import lexer.ILexer
 import lexer.PositionalToken
@@ -14,7 +16,8 @@ class Parser(val lexer: ILexer): IParser {
                 when (token) {
                     is Token.Type -> parseDeclaration()
                     is Token.SpecialChar.EndOfLine -> null
-                    else -> throw Exception("Make this a unexpected token exception once that is implemented...")
+                    else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                            current.token)
                 }.let { if (it != null) this@apply.children.add(it) }
             }
         }
@@ -61,7 +64,8 @@ class Parser(val lexer: ILexer): IParser {
         is Token.Type.Func -> parseFuncType()
         is Token.Type.Tuple -> parseTupleType()
         is Token.Type.List -> parseListType()
-        else -> throw Exception("Make this an expected type but found token type T")
+        else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                                           current.token)
     }.also { moveNext() }
 
     private fun BufferedLaabStream<PositionalToken>.parseFuncType(): TreeNode.Type.Func {
@@ -71,15 +75,18 @@ class Parser(val lexer: ILexer): IParser {
             while (true) {
                 if (current.token is Token.Type) {
                     if (current.token is Token.Type.None && peek().token !is Token.SpecialChar.SquareBracketEnd)
-                        throw Exception("Function parameters can't be of type None")
+                        throw NoneAsInputError(current.lineNumber, current.lineIndex,
+                                               lexer.inputLine(current.lineNumber))
                     else parameters.add(parseType())
                 }
-                else throw Exception("Make this an expected token type T1 but found token type T2")
+                else throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
+                                                lexer.inputLine(current.lineNumber), current.token)
                 if (current.token is Token.SpecialChar.ListSeparator) moveNext()
                 else break
             }
             if (current.token !is Token.SpecialChar.SquareBracketEnd)
-                throw Exception("Make this an expected token type T1 but found token type T2")
+                throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                                          Token.SpecialChar.SquareBracketStart(), current.token)
         }
         else throw NotImplementedError()
         val returnType = parameters.last()
@@ -95,22 +102,27 @@ class Parser(val lexer: ILexer): IParser {
             if (peek().token !is Token.SpecialChar.ParenthesesEnd) {
                 while (true) {
                     if (moveNext().token is Token.Type) {
-                        if (current.token is Token.Type.None) throw Exception("Function parameters can't be of type None")
+                        if (current.token is Token.Type.None)
+                            throw NoneAsInputError(current.lineNumber, current.lineIndex,
+                                                   lexer.inputLine(current.lineNumber))
                         parameters.add(parseDeclaration() as TreeNode.Command.Declaration)
-                    } else throw Exception("Expected type token")
+                    } else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                            current.token)
                     if (current.token !is Token.SpecialChar.ListSeparator) break
                 }
             }
             else moveNext()
             if (current.token !is Token.SpecialChar.ParenthesesEnd)
-                throw Exception("Expected parenthesis end")
+                throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                        Token.SpecialChar.ParenthesesEnd(), current.token)
             moveNext()
             accept<Token.SpecialChar.Colon>()
             returnType = parseType()
             body = parseLambdaBody()
             return TreeNode.Command.Expression.LambdaExpression(parameters, returnType, body)
         }
-        else throw Exception("Make this an expected token type T1 but found token type T2")
+        else throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                                       Token.SpecialChar.ParenthesesStart(), current.token)
     }
 
     private fun BufferedLaabStream<PositionalToken>.parseLambdaBody(): List<TreeNode.Command> {
@@ -131,7 +143,8 @@ class Parser(val lexer: ILexer): IParser {
                 else break
             }
             if (current.token !is Token.SpecialChar.SquareBracketEnd)
-                throw Exception("Make this an expected token type T1 but found token type T2")
+                throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                        Token.SpecialChar.SquareBracketEnd(), current.token)
         }
         else throw NotImplementedError()
         return TreeNode.Type.Tuple(elementTypes)
@@ -142,9 +155,11 @@ class Parser(val lexer: ILexer): IParser {
         if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
             moveNext()
             if (current.token is Token.Type && current.token !is Token.Type.None) elementType = parseType()
-            else throw Exception("Make this an expected token type T1 but found token type T2")
+            else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                    current.token)
             if (current.token !is Token.SpecialChar.SquareBracketEnd)
-                throw Exception("Make this an expected token type T1 but found token type T2")
+                throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                        Token.SpecialChar.SquareBracketEnd(), current.token)
         }
         else throw NotImplementedError()
         return TreeNode.Type.List(elementType)
@@ -194,12 +209,14 @@ class Parser(val lexer: ILexer): IParser {
         while (true){
             if (current.token is Token.Literal) elements.add(acceptLiteral())
             else if (current.token is Token.Identifier) elements.add(acceptIdentifier())
-            else throw Exception("Make this an expected token type T1 but found token type T2")
+            else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                    current.token)
             if (current.token is Token.SpecialChar.ListSeparator) moveNext()
                 else break
         }
         if (current.token !is Token.SpecialChar.ParenthesesEnd)
-            throw Exception("Make this an expected token type T1 but found token type T2")
+            throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                    Token.SpecialChar.ParenthesesEnd(), current.token)
         moveNext()
         return TreeNode.Command.Expression.Value.Literal.Tuple(elements)
     }
@@ -210,12 +227,14 @@ class Parser(val lexer: ILexer): IParser {
         while (true) {
             if (current.token is Token.Literal) elements.add(acceptLiteral())
             else if (current.token is Token.Identifier) elements.add(acceptIdentifier())
-            else throw Exception("Make this an expected token type T1 but found token type T2")
+            else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                    current.token)
             if (current.token is Token.SpecialChar.ListSeparator) moveNext()
                 else break
         }
         if (current.token !is Token.SpecialChar.SquareBracketEnd)
-            throw Exception("Make this an expected token type T1 but found token type T2")
+            throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                    Token.SpecialChar.SquareBracketEnd(), current.token)
         moveNext()
         return TreeNode.Command.Expression.Value.Literal.List(elements)
     }

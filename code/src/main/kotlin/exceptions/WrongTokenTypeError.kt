@@ -1,10 +1,7 @@
 package exceptions
-
 import lexer.Token
-
-
 /**
- * Class used to log undeclared variables errors.
+ * Class used to log wrong token type errors
  * @param expectedToken The Token that is expected
  * @param actualToken The actual Token passed
  */
