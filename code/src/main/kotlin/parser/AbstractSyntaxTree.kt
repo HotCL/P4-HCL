@@ -5,6 +5,7 @@ data class AbstractSyntaxTree(val children: MutableList<TreeNode.Command> = muta
 sealed class TreeNode {
     sealed class Command: TreeNode() {
         data class Declaration(val type: Type, val identifier: Expression.Value.Identifier, val expression: Expression? = null): Command()
+        data class Assignment(val identifier: Expression.Value.Identifier, val expression: Expression): Command()
         sealed class Expression: Command() {
             sealed class Value: Expression() {
                 data class Identifier(val name: String): Value()

@@ -86,6 +86,40 @@ class Parser: IParser {
         return TreeNode.Type.Func(parameters.dropLast(1), returnType)
     }
 
+    private fun BufferedLaabStream<PositionalToken>.parseLambdaExpression():
+                                                                TreeNode.Command.Expression.LambdaExpression {
+        val parameters = mutableListOf<TreeNode.Command.Declaration>()
+        val returnType: TreeNode.Type
+        val body: List<TreeNode.Command>
+        if (current.token is Token.SpecialChar.ParenthesesStart) {
+            if (peek().token !is Token.SpecialChar.ParenthesesEnd) {
+                while (true) {
+                    if (moveNext().token is Token.Type) {
+                        if (current.token is Token.Type.None) throw Exception("Function parameters can't be of type None")
+                        parameters.add(parseDeclaration() as TreeNode.Command.Declaration)
+                    } else throw Exception("Expected type token")
+                    if (current.token !is Token.SpecialChar.ListSeparator) break
+                }
+            }
+            else moveNext()
+            if (current.token !is Token.SpecialChar.ParenthesesEnd)
+                throw Exception("Expected parenthesis end")
+            moveNext()
+            accept<Token.SpecialChar.Colon>()
+            returnType = parseType()
+            body = parseLambdaBody()
+            return TreeNode.Command.Expression.LambdaExpression(parameters, returnType, body)
+        }
+        else throw Exception("Make this an expected token type T1 but found token type T2")
+    }
+
+    private fun BufferedLaabStream<PositionalToken>.parseLambdaBody(): List<TreeNode.Command> {
+        while (current.token !is Token.SpecialChar.BlockEnd)
+            accept<Token>()
+        moveNext()
+        return listOf()
+    }
+
     private fun BufferedLaabStream<PositionalToken>.parseTupleType(): TreeNode.Type.Tuple {
         val elementTypes = mutableListOf<TreeNode.Type>()
         if (moveNext().token is Token.SpecialChar.SquareBracketStart) {
@@ -126,6 +160,12 @@ class Parser: IParser {
         }
        // if (peek().token is Token.SpecialChar.EndOfLine) return acceptLiteral()
         TODO("Make this parse function valid...")
+        if (peek().token is Token.SpecialChar.EndOfLine) return acceptLiteral()
+        else if (current.token is Token.SpecialChar.ParenthesesStart &&
+                (peek().token is Token.Type || peek().token is Token.SpecialChar.ParenthesesEnd)) {
+            return parseLambdaExpression()
+        }
+        else throw Exception("Unrecognized expression")
     }
     private fun BufferedLaabStream<PositionalToken>.parseTupleDeclaration(): TreeNode.Command.Expression{
         val elements = mutableListOf<TreeNode.Command.Expression>()

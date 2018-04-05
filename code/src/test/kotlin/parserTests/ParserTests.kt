@@ -134,6 +134,138 @@ class ParserTests {
     }
     //endregion FuncTypeDcl
 
+    //region LambdaExpression
+    @org.junit.jupiter.api.Test
+    fun testParserFuncDclAndAssignmentTwoParameters() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.Type.Func())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Type.Number())
+            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.Type.Text())
+            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Identifier("myFunc"))
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.ParenthesesStart())
+            yield(Token.Type.Number())
+            yield(Token.Identifier("myParam1"))
+            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.Type.Text())
+            yield(Token.Identifier("myParam2"))
+            yield(Token.SpecialChar.ParenthesesEnd())
+            yield(Token.SpecialChar.Colon())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.BlockStart())
+            yield(Token.SpecialChar.BlockEnd())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        assertThat(ast.children.size, equalTo(1))
+        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
+
+        val declaration = ast.children[0] as TreeNode.Command.Declaration
+        assertTrue(declaration.type is TreeNode.Type.Func)
+        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myFunc")))
+        assertThat((declaration.type as TreeNode.Type.Func).paramTypes.size, equalTo(2))
+        assertTrue((declaration.type as TreeNode.Type.Func).paramTypes[0] is TreeNode.Type.Number)
+        assertTrue((declaration.type as TreeNode.Type.Func).paramTypes[1] is TreeNode.Type.Text)
+        assertTrue((declaration.type as TreeNode.Type.Func).returnType is TreeNode.Type.None)
+
+        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations.size,
+                   equalTo(2))
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations[0].type
+                   is TreeNode.Type.Number)
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations[1].type
+                is TreeNode.Type.Text)
+        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations[0].identifier,
+                   equalTo(TreeNode.Command.Expression.Value.Identifier("myParam1")))
+        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations[1].identifier,
+                equalTo(TreeNode.Command.Expression.Value.Identifier("myParam2")))
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).returnType
+                   is TreeNode.Type.None)
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body.isEmpty())
+    }
+
+    @org.junit.jupiter.api.Test
+    fun testParserFuncDclAndAssignmentOneParameter() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.Type.Func())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Type.Number())
+            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Identifier("myFunc"))
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.ParenthesesStart())
+            yield(Token.Type.Number())
+            yield(Token.Identifier("myParam1"))
+            yield(Token.SpecialChar.ParenthesesEnd())
+            yield(Token.SpecialChar.Colon())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.BlockStart())
+            yield(Token.SpecialChar.BlockEnd())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        assertThat(ast.children.size, equalTo(1))
+        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
+
+        val declaration = ast.children[0] as TreeNode.Command.Declaration
+        assertTrue(declaration.type is TreeNode.Type.Func)
+        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myFunc")))
+        assertThat((declaration.type as TreeNode.Type.Func).paramTypes.size, equalTo(1))
+        assertTrue((declaration.type as TreeNode.Type.Func).paramTypes[0] is TreeNode.Type.Number)
+        assertTrue((declaration.type as TreeNode.Type.Func).returnType is TreeNode.Type.None)
+
+        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations.size,
+                equalTo(1))
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations[0].type
+                is TreeNode.Type.Number)
+        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations[0].identifier,
+                equalTo(TreeNode.Command.Expression.Value.Identifier("myParam1")))
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).returnType
+                is TreeNode.Type.None)
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body.isEmpty())
+    }
+
+    @org.junit.jupiter.api.Test
+    fun testParserFuncDclAndAssignmentZeroParameters() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.Type.Func())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Identifier("myFunc"))
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.ParenthesesStart())
+            yield(Token.SpecialChar.ParenthesesEnd())
+            yield(Token.SpecialChar.Colon())
+            yield(Token.Type.None())
+            yield(Token.SpecialChar.BlockStart())
+            yield(Token.SpecialChar.BlockEnd())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        assertThat(ast.children.size, equalTo(1))
+        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
+
+        val declaration = ast.children[0] as TreeNode.Command.Declaration
+        assertTrue(declaration.type is TreeNode.Type.Func)
+        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myFunc")))
+        assertThat((declaration.type as TreeNode.Type.Func).paramTypes.size, equalTo(0))
+        assertTrue((declaration.type as TreeNode.Type.Func).returnType is TreeNode.Type.None)
+
+        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations.size,
+                equalTo(0))
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).returnType
+                is TreeNode.Type.None)
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body.isEmpty())
+    }
+    //endregion LambdaExpression
+
     //region TupleTypeDcl
     @org.junit.jupiter.api.Test
     fun testParserTupleType() {
