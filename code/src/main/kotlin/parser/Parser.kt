@@ -155,19 +155,40 @@ class Parser: IParser {
         // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
         // the token will be a literal, but it could also be an identifier.
         when(current.token){
-            is Token.SpecialChar.ParenthesesStart -> return parseTupleDeclaration()
             is Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()
+            is Token.SpecialChar.ParenthesesStart -> {
+                if (peek().token is Token.Type || peek().token is Token.SpecialChar.ParenthesesEnd){
+                    return parseLambdaExpression()
+                }
+                else {
+                    var counter = 1
+                    while(true){
+                        if(lookAhead(counter).token is Token.SpecialChar.ListSeparator) return parseTupleExpression()
+                        else if (lookAhead(counter++).token is Token.SpecialChar.ParenthesesEnd) break
+                    }
+                }
+            }
+            is Token.Literal.Text -> {
+                if (isLiteral(peek().token)) return acceptLiteral()
+                TODO ("make else that parses expression  (like \"hej\" + \"du\")")
+            }
+            is Token.Literal.Bool -> {
+                if (isLiteral(peek().token)) return acceptLiteral()
+                TODO ("make else that parses expression  (like 5 < 7)")
+            }
+            is Token.Literal.Number -> {
+                if (isLiteral(peek().token)) return acceptLiteral()
+                TODO ("make else that parses expression  (like 5+5)")
+            }
         }
-       // if (peek().token is Token.SpecialChar.EndOfLine) return acceptLiteral()
-        TODO("Make this parse function valid...")
-        if (peek().token is Token.SpecialChar.EndOfLine) return acceptLiteral()
-        else if (current.token is Token.SpecialChar.ParenthesesStart &&
-                (peek().token is Token.Type || peek().token is Token.SpecialChar.ParenthesesEnd)) {
-            return parseLambdaExpression()
-        }
-        else throw Exception("Unrecognized expression")
+        throw Exception("Unrecognized expression")
     }
-    private fun BufferedLaabStream<PositionalToken>.parseTupleDeclaration(): TreeNode.Command.Expression{
+    private fun isLiteral(token: Token): Boolean{
+        if (token is Token.SpecialChar.EndOfLine || token is Token.SpecialChar.ListSeparator
+                || token is Token.SpecialChar.ParenthesesEnd) return true
+        return false
+    }
+    private fun BufferedLaabStream<PositionalToken>.parseTupleExpression(): TreeNode.Command.Expression{
         val elements = mutableListOf<TreeNode.Command.Expression>()
         moveNext()
         while (true){

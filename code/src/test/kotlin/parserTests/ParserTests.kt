@@ -374,7 +374,7 @@ class ParserTests {
             yield(Token.SpecialChar.EndOfLine())
         })
         val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
-        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+        assertEquals("Unrecognized expression", exception.message)
     }
 
     @org.junit.jupiter.api.Test
