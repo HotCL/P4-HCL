@@ -16,34 +16,34 @@ import kotlin.test.assertEquals
 
 class ParserTests {
     private fun matchesAstChildren(vararg expectedAstChildren: TreeNode.Command): Matcher<List<Token>> =
-        object : Matcher<List<Token>> {
-            override fun invoke(actual: List<Token>): MatchResult {
-                val actualAst = Parser(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
-                val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
-                return if (actualAst.toString() == expectedAst.toString()) MatchResult.Match
-                else MatchResult.Mismatch("Expected AST equal to this:\n${expectedAst}\nBut got this:\n${actualAst}")
+            object : Matcher<List<Token>> {
+                override fun invoke(actual: List<Token>): MatchResult {
+                    val actualAst = Parser(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
+                    val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
+                    return if (actualAst.toString() == expectedAst.toString()) MatchResult.Match
+                    else MatchResult.Mismatch("Expected AST equal to this:\n${expectedAst}\nBut got this:\n${actualAst}")
+                }
+                override val description: String get() = "was equal to the expected AST"
+                override val negatedDescription: String get() = "was not equal to the expected AST"
             }
-            override val description: String get() = "was equal to the expected AST"
-            override val negatedDescription: String get() = "was not equal to the expected AST"
-        }
 
     @org.junit.jupiter.api.Test
     fun testParser() {
         assertThat(
-            listOf(
-                Token.Type.Number(),
-                Token.Identifier("myId"),
-                Token.SpecialChar.Equals(),
-                Token.Literal.Number("5"),
-                Token.SpecialChar.EndOfLine()
-            ),
-            matchesAstChildren(
-                TreeNode.Command.Declaration(
-                    TreeNode.Type.Number(),
-                    TreeNode.Command.Expression.Value.Identifier("myId"),
-                    TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                listOf(
+                        Token.Type.Number(),
+                        Token.Identifier("myId"),
+                        Token.SpecialChar.Equals(),
+                        Token.Literal.Number("5"),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Number(),
+                                TreeNode.Command.Expression.Value.Identifier("myId"),
+                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        )
                 )
-            )
         )
     }
 
@@ -114,7 +114,7 @@ class ParserTests {
                 matchesAstChildren(
                         TreeNode.Command.Declaration(TreeNode.Type.Func(listOf(), TreeNode.Type.Text()),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc")
-                                )
+                        )
 
                 )
         )
@@ -143,9 +143,8 @@ class ParserTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        //val ast = Parser().generateAbstractSyntaxTree(lexer)
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+        //NILLAS LOOK HERE IF YOU WANT TO LIVE! AARHUGUUH
+        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
     //endregion FuncTypeDcl
 
@@ -155,33 +154,33 @@ class ParserTests {
         assertThat(
                 listOf(
                         Token.Type.Func(),
-                                Token.SpecialChar.SquareBracketStart(),
-                                Token.Type.Number(),
-                                Token.SpecialChar.ListSeparator(),
-                                Token.Type.Text(),
-                                Token.SpecialChar.ListSeparator(),
-                                Token.Type.None(),
-                                Token.SpecialChar.SquareBracketEnd(),
-                                Token.Identifier("myFunc"),
-                                Token.SpecialChar.Equals(),
-                                Token.SpecialChar.ParenthesesStart(),
-                                Token.Type.Number(),
-                                Token.Identifier("myParam1"),
-                                Token.SpecialChar.ListSeparator(),
-                                Token.Type.Text(),
-                                Token.Identifier("myParam2"),
-                                Token.SpecialChar.ParenthesesEnd(),
-                                Token.SpecialChar.Colon(),
-                                Token.Type.None(),
-                                Token.SpecialChar.BlockStart(),
-                                Token.SpecialChar.BlockEnd(),
-                                Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.Number(),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Type.Text(),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Type.None(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals(),
+                        Token.SpecialChar.ParenthesesStart(),
+                        Token.Type.Number(),
+                        Token.Identifier("myParam1"),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Type.Text(),
+                        Token.Identifier("myParam2"),
+                        Token.SpecialChar.ParenthesesEnd(),
+                        Token.SpecialChar.Colon(),
+                        Token.Type.None(),
+                        Token.SpecialChar.BlockStart(),
+                        Token.SpecialChar.BlockEnd(),
+                        Token.SpecialChar.EndOfLine()
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(TreeNode.Type.Func(
                                 listOf(TreeNode.Type.Number(), TreeNode.Type.Text()),
-                                    TreeNode.Type.None()
-                                ),
+                                TreeNode.Type.None()
+                        ),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
                                 TreeNode.Command.Expression.LambdaExpression(
                                         listOf(
@@ -227,7 +226,7 @@ class ParserTests {
                 matchesAstChildren(
                         TreeNode.Command.Declaration(TreeNode.Type.Func(
                                 listOf(TreeNode.Type.Number()), //InputTypes
-                                    TreeNode.Type.None() //ReturnType
+                                TreeNode.Type.None() //ReturnType
                         ),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
                                 TreeNode.Command.Expression.LambdaExpression(
@@ -235,8 +234,8 @@ class ParserTests {
                                                 TreeNode.Command.Declaration(
                                                         TreeNode.Type.Number(),
                                                         TreeNode.Command.Expression.Value.Identifier("myParam1")
-                                                    )
-                                                ),
+                                                )
+                                        ),
                                         TreeNode.Type.None(),
                                         listOf<TreeNode.Command.Expression.LambdaExpression>()
                                 )
