@@ -115,14 +115,14 @@ class Parser: IParser {
         else throw NotImplementedError()
         return TreeNode.Type.List(elementType)
     }
-//regionend
-    //region ExpressionParsing
+//endregion
+//region ExpressionParsing
     private fun BufferedLaabStream<PositionalToken>.parseExpression(): TreeNode.Command.Expression {
         // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
         // the token will be a literal, but it could also be an identifier.
         when(current.token){
             is Token.SpecialChar.ParenthesesStart -> return parseTupleDeclaration()
-            /*is Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()*/
+            is Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()
         }
        // if (peek().token is Token.SpecialChar.EndOfLine) return acceptLiteral()
         TODO("Make this parse function valid...")
@@ -142,13 +142,14 @@ class Parser: IParser {
         moveNext()
         return TreeNode.Command.Expression.Value.Literal.Tuple(elements)
     }
-    /*private fun BufferedLaabStream<PositionalToken>.parseListDeclaration(): TreeNode.Command.Expression{
+
+    private fun BufferedLaabStream<PositionalToken>.parseListDeclaration(): TreeNode.Command.Expression{
         val elements = mutableListOf<TreeNode.Command.Expression>()
-        movenext()
+        moveNext()
         while (true) {
             if (current.token is Token.Literal) elements.add(acceptLiteral())
             else if (current.token is Token.Identifier) elements.add(acceptIdentifier())
-            else w Exception("Make this an expected token type T1 but found token type T2")
+            else throw Exception("Make this an expected token type T1 but found token type T2")
             if (current.token is Token.SpecialChar.ListSeparator) moveNext()
                 else break
         }
@@ -156,6 +157,6 @@ class Parser: IParser {
             throw Exception("Make this an expected token type T1 but found token type T2")
         moveNext()
         return TreeNode.Command.Expression.Value.Literal.List(elements)
-    }*/
-    //regionend
+    }
+    //endregion ExpressionParsing
 }

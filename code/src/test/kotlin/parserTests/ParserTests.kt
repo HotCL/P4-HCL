@@ -288,6 +288,73 @@ class ParserTests {
         assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myList")))
         assertTrue((declaration.type as TreeNode.Type.List).elementType is TreeNode.Type.Number)
     }
+
+    @org.junit.jupiter.api.Test
+    fun testParserListDeclaration() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.Type.List())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Type.Number())
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Identifier("MyList"))
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Literal.Number("5.0"))
+            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.Literal.Number("10.0"))
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+        val ast = Parser().generateAbstractSyntaxTree(lexer)
+        assertThat(ast.children.size, equalTo(1))
+        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
+        val declaration = ast.children[0] as TreeNode.Command.Declaration
+        assertTrue(declaration.type is TreeNode.Type.List)
+        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("MyList")))
+        assertTrue((declaration.type as TreeNode.Type.List).elementType is TreeNode.Type.Number)
+        assertThat(declaration.expression as TreeNode.Command.Expression.Value.Literal.List, equalTo(TreeNode.Command.Expression.Value.Literal.List(
+                listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0), TreeNode.Command.Expression.Value.Literal.Number(10.0)))))
+    }
+    @org.junit.jupiter.api.Test
+    fun testParserListDeclarationTooFewSeperators() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.Type.List())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Type.Number())
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Identifier("MyList"))
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Literal.Number("5.0"))
+            yield(Token.Literal.Number("10.0"))
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+
+    }
+    @org.junit.jupiter.api.Test
+    fun testParserListDeclarationTooManySeperators() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.Type.List())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Type.Number())
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Identifier("MyList"))
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.SquareBracketStart())
+            yield(Token.Literal.Number("5.0"))
+            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.Literal.Number("10.0"))
+            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+        val exception = assertThrows(Exception::class.java) { Parser().generateAbstractSyntaxTree(lexer) }
+        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+    }
+
     //endregion ListTypeDcl
 
     class DummyLexer(val tokens: Sequence<Token>): ILexer {
@@ -297,4 +364,6 @@ class ParserTests {
 
         override fun inputLine(lineNumber: Int) = "Dummy lexer does not implement input line"
     }
+
+
 }
