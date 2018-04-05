@@ -1,34 +1,49 @@
 package parserTests
 
+import com.natpryce.hamkrest.*
 import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertThrows
+import parser.AbstractSyntaxTree
 import parser.Parser
 import parser.TreeNode
 import kotlin.coroutines.experimental.buildSequence
 import kotlin.test.assertEquals
 
 class ParserTests {
+    private fun matchesAstChildren(vararg expectedAstChildren: TreeNode.Command): Matcher<List<Token>> =
+        object : Matcher<List<Token>> {
+            override fun invoke(actual: List<Token>): MatchResult {
+                val actualAst = Parser().generateAbstractSyntaxTree(DummyLexer(buildSequence{ yieldAll(actual) }))
+                val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
+                return if (actualAst.toString() == expectedAst.toString()) MatchResult.Match
+                else MatchResult.Mismatch("Expected AST equal to this:\n${expectedAst}\nBut got this:\n${actualAst}")
+            }
+            override val description: String get() = "was equal to the expected AST"
+            override val negatedDescription: String get() = "was not equal to the expected AST"
+        }
+
     @org.junit.jupiter.api.Test
     fun testParser() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Number())
-            yield(Token.Identifier("myId"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.Literal.Number("5"))
-            yield(Token.SpecialChar.EndOfLine())
-        })
-        val ast = Parser().generateAbstractSyntaxTree(lexer)
-        assertThat(ast.children.size, equalTo(1))
-        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
-        val declaration = ast.children[0] as TreeNode.Command.Declaration
-        assertTrue(declaration.type is TreeNode.Type.Number)
-        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myId")))
-        assertThat(declaration.expression as TreeNode.Command.Expression.Value.Literal.Number, equalTo(TreeNode.Command.Expression.Value.Literal.Number(5.0)))
+        assertThat(
+            listOf(
+                Token.Type.Number(),
+                Token.Identifier("myId"),
+                Token.SpecialChar.Equals(),
+                Token.Literal.Number("5"),
+                Token.SpecialChar.EndOfLine()
+            ),
+            matchesAstChildren(
+                TreeNode.Command.Declaration(
+                    TreeNode.Type.Number(),
+                    TreeNode.Command.Expression.Value.Identifier("myId"),
+                    TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                )
+            )
+        )
     }
 
     //region FuncTypeDcl
