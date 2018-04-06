@@ -47,6 +47,24 @@ class ParserTests {
         )
     }
 
+    @org.junit.jupiter.api.Test
+    fun testParserAssignment() {
+        assertThat(
+                listOf(
+                        Token.Identifier("myId"),
+                        Token.SpecialChar.Equals(),
+                        Token.Literal.Number("5"),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Assignment(
+                                TreeNode.Command.Expression.Value.Identifier("myId"),
+                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        )
+                )
+        )
+    }
+
     //region FuncTypeDcl
     @org.junit.jupiter.api.Test
     fun testParserFuncType() {

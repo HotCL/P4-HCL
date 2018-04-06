@@ -28,6 +28,16 @@ class Parser(val lexer: ILexer): IParser {
                 acceptEndOfLines()
                 return command
             }
+            is Token.Identifier -> {
+                when (peek().token) {
+                    is Token.SpecialChar.Equals -> {
+                        command = parseAssignment()
+                        acceptEndOfLines()
+                        return command
+                    }
+                    else -> TODO("Function call without parameters")
+                }
+            }
             else -> throw Exception("Make this a unexpected token exception once that is implemented...")
         }
     }
@@ -105,6 +115,13 @@ class Parser(val lexer: ILexer): IParser {
             parseExpression()
         } else null
         return TreeNode.Command.Declaration(type, identifier, expression)
+    }
+
+    private fun BufferedLaabStream<PositionalToken>.parseAssignment(): TreeNode.Command.Assignment {
+        val identifier = acceptIdentifier()
+        accept<Token.SpecialChar.Equals>()
+        val expression = parseExpression()
+        return TreeNode.Command.Assignment(identifier, expression)
     }
 
 //region Type declarations
