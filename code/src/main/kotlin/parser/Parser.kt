@@ -1,5 +1,6 @@
 package parser
 
+import exceptions.InitializedFunctionParameterError
 import exceptions.NoneAsInputError
 import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
@@ -60,7 +61,43 @@ class Parser(val lexer: ILexer): IParser {
         }
     }
 
-    private fun BufferedLaabStream<PositionalToken>.parseDeclaration(): TreeNode.Command {
+    private fun BufferedLaabStream<PositionalToken>.parseSingleParameter(): TreeNode.Command.Declaration {
+        val type = parseType()
+        val identifier = acceptIdentifier()
+        if (current.token is Token.SpecialChar.Equals)
+            throw InitializedFunctionParameterError(current.lineNumber,
+                                                    current.lineIndex,
+                                                    lexer.inputLine(current.lineNumber))
+        return TreeNode.Command.Declaration(type, identifier, null)
+    }
+
+    private fun BufferedLaabStream<PositionalToken>.parseFunctionParameters(): List<TreeNode.Command.Declaration> {
+        val parameters = mutableListOf<TreeNode.Command.Declaration>()
+
+        if (current.token is Token.SpecialChar.ParenthesesStart) {
+            if (peek().token !is Token.SpecialChar.ParenthesesEnd) {
+                while (true) {
+                    if (moveNext().token is Token.Type) {
+                        if (current.token is Token.Type.None)
+                            throw NoneAsInputError(current.lineNumber, current.lineIndex,
+                                                   lexer.inputLine(current.lineNumber))
+                        parameters.add(parseSingleParameter())
+                    } else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                            current.token)
+                    if (current.token !is Token.SpecialChar.ListSeparator) break
+                }
+            }
+            else moveNext()
+            if (current.token !is Token.SpecialChar.ParenthesesEnd)
+                throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                        Token.SpecialChar.ParenthesesEnd(), current.token)
+        }
+        else throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                                       Token.SpecialChar.ParenthesesStart(), current.token)
+        return parameters
+    }
+
+    private fun BufferedLaabStream<PositionalToken>.parseDeclaration(): TreeNode.Command.Declaration {
         val type = parseType()
         val identifier = acceptIdentifier()
         val expression = if (current.token is Token.SpecialChar.Equals) {
@@ -110,35 +147,13 @@ class Parser(val lexer: ILexer): IParser {
 
     private fun BufferedLaabStream<PositionalToken>.parseLambdaExpression():
                                                                 TreeNode.Command.Expression.LambdaExpression {
-        val parameters = mutableListOf<TreeNode.Command.Declaration>()
-        val returnType: TreeNode.Type
-        val body: List<TreeNode.Command>
-        if (current.token is Token.SpecialChar.ParenthesesStart) {
-            if (peek().token !is Token.SpecialChar.ParenthesesEnd) {
-                while (true) {
-                    if (moveNext().token is Token.Type) {
-                        if (current.token is Token.Type.None)
-                            throw NoneAsInputError(current.lineNumber, current.lineIndex,
-                                                   lexer.inputLine(current.lineNumber))
-                        parameters.add(parseDeclaration() as TreeNode.Command.Declaration)
-                    } else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                            current.token)
-                    if (current.token !is Token.SpecialChar.ListSeparator) break
-                }
-            }
-            else moveNext()
-            if (current.token !is Token.SpecialChar.ParenthesesEnd)
-                throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                        Token.SpecialChar.ParenthesesEnd(), current.token)
-            moveNext()
-            accept<Token.SpecialChar.Colon>()
-            returnType = parseType()
-            acceptEndOfLines()
-            body = parseLambdaBody()
-            return TreeNode.Command.Expression.LambdaExpression(parameters, returnType, body)
-        }
-        else throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                                       Token.SpecialChar.ParenthesesStart(), current.token)
+        val parameters = parseFunctionParameters()
+        moveNext()
+        accept<Token.SpecialChar.Colon>()
+        val returnType = parseType()
+        acceptEndOfLines()
+        val body = parseLambdaBody()
+        return TreeNode.Command.Expression.LambdaExpression(parameters, returnType, body)
     }
 
     private fun BufferedLaabStream<PositionalToken>.parseLambdaBody(): List<TreeNode.Command> {
