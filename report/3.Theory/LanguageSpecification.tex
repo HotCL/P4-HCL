@@ -133,7 +133,7 @@ This can be amended by structuring calculations in a left-to-right manner, or by
 As mentioned in section \ref{subsec:hofhcl} the language will include high-order functions. To declare that a function will accept other functions you should simply declare a parameter of type "func" with the expected input and output types from the function.
 
 Both predeclared functions and anonymous in-line functions can be passed as parameters. However, if using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. Since lambdas should not be prefixed with a colon, this makes it impossible for a lambda to be invoked in-line. Therefore lambdas may only be passed as parameters, and never invoked by itself.
-
+Below is an example of high-order functionality in action in HCL.
 \begin{lstlisting}
 var modifyNumber = (num n, func[num, num] modifyFunction): num { n modifyFunction }
 
@@ -158,7 +158,8 @@ If two numbers were passed, the obvious result should be the sum of the two numb
 If on the other hand two strings were passed, the function could be implemented in such a way that the result would be the concatenation of the two strings.
 
 The function overloading in HCL is however a bit limited in that functions can not be overloaded with same parameters but different return types. 
-It can be overloaded to return different types, if the types of the parameters vary. 
+It can only be overloaded to return different types, if the types of the parameters vary.
+Furthermore overloading with different amounts of parameters are also not possible in HCL.
 This is because of multiple reasons, one being simplicity for the user, not accidentally adding an unexpected parameter to a function call. 
 Another being simplicity in the parsing of the function parameters. 
 Since the ability to overload with different amount of parameters brings next to nothing to the language, it was decided that it was not worth the effort to implement.
