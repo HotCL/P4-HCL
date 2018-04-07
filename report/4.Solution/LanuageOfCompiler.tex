@@ -1,30 +1,37 @@
 \section{The languages of the compiler}
 When creating a compiler there are three languages of relevance, as see in the tombstone diagram\ref{fig:TStoneExample}.
-the input language, in the case of this report HCL, the output language, which is going to be C++. 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth/2+\textwidth/4]{4.Solution/images/T-diagram.png}
 	\caption{
-		Example of T-stone diagram showcasing an example of three languages for a given compiler.\cite{TStoneWiki}
+		Example of Tombstone diagram showcasing an example of three languages for a given compiler.\cite{TStoneWiki}
 	}
 	\label{fig:TStoneExample}
 \end{figure}
+In the case of the HCL compiler the three languages are as follows:
+
+\begin{align*}
+input \to & HCL \\
+output \to & C++/C \\
+compiler \to & Kotlin \\
+\end{align*}
+
 \subsection{Language of the compiler}
 The compiler was written in Kotlin\cite{KotlinWebsite}, a Java based language.
 This was based on a number of factors.
-The group wanted to try a new language, but didn't have a lot of time, so the language had to look like known paradigms. 
-The group knew C\# and a bit Java, however as the HCL language has a lot of functional features, it was deemed important that the group became comfortable with a language that, at the very least was multi paradigm.
-Kotlin is java-based and is similar, in syntax, to C\# and java, which was important.
+The group wanted to experiment with using a language they had no prior experience with for the duration of the project, but because of time limitations, a new language had to adhere to already known paradigms.
+The group knew C\# and a bit of Java, however as the HCL language has a lot of functional features, it was deemed important that the group became comfortable with a language that, at the very least was multi paradigm.
+Kotlin is java-based and is similar, in syntax, to C\# and java, which made it easier to learn from the perspective of the group.
 However it is still possible to write methods that is utilizing a functional domain.
 
 This grants the develop af large amount of possibilities, while still being relatively easy to learn.
-A disadvantage could be that low-level languages might have faster executing time, but as HCL is built with the Arduino system in mind, it is not possible to create vast programs, as the architecture has some hardware limitations, so execution time of the compiler will never really affect the end user, as the difference shouldn't be noticeable.
+A disadvantage could be that low-level languages might have faster executing time, but as HCL is built with the Arduino system in mind, it is not possible to create vast programs, as the architecture has some hardware limitations, so execution time of the compiler will never really affect the end user, as the difference should not be noticeable.
 
 \subsection{Output language of the compiler}
-The group initially wanted to compile to assembly, primarily for educational purposes, however as the initial brainstorming took place, the group quickly realize that they wanted a big set of possibilities, and that would take a lot of development time simply doing code generation. 
-After some discussion it was agreed upon, to compile to c++, the language that developers normally write for the Arduino, to save time.
-When writing code in the Arduino IDE, it gives access to a couple of predefined methods for interacting with I/O devices, and then through a c/c++ compiler. \cite{ArFAQ}
-However, the standard library is not accessible in the Arduino language, which means that dynamic lists, vectors, and other similar constructs, are not accessible.
-Therefore it was required that the development team of HCL, would implement some of these constructs manually, however this is still a lot easier than compiling to assembly directly. 
+The group initially wanted to compile to assembly, primarily for educational purposes, however as the initial brainstorming took place, the group quickly realized that they wanted a big set of possibilities, which would waste a lot of development time on code generation. 
+After some discussion the group agreed upon compiling to C++, the language that developers normally write for the Arduino, inorder to save time.
+When writing code in the Arduino IDE, it gives access to a couple of predefined methods for interacting with I/O devices and then through a C/C++ compiler\cite{ArFAQ}.
+However, the standard library is not accessible in the Arduino language, which means that dynamic lists, vectors, and other similar constructs are not accessible.
+Therefore it was required that the development team of HCL would implement some of these constructs manually, however this is still a lot easier than compiling to assembly directly. 
 The compilation process, with this is mind, will essentially be: Compile to the Arduino-subset of C++, and then let the Arduino software generate assembly code from the code generated by the HCL compiler.
