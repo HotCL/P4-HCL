@@ -8,11 +8,13 @@ import parser.TreeNode
 interface ISymbolTable{
     /**
      * Opens a new scope in the symbol table.
+     * Pushes a new subtable unto the scope stack.
      */
     fun openScope(): Unit
 
     /**
      * Closes the most recently opened scope in the symbol table.
+     * Pops the subtable from the stack.
      * Symbol references subsequently revert to outer scopes.
      */
     fun closeScope(): Unit
@@ -25,11 +27,11 @@ interface ISymbolTable{
     fun enterSymbol(name: String, type: TreeNode.Type)
 
     /**
-     * Returns the symbol table's currently valid declaration for name.
-     * If no declaration for name is currently in effect, then null is returned.
+     * Returns a list of the symbol table's currently valid declarations for name.
+     * If no declaration for name is currently in effect, then an empty list is returned.
      * @param name The name of the identifier.
      */
-    fun retrieveSymbol(name: String): Symbol?
+    fun retrieveSymbol(name: String): MutableList<Symbol>
 
     /**
      * Tests whether name is present in the symbol table's current scope.
@@ -37,5 +39,5 @@ interface ISymbolTable{
      * Otherwise False is returned.
      * @param name The name of the identifier.
      */
-    fun DeclaredLocally(name: String): Boolean
+    fun declaredLocally(name: String): Boolean
 }
