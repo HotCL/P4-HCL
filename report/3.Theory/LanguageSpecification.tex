@@ -64,7 +64,10 @@ func[num,num,none] addNumbers = (num a, num b): num {
 }
 \end{lstlisting}
 
-As you may have noticed the return statement is missing in the first function. "return" is optional if the function body only contains a single expression. This makes sense when using lambdas, so you do not have to explicitly return the expression always. If the function contains more than one expression "return" has to be explicit.
+As you may have noticed the return statement is missing in the first function. 
+"return" is optional if the function body only contains a single expression. 
+This makes sense when using lambdas, so you do not have to explicitly return the expression always. 
+If the function contains more than one expression "return" has to be explicit.
 
 
 \textbf{Grammar for declarations}\\
@@ -130,9 +133,13 @@ Not having operators for arithmetic operations also means that there are no nati
 This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parenthesis. 
 
 \textbf{High order functions}\\
-As mentioned in section \ref{subsec:hofhcl} the language will include high-order functions. To declare that a function will accept other functions you should simply declare a parameter of type "func" with the expected input and output types from the function.
+As mentioned in section \ref{subsec:hofhcl} the language will include high-order functions. 
+To declare that a function will accept other functions you should simply declare a parameter of type "func" with the expected input and output types from the function.
 
-Both predeclared functions and anonymous in-line functions can be passed as parameters. However, if using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. Since lambdas should not be prefixed with a colon, this makes it impossible for a lambda to be invoked in-line. Therefore lambdas may only be passed as parameters, and never invoked by itself.
+Both predeclared functions and anonymous in-line functions can be passed as parameters. 
+However, if using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. 
+Since lambdas should not be prefixed with a colon, this makes it impossible for a lambda to be invoked in-line. 
+Therefore lambdas may only be passed as parameters, and never invoked by itself.
 Below is an example of high-order functionality in action in HCL.
 \begin{lstlisting}
 var modifyNumber = (num n, func[num, num] modifyFunction): num { n modifyFunction }
