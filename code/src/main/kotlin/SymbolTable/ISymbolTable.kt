@@ -29,7 +29,7 @@ interface ISymbolTable{
      * If no declaration for name is currently in effect, then null is returned.
      * @param name The name of the identifier.
      */
-    fun retrieveSymbol(name: String): Symbol.Symbol?
+    fun retrieveSymbol(name: String): Symbol?
 
     /**
      * Tests whether name is present in the symbol table's current scope.
