@@ -3,7 +3,7 @@ package symbolTableTests
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import parser.TreeNode
-import parser.symbolTable.Symbol
+import parser.symboltable.Symbol
 
 class SymbolTest {
 
