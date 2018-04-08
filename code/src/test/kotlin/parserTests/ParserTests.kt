@@ -394,6 +394,7 @@ class ParserTests {
         )
     }
 
+/*
     @org.junit.jupiter.api.Test
     fun testParserTupleDeclarationSHOULDFAIL() {
         assertThat(
@@ -432,20 +433,9 @@ class ParserTests {
                                 )
                         )
                 )
-        )/*
-        val ast = Parser(lexer).generateAbstractSyntaxTree()
-        assertThat(ast.children.size, equalTo(1))
-        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
-        val declaration = ast.children[0] as TreeNode.Command.Declaration
-        assertTrue(declaration.type is TreeNode.Type.Tuple)
-        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myTuple")))
-        assertThat((declaration.type as TreeNode.Type.Tuple).elementTypes.size, equalTo(2))
-        assertTrue((declaration.type as TreeNode.Type.Tuple).elementTypes[0] is TreeNode.Type.Number)
-        assertTrue((declaration.type as TreeNode.Type.Tuple).elementTypes[1] is TreeNode.Type.Text)
-        assertThat(declaration.expression as TreeNode.Command.Expression.Value.Literal.Tuple, equalTo(TreeNode.Command.Expression.Value.Literal.Tuple(
-                listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0), TreeNode.Command.Expression.Value.Literal.Text("hej"),
-                        TreeNode.Command.Expression.Value.Literal.Bool(true)))))*/
+        )
     }
+    */
 
     @org.junit.jupiter.api.Test
     fun testParserTupleDeclaration() {
