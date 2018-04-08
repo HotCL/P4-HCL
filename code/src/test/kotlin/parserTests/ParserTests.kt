@@ -263,67 +263,91 @@ class ParserTests {
 
     @org.junit.jupiter.api.Test
     fun testParserFuncDclAndAssignmentWithoutBodyZeroParameters() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Func())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.None())
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.Identifier("myFunc"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.ParenthesesStart())
-            yield(Token.SpecialChar.ParenthesesEnd())
-            yield(Token.SpecialChar.Colon())
-            yield(Token.Type.None())
-            yield(Token.SpecialChar.BlockStart())
-            yield(Token.SpecialChar.BlockEnd())
-            yield(Token.SpecialChar.EndOfLine())
-        })
-        val ast = Parser(lexer).generateAbstractSyntaxTree()
-        println(ast)
-        assertThat(ast.children.size, equalTo(1))
-        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
-
-        val declaration = ast.children[0] as TreeNode.Command.Declaration
-        assertTrue(declaration.type is TreeNode.Type.Func)
-        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myFunc")))
-        assertThat((declaration.type as TreeNode.Type.Func).paramTypes.size, equalTo(0))
-        assertTrue((declaration.type as TreeNode.Type.Func).returnType is TreeNode.Type.None)
-
-        assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations.size,
-                equalTo(0))
-        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).returnType
-                is TreeNode.Type.None)
-        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body.isEmpty())
+        assertThat(
+                listOf(
+                    Token.Type.Func(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.None(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals(),
+                        Token.SpecialChar.ParenthesesStart(),
+                        Token.SpecialChar.ParenthesesEnd(),
+                        Token.SpecialChar.Colon(),
+                        Token.Type.None(),
+                        Token.SpecialChar.BlockStart(),
+                        Token.SpecialChar.BlockEnd(),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Func(
+                                        listOf(), TreeNode.Type.None()
+                                ),
+                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                    TreeNode.Command.Expression.LambdaExpression(
+                                        listOf(),
+                                        TreeNode.Type.None(),
+                                        listOf()
+                                )
+                        )
+                )
+        )
     }
 
     @org.junit.jupiter.api.Test
     fun testParserFuncDclAndAssignmentWithBody() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Func())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.None())
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.Identifier("myFunc"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.ParenthesesStart())
-            yield(Token.SpecialChar.ParenthesesEnd())
-            yield(Token.SpecialChar.Colon())
-            yield(Token.Type.None())
-            yield(Token.SpecialChar.EndOfLine())
-            yield(Token.SpecialChar.BlockStart())
-            yield(Token.Type.Number())
-            yield(Token.Identifier("myNum"))
-            yield(Token.SpecialChar.EndOfLine())
-            yield(Token.Type.Text())
-            yield(Token.Identifier("myText"))
-            yield(Token.SpecialChar.EndOfLine())
-            yield(Token.SpecialChar.EndOfLine())
-            yield(Token.SpecialChar.EndOfLine())
-            yield(Token.SpecialChar.BlockEnd())
-            yield(Token.SpecialChar.EndOfLine())
-        })
+        assertThat(
+                listOf(
+                        Token.Type.Func(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.None(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals(),
+                        Token.SpecialChar.ParenthesesStart(),
+                        Token.SpecialChar.ParenthesesEnd(),
+                        Token.SpecialChar.Colon(),
+                        Token.Type.None(),
+                        Token.SpecialChar.EndOfLine(),
+                        Token.SpecialChar.BlockStart(),
+                        Token.Type.Number(),
+                        Token.Identifier("myNum"),
+                        Token.SpecialChar.EndOfLine(),
+                        Token.Type.Text(),
+                        Token.Identifier("myText"),
+                        Token.SpecialChar.EndOfLine(),
+                        Token.SpecialChar.EndOfLine(),
+                        Token.SpecialChar.EndOfLine(),
+                        Token.SpecialChar.BlockEnd(),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Func(
+                                        listOf(), TreeNode.Type.None()
+                                ),
+                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                TreeNode.Command.Expression.LambdaExpression(
+                                        listOf(),
+                                        TreeNode.Type.None(),
+                                        listOf(
+                                                TreeNode.Command.Declaration(
+                                                        TreeNode.Type.Number(),
+                                                        TreeNode.Command.Expression.Value.Identifier("myNum"),
+                                                        null
+                                                ),
+                                                TreeNode.Command.Declaration(
+                                                        TreeNode.Type.Text(),
+                                                        TreeNode.Command.Expression.Value.Identifier("myText"),
+                                                        null
+                                                )
+                                        )
 
-        val ast = Parser(lexer).generateAbstractSyntaxTree()
+                                )
+                        )
+                )
+        )/*
         println(ast)
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
@@ -338,54 +362,77 @@ class ParserTests {
                 equalTo(0))
         assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).returnType
                 is TreeNode.Type.None)
-        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body[0] is TreeNode.Command.Declaration)
+        assertTrue((declaration.expression as TreeNode.Command.Expression.LambdaExpression).body[0] is TreeNode.Command.Declaration)*/
     }
     //endregion LambdaExpression
 
     //region TupleTypeDcl
     @org.junit.jupiter.api.Test
     fun testParserTupleType() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Tuple())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Type.Text())
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.Identifier("myTuple"))
-            yield(Token.SpecialChar.EndOfLine())
-        })
-        val ast = Parser(lexer).generateAbstractSyntaxTree()
-        assertThat(ast.children.size, equalTo(1))
-        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
-        val declaration = ast.children[0] as TreeNode.Command.Declaration
-        assertTrue(declaration.type is TreeNode.Type.Tuple)
-        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myTuple")))
-        assertThat((declaration.type as TreeNode.Type.Tuple).elementTypes.size, equalTo(2))
-        assertTrue((declaration.type as TreeNode.Type.Tuple).elementTypes[0] is TreeNode.Type.Number)
-        assertTrue((declaration.type as TreeNode.Type.Tuple).elementTypes[1] is TreeNode.Type.Text)
+        assertThat(
+                listOf(
+                        Token.Type.Tuple(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.Number(),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Type.Text(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("myTuple"),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Tuple(
+                                        listOf(
+                                                TreeNode.Type.Number(),
+                                                TreeNode.Type.Text()
+                                        )
+                                ),
+                                TreeNode.Command.Expression.Value.Identifier("myTuple")
+                        )
+                )
+        )
     }
 
     @org.junit.jupiter.api.Test
     fun testParserTupleDeclarationSHOULDFAIL() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Tuple())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Type.Text())
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.Identifier("myTuple"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.ParenthesesStart())
-            yield(Token.Literal.Number("5.0"))
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Literal.Text("hej"))
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Literal.Bool(true))
-            yield(Token.SpecialChar.ParenthesesEnd())
-            yield(Token.SpecialChar.EndOfLine())
-        })
+        assertThat(
+                listOf(
+                        Token.Type.Tuple(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.Number(),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Type.Text(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("myTuple"),
+                        Token.SpecialChar.Equals(),
+                        Token.SpecialChar.ParenthesesStart(),
+                        Token.Literal.Number("5.0"),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Literal.Text("hej"),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Literal.Bool(true),
+                        Token.SpecialChar.ParenthesesEnd(),
+                        Token.SpecialChar.EndOfLine()
+                        ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Tuple(listOf(
+                                        TreeNode.Type.Number(),
+                                        TreeNode.Type.Text()
+                                        )
+                                ),
+                                TreeNode.Command.Expression.Value.Identifier("myTuple"),
+                                TreeNode.Command.Expression.Value.Literal.Tuple(
+                                        listOf(
+                                                TreeNode.Command.Expression.Value.Literal.Number(5.0),
+                                                TreeNode.Command.Expression.Value.Literal.Text("hej"),
+                                                TreeNode.Command.Expression.Value.Literal.Bool(true)
+                                        )
+                                )
+                        )
+                )
+        )/*
         val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
@@ -397,27 +444,46 @@ class ParserTests {
         assertTrue((declaration.type as TreeNode.Type.Tuple).elementTypes[1] is TreeNode.Type.Text)
         assertThat(declaration.expression as TreeNode.Command.Expression.Value.Literal.Tuple, equalTo(TreeNode.Command.Expression.Value.Literal.Tuple(
                 listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0), TreeNode.Command.Expression.Value.Literal.Text("hej"),
-                        TreeNode.Command.Expression.Value.Literal.Bool(true)))))
+                        TreeNode.Command.Expression.Value.Literal.Bool(true)))))*/
     }
 
     @org.junit.jupiter.api.Test
     fun testParserTupleDeclaration() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Tuple())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Type.Text())
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.Identifier("myTuple"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.ParenthesesStart())
-            yield(Token.Literal.Number("5.0"))
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Literal.Text("someText"))
-            yield(Token.SpecialChar.ParenthesesEnd())
-            yield(Token.SpecialChar.EndOfLine())
-        })
+        assertThat(
+                listOf(
+                        Token.Type.Tuple(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.Number(),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Type.Text(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("myTuple"),
+                        Token.SpecialChar.Equals(),
+                        Token.SpecialChar.ParenthesesStart(),
+                        Token.Literal.Number("5.0"),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Literal.Text("someText"),
+                        Token.SpecialChar.ParenthesesEnd(),
+                        Token.SpecialChar.EndOfLine()
+                        ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Tuple(listOf(
+                                        TreeNode.Type.Number(),
+                                        TreeNode.Type.Text()
+                                )
+                                ),
+                                TreeNode.Command.Expression.Value.Identifier("myTuple"),
+                                TreeNode.Command.Expression.Value.Literal.Tuple(
+                                        listOf(
+                                                TreeNode.Command.Expression.Value.Literal.Number(5.0),
+                                                TreeNode.Command.Expression.Value.Literal.Text("someText")
+                                        )
+                                )
+                        )
+                )
+        )
+/*
         val ast = Parser(lexer).generateAbstractSyntaxTree()
         assertThat(ast.children.size, equalTo(1))
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
@@ -430,6 +496,7 @@ class ParserTests {
         //val expression = declaration.expression as TreeNode.Command.Expression.Value.Literal.Tuple
         assertThat(declaration.expression as TreeNode.Command.Expression.Value.Literal.Tuple, equalTo(TreeNode.Command.Expression.Value.Literal.Tuple(
                 listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0), TreeNode.Command.Expression.Value.Literal.Text("someText")))))
+                */
     }
 
     @org.junit.jupiter.api.Test
@@ -479,49 +546,55 @@ class ParserTests {
     //region ListTypeDcl
     @org.junit.jupiter.api.Test
     fun testParserListType() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.List())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.Identifier("myList"))
-            yield(Token.SpecialChar.EndOfLine())
-        })
-        val ast = Parser(lexer).generateAbstractSyntaxTree()
-        assertThat(ast.children.size, equalTo(1))
-        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
-        val declaration = ast.children[0] as TreeNode.Command.Declaration
-        assertTrue(declaration.type is TreeNode.Type.List)
-        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myList")))
-        assertTrue((declaration.type as TreeNode.Type.List).elementType is TreeNode.Type.Number)
-    }
+        assertThat(
+                listOf(
+                        Token.Type.List(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.Number(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("myList"),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.List(TreeNode.Type.Number()),
+                                TreeNode.Command.Expression.Value.Identifier("myList")
+                        )
+                )
+        )
+}
 
     @org.junit.jupiter.api.Test
     fun testParserListDeclaration() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.List())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.Identifier("MyList"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Literal.Number("5.0"))
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Literal.Number("10.0"))
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.SpecialChar.EndOfLine())
-        })
-        val ast = Parser(lexer).generateAbstractSyntaxTree()
-        assertThat(ast.children.size, equalTo(1))
-        assertTrue(ast.children[0] is TreeNode.Command.Declaration)
-        val declaration = ast.children[0] as TreeNode.Command.Declaration
-        assertTrue(declaration.type is TreeNode.Type.List)
-        assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("MyList")))
-        assertTrue((declaration.type as TreeNode.Type.List).elementType is TreeNode.Type.Number)
-        assertThat(declaration.expression as TreeNode.Command.Expression.Value.Literal.List, equalTo(TreeNode.Command.Expression.Value.Literal.List(
-                listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0), TreeNode.Command.Expression.Value.Literal.Number(10.0)))))
-    }
+        assertThat(
+                listOf(
+                        Token.Type.List(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Type.Number(),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Identifier("MyList"),
+                        Token.SpecialChar.Equals(),
+                        Token.SpecialChar.SquareBracketStart(),
+                        Token.Literal.Number("5.0"),
+                        Token.SpecialChar.ListSeparator(),
+                        Token.Literal.Number("10.0"),
+                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.List(TreeNode.Type.Number()),
+                                TreeNode.Command.Expression.Value.Identifier("MyList"),
+                                TreeNode.Command.Expression.Value.Literal.List(
+                                        listOf(
+                                                TreeNode.Command.Expression.Value.Literal.Number(5.0),
+                                                TreeNode.Command.Expression.Value.Literal.Number(10.0)
+                                        )
+                                )
+                        )
+                )
+        )
+}
     @org.junit.jupiter.api.Test
     fun testParserListDeclarationTooFewSeperators() {
         val lexer = DummyLexer(buildSequence {
