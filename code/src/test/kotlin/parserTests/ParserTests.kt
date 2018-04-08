@@ -2,6 +2,9 @@ package parserTests
 
 import com.natpryce.hamkrest.*
 import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.MissingArgumentError
+import exceptions.UnexpectedTokenError
+import exceptions.WrongTokenTypeError
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
@@ -99,9 +102,7 @@ class ParserTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        //val ast = Parser().generateAbstractSyntaxTree(lexer)
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test
@@ -113,9 +114,7 @@ class ParserTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        //val ast = Parser().generateAbstractSyntaxTree(lexer)
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+        assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test
@@ -161,8 +160,7 @@ class ParserTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine())
         })
-        //NILLAS LOOK HERE IF YOU WANT TO LIVE! AARHUGUUH
-        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
     //endregion FuncTypeDcl
 
@@ -204,10 +202,10 @@ class ParserTests {
                                         listOf(
                                                 TreeNode.Command.Declaration(
                                                         TreeNode.Type.Number(),
-                                                        TreeNode.Command.Expression.Value.Identifier("MyParam1")),
+                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")),
                                                 TreeNode.Command.Declaration(
                                                         TreeNode.Type.Text(),
-                                                        TreeNode.Command.Expression.Value.Identifier("MyParam2")
+                                                        TreeNode.Command.Expression.Value.Identifier("myParam2")
                                                 )),
                                         TreeNode.Type.None(),
                                         listOf<TreeNode.Command.Expression.LambdaExpression>()
@@ -474,8 +472,7 @@ class ParserTests {
             yield(Token.SpecialChar.ParenthesesEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+        assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
     //endregion TupleTypeDcl
 
@@ -540,8 +537,7 @@ class ParserTests {
             yield(Token.SpecialChar.SquareBracketEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
 
     }
     @org.junit.jupiter.api.Test
@@ -561,8 +557,7 @@ class ParserTests {
             yield(Token.SpecialChar.SquareBracketEnd())
             yield(Token.SpecialChar.EndOfLine())
         })
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertEquals("Make this an expected token type T1 but found token type T2", exception.message)
+        assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     //endregion ListTypeDcl
