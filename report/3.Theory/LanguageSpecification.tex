@@ -64,9 +64,9 @@ func[num,num,none] addNumbers = (num a, num b): num {
 }
 \end{lstlisting}
 
-As you may have noticed the return statement is missing in the first function. 
+The return statement is noticeably missing in the first funciton.
 "return" is optional if the function body only contains a single expression. 
-This makes sense when using lambdas, so you do not have to explicitly return the expression always. 
+This makes sense when using using lambdas, where return statements are often implicitly written. 
 If the function contains more than one expression "return" has to be explicit.
 
 
@@ -133,14 +133,14 @@ Not having operators for arithmetic operations also means that there are no nati
 This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parenthesis. 
 
 \textbf{High order functions}\\
-As mentioned in section \ref{subsec:hofhcl} the language will include high-order functions. 
-To declare that a function will accept other functions the developer should simply declare a parameter of type "func" with the expected input and output types from the function.
+As mentioned in section \ref{subsec:hofhcl}, the language will include high-order functions. 
+To declare that a function will accept other functions, that the developer should simply declare a parameter of type "func" with the expected input and output types from the function.
 
 Both predeclared functions and anonymous in-line functions can be passed as parameters. 
 However, if using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. 
-Since lambdas should not be prefixed with a colon, this makes it impossible for a lambda to be invoked in-line. 
-Therefore lambdas may only be passed as parameters, and never invoked by itself.
-Below is an example of high-order functionality in action in HCL.
+Since lambdas should not be prefixed with a colon, it makes it impossible for a lambda to be invoked in-line. 
+Therefore lambdas may only be passed as parameters, and never invoked by themselves.
+below is an example of how high-order functionality is used in HCL.
 \begin{lstlisting}
 var modifyNumber = (num n, func[num, num] modifyFunction): num { n modifyFunction }
 
@@ -164,8 +164,8 @@ The plus function could accept two numbers or two strings, but the implementatio
 If two numbers were passed, the obvious result should be the sum of the two numbers.
 If on the other hand two strings were passed, the function could be implemented in such a way that the result would be the concatenation of the two strings.
 
-The function overloading in HCL is limited in that functions can not be overloaded with same parameters but different return types. 
-It can only be overloaded to return different types, if the types of the parameters vary.
+Function overloading in HCL is limited in that functions can not be overloaded with same parameters but different return types. 
+Functions can only be overloaded to return different types, if the types of the parameters vary.
 Furthermore overloading with different amounts of parameters are also not possible in HCL.
 This is because of multiple reasons, one being simplicity for the user, not accidentally adding an unexpected parameter to a function call. 
 Another being simplicity in the parsing of the function parameters. 
