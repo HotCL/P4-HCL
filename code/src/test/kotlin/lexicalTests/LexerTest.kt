@@ -357,4 +357,24 @@ class LexerTest {
         assertThat(lexer.inputLine(1), equalTo("Med\n"))
         assertThat(lexer.inputLine(2), equalTo("Dig!\n"))
     }
+
+    @org.junit.jupiter.api.Test
+fun lexerTestTabTest() {
+    val lex = Lexer("x=\t5")
+
+    val tokens = lex.getTokenSequence().toList()
+
+    assertPositionalToken(tokens[0],
+            { token -> token is lexer.Token.Identifier && token.value == "x" },
+            0, 0)
+
+    assertPositionalToken(tokens[1],
+            { token -> token is lexer.Token.SpecialChar.Equals },
+            1, 0)
+
+    assertPositionalToken(tokens[2],
+            { token -> token is lexer.Token.Literal.Number && token.value == 5.0 },
+            3, 0)
+        
+    }
 }

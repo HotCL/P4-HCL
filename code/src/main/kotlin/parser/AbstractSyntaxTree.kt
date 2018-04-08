@@ -4,8 +4,10 @@ data class AbstractSyntaxTree(val children: MutableList<TreeNode.Command> = muta
 
 sealed class TreeNode {
     sealed class Command: TreeNode() {
-        data class Declaration(val type: Type, val identifier: Expression.Value.Identifier,
-                               val expression: Expression? = null): Command()
+
+        data class Declaration(val type: Type, val identifier: Expression.Value.Identifier, val expression: Expression? = null): Command()
+        data class Assignment(val identifier: Expression.Value.Identifier, val expression: Expression): Command()
+
         sealed class Expression: Command() {
             sealed class Value: Expression() {
                 data class Identifier(val name: String): Value()
@@ -24,11 +26,10 @@ sealed class TreeNode {
         data class Return(val expression: Expression): Command()
     }
     sealed class Type {
-        class Number: Type()
-        class Text: Type()
-        class Bool: Type()
-        class None: Type()
-        class Var: Type()
+        class Number: Type() { override fun toString() = this::class.simpleName!! }
+        class Text: Type() { override fun toString() = this::class.simpleName!! }
+        class Bool: Type() { override fun toString() = this::class.simpleName!! }
+        class None: Type() { override fun toString() = this::class.simpleName!! }
         data class GenericType(val name: String): Type()
         data class List(val elementType: Type): Type()
         data class Func(val paramTypes: kotlin.collections.List<Type>, val returnType: Type): Type()
