@@ -125,7 +125,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     }
 
     //region Type declarations
-    private fun  parseType(implicitAllowed:Boolean=false): TreeNode.Type {
+    private fun  parseType(implicitAllowed: Boolean = false): TreeNode.Type {
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
