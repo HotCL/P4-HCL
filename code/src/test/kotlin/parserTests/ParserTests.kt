@@ -16,6 +16,7 @@ import parser.TreeNode
 import sun.reflect.generics.tree.Tree
 import kotlin.coroutines.experimental.buildSequence
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 
 class ParserTests {
     private fun matchesAstChildren(vararg expectedAstChildren: TreeNode.Command): Matcher<List<Token>> =
@@ -30,7 +31,7 @@ class ParserTests {
                 override val negatedDescription: String get() = "was not equal to the expected AST"
             }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun testParser() {
         assertThat(
                 listOf(
@@ -50,7 +51,27 @@ class ParserTests {
         )
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
+    fun testParserBool() {
+        assertThat(
+                listOf(
+                        Token.Type.Bool(),
+                        Token.Identifier("myBool"),
+                        Token.SpecialChar.Equals(),
+                        Token.Literal.Bool(true),
+                        Token.SpecialChar.EndOfLine()
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Bool(),
+                                TreeNode.Command.Expression.Value.Identifier("myBool"),
+                                TreeNode.Command.Expression.Value.Literal.Bool(true)
+                        )
+                )
+        )
+    }
+
+    @Test
     fun testParserAssignment() {
         assertThat(
                 listOf(
@@ -69,7 +90,7 @@ class ParserTests {
     }
 
     //region FuncTypeDcl
-    @org.junit.jupiter.api.Test
+    @Test
     fun testParserFuncType() {
         assertThat(
                 listOf(
@@ -627,7 +648,7 @@ class ParserTests {
 
     // region Fuckups
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun testParserStartWithError() {
         val lexer = DummyLexer(buildSequence {
             yield(Token.SpecialChar.Equals())
