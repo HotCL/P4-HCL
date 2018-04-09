@@ -80,4 +80,32 @@ class TokenTest {
                         " | Missing closing character for '('\n" +
                         " | -->help: Remember to always close encapsulations.\n", logger.buffer.toString())
     }
+
+    @org.junit.jupiter.api.Test
+    fun testInitializedFunctionParameterError() {
+        val error = InitializedFunctionParameterError(0, 15, "var x = (num z = 5): none {}")
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: InitializedFunctionParameterError found at line 0 index 15:\n" +
+                        " | var x = (num z = 5): none {}\n" +
+                        " |                ^--\n" +
+                        " | Cannot initialize function parameters in declaration.\n" +
+                        " | -->help: Function parameters are initialized when the function is called.\n",
+                logger.buffer.toString())
+    }
+
+    @org.junit.jupiter.api.Test
+    fun testNoneAsInputError() {
+        val error = NoneAsInputError(0, 9, "var x = (none z): none {}")
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: NoneAsInputError found at line 0 index 9:\n" +
+                        " | var x = (none z): none {}\n" +
+                        " |          ^--\n" +
+                        " | Functions can not have input-parameter of type 'none'.\n" +
+                        " | -->help: 'none' can only be used as a functions return-type.\n",
+                logger.buffer.toString())
+    }
 }
