@@ -130,7 +130,6 @@ class LexerTest {
         assertTrue(tokens[7].token is lexer.Token.Type.Text)
     }
 
-    @org.junit.jupiter.api.Disabled
     @org.junit.jupiter.api.Test
     fun lexerTestLegalIdentifiers() {
         val raw_input = "hej var1 +- æøå ↑ ☺☻ ??? _this £50 *bold* 6lol"
@@ -145,7 +144,6 @@ class LexerTest {
         assertTrue(tokens.last().token is lexer.Token.SpecialChar.EndOfLine)
     }
 
-    @org.junit.jupiter.api.Disabled
     @org.junit.jupiter.api.Test
     fun lexerTestIllegalIdentifiers() {
         val lex = Lexer("var = \"id\" 'di 'di' [] { () true \\ , }")
