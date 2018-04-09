@@ -31,10 +31,9 @@ class SymbolTable : ISymbolTable {
     }
 
     override fun retrieveSymbol(name: String) =
-            // Alright, so this line may actually need a comment...
             // We go backwards through the stack of dictionaries in symboltable, and add all elements from each
             // dictionary that matches the name of the symbol. Flat map adds all elements from a list of lists into a
-            // single list. ((1, 2, 3), (4, 5, 6), (7, 8, 9) flatMapped == (1, 2, 3, 4, 5, 6, 7, 8, 9)).
+            // Example: single list. ((1, 2, 3), (4, 5, 6), (7, 8, 9) flatMapped == (1, 2, 3, 4, 5, 6, 7, 8, 9)).
             Symbol(symbolTable.reversed().map { it[name] }.flatMap { it ?: mutableListOf() })
 
     override fun declaredLocally(name: String) = symbolTable.last[name] != null

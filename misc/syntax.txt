@@ -141,6 +141,7 @@ NTH = NICE TO HAVE
 	- fisk
 	- varfisk
 	- +-
+	Variables can only be redefined in different scopes.
 
 10) value passing
 	PASS BY VALUE - no side effects
