@@ -36,8 +36,8 @@ class SymbolTest {
     @Test
     fun testSymbolClassFunDeclarations() {
         val symbol = Symbol(listOf(
-                TreeNode.Type.Func(listOf(TreeNode.Type.Number()), TreeNode.Type.Number()),
-                TreeNode.Type.Func(listOf(TreeNode.Type.Text()), TreeNode.Type.Text())
+                TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Number()), TreeNode.Type.Number()),
+                TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Text()), TreeNode.Type.Text())
         ))
         assertTrue(!symbol.undeclared)
         assertTrue(!symbol.isIdentifier)

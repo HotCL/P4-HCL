@@ -1,4 +1,5 @@
 package exceptions
+import lexer.PositionalToken
 import lexer.Token
 /**
  * Class used to log unexpectedToken errors
@@ -8,4 +9,6 @@ class UnexpectedTokenError(lineNumber: Int, lineIndex: Int, lineText: String, pr
                                 : ParserException(lineNumber, lineIndex, lineText){
     override val errorMessage = "Found unexpected token: '$actualToken'."
     override val helpText = ""
+    constructor(posToken: PositionalToken, lineText:String) : this(posToken.lineNumber,
+            posToken.lineIndex, lineText, posToken.token)
 }

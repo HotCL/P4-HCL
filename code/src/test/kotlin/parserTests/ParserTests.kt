@@ -3,6 +3,7 @@ package parserTests
 import com.natpryce.hamkrest.MatchResult
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.InitializedFunctionParameterError
 import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
 import lexer.ILexer
@@ -10,6 +11,7 @@ import lexer.PositionalToken
 import lexer.Token
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Disabled
 import parser.AbstractSyntaxTree
 import parser.Parser
 import parser.TreeNode
@@ -103,7 +105,7 @@ class ParserTests {
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Func(listOf(TreeNode.Type.Number()),TreeNode.Type.Text()),
+                                TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Number()),TreeNode.Type.Text()),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc")
                         )
                 )
@@ -148,7 +150,7 @@ class ParserTests {
                         Token.SpecialChar.EndOfLine()
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(TreeNode.Type.Func(listOf(), TreeNode.Type.Text()),
+                        TreeNode.Command.Declaration(TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.Text()),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc")
                         )
 
@@ -158,12 +160,33 @@ class ParserTests {
 
     @org.junit.jupiter.api.Test
     fun testParserFuncTypeImplicit() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Func())
-            yield(Token.Identifier("myFunc"))
-            yield(Token.SpecialChar.EndOfLine())
-        })
-        assertThrows(NotImplementedError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThat(listOf(
+                Token.Type.Func(),
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals(),
+                Token.SpecialChar.ParenthesesStart(),
+                Token.SpecialChar.ParenthesesEnd(),
+                Token.SpecialChar.Colon(),
+                Token.Type.None(),
+                Token.SpecialChar.BlockStart(),
+                Token.SpecialChar.BlockEnd(),
+                Token.SpecialChar.EndOfLine()
+        ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Func.ImplicitFunc(),
+                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                TreeNode.Command.Expression.LambdaExpression
+                                (
+                                        listOf(),
+                                        TreeNode.Type.None(),
+                                        listOf<TreeNode.Command.Expression.LambdaExpression>()
+                                )
+
+                        )
+
+                )
+        )
     }
 
     @org.junit.jupiter.api.Test
@@ -212,20 +235,28 @@ class ParserTests {
                         Token.SpecialChar.EndOfLine()
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(TreeNode.Type.Func(
-                                listOf(TreeNode.Type.Number(), TreeNode.Type.Text()),
-                                TreeNode.Type.None()
-                        ),
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Func.ExplicitFunc
+                                (
+                                        listOf(TreeNode.Type.Number(), TreeNode.Type.Text()),
+                                        TreeNode.Type.None()
+                                ),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                TreeNode.Command.Declaration(
+                                TreeNode.Command.Expression.LambdaExpression
+                                (
+                                        listOf
+                                        (
+                                                TreeNode.ParameterDeclaration
+                                                (
                                                         TreeNode.Type.Number(),
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")),
-                                                TreeNode.Command.Declaration(
+                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")
+                                                ),
+                                                TreeNode.ParameterDeclaration
+                                                (
                                                         TreeNode.Type.Text(),
                                                         TreeNode.Command.Expression.Value.Identifier("myParam2")
-                                                )),
+                                                )
+                                        ),
                                         TreeNode.Type.None(),
                                         listOf<TreeNode.Command.Expression.LambdaExpression>()
                                 )
@@ -259,14 +290,14 @@ class ParserTests {
                         Token.SpecialChar.EndOfLine()
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(TreeNode.Type.Func(
+                        TreeNode.Command.Declaration(TreeNode.Type.Func.ExplicitFunc(
                                 listOf(TreeNode.Type.Number()), //InputTypes
                                 TreeNode.Type.None() //ReturnType
                         ),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
                                 TreeNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.Command.Declaration(
+                                                TreeNode.ParameterDeclaration(
                                                         TreeNode.Type.Number(),
                                                         TreeNode.Command.Expression.Value.Identifier("myParam1")
                                                 )
@@ -284,10 +315,7 @@ class ParserTests {
     fun testParserFuncDclAndAssignmentWithoutBodyZeroParameters() {
         assertThat(
                 listOf(
-                    Token.Type.Func(),
-                        Token.SpecialChar.SquareBracketStart(),
-                        Token.Type.None(),
-                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Type.Func(),
                         Token.Identifier("myFunc"),
                         Token.SpecialChar.Equals(),
                         Token.SpecialChar.ParenthesesStart(),
@@ -300,11 +328,9 @@ class ParserTests {
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Func(
-                                        listOf(), TreeNode.Type.None()
-                                ),
+                                TreeNode.Type.Func.ImplicitFunc(),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                    TreeNode.Command.Expression.LambdaExpression(
+                                TreeNode.Command.Expression.LambdaExpression(
                                         listOf(),
                                         TreeNode.Type.None(),
                                         listOf()
@@ -314,14 +340,31 @@ class ParserTests {
         )
     }
 
+    @Test
+    fun testParserFailsOnDeclarationInParameterDefinition(){
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func(),
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals(),
+                Token.SpecialChar.ParenthesesStart(),
+                Token.Type.Number(),
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.Equals(),
+                Token.Literal.Number("5"),
+                Token.SpecialChar.ParenthesesEnd(),
+                Token.SpecialChar.Colon(),
+                Token.Type.None(),
+                Token.SpecialChar.EndOfLine()
+        ))
+        assertThrows(InitializedFunctionParameterError::class.java, { Parser(lexer).generateAbstractSyntaxTree() })
+
+    }
+
     @org.junit.jupiter.api.Test
     fun testParserFuncDclAndAssignmentWithBody() {
         assertThat(
                 listOf(
                         Token.Type.Func(),
-                        Token.SpecialChar.SquareBracketStart(),
-                        Token.Type.None(),
-                        Token.SpecialChar.SquareBracketEnd(),
                         Token.Identifier("myFunc"),
                         Token.SpecialChar.Equals(),
                         Token.SpecialChar.ParenthesesStart(),
@@ -336,16 +379,12 @@ class ParserTests {
                         Token.Type.Text(),
                         Token.Identifier("myText"),
                         Token.SpecialChar.EndOfLine(),
-                        Token.SpecialChar.EndOfLine(),
-                        Token.SpecialChar.EndOfLine(),
                         Token.SpecialChar.BlockEnd(),
                         Token.SpecialChar.EndOfLine()
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Func(
-                                        listOf(), TreeNode.Type.None()
-                                ),
+                                TreeNode.Type.Func.ImplicitFunc(),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
                                 TreeNode.Command.Expression.LambdaExpression(
                                         listOf(),
@@ -372,10 +411,10 @@ class ParserTests {
         assertTrue(ast.children[0] is TreeNode.Command.Declaration)
 
         val declaration = ast.children[0] as TreeNode.Command.Declaration
-        assertTrue(declaration.type is TreeNode.Type.Func)
+        assertTrue(declaration.type is TreeNode.Type.Func.ExplicitFunc)
         assertThat(declaration.identifier, equalTo(TreeNode.Command.Expression.Value.Identifier("myFunc")))
-        assertThat((declaration.type as TreeNode.Type.Func).paramTypes.size, equalTo(0))
-        assertTrue((declaration.type as TreeNode.Type.Func).returnType is TreeNode.Type.None)
+        assertThat((declaration.type as TreeNode.Type.Func.ExplicitFunc).paramTypes.size, equalTo(0))
+        assertTrue((declaration.type as TreeNode.Type.Func.ExplicitFunc).returnType is TreeNode.Type.None)
 
         assertThat((declaration.expression as TreeNode.Command.Expression.LambdaExpression).paramDeclarations.size,
                 equalTo(0))
@@ -474,7 +513,7 @@ class ParserTests {
                         Token.Literal.Text("someText"),
                         Token.SpecialChar.ParenthesesEnd(),
                         Token.SpecialChar.EndOfLine()
-                        ),
+                ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
                                 TreeNode.Type.Tuple(listOf(
@@ -571,7 +610,7 @@ class ParserTests {
                         )
                 )
         )
-}
+    }
 
     @org.junit.jupiter.api.Test
     fun testParserListDeclaration() {
@@ -603,7 +642,7 @@ class ParserTests {
                         )
                 )
         )
-}
+    }
     @org.junit.jupiter.api.Test
     fun testParserListDeclarationTooFewSeperators() {
         val lexer = DummyLexer(buildSequence {
@@ -658,10 +697,11 @@ class ParserTests {
 
     // endregion
 
-    class DummyLexer(val tokens: Sequence<Token>): ILexer {
+    class DummyLexer(private val tokens: Sequence<Token>): ILexer {
         override fun getTokenSequence() = buildSequence {
             tokens.forEach { yield(PositionalToken(it, -1, -1)) }
         }
+        constructor(tokens: List<Token>) : this(buildSequence { yieldAll(tokens) })
 
         override fun inputLine(lineNumber: Int) = "Dummy lexer does not implement input line"
     }
