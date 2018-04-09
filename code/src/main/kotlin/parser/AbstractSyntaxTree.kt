@@ -23,12 +23,12 @@ sealed class TreeNode {
         }
         data class Return(val expression: Expression): Command()
     }
-    sealed class Type {
-        class Number: Type()
-        class Text: Type()
-        class Bool: Type()
-        class None: Type()
-        class Var: Type()
+    sealed class Type: TreeNode() {
+        object Number: Type()
+        object Text: Type()
+        object Bool: Type()
+        object None: Type()
+        object Var: Type()
         data class GenericType(val name: String): Type()
         data class List(val elementType: Type): Type()
         data class Func(val paramTypes: kotlin.collections.List<Type>, val returnType: Type): Type()
