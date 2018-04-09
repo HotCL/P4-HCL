@@ -49,20 +49,26 @@ The language uses static typing, meaning that type-checking is done at compile t
 \textbf{Function Declaration}\\
 The type of a functions parameters, as well as its return type, are explicitly declared when a function is defined. 
 The declaration is structured as an assignment, where the functions name is declared on the left-hand-side, prefixed by either \textbf{\textit{var}} or \textbf{\textit{func}}. 
-The parameters of the function is declared on the right-hand-side inside parentheses, followed by an arrow (\textbf{\textit{->}}), which declares the return type. 
+The parameters of the function is declared on the right-hand-side inside parentheses, followed by a colon (\textbf{\textit{:}}), which declares the return type. 
 
-An example function that adds two numbers together and prints the value is shown below:
+An example function that adds two numbers together and returns the value is shown below:
 \begin{lstlisting}
-var addNumbers = (num a, num b) -> none {
-	a + b print
+var addNumbers = (num a, num b): num {
+    a + b
 }
 \end{lstlisting} 
 A more explicit declaration of the same function can be seen in the snippet below:
 \begin{lstlisting}
-func<num,num,none> addNumbers = (num a, num b) -> none {
-	a + b print
+func[num,num,none] addNumbers = (num a, num b): num {
+	return a + b
 }
 \end{lstlisting}
+
+The return statement is noticeably missing in the first function.
+\texttt{return} is optional if the function body only contains a single expression. 
+This makes sense when using using lambdas, where return statements are often implicitly written. 
+If the function contains more than one expression \texttt{return} has to be explicit.
+
 
 \textbf{Grammar for declarations}\\
 The grammar for declarations in HCL (specified in Appendix \ref{AppendixEBNF}) acknowledges that type declarations and function declarations are very similar by describing them with the same non-terminal, \texttt{<Dcl>}.
@@ -126,6 +132,29 @@ The only operators that remains operators are the assign-operator (\textbf{=}) a
 Not having operators for arithmetic operations also means that there are no native operator precedence in the language.
 This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parenthesis. 
 
+\textbf{High order functions}\\
+As mentioned in section \ref{subsec:hofhcl}, the language will include high-order functions. 
+To declare that a function will accept other functions, the developer should simply declare a parameter of type "func" with the expected input and output types explicitly stated from the function.
+
+Both predeclared functions and anonymous in-line functions can be passed as parameters. 
+However, when using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. 
+Since lambdas should not be prefixed with a colon, it makes it impossible for a lambda to be invoked in-line. 
+Therefore lambdas may only be passed as parameters, and never invoked by themselves.
+below is an example of how high-order functionality is used in HCL.
+\begin{lstlisting}
+var modifyNumber = (num n, func[num, num] modifyFunction): num { n modifyFunction }
+
+# Used with lamdas
+5 modifyNumber { value * 2 } # 10
+5 modifyNumber { value - 3 } # 2
+
+# Used with predeclared functions
+var times2 = (num v): num { v * 2 }
+
+8 modifyNumber :times2 # 16
+
+\end{lstlisting}
+
 \textbf{Overloading}\\
 
 The language will include function overloading. 
@@ -135,31 +164,27 @@ The plus function could accept two numbers or two strings, but the implementatio
 If two numbers were passed, the obvious result should be the sum of the two numbers.
 If on the other hand two strings were passed, the function could be implemented in such a way that the result would be the concatenation of the two strings.
 
-The function overloading in HCL is however a bit limited in that functions can not be overloaded with different amounts of parameters, only different parameter types. 
-This is due to the nature of the syntax in HCL where function parameters are not directly coupled to a function. 
-Therefore it would be impossible for the compiler to determine what is parameters and what is functions.
-Consider this example:
-
-\begin{lstlisting}
-1 to 10 sum print
-\end{lstlisting}
-
-Obviously the sum function accepts a list that should be summed. 
-However, if the sum function could potentially also accept a modifier function, that were to alter the result of the sum function, it would be impossible for the compiler to determine whether print was that modifier function, or the sum should be passed as a parameter to the print function.
+Function overloading in HCL is limited in that functions can not be overloaded with same parameters but different return types. 
+Functions can only be overloaded to return different types, if the types of the parameters vary.
+Furthermore overloading with different amounts of parameters is not possible in HCL.
+This is because of multiple reasons, one being simplicity for the user, not accidentally adding an unexpected parameter to a function call. 
+Another being simplicity in the parsing of the function parameters. 
+Since the ability to overload with different amount of parameters brings next to nothing to the language, it was decided that it was not worth the effort to implement.
+Should it be neccesary to overload functions with varying lenghts of input-parameters, it can be done utilizing tuples or lists.
 
 Function overloading requires nothing special of the user, just declare two functions with the same amount of parameters, but with different types. 
 See listings below for example
 
 \begin{lstlisting}
-var isAwesome = (string name) -> bool {
-	return name equals "HCL" thenElse {true} {false}
+var isAwesome = (string name): bool {
+	name equals "HCL" thenElse {true} {false}
 }
-var isAwesome = (num number) -> bool {
-	return number equals 42 thenElse {true} {false}
+var isAwesome = (num number): bool {
+	number equals 42 thenElse {true} {false}
 }
 
-42 isAwesome // True
-"Java" isAwesome // False
+42 isAwesome # True
+"Java" isAwesome # False
 \end{lstlisting}
 
 The main reasoning for including function overloading is simplicity for the user.
@@ -189,4 +214,4 @@ var map = (list[T1] elementsToMap, func[T1, T2] mapFunction) -> list[T2] {
 \end{lstlisting}
 
 Generic types in the above example is T1 and T2. 
-Since nothing type specific ever happens with these types, we can handle all types the same, whether that be a string, a number or some other type will not matter.
+Since nothing type specific ever happens with these types, they can all be handled the same way, whether that be a string, a number or some other type will not matter.
