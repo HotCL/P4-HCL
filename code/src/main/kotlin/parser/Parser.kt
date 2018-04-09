@@ -1,7 +1,7 @@
 package parser
 
+import exceptions.ImplicitTypeNotAllowed
 import exceptions.InitializedFunctionParameterError
-import exceptions.NoneAsInputError
 import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
 import lexer.ILexer
@@ -97,33 +97,17 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     private fun parseFunctionParameters(): List<TreeNode.ParameterDeclaration> {
         val parameters = mutableListOf<TreeNode.ParameterDeclaration>()
 
-        if (current.token !is Token.SpecialChar.ParenthesesStart)
-            throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                    Token.SpecialChar.ParenthesesStart::class.simpleName, current.token)
-
-        if (peek().token !is Token.SpecialChar.ParenthesesEnd) {
-            while (true) {
-                if (moveNext().token !is Token.Type)
-                    throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
-                            lexer.inputLine(current.lineNumber), current.token)
-
-                if (current.token is Token.Type.None)
-                    throw NoneAsInputError(current.lineNumber, current.lineIndex,
-                            lexer.inputLine(current.lineNumber))
-
-                parameters.add(parseSingleParameter())
-
-                if (current.token !is Token.SpecialChar.ListSeparator) break
-            }
+        accept<Token.SpecialChar.ParenthesesStart>()
+        while (current.token !is Token.SpecialChar.ParenthesesEnd) {
+            parameters.add(parseSingleParameter())
+            if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
         }
-        else moveNext()
-
         accept<Token.SpecialChar.ParenthesesEnd>()
         return parameters
     }
 
     private fun parseDeclaration(): TreeNode.Command.Declaration {
-        val type = parseType()
+        val type = parseType(implicitAllowed = true)
 
         val identifier = acceptIdentifier()
         val expression = if (current.token is Token.SpecialChar.Equals) {
@@ -141,17 +125,22 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     }
 
     //region Type declarations
-    private fun  parseType(): TreeNode.Type {
+    private fun  parseType(implicitAllowed:Boolean=false): TreeNode.Type {
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
             is Token.Type.Number -> TreeNode.Type.Number()
             is Token.Type.Text -> TreeNode.Type.Text()
             is Token.Type.Bool -> TreeNode.Type.Bool()
-            is Token.Type.Func -> parseFuncType()
+            is Token.Type.Func -> parseFuncType(implicitAllowed)
             is Token.Type.Tuple -> parseTupleType()
             is Token.Type.List -> parseListType()
-            else -> throw UnexpectedTokenError(currentPosToken, lexer.inputLine(current.lineNumber))
+            else -> {
+                if(implicitAllowed && tryAccept<Token.Type.Var>())
+                    throw NotImplementedException()
+                else
+                    throw UnexpectedTokenError(currentPosToken, lexer.inputLine(current.lineNumber))
+            }
         }
     }
 
@@ -167,8 +156,8 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
 
 
 
-    private fun parseFuncType(): TreeNode.Type.Func {
-        if (current.token is Token.SpecialChar.SquareBracketStart) {
+    private fun parseFuncType(implicitAllowed: Boolean): TreeNode.Type.Func {
+        return if (current.token is Token.SpecialChar.SquareBracketStart) {
             accept<Token.SpecialChar.SquareBracketStart>()
 
             val parameters = parseTypes({
@@ -177,11 +166,18 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
                 else parseType()
             })
             accept<Token.SpecialChar.SquareBracketEnd>()
-
             val returnType = parameters.last()
-            return TreeNode.Type.Func.ExplicitFunc(parameters.dropLast(1), returnType)
+
+
+            TreeNode.Type.Func.ExplicitFunc(parameters.dropLast(1), returnType)
         }
-        else return TreeNode.Type.Func.ImplicitFunc()
+        else
+        {
+            if(implicitAllowed)
+                TreeNode.Type.Func.ImplicitFunc()
+            else
+                throw ImplicitTypeNotAllowed(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber))
+        }
     }
 
     private fun parseLambdaDeclaration(): TreeNode.Command.Expression.LambdaExpression {

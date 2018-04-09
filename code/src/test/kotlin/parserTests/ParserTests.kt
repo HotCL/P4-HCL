@@ -3,6 +3,7 @@ package parserTests
 import com.natpryce.hamkrest.MatchResult
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.ImplicitTypeNotAllowed
 import exceptions.InitializedFunctionParameterError
 import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
@@ -137,6 +138,19 @@ class ParserTests {
         })
         assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
+    @org.junit.jupiter.api.Test
+    fun testParserImplicitFuncAsParameter() {
+        val lexer = DummyLexer(listOf(
+                Token.Type.List(),
+                Token.SpecialChar.SquareBracketStart(),
+                Token.Type.Func(),
+                Token.SpecialChar.SquareBracketEnd(),
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.EndOfLine()
+        ))
+        assertThrows(ImplicitTypeNotAllowed::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+    }
+
 
     @org.junit.jupiter.api.Test
     fun testParserFuncTypeOneType() {
