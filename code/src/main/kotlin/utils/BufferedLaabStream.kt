@@ -1,22 +1,22 @@
 package utils
 
-class BufferedLaabStream<out T>(sequence: Sequence<T>) {
+class BufferedLaabStream<out T>(sequence: Sequence<T>): IBufferedLaabStream<T> {
     private val buffer = sequence.toList()
     private var index = 0
-    val current: T get() = buffer[index]
+    override val current: T get() = buffer[index]
 
-    fun hasNext() = index < buffer.size - 1
-    fun hasAhead(n: Int) = n + index < buffer.size
-    fun hasBehind(n: Int) = 0 <= index - n
+    override fun hasNext() = index < buffer.size - 1
+    override fun hasAhead(n: Int) = n + index < buffer.size
+    override fun hasBehind(n: Int) = 0 <= index - n
 
-    fun moveNext() = moveAhead(1)
-    fun moveAhead(indexes: Int): T {
+    override fun moveNext() = moveAhead(1)
+    override fun moveAhead(indexes: Int): T {
         index += indexes
         return buffer[index]
     }
 
-    fun lookAhead(indexes: Int) = buffer[index + indexes]
-    fun lookBehind(indexes: Int) = buffer[index - indexes]
+    override fun lookAhead(indexes: Int) = buffer[index + indexes]
+    override fun lookBehind(indexes: Int) = buffer[index - indexes]
 
-    fun peek() = lookAhead(1)
+    override fun peek() = lookAhead(1)
 }
