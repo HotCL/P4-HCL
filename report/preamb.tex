@@ -4,6 +4,7 @@
 %%%% PAKKER %%%%
 
 % ¤¤ Oversaettelse og tegnsaetning ¤¤ %
+\usepackage[usenames,dvipsnames]{xcolor}				% Definer farver med \definecolor. Se mere: http://en.wikibooks.org/wiki/LaTeX/Colors had to move up due to optionclash with pgf
 \usepackage[utf8]{inputenc}					% Input-indkodning af tegnsaet (UTF8)
 \usepackage[english]{babel}					% Dokumentets sprog
 \usepackage[T1]{fontenc}					% Output-indkodning af tegnsaet (T1)
@@ -33,7 +34,7 @@
 \usepackage{graphicx} 						% Haandtering af eksterne billeder (JPG, PNG, PDF)
 \usepackage{multirow}                		% Fletning af raekker og kolonner (\multicolumn og \multirow)
 \usepackage{colortbl} 						% Farver i tabeller (fx \columncolor, \rowcolor og \cellcolor)
-\usepackage{xcolor}				            % Definer farver med \definecolor. Se mere: http://en.wikibooks.org/wiki/LaTeX/Colors
+
 \usepackage{flafter}						% Soerger for at floats ikke optraeder i teksten foer deres reference
 \let\newfloat\relax 						% Justering mellem float-pakken og memoir
 \usepackage{float}							% Muliggoer eksakt placering af floats, f.eks. \begin{figure}[H]
@@ -57,6 +58,34 @@
 % ¤¤ Misc. ¤¤ %
 \usepackage{listings}						% Placer kildekode i dokumentet med \begin{lstlisting}...\end{lstlisting}
                                             % Kode-style
+                                            
+                                            
+\lstdefinestyle{Kotlin}{language=kotlin, frame=lr, rulecolor=\color{blue!80!black}}
+\renewcommand{\lstlistingname}{Snippet}                                            
+\lstdefinelanguage{Kotlin}{
+	keywords={package, as, as?, typealias, this, super, val, var, fun, for, null, true, false, is, in, throw, return, break, continue, object, if, try, else, while, do, when, class, interface, enum, object, companion, override, public, private, get, set, import, abstract, vararg, expect, actual, where, suspend, data, internal, dynamic, final, by},
+	keywordstyle=\color{NavyBlue}\bfseries,
+	ndkeywords={@Deprecated, @JvmName, @JvmStatic, @JvmOverloads, @JvmField, @JvmSynthetic, Iterable, Int, Long, Integer, Short, Byte, Float, Double, String, Runnable, Array},
+	ndkeywordstyle=\color{BurntOrange}\bfseries,
+	emph={println, return@, forEach, map, mapNotNull, first, filter, firstOrNull, lazy, delegate},
+	emphstyle={\color{OrangeRed}},
+	identifierstyle=\color{Mahogany},
+	sensitive=true,
+	commentstyle=\color{gray}\ttfamily,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	stringstyle=\color{ForestGreen}\ttfamily,
+	morestring=[b]",
+	morestring=[s]{"""*}{*"""},
+}
+
+%\lstdefinestyle{HCL}{language=hcl, frame, lr, rulecolor=\color{blue!80!black}}
+%\renewcommand{\lstlistingname}{Snippet}
+%\lstdefinelanguage{HCL}
+%{
+%	keywords{}
+%}
+                                            
 \lstdefinestyle{CSharp}{language=[sharp]c, frame=lr, rulecolor=\color{blue!80!black}}
 
 \renewcommand{\lstlistingname}{Snippet}     % Listing navn
