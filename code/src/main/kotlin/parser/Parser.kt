@@ -9,6 +9,7 @@ import lexer.PositionalToken
 import lexer.Token
 import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
@@ -40,7 +41,8 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
                     else -> TODO("Function call without parameters")
                 }
             }
-            else -> throw Exception("Make this a unexpected token exception once that is implemented...")
+            // TODO "Make this a unexpected token exception once that is implemented..."
+            else -> throw NotImplementedException()
         }
     }
 
@@ -82,6 +84,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
                                                     lexer.inputLine(current.lineNumber))
         return TreeNode.Command.Declaration(type, identifier, null)
     }
+
 
     private fun parseFunctionParameters(): List<TreeNode.Command.Declaration> {
         val parameters = mutableListOf<TreeNode.Command.Declaration>()
@@ -238,16 +241,14 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
             }
             is Token.Literal.Text -> {
                 if (isLiteral(peek().token)) return acceptLiteral()
-                TODO ("make else that parses expression  (like \"hej\" + \"du\")")
             }
             is Token.Literal.Bool -> {
                 if (isLiteral(peek().token)) return acceptLiteral()
-                TODO ("make else that parses expression  (like 5 < 7)")
             }
             is Token.Literal.Number -> {
                 if (isLiteral(peek().token)) return acceptLiteral()
-                TODO ("make else that parses expression  (like 5+5)")
             }
+            else ->TODO ("Make a function call get and identifier ")
         }
         throw Exception("Unrecognized expression")
     }
