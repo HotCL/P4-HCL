@@ -1,21 +1,19 @@
 package parserTests
 
-import com.natpryce.hamkrest.*
+import com.natpryce.hamkrest.MatchResult
+import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.MissingArgumentError
 import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import parser.AbstractSyntaxTree
 import parser.Parser
 import parser.TreeNode
-import sun.reflect.generics.tree.Tree
 import kotlin.coroutines.experimental.buildSequence
-import kotlin.test.assertEquals
 
 class ParserTests {
     private fun matchesAstChildren(vararg expectedAstChildren: TreeNode.Command): Matcher<List<Token>> =
