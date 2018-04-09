@@ -17,7 +17,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
         while (hasNext()) {
-            if (current.token !is Token.SpecialChar.EndOfLine) {
+            if (current.token != Token.SpecialChar.EndOfLine) {
                 children.add(parseCommand())
             }
         }
@@ -67,7 +67,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     }
 
     private fun acceptEndOfLines() {
-        while (current.token is Token.SpecialChar.EndOfLine && hasNext())
+        while (current.token == Token.SpecialChar.EndOfLine && hasNext())
             accept<Token.SpecialChar.EndOfLine>()
     }
 
@@ -86,7 +86,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     private fun parseSingleParameter(): TreeNode.ParameterDeclaration {
         val type = parseType()
         val identifier = acceptIdentifier()
-        if (current.token is Token.SpecialChar.Equals)
+        if (current.token == Token.SpecialChar.Equals)
             throw InitializedFunctionParameterError(current.lineNumber,
                     current.lineIndex,
                     lexer.inputLine(current.lineNumber))
@@ -98,7 +98,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         val parameters = mutableListOf<TreeNode.ParameterDeclaration>()
 
         accept<Token.SpecialChar.ParenthesesStart>()
-        while (current.token !is Token.SpecialChar.ParenthesesEnd) {
+        while (current.token != Token.SpecialChar.ParenthesesEnd) {
             parameters.add(parseSingleParameter())
             if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
         }
@@ -110,7 +110,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         val type = parseType(implicitAllowed = true)
 
         val identifier = acceptIdentifier()
-        val expression = if (current.token is Token.SpecialChar.Equals) {
+        val expression = if (current.token == Token.SpecialChar.Equals) {
             moveNext()
             parseExpression()
         } else null
@@ -129,9 +129,9 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
-            is Token.Type.Number -> TreeNode.Type.Number()
-            is Token.Type.Text -> TreeNode.Type.Text()
-            is Token.Type.Bool -> TreeNode.Type.Bool()
+            is Token.Type.Number -> TreeNode.Type.Number
+            is Token.Type.Text -> TreeNode.Type.Text
+            is Token.Type.Bool -> TreeNode.Type.Bool
             is Token.Type.Func -> parseFuncType(implicitAllowed)
             is Token.Type.Tuple -> parseTupleType()
             is Token.Type.List -> parseListType()
@@ -144,7 +144,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         }
     }
 
-    private fun parseTypes(parsingMethod:()->TreeNode.Type):List<TreeNode.Type>{
+    private fun parseTypes(parsingMethod:()->TreeNode.Type): List<TreeNode.Type>{
         val elementTypes = mutableListOf<TreeNode.Type>()
 
         while (true) {
@@ -157,12 +157,12 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
 
 
     private fun parseFuncType(implicitAllowed: Boolean): TreeNode.Type.Func {
-        return if (current.token is Token.SpecialChar.SquareBracketStart) {
+        return if (current.token == Token.SpecialChar.SquareBracketStart) {
             accept<Token.SpecialChar.SquareBracketStart>()
 
             val parameters = parseTypes({
-                if (peek().token is Token.SpecialChar.SquareBracketEnd && tryAccept<Token.Type.None>())
-                    TreeNode.Type.None()
+                if (peek().token == Token.SpecialChar.SquareBracketEnd && tryAccept<Token.Type.None>())
+                    TreeNode.Type.None
                 else parseType()
             })
             accept<Token.SpecialChar.SquareBracketEnd>()
@@ -174,7 +174,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         else
         {
             if(implicitAllowed)
-                TreeNode.Type.Func.ImplicitFunc()
+                TreeNode.Type.Func.ImplicitFunc
             else
                 throw ImplicitTypeNotAllowed(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber))
         }
@@ -183,9 +183,9 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     private fun parseLambdaDeclaration(): TreeNode.Command.Expression.LambdaExpression {
         val parameters = parseFunctionParameters()
         accept<Token.SpecialChar.Colon>()
-        val returnType = if(current.token is Token.Type.None){
+        val returnType = if(current.token == Token.Type.None){
             moveNext()
-            TreeNode.Type.None()
+            TreeNode.Type.None
         }else parseType()
 
         acceptEndOfLines()
@@ -196,7 +196,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     private fun parseLambdaBody(): List<TreeNode.Command> {
         val commands = mutableListOf<TreeNode.Command>()
         accept<Token.SpecialChar.BlockStart>()
-        while (current.token !is Token.SpecialChar.BlockEnd) {
+        while (current.token != Token.SpecialChar.BlockEnd) {
             commands.add(parseCommand())
         }
         accept<Token.SpecialChar.BlockEnd>()
@@ -222,17 +222,17 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     private fun parseExpression(): TreeNode.Command.Expression {
         // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
         // the token will be a literal, but it could also be an identifier.
-        when(current.token){
+        when(current.token) {
             is Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()
             is Token.SpecialChar.ParenthesesStart -> {
-                if (peek().token is Token.Type || peek().token is Token.SpecialChar.ParenthesesEnd){
+                if (peek().token is Token.Type || peek().token == Token.SpecialChar.ParenthesesEnd) {
                     return parseLambdaDeclaration()
                 }
                 else {
                     var counter = 1
-                    while(true){
-                        if(lookAhead(counter).token is Token.SpecialChar.ListSeparator) return parseTupleExpression()
-                        else if (lookAhead(counter++).token is Token.SpecialChar.ParenthesesEnd) break
+                    while (true) {
+                        if (lookAhead(counter).token == Token.SpecialChar.ListSeparator) return parseTupleExpression()
+                        else if (lookAhead(counter++).token == Token.SpecialChar.ParenthesesEnd) break
                     }
                 }
             }
@@ -251,8 +251,8 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
     }
 
     private fun isLiteral(token: Token): Boolean{
-        if (token is Token.SpecialChar.EndOfLine || token is Token.SpecialChar.ListSeparator
-                || token is Token.SpecialChar.ParenthesesEnd) return true
+        if (token == Token.SpecialChar.EndOfLine || token == Token.SpecialChar.ListSeparator
+                || token == Token.SpecialChar.ParenthesesEnd) return true
         return false
     }
 
@@ -260,14 +260,16 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         val elements = mutableListOf<TreeNode.Command.Expression>()
         moveNext()
         while (true){
-            if (current.token is Token.Literal) elements.add(acceptLiteral())
-            else if (current.token is Token.Identifier) elements.add(acceptIdentifier())
-            else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                    current.token)
-            if (current.token is Token.SpecialChar.ListSeparator) moveNext()
+            when {
+                current.token is Token.Literal -> elements.add(acceptLiteral())
+                current.token is Token.Identifier -> elements.add(acceptIdentifier())
+                else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
+                        lexer.inputLine(current.lineNumber), current.token)
+            }
+            if (current.token == Token.SpecialChar.ListSeparator) moveNext()
             else break
         }
-        if (current.token !is Token.SpecialChar.ParenthesesEnd)
+        if (current.token != Token.SpecialChar.ParenthesesEnd)
             throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
                     Token.SpecialChar.ParenthesesEnd::class.simpleName, current.token)
         moveNext()
@@ -278,14 +280,16 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         val elements = mutableListOf<TreeNode.Command.Expression>()
         moveNext()
         while (true) {
-            if (current.token is Token.Literal) elements.add(acceptLiteral())
-            else if (current.token is Token.Identifier) elements.add(acceptIdentifier())
-            else throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                    current.token)
-            if (current.token is Token.SpecialChar.ListSeparator) moveNext()
+            when {
+                current.token is Token.Literal -> elements.add(acceptLiteral())
+                current.token is Token.Identifier -> elements.add(acceptIdentifier())
+                else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
+                                                   lexer.inputLine(current.lineNumber), current.token)
+            }
+            if (current.token == Token.SpecialChar.ListSeparator) moveNext()
             else break
         }
-        if (current.token !is Token.SpecialChar.SquareBracketEnd)
+        if (current.token != Token.SpecialChar.SquareBracketEnd)
             throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
                     Token.SpecialChar.SquareBracketEnd::class.simpleName, current.token)
         moveNext()

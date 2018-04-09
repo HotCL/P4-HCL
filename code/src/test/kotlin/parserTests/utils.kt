@@ -15,7 +15,7 @@ fun matchesAstChildren(vararg expectedAstChildren: TreeNode.Command): Matcher<Li
             override fun invoke(actual: List<Token>): MatchResult {
                 val actualAst = Parser(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
-                return if (actualAst.toString() == expectedAst.toString()) MatchResult.Match
+                return if (actualAst == expectedAst) MatchResult.Match
                 else MatchResult.Mismatch("Expected AST equal to this:\n${expectedAst}\nBut got this:\n${actualAst}")
             }
             override val description: String get() = "was equal to the expected AST"

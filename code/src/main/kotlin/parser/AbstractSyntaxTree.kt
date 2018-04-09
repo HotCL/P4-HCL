@@ -28,18 +28,16 @@ sealed class TreeNode {
         }
         data class Return(val expression: Expression): Command()
     }
-    sealed class Type:TreeNode() {
-        class Number: Type() { override fun toString() = this::class.simpleName!! }
-        class Text: Type() { override fun toString() = this::class.simpleName!! }
-        class Bool: Type() { override fun toString() = this::class.simpleName!! }
-        class None: Type() { override fun toString() = this::class.simpleName!! }
+    sealed class Type: TreeNode() {
+        object Number: Type()
+        object Text: Type()
+        object Bool: Type()
+        object None: Type()
         data class GenericType(val name: String): Type()
         data class List(val elementType: Type): Type()
         sealed class Func: Type() {
             data class ExplicitFunc(val paramTypes: kotlin.collections.List<Type>, val returnType: Type): Func()
-            class ImplicitFunc: Func() {
-                override fun toString() = this::class.simpleName!!
-            }
+            object ImplicitFunc: Func()
         }
         data class Tuple(val elementTypes: kotlin.collections.List<Type>): Type()
     }

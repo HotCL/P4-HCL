@@ -16,15 +16,15 @@ class GenericTests {
     fun canParseNumDeclaration() {
         assertThat(
                 listOf(
-                        Token.Type.Number(),
+                        Token.Type.Number,
                         Token.Identifier("myId"),
-                        Token.SpecialChar.Equals(),
-                        Token.Literal.Number("5"),
-                        Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.Equals,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Number(),
+                                TreeNode.Type.Number,
                                 TreeNode.Command.Expression.Value.Identifier("myId"),
                                 TreeNode.Command.Expression.Value.Literal.Number(5.0)
                         )
@@ -36,15 +36,15 @@ class GenericTests {
     fun canParseBool() {
         assertThat(
                 listOf(
-                        Token.Type.Bool(),
+                        Token.Type.Bool,
                         Token.Identifier("myBool"),
-                        Token.SpecialChar.Equals(),
+                        Token.SpecialChar.Equals,
                         Token.Literal.Bool(true),
-                        Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Bool(),
+                                TreeNode.Type.Bool,
                                 TreeNode.Command.Expression.Value.Identifier("myBool"),
                                 TreeNode.Command.Expression.Value.Literal.Bool(true)
                         )
@@ -57,9 +57,9 @@ class GenericTests {
         assertThat(
                 listOf(
                         Token.Identifier("myId"),
-                        Token.SpecialChar.Equals(),
-                        Token.Literal.Number("5"),
-                        Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.Equals,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Assignment(
@@ -73,27 +73,23 @@ class GenericTests {
     @org.junit.jupiter.api.Test
     fun failsOnImplicitFuncAsParameter() {
         val lexer = DummyLexer(listOf(
-                Token.Type.List(),
-                Token.SpecialChar.SquareBracketStart(),
-                Token.Type.Func(),
-                Token.SpecialChar.SquareBracketEnd(),
+                Token.Type.List,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Func,
+                Token.SpecialChar.SquareBracketEnd,
                 Token.Identifier("myFunc"),
-                Token.SpecialChar.EndOfLine()
+                Token.SpecialChar.EndOfLine
         ))
         Assertions.assertThrows(ImplicitTypeNotAllowed::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
-
     @Test
     fun failsOnLineStartsWithEquals() {
         val lexer = DummyLexer(buildSequence {
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.Equals)
+            yield(Token.SpecialChar.EndOfLine)
         })
 
         assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
-
-
-
 }

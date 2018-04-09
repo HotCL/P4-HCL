@@ -16,21 +16,21 @@ class CollectionDeclarationTests {
     fun parseTupleTypeWithoutAssignment() {
         assertThat(
                 listOf(
-                        Token.Type.Tuple(),
-                        Token.SpecialChar.SquareBracketStart(),
-                        Token.Type.Number(),
-                        Token.SpecialChar.ListSeparator(),
-                        Token.Type.Text(),
-                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Type.Tuple,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myTuple"),
-                        Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
                                 TreeNode.Type.Tuple(
                                         listOf(
-                                                TreeNode.Type.Number(),
-                                                TreeNode.Type.Text()
+                                                TreeNode.Type.Number,
+                                                TreeNode.Type.Text
                                         )
                                 ),
                                 TreeNode.Command.Expression.Value.Identifier("myTuple")
@@ -43,26 +43,26 @@ class CollectionDeclarationTests {
     fun parseTupleWithAssignment() {
         assertThat(
                 listOf(
-                        Token.Type.Tuple(),
-                        Token.SpecialChar.SquareBracketStart(),
-                        Token.Type.Number(),
-                        Token.SpecialChar.ListSeparator(),
-                        Token.Type.Text(),
-                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Type.Tuple,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myTuple"),
-                        Token.SpecialChar.Equals(),
-                        Token.SpecialChar.ParenthesesStart(),
-                        Token.Literal.Number("5.0"),
-                        Token.SpecialChar.ListSeparator(),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.ListSeparator,
                         Token.Literal.Text("someText"),
-                        Token.SpecialChar.ParenthesesEnd(),
-                        Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
                                 TreeNode.Type.Tuple(listOf(
-                                        TreeNode.Type.Number(),
-                                        TreeNode.Type.Text()
+                                        TreeNode.Type.Number,
+                                        TreeNode.Type.Text
                                 )
                                 ),
                                 TreeNode.Command.Expression.Value.Identifier("myTuple"),
@@ -80,19 +80,19 @@ class CollectionDeclarationTests {
     @org.junit.jupiter.api.Test
     fun failsOnNotEnoughSeparators() {
         val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Tuple())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Type.Text())
-            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Type.Tuple)
+            yield(Token.SpecialChar.SquareBracketStart)
+            yield(Token.Type.Number)
+            yield(Token.SpecialChar.ListSeparator)
+            yield(Token.Type.Text)
+            yield(Token.SpecialChar.SquareBracketEnd)
             yield(Token.Identifier("myTuple"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.ParenthesesStart())
-            yield(Token.Literal.Number("5.0"))
+            yield(Token.SpecialChar.Equals)
+            yield(Token.SpecialChar.ParenthesesStart)
+            yield(Token.Literal.Number(5.0))
             yield(Token.Literal.Text("someText"))
-            yield(Token.SpecialChar.ParenthesesEnd())
-            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.ParenthesesEnd)
+            yield(Token.SpecialChar.EndOfLine)
         })
         val exception = Assertions.assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
         Assertions.assertEquals("Unrecognized expression", exception.message)
@@ -101,21 +101,21 @@ class CollectionDeclarationTests {
     @org.junit.jupiter.api.Test
     fun failsOnTupleAssignmentFailsOnTooManySeperators() {
         val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Tuple())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Type.Text())
-            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Type.Tuple)
+            yield(Token.SpecialChar.SquareBracketStart)
+            yield(Token.Type.Number)
+            yield(Token.SpecialChar.ListSeparator)
+            yield(Token.Type.Text)
+            yield(Token.SpecialChar.SquareBracketEnd)
             yield(Token.Identifier("myTuple"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.ParenthesesStart())
-            yield(Token.Literal.Number("5.0"))
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.SpecialChar.ListSeparator())
+            yield(Token.SpecialChar.Equals)
+            yield(Token.SpecialChar.ParenthesesStart)
+            yield(Token.Literal.Number(5.0))
+            yield(Token.SpecialChar.ListSeparator)
+            yield(Token.SpecialChar.ListSeparator)
             yield(Token.Literal.Text("someText"))
-            yield(Token.SpecialChar.ParenthesesEnd())
-            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.ParenthesesEnd)
+            yield(Token.SpecialChar.EndOfLine)
         })
         Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
@@ -126,16 +126,16 @@ class CollectionDeclarationTests {
     fun parseListType() {
         assertThat(
                 listOf(
-                        Token.Type.List(),
-                        Token.SpecialChar.SquareBracketStart(),
-                        Token.Type.Number(),
-                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Type.List,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myList"),
-                        Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Number()),
+                                TreeNode.Type.List(TreeNode.Type.Number),
                                 TreeNode.Command.Expression.Value.Identifier("myList")
                         )
                 )
@@ -146,22 +146,22 @@ class CollectionDeclarationTests {
     fun parseListDeclarationWithAssignment() {
         assertThat(
                 listOf(
-                        Token.Type.List(),
-                        Token.SpecialChar.SquareBracketStart(),
-                        Token.Type.Number(),
-                        Token.SpecialChar.SquareBracketEnd(),
+                        Token.Type.List,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("MyList"),
-                        Token.SpecialChar.Equals(),
-                        Token.SpecialChar.SquareBracketStart(),
-                        Token.Literal.Number("5.0"),
-                        Token.SpecialChar.ListSeparator(),
-                        Token.Literal.Number("10.0"),
-                        Token.SpecialChar.SquareBracketEnd(),
-                        Token.SpecialChar.EndOfLine()
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.ListSeparator,
+                        Token.Literal.Number(10.0),
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Number()),
+                                TreeNode.Type.List(TreeNode.Type.Number),
                                 TreeNode.Command.Expression.Value.Identifier("MyList"),
                                 TreeNode.Command.Expression.Value.Literal.List(
                                         listOf(
@@ -177,17 +177,17 @@ class CollectionDeclarationTests {
     @org.junit.jupiter.api.Test
     fun failsOnListAssignmentWithTooFewSeparators() {
         val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.List())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Type.List)
+            yield(Token.SpecialChar.SquareBracketStart)
+            yield(Token.Type.Number)
+            yield(Token.SpecialChar.SquareBracketEnd)
             yield(Token.Identifier("MyList"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Literal.Number("5.0"))
-            yield(Token.Literal.Number("10.0"))
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.Equals)
+            yield(Token.SpecialChar.SquareBracketStart)
+            yield(Token.Literal.Number(5.0))
+            yield(Token.Literal.Number(10.0))
+            yield(Token.SpecialChar.SquareBracketEnd)
+            yield(Token.SpecialChar.EndOfLine)
         })
         Assertions.assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
 
@@ -196,19 +196,19 @@ class CollectionDeclarationTests {
     @org.junit.jupiter.api.Test
     fun failsOnListAssignmentWithTooManySeparators() {
         val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.List())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Type.Number())
-            yield(Token.SpecialChar.SquareBracketEnd())
+            yield(Token.Type.List)
+            yield(Token.SpecialChar.SquareBracketStart)
+            yield(Token.Type.Number)
+            yield(Token.SpecialChar.SquareBracketEnd)
             yield(Token.Identifier("MyList"))
-            yield(Token.SpecialChar.Equals())
-            yield(Token.SpecialChar.SquareBracketStart())
-            yield(Token.Literal.Number("5.0"))
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.SpecialChar.ListSeparator())
-            yield(Token.Literal.Number("10.0"))
-            yield(Token.SpecialChar.SquareBracketEnd())
-            yield(Token.SpecialChar.EndOfLine())
+            yield(Token.SpecialChar.Equals)
+            yield(Token.SpecialChar.SquareBracketStart)
+            yield(Token.Literal.Number(5.0))
+            yield(Token.SpecialChar.ListSeparator)
+            yield(Token.SpecialChar.ListSeparator)
+            yield(Token.Literal.Number(10.0))
+            yield(Token.SpecialChar.SquareBracketEnd)
+            yield(Token.SpecialChar.EndOfLine)
         })
         Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }

@@ -4,48 +4,40 @@ package lexer
  * Lexical getTokenSequence emitted by the lexer
  */
 sealed class Token {
-    data class Identifier(val value: String) : Token() {
-        override fun toString() = super.toString() + "[$value]"
-    }
+    data class Identifier(val value: String) : Token()
 
     override fun toString() = this::class.simpleName!!
 
     sealed class Literal : Token() {
-        class Text(val value: String) : Literal() {
-            override fun toString() = super.toString() + "[$value]"
-        }
-        class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal() {
-            override fun toString() = super.toString() + "[$value]"
-        }
-        class Bool(val value: Boolean) : Literal() {
-            override fun toString() = super.toString() + "[$value]"
-        }
+        data class Text(val value: String) : Literal()
+        data class Number(val value: Double) : Literal()
+        data class Bool(val value: Boolean) : Literal()
     }
 
     sealed class SpecialChar : Token() {
-        class BlockStart : SpecialChar()
-        class BlockEnd : SpecialChar()
-        class SquareBracketStart : SpecialChar()
-        class SquareBracketEnd : SpecialChar()
-        class ParenthesesStart : SpecialChar()
-        class ParenthesesEnd : SpecialChar()
-        class EndOfLine : SpecialChar()
-        class ListSeparator : SpecialChar()
-        class LineContinue : SpecialChar()
-        class Equals : SpecialChar()
-        class Colon : SpecialChar()
+        object BlockStart : SpecialChar()
+        object BlockEnd : SpecialChar()
+        object SquareBracketStart : SpecialChar()
+        object SquareBracketEnd : SpecialChar()
+        object ParenthesesStart : SpecialChar()
+        object ParenthesesEnd : SpecialChar()
+        object EndOfLine : SpecialChar()
+        object ListSeparator : SpecialChar()
+        object LineContinue : SpecialChar()
+        object Equals : SpecialChar()
+        object Colon : SpecialChar()
     }
 
     sealed class Type : Token() {
-        class Var : Type()
-        class None : Type()
-        class Text : Type()
-        class Number : Type()
-        class Bool : Type()
-        class Tuple : Type()
-        class List : Type()
-        class Func : Type()
+        object Var : Type()
+        object None : Type()
+        object Text : Type()
+        object Number : Type()
+        object Bool : Type()
+        object Tuple : Type()
+        object List : Type()
+        object Func : Type()
     }
 
-    class Return : Token()
+    object Return : Token()
 }
