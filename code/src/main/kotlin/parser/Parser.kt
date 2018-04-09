@@ -223,8 +223,8 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
         // the token will be a literal, but it could also be an identifier.
         when(current.token) {
-            is Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()
-            is Token.SpecialChar.ParenthesesStart -> {
+            Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()
+            Token.SpecialChar.ParenthesesStart -> {
                 if (peek().token is Token.Type || peek().token == Token.SpecialChar.ParenthesesEnd) {
                     return parseLambdaDeclaration()
                 }
@@ -260,9 +260,9 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         val elements = mutableListOf<TreeNode.Command.Expression>()
         moveNext()
         while (true){
-            when {
-                current.token is Token.Literal -> elements.add(acceptLiteral())
-                current.token is Token.Identifier -> elements.add(acceptIdentifier())
+            when(current.token) {
+                is Token.Literal -> elements.add(acceptLiteral())
+                is Token.Identifier -> elements.add(acceptIdentifier())
                 else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
                         lexer.inputLine(current.lineNumber), current.token)
             }
@@ -280,9 +280,9 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
         val elements = mutableListOf<TreeNode.Command.Expression>()
         moveNext()
         while (true) {
-            when {
-                current.token is Token.Literal -> elements.add(acceptLiteral())
-                current.token is Token.Identifier -> elements.add(acceptIdentifier())
+            when(current.token) {
+                is Token.Literal -> elements.add(acceptLiteral())
+                is Token.Identifier -> elements.add(acceptIdentifier())
                 else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
                                                    lexer.inputLine(current.lineNumber), current.token)
             }
