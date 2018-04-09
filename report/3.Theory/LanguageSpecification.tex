@@ -65,9 +65,9 @@ func[num,num,none] addNumbers = (num a, num b): num {
 \end{lstlisting}
 
 The return statement is noticeably missing in the first function.
-"return" is optional if the function body only contains a single expression. 
+\texttt{return} is optional if the function body only contains a single expression. 
 This makes sense when using using lambdas, where return statements are often implicitly written. 
-If the function contains more than one expression "return" has to be explicit.
+If the function contains more than one expression \texttt{return} has to be explicit.
 
 
 \textbf{Grammar for declarations}\\
@@ -134,10 +134,10 @@ This can be amended by structuring calculations in a left-to-right manner, or by
 
 \textbf{High order functions}\\
 As mentioned in section \ref{subsec:hofhcl}, the language will include high-order functions. 
-To declare that a function will accept other functions, that the developer should simply declare a parameter of type "func" with the expected input and output types from the function.
+To declare that a function will accept other functions, the developer should simply declare a parameter of type "func" with the expected input and output types explicitly stated from the function.
 
 Both predeclared functions and anonymous in-line functions can be passed as parameters. 
-However, if using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. 
+However, when using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. 
 Since lambdas should not be prefixed with a colon, it makes it impossible for a lambda to be invoked in-line. 
 Therefore lambdas may only be passed as parameters, and never invoked by themselves.
 below is an example of how high-order functionality is used in HCL.
@@ -166,10 +166,11 @@ If on the other hand two strings were passed, the function could be implemented 
 
 Function overloading in HCL is limited in that functions can not be overloaded with same parameters but different return types. 
 Functions can only be overloaded to return different types, if the types of the parameters vary.
-Furthermore overloading with different amounts of parameters are also not possible in HCL.
+Furthermore overloading with different amounts of parameters is not possible in HCL.
 This is because of multiple reasons, one being simplicity for the user, not accidentally adding an unexpected parameter to a function call. 
 Another being simplicity in the parsing of the function parameters. 
 Since the ability to overload with different amount of parameters brings next to nothing to the language, it was decided that it was not worth the effort to implement.
+Should it be neccesary to overload functions with varying lenghts of input-parameters, it can be done utilizing tuples or lists.
 
 Function overloading requires nothing special of the user, just declare two functions with the same amount of parameters, but with different types. 
 See listings below for example
@@ -213,4 +214,4 @@ var map = (list[T1] elementsToMap, func[T1, T2] mapFunction) -> list[T2] {
 \end{lstlisting}
 
 Generic types in the above example is T1 and T2. 
-Since nothing type specific ever happens with these types, we can handle all types the same, whether that be a string, a number or some other type will not matter.
+Since nothing type specific ever happens with these types, they can all be handled the same way, whether that be a string, a number or some other type will not matter.
