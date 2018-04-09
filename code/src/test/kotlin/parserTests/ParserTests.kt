@@ -625,6 +625,20 @@ class ParserTests {
 
     //endregion ListTypeDcl
 
+    // region Fuckups
+
+    @org.junit.jupiter.api.Test
+    fun testParserStartWithError() {
+        val lexer = DummyLexer(buildSequence {
+            yield(Token.SpecialChar.Equals())
+            yield(Token.SpecialChar.EndOfLine())
+        })
+
+        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+    }
+
+    // endregion
+
     class DummyLexer(val tokens: Sequence<Token>): ILexer {
         override fun getTokenSequence() = buildSequence {
             tokens.forEach { yield(PositionalToken(it, -1, -1)) }
