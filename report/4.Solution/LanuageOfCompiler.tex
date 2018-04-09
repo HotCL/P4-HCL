@@ -34,7 +34,8 @@ Therefore execution time of the compiler will never really affect the end user, 
 \subsection{Output language of the compiler}
 The group initially wanted to compile to assembly, primarily for educational purposes, however as the initial brainstorming took place, the group quickly realized that they wanted a big set of possibilities, which would waste a lot of development time on code generation. 
 In order to save time, the group agreed on compiling to C++, the language that Arduino software is normally written in.
-When writing code in the Arduino IDE, it gives access to a couple of predefined methods for interacting with I/O devices and then through a C/C++ compiler\cite{ArFAQ}.
+When writing code in the Arduino IDE, it gives access to predefined methods for interacting with I/O devices.
+It then runs the code through a C/C++ compiler\cite{ArFAQ}.
 However, the standard library is not accessible in the Arduino language, which means that dynamic lists, vectors, and other similar constructs are not accessible.
 Therefore it was required that the development team of HCL would implement some of these constructs manually.
 However, this is still a lot easier than compiling to assembly directly. 
