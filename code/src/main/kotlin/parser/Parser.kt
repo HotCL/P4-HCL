@@ -1,5 +1,7 @@
 package parser
 
+import parser.typechecker.ITypeChecker
+import parser.typechecker.TypeChecker
 import exceptions.ImplicitTypeNotAllowed
 import exceptions.InitializedFunctionParameterError
 import exceptions.UnexpectedTokenError
@@ -7,13 +9,11 @@ import exceptions.WrongTokenTypeError
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
-import parser.symboltable.ISymbolTable
-import parser.symboltable.SymbolTable
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
-class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
+class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
         while (hasNext()) {
@@ -40,10 +40,24 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
                     }
                     else -> TODO("Function call without parameters")
                 }
+
+                retrieveSymbol(current.token.value).handle(
+                        { TreeNode.Command.Expression.FunctionCall(
+                                TreeNode.Command.Expression.Value.Identifier(current.token.value),
+                                listOf()
+                                )
+                        },
+                        { it },
+                        { throw Exception("Not declared identifier") }
+                )
             }
         // TODO "Make this a unexpected token exception once that is implemented..."
             else -> throw NotImplementedException()
         }
+    }
+
+    private fun parseFunctionCall(): TreeNode.Command.Expression.FunctionCall {
+
     }
 
     private inline fun<reified T: Token> accept(): T {

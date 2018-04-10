@@ -1,0 +1,48 @@
+package parser.typechecker
+
+import parser.TreeNode.Command.Expression
+import parser.TreeNode
+import parser.symboltable.ISymbolTable
+import parser.symboltable.SymbolTable
+
+class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
+
+    override fun checkExpressionTypeMatchesSymbolType(expr: Expression, symbol: String) =
+            retrieveSymbol(symbol).identifier == getTypeOfExpression(expr)
+
+    override fun getTypeOfExpression(expr: Expression): TreeNode.Type = when (expr) {
+        is Expression.Value.Literal.Number -> TreeNode.Type.Number
+        is Expression.Value.Literal.Bool -> TreeNode.Type.Bool
+        is Expression.Value.Literal.List -> TreeNode.Type.List(getTypeOfListExpression(expr))
+        is Expression.Value.Literal.Text -> TreeNode.Type.Text
+        is Expression.Value.Literal.Tuple -> TreeNode.Type.Tuple(getTypeOfTupleExpression(expr))
+        is Expression.Value.Identifier -> retrieveSymbol(expr.name).handle(
+                { TreeNode.Type.Func.ImplicitFunc },
+                { it },
+                { throw Exception("Undeclared identifier") }
+        )
+        is Expression.FunctionCall -> {
+            val functionDeclarationsSymbol = retrieveSymbol(expr.identifier.name)
+            if (!functionDeclarationsSymbol.isFunctions)
+                throw Exception("Function with name ${expr.identifier.name} was not defined in symbol table")
+            val functionDeclarations = functionDeclarationsSymbol.functions
+            val parameterTypes = expr.parameters.map { getTypeOfExpression(it) }
+            val functionDeclaration = functionDeclarations.firstOrNull {
+                it.paramTypes == parameterTypes
+            } ?: throw Exception("No function declaration with provided parameters")
+            functionDeclaration.returnType
+        }
+        is Expression.LambdaExpression -> expr.returnType
+    }
+
+    private fun getTypeOfListExpression(list: Expression.Value.Literal.List): TreeNode.Type {
+        val ret = getTypeOfExpression(list.elements[0])
+        list.elements.drop(1).forEach {
+            if (ret != getTypeOfExpression(it)) throw Exception("List has elements of different types")
+        }
+        return ret
+    }
+
+    private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =
+            tuple.elements.map { getTypeOfExpression(it) }
+}

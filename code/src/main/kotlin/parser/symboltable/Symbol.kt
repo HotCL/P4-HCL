@@ -11,13 +11,12 @@ class Symbol(private val types: List<TreeNode.Type>) {
     }
     val identifier get() = types.first()
 
-    fun handle(funHandler: (List<TreeNode.Type.Func.ExplicitFunc>) -> Unit, idHandler: (TreeNode.Type) -> Unit,
-               errorHandler: () -> Unit) {
+    fun<T> handle(funHandler: (List<TreeNode.Type.Func.ExplicitFunc>) -> T, idHandler: (TreeNode.Type) -> T,
+               errorHandler: () -> T) =
         when {
             isFunctions -> funHandler(functions)
             undeclared -> errorHandler()
             else -> idHandler(identifier)
         }
-    }
 }
 
