@@ -37,7 +37,7 @@ class SymbolTableTest {
     @Test
     fun testFunctionDeclarationsSymbolTable() {
         val st = SymbolTable()
-        st.enterSymbol("myFun", TreeNode.Type.Func(listOf(TreeNode.Type.Number), TreeNode.Type.Bool))
+        st.enterSymbol("myFun", TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Number), TreeNode.Type.Bool))
         val symbol = st.retrieveSymbol("myFun").functions
         assertTrue(symbol[0].paramTypes[0] == TreeNode.Type.Number)
         assertTrue(symbol[0].returnType == TreeNode.Type.Bool)
@@ -46,8 +46,8 @@ class SymbolTableTest {
     @Test
     fun testFunctionDeclarationsMultipleScopesSymbolTable() {
         val st = SymbolTable()
-        st.enterSymbol("myFun", TreeNode.Type.Func(listOf(TreeNode.Type.Number), TreeNode.Type.Bool))
-        st.enterSymbol("myFun", TreeNode.Type.Func(listOf(TreeNode.Type.Bool), TreeNode.Type.Number))
+        st.enterSymbol("myFun", TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Number), TreeNode.Type.Bool))
+        st.enterSymbol("myFun", TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Bool), TreeNode.Type.Number))
         st.openScope()
         val symbol = st.retrieveSymbol("myFun").functions
         assertTrue(symbol[0].paramTypes[0] == TreeNode.Type.Number)
@@ -62,8 +62,8 @@ class SymbolTableTest {
         val st = SymbolTable()
         st.enterSymbol("myFun", TreeNode.Type.Number)
         st.openScope()
-        st.enterSymbol("myFun", TreeNode.Type.Func(listOf(TreeNode.Type.Number), TreeNode.Type.Bool))
-        st.enterSymbol("myFun", TreeNode.Type.Func(listOf(TreeNode.Type.Bool), TreeNode.Type.Number))
+        st.enterSymbol("myFun", TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Number), TreeNode.Type.Bool))
+        st.enterSymbol("myFun", TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Bool), TreeNode.Type.Number))
         st.openScope()
         val symbol = st.retrieveSymbol("myFun").functions
         assertTrue(symbol[0].paramTypes[0] == TreeNode.Type.Number)
