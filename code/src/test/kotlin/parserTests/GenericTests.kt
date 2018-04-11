@@ -56,15 +56,53 @@ class GenericTests {
     fun canParseNumAssignment() {
         assertThat(
                 listOf(
+                        Token.Type.Number,
+                        Token.Identifier("myId"),
+                        Token.SpecialChar.EndOfLine,
                         Token.Identifier("myId"),
                         Token.SpecialChar.Equals,
                         Token.Literal.Number(5.0),
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Number,
+                                TreeNode.Command.Expression.Value.Identifier("myId")
+                        ),
                         TreeNode.Command.Assignment(
                                 TreeNode.Command.Expression.Value.Identifier("myId"),
                                 TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        )
+                )
+        )
+    }
+
+
+    @Test
+    fun canParseNumAssignmentWithIdentifier() {
+        assertThat(
+                listOf(
+                        Token.Type.Number,
+                        Token.Identifier("myNumber"),
+                        Token.SpecialChar.Equals,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.EndOfLine,
+                        Token.Type.Number,
+                        Token.Identifier("myId"),
+                        Token.SpecialChar.Equals,
+                        Token.Identifier("myNumber"),
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Number,
+                                TreeNode.Command.Expression.Value.Identifier("myNumber"),
+                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        ),
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Number,
+                                TreeNode.Command.Expression.Value.Identifier("myId"),
+                                TreeNode.Command.Expression.Value.Identifier("myNumber")
                         )
                 )
         )

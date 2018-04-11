@@ -1,12 +1,8 @@
 package parser
 
-import com.sun.org.apache.xerces.internal.util.SymbolTable
+import exceptions.*
 import parser.typechecker.ITypeChecker
 import parser.typechecker.TypeChecker
-import exceptions.ImplicitTypeNotAllowed
-import exceptions.InitializedFunctionParameterError
-import exceptions.UnexpectedTokenError
-import exceptions.WrongTokenTypeError
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
@@ -74,8 +70,11 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     }
 
     private fun acceptEndOfLines() {
+        if (current.token != Token.SpecialChar.EndOfLine && peek().token == Token.SpecialChar.EndOfLine)
+            moveNext()
         while (current.token == Token.SpecialChar.EndOfLine && hasNext())
             accept<Token.SpecialChar.EndOfLine>()
+
     }
 
     private fun acceptIdentifier() =
@@ -114,7 +113,6 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
     private fun parseDeclaration(): TreeNode.Command.Declaration {
         val type = parseType(implicitAllowed = true)
-
         val identifier = acceptIdentifier()
         enterSymbol(identifier.name, type)
         val expression = if (current.token == Token.SpecialChar.Equals) {
@@ -123,7 +121,8 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         } else null
         if (expression != null) {
             if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
-                throw Exception("Type of expression does not match type of identifier")
+                throw UnexpectedTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                                          type.toString(), getTypeOfExpression(expression).toString())
         }
         return TreeNode.Command.Declaration(type, identifier, expression)
     }
@@ -132,8 +131,10 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val identifier = acceptIdentifier()
         accept<Token.SpecialChar.Equals>()
         val expression = parseExpression()
-        if (checkExpressionTypeMatchesSymbolType(expression, identifier.name))
-            throw Exception("Type of expression does not match type of identifier")
+        if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
+            throw UnexpectedTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                                      retrieveSymbol(identifier.name).identifier.toString(),
+                                      getTypeOfExpression(expression).toString())
         return TreeNode.Command.Assignment(identifier, expression)
     }
 

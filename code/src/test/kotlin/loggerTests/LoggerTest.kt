@@ -108,4 +108,18 @@ class TokenTest {
                         " | -->help: 'none' can only be used as a functions return-type.\n",
                 logger.buffer.toString())
     }
+    @org.junit.jupiter.api.Test
+    fun testUnexpectedTypeError() {
+        val error = UnexpectedTypeError(50, 8, "num x = \"five\"", "num",
+                              "txt")
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: UnexpectedTypeError found at line 50 index 8:\n" +
+                        " | num x = \"five\"\n" +
+                        " |         ^--\n" +
+                        " | Cannot implicit cast type 'txt' to type 'num'.\n" +
+                        " | -->help: Try casting your types to match eachother.\n",
+                logger.buffer.toString())
+    }
 }
