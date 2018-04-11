@@ -10,6 +10,9 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     override fun checkExpressionTypeMatchesSymbolType(expr: Expression, symbol: String) =
             retrieveSymbol(symbol).identifier == getTypeOfExpression(expr)
 
+    override fun checkExpressionTypesMatch(expr1: Expression, expr2: Expression): Boolean =
+            getTypeOfExpression(expr1) == getTypeOfExpression(expr2)
+
     override fun getTypeOfExpression(expr: Expression): TreeNode.Type = when (expr) {
         is Expression.Value.Literal.Number -> TreeNode.Type.Number
         is Expression.Value.Literal.Bool -> TreeNode.Type.Bool
