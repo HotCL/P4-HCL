@@ -1,4 +1,4 @@
-package generationTests.analytics
+package generation
 
 import parser.AbstractSyntaxTree
 

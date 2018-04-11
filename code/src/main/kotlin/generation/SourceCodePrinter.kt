@@ -1,4 +1,4 @@
-package generationTests.analytics
+package generation
 
 import parser.AbstractSyntaxTree
 import parser.TreeNode
@@ -26,7 +26,6 @@ class SourceCodePrinter : IPrinter {
 
 
     private fun TreeNode.Command.Expression.visit(): String = when(this){
-
         is TreeNode.Command.Expression.Value.Identifier -> this.name
         is TreeNode.Command.Expression.Value.Literal.Number -> this.value.toString()
         is TreeNode.Command.Expression.Value.Literal.Text -> "\"${this.value}\""

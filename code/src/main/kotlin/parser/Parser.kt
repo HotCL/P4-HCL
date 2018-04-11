@@ -284,7 +284,7 @@ class Parser(val lexer: ILexer): IParser, ISymbolTable by SymbolTable(),
                 is Token.Literal -> elements.add(acceptLiteral())
                 is Token.Identifier -> elements.add(acceptIdentifier())
                 else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
-                                                   lexer.inputLine(current.lineNumber), current.token)
+                        lexer.inputLine(current.lineNumber), current.token)
             }
             if (current.token == Token.SpecialChar.ListSeparator) moveNext()
             else break
