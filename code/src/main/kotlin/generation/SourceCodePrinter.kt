@@ -4,6 +4,9 @@ import parser.AbstractSyntaxTree
 import parser.TreeNode.Command
 import parser.TreeNode.Type
 
+/**
+ * Outputs in the syntax of the source language, HCL.
+ */
 class SourceCodePrinter : IPrinter {
     override fun generateOutput(ast: AbstractSyntaxTree): String = ast.children.visit()
 
