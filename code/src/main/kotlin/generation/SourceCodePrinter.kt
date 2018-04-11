@@ -3,6 +3,9 @@ package generation
 import parser.AbstractSyntaxTree
 import parser.TreeNode
 
+/**
+ * Outputs in the syntax of the source language, HCL.
+ */
 class SourceCodePrinter : IPrinter {
     override fun generateOutput(ast: AbstractSyntaxTree): String = ast.children.visit()
 
