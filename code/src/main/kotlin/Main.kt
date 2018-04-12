@@ -7,7 +7,7 @@ fun main(args: Array<String>) {
             "list[list[num]] myListList = [myList]"
 
     val lexer = Lexer(code)
-    println("Tokens: \n" + lexer.getTokenSequence().joinToString(",\n") { "${it.token}" })
+    println("Tokens: \n" + lexer.getTokenSequence().joinToString(",\n") { "${it.token::class.qualifiedName}" })
     val parser = Parser(lexer)
     println("Ast: " + parser.generateAbstractSyntaxTree())
 }
