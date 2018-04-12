@@ -20,9 +20,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
         is Expression.Value.Literal.Text -> TreeNode.Type.Text
         is Expression.Value.Literal.Tuple -> TreeNode.Type.Tuple(getTypeOfTupleExpression(expr))
         is Expression.Value.Identifier -> retrieveSymbol(expr.name).handle(
-                // Return ImplicitFunc to show that the identifier matches a function, but not sure which which
-                // overloading version of the function that matches.
-                { if (it.size == 1) it.first() else TreeNode.Type.Func.ImplicitFunc },
+                { it.getTypeDeclaration(listOf())?.let { it } ?:
+                    throw Exception("Can't invoke function, since no overloading with no parameters exist") },
                 { it },
                 { throw Exception("Undeclared identifier") }
         )
@@ -32,9 +31,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
                 throw Exception("Function with name ${expr.identifier.name} was not defined in symbol table")
             val functionDeclarations = functionDeclarationsSymbol.functions
             val parameterTypes = expr.parameters.map { getTypeOfExpression(it) }
-            val functionDeclaration = functionDeclarations.firstOrNull {
-                it.paramTypes == parameterTypes
-            } ?: throw Exception("No function declaration with provided parameters")
+            val functionDeclaration = functionDeclarations.getTypeDeclaration(parameterTypes)
+                    ?: throw Exception("No function declaration with provided parameters")
             functionDeclaration.returnType
         }
         is Expression.LambdaExpression -> TreeNode.Type.Func.ExplicitFunc(
@@ -53,4 +51,9 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
     private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =
             tuple.elements.map { getTypeOfExpression(it) }
+
+    fun List<TreeNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<TreeNode.Type>) =
+            this.firstOrNull{ it.paramTypes == types }
+
+    override val TreeNode.Command.Expression.type get() = getTypeOfExpression(this)
 }

@@ -95,8 +95,7 @@ class CollectionDeclarationTests {
             yield(Token.SpecialChar.ParenthesesEnd)
             yield(Token.SpecialChar.EndOfLine)
         })
-        val exception = Assertions.assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        Assertions.assertEquals("Unrecognized expression", exception.message)
+        Assertions.assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test

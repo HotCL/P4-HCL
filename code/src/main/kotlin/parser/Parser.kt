@@ -24,7 +24,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val command = when (current.token) {
             is Token.Type -> parseDeclaration()
             is Token.Identifier -> {
-                if (peek().token is Token.SpecialChar.Equals) {
+                if (peek().token == Token.SpecialChar.Equals) {
                     parseAssignment()
                 }
                 else parseExpression()
@@ -204,7 +204,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parseLambdaDeclaration(): TreeNode.Command.Expression.LambdaExpression {
         val parameters = parseFunctionParameters()
         accept<Token.SpecialChar.Colon>()
-        val returnType = if(current.token == Token.Type.None){
+        val returnType = if (current.token == Token.Type.None) {
             moveNext()
             TreeNode.Type.None
         } else parseType()
@@ -240,46 +240,47 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 //endregion
 
     //region ExpressionParsing
-    private fun parseExpression(): TreeNode.Command.Expression {
+    private fun parseExpression(): TreeNode.Command.Expression =
         when(current.token) {
-            Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()
+            Token.SpecialChar.SquareBracketStart -> parseListDeclaration()
             Token.SpecialChar.ParenthesesStart -> {
                 if (peek().token is Token.Type || peek().token == Token.SpecialChar.ParenthesesEnd) {
-                    return parseLambdaDeclaration()
+                    parseLambdaDeclaration()
                 }
                 else {
-                    var counter = 1
-                    while (true) {
-                        if (lookAhead(counter).token == Token.SpecialChar.ListSeparator) return parseTupleExpression()
-                        else if (lookAhead(counter++).token == Token.SpecialChar.ParenthesesEnd) break
+                    if (upcomingTuple()) parseTupleExpression() else {
+                        accept<Token.SpecialChar.ParenthesesStart>()
+                        parseExpression().apply { accept<Token.SpecialChar.ParenthesesEnd>() }
                     }
                 }
             }
             is Token.Literal.Text,
             is Token.Literal.Bool,
-            is Token.Literal.Number -> {
-                return when {
-                    isLiteral(peek().token) -> acceptLiteral()
-                    peek().token is Token.Identifier -> parseFunctionCall(acceptLiteral())
-                    else -> throw Exception("Unexpected token")
+            is Token.Literal.Number -> acceptLiteral()
+            is Token.Identifier -> {
+                val identifier = retrieveSymbol(current.token.value)
+                when  {
+                    peek().token is Token.Identifier -> parseFunctionCall(acceptIdentifier())
+                    identifier.isIdentifier -> acceptIdentifier()
+                    else -> parseFunctionCall()
                 }
             }
-            is Token.Identifier -> {
-                val identifier = retrieveSymbol(current.token.value).handle(
-                        { TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier(current.token.value),
-                                listOf()
-                        )
-                        },
-                        { it },
-                        { throw Exception("Not declared identifier") }
-                )
-                return if (identifier is TreeNode.Type && isLiteral(peek().token)) acceptIdentifier()
-                else if (identifier is TreeNode.Type) parseFunctionCall(acceptIdentifier())
-                else parseFunctionCall()
+            else -> throw UnexpectedTokenError(current, lexer.inputLine(current.lineNumber))
+        }
+
+    private fun upcomingTuple(): Boolean {
+        var lookAhead = 1
+        var depth = 0
+        while (hasAhead(lookAhead++)) {
+            when (lookAhead(lookAhead).token) {
+                Token.SpecialChar.ParenthesesEnd -> if (depth == 0) return false else depth--
+                Token.SpecialChar.ParenthesesStart,
+                Token.SpecialChar.SquareBracketStart -> depth++
+                Token.SpecialChar.SquareBracketEnd -> depth--
+                Token.SpecialChar.ListSeparator -> if (depth == 0) return true
             }
         }
-        throw Exception("Unrecognized expression")
+        throw Exception("Unclosed parentheses")
     }
 
     // TODO Find a better name for this, as it is also used for identifiers
@@ -289,45 +290,31 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             || token == Token.SpecialChar.ParenthesesEnd
     )
 
-    private fun parseTupleExpression(): TreeNode.Command.Expression {
-        val elements = mutableListOf<TreeNode.Command.Expression>()
-        moveNext()
-        while (true){
-            when(current.token) {
-                is Token.Literal -> elements.add(acceptLiteral())
-                is Token.Identifier -> elements.add(acceptIdentifier())
-                else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
-                        lexer.inputLine(current.lineNumber), current.token)
+    private fun parseTupleExpression() =
+        TreeNode.Command.Expression.Value.Literal.Tuple(
+            mutableListOf<TreeNode.Command.Expression>().apply {
+                accept<Token.SpecialChar.ParenthesesStart>()
+                while (current.token != Token.SpecialChar.ParenthesesEnd) {
+                    add(parseExpression())
+                    if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
+                }
+                accept<Token.SpecialChar.ParenthesesEnd>()
             }
-            if (current.token == Token.SpecialChar.ListSeparator) moveNext()
-            else break
-        }
-        if (current.token != Token.SpecialChar.ParenthesesEnd)
-            throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                    Token.SpecialChar.ParenthesesEnd::class.simpleName, current.token)
-        moveNext()
-        return TreeNode.Command.Expression.Value.Literal.Tuple(elements)
-    }
+        )
 
-    private fun parseListDeclaration(): TreeNode.Command.Expression {
-        val elements = mutableListOf<TreeNode.Command.Expression>()
-        moveNext()
-        while (true) {
-            when(current.token) {
-                is Token.Literal -> elements.add(acceptLiteral())
-                is Token.Identifier -> elements.add(acceptIdentifier())
-                else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
-                                                   lexer.inputLine(current.lineNumber), current.token)
+    private fun parseListDeclaration() =
+        TreeNode.Command.Expression.Value.Literal.List(
+            mutableListOf<TreeNode.Command.Expression>().apply {
+                accept<Token.SpecialChar.SquareBracketStart>()
+                while (current.token != Token.SpecialChar.SquareBracketEnd) {
+                    add(parseExpression())
+                    if (first().type != last().type)
+                        throw Exception("Element ${last()} did not match type of first element in list")
+                    if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
+                }
+                accept<Token.SpecialChar.SquareBracketEnd>()
             }
-            if (current.token == Token.SpecialChar.ListSeparator) moveNext()
-            else break
-        }
-        if (current.token != Token.SpecialChar.SquareBracketEnd)
-            throw WrongTokenTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                    Token.SpecialChar.SquareBracketEnd::class.simpleName, current.token)
-        moveNext()
-        return TreeNode.Command.Expression.Value.Literal.List(elements)
-    }
+        )
 
     private fun parseSecondaryFunctionParameter(): TreeNode.Command.Expression {
         return when(current.token) {
