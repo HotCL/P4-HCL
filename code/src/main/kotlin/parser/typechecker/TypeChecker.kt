@@ -35,7 +35,10 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             } ?: throw Exception("No function declaration with provided parameters")
             functionDeclaration.returnType
         }
-        is Expression.LambdaExpression -> expr.returnType
+        is Expression.LambdaExpression -> TreeNode.Type.Func.ExplicitFunc(
+                expr.paramDeclarations.map { it.type },
+                expr.returnType
+        )
     }
 
     private fun getTypeOfListExpression(list: Expression.Value.Literal.List): TreeNode.Type {

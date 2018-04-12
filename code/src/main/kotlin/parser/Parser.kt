@@ -114,15 +114,22 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parseDeclaration(): TreeNode.Command.Declaration {
         val type = parseType(implicitAllowed = true)
         val identifier = acceptIdentifier()
-        enterSymbol(identifier.name, type)
         val expression = if (current.token == Token.SpecialChar.Equals) {
             moveNext()
             parseExpression()
         } else null
+        
+        if (expression == null && type == TreeNode.Type.Func.ImplicitFunc)
+            throw Exception("Cannot declare implicit func without body")
+        if (expression != null && type == TreeNode.Type.Func.ImplicitFunc) {
+            enterSymbol(identifier.name, getTypeOfExpression(expression))
+        }
+        else enterSymbol(identifier.name, type)
+
         if (expression != null) {
             if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
                 throw UnexpectedTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                                          type.toString(), getTypeOfExpression(expression).toString())
+                        type.toString(), getTypeOfExpression(expression).toString())
         }
         return TreeNode.Command.Declaration(type, identifier, expression)
     }
