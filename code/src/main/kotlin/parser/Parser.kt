@@ -38,7 +38,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             else -> throw UnexpectedTokenError(current.lineNumber, current.lineIndex,
                                                lexer.inputLine(current.lineNumber), current.token)
         }
-        acceptEndOfLines()
+        flushNewLine()
         return command
     }
 
@@ -69,18 +69,10 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         return result
     }
 
-    private fun acceptEndOfLines() {
-        if (hasNext()) accept<Token.SpecialChar.EndOfLine>()
+    private fun flushNewLine(requireNewLine: Boolean = true) {
+        if (hasNext() && requireNewLine) accept<Token.SpecialChar.EndOfLine>()
         while (current.token == Token.SpecialChar.EndOfLine && hasNext())
             accept<Token.SpecialChar.EndOfLine>()
-    }
-
-    private fun acceptEndOfLinesLambda() {
-        if (current.token != Token.SpecialChar.EndOfLine && peek().token == Token.SpecialChar.EndOfLine)
-            moveNext()
-        while (current.token == Token.SpecialChar.EndOfLine && hasNext())
-            accept<Token.SpecialChar.EndOfLine>()
-
     }
 
     private fun acceptIdentifier() =
@@ -215,7 +207,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             TreeNode.Type.None
         } else parseType()
 
-        acceptEndOfLinesLambda()
+        flushNewLine(false)
         val body = parseLambdaBody()
         return TreeNode.Command.Expression.LambdaExpression(parameters, returnType, body)
     }
