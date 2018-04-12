@@ -118,7 +118,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             moveNext()
             parseExpression()
         } else null
-        
+
         if (expression == null && type == TreeNode.Type.Func.ImplicitFunc)
             throw Exception("Cannot declare implicit func without body")
         if (expression != null && type == TreeNode.Type.Func.ImplicitFunc) {
@@ -338,7 +338,10 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             is Token.Literal.Number -> acceptLiteral()
             is Token.Identifier -> {
                 retrieveSymbol(current.token.value).handle(
-                        { throw Exception("Function identifier cannot be a parameter without colon") },
+                        {
+                            if (it.first().paramTypes.isEmpty()) parseFunctionCall()
+                            else throw Exception("Can only parse function calls that don't take arguments as RHS parameter")
+                        },
                         { acceptIdentifier() },
                         { throw Exception("Undeclared identifier") }
                 )
@@ -347,30 +350,43 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         }
     }
 
+    // TODO Make sure the types of arguments match parameters
+    // TODO Make sure a function call without arguments can be used as right-hand-side argument
+    // TODO Exception handling has to be beautiful here
+    // TODO Make 1000000 tests for this!!!!!
     private fun parseFunctionCall(firstParameter: TreeNode.Command.Expression? = null):
             TreeNode.Command.Expression.FunctionCall {
-        // TODO Check if there should've been parameters, but they were forgotten
-        if (firstParameter == null) return TreeNode.Command.Expression.FunctionCall(acceptIdentifier(), listOf())
+        if (firstParameter == null) {
+            val parameters = retrieveSymbol(
+                    (current.token as Token.Identifier).value).functions.first().paramTypes
+
+            if (parameters.isEmpty())
+                return TreeNode.Command.Expression.FunctionCall(acceptIdentifier(), listOf())
+            else throw Exception("The function has been called without arguments. It needs ${parameters.size} arguments")
+        }
         else {
             val functionId = current.token as Token.Identifier
-            val parameters = mutableListOf<TreeNode.Command.Expression>()
-            parameters.add(firstParameter)
+            val arguments = mutableListOf<TreeNode.Command.Expression>()
+            arguments.add(firstParameter)
             val functionList = retrieveSymbol(functionId.value).functions
             moveNext()
             for (item in functionList.first().paramTypes.drop(1)) {
-                parameters.add(parseSecondaryFunctionParameter())
+                arguments.add(parseSecondaryFunctionParameter())
             }
             val functionCall =
                     retrieveSymbol((functionId).value).handle(
                             { TreeNode.Command.Expression.FunctionCall(
-                                    TreeNode.Command.Expression.Value.Identifier(functionId.value), parameters)
+                                    TreeNode.Command.Expression.Value.Identifier(functionId.value), arguments)
                             },
                             { throw Exception("This token must be a function identifier!") },
                             { throw Exception("Undeclared identifier") }
                     )
             // IntelliJ says that current.token is always an identifier, but this is not true!!
-            return if (current.token is Token.Identifier) parseFunctionCall((functionCall))
-            else functionCall
+            return when (current.token) {
+                is Token.Identifier -> parseFunctionCall(functionCall)
+                is Token.SpecialChar.EndOfLine -> functionCall
+                else -> throw Exception("Too many arguments for function ${functionId.value}. It only takes ${arguments.size} arguments")
+            }
         }
     }
 
