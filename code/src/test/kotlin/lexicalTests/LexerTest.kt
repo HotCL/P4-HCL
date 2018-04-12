@@ -375,4 +375,13 @@ class LexerTest {
                 3, 0)
 
     }
+    @org.junit.jupiter.api.Test
+    fun lexerTestNegativeNumber() {
+        val lex = Lexer("-5")
+        val tokens = lex.getTokenSequence().toList()
+
+        assertPositionalToken(tokens[0],
+                { token -> token is lexer.Token.Literal.Number && token.value == -5.0 },
+                0, 0)
+    }
 }

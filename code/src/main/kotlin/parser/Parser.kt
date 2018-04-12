@@ -373,7 +373,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 is Token.Identifier -> parseFunctionCall(functionCall)
                 is Token.SpecialChar.EndOfLine -> functionCall
                 else -> throw Exception("Too many arguments for function ${functionId.value}. It only takes ${arguments.size} arguments")
-            }
+           }
         }
     }
 
