@@ -7,6 +7,7 @@ import lexer.Token
 import org.junit.jupiter.api.Assertions
 import parser.Parser
 import parser.TreeNode
+import sun.reflect.generics.tree.Tree
 import kotlin.coroutines.experimental.buildSequence
 
 class CollectionDeclarationTests {
@@ -99,7 +100,7 @@ class CollectionDeclarationTests {
     }
 
     @org.junit.jupiter.api.Test
-    fun failsOnTupleAssignmentFailsOnTooManySeperators() {
+    fun failsOnTupleAssignmentFailsOnTooManySeparators() {
         val lexer = DummyLexer(buildSequence {
             yield(Token.Type.Tuple)
             yield(Token.SpecialChar.SquareBracketStart)
@@ -167,6 +168,103 @@ class CollectionDeclarationTests {
                                         listOf(
                                                 TreeNode.Command.Expression.Value.Literal.Number(5.0),
                                                 TreeNode.Command.Expression.Value.Literal.Number(10.0)
+                                        )
+                                )
+                        )
+                )
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun parseListWithLists() {
+        assertThat(
+                listOf(
+                        Token.Type.List,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myNumberList"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Literal.Number(10.0),
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.EndOfLine,
+                        Token.Type.List,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.List,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myList"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Identifier("myNumberList"),
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.List(TreeNode.Type.Number),
+                                TreeNode.Command.Expression.Value.Identifier("myNumberList"),
+                                TreeNode.Command.Expression.Value.Literal.List(
+                                        listOf(
+                                                TreeNode.Command.Expression.Value.Literal.Number(10.0)
+                                        )
+                                )
+                        ),
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.List(TreeNode.Type.List(TreeNode.Type.Number)),
+                                TreeNode.Command.Expression.Value.Identifier("myList"),
+                                TreeNode.Command.Expression.Value.Literal.List(
+                                        listOf(
+                                                TreeNode.Command.Expression.Value.Identifier("myNumberList")
+                                        )
+                                )
+                        )
+                )
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun parseListWithFunc() { //TODO(fix this to be List[none] myList = [myFunc]  where myFunc return 'none')
+        assertThat(
+                listOf(
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.None,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.None,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine,
+                        Token.Type.List,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.None,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myList"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.None),
+                                TreeNode.Command.Expression.Value.Identifier("myFunc")
+                        ),
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.List(TreeNode.Type.Func.ExplicitFunc(listOf(),TreeNode.Type.None)),
+                                TreeNode.Command.Expression.Value.Identifier("myList"),
+                                TreeNode.Command.Expression.Value.Literal.List(
+                                        listOf(
+                                                TreeNode.Command.Expression.Value.Identifier("myFunc")
                                         )
                                 )
                         )
