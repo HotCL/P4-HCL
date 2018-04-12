@@ -2,6 +2,7 @@ package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
 import exceptions.ImplicitTypeNotAllowed
+import exceptions.WrongTokenTypeError
 import lexer.Token
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -128,8 +129,7 @@ class FunctionCallTests {
                 Token.Identifier("myFunc"),
                 Token.SpecialChar.EndOfLine
         ))
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertTrue(exception.message == "The function has been called without arguments. It needs 1 arguments")
+        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -157,8 +157,7 @@ class FunctionCallTests {
                 Token.Literal.Number(5.0),
                 Token.SpecialChar.EndOfLine
         ))
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertTrue(exception.message == "Too many arguments for function myFunc. It only takes 1 arguments")
+        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -192,8 +191,7 @@ class FunctionCallTests {
                 Token.Literal.Number(5.0),
                 Token.SpecialChar.EndOfLine
         ))
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertTrue(exception.message == "Can only parse function calls that don't take arguments as RHS parameter")
+        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -317,8 +315,7 @@ class FunctionCallTests {
                 Token.Literal.Text("hej"),
                 Token.SpecialChar.EndOfLine
         ))
-        val exception = assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
-        assertTrue(exception.message == "Too many arguments for function myFunc. It only takes 2 arguments")
+        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test

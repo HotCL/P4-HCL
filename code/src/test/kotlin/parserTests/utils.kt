@@ -2,6 +2,7 @@ package parserTests
 
 import com.natpryce.hamkrest.MatchResult
 import com.natpryce.hamkrest.Matcher
+import generation.SourceCodePrinter
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
@@ -14,11 +15,14 @@ import kotlin.coroutines.experimental.buildSequence
 fun matchesAstChildren(vararg expectedAstChildren: TreeNode.Command): Matcher<List<Token>> =
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
-                println("Test for code:\n" + printTokens(actual))
+                println("Test for code:\n " + printTokens(actual))
                 val actualAst = Parser(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
-                else MatchResult.Mismatch("Expected AST equal to this:\n${expectedAst}\nBut got this:\n${actualAst}")
+                else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n" +
+                        "${SourceCodePrinter().generateOutput(expectedAst)}\n" +
+                        "But got this:\n$actualAst\n" +
+                        "${SourceCodePrinter().generateOutput(actualAst)}\n")
             }
             override val description: String get() = "was equal to the expected AST"
             override val negatedDescription: String get() = "was not equal to the expected AST"

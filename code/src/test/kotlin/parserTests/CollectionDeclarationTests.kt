@@ -231,20 +231,20 @@ class CollectionDeclarationTests {
                 listOf(
                         Token.Type.Func,
                         Token.SpecialChar.SquareBracketStart,
-                        Token.Type.None,
+                        Token.Type.Number,
                         Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myFunc"),
                         Token.SpecialChar.Equals,
                         Token.SpecialChar.ParenthesesStart,
                         Token.SpecialChar.ParenthesesEnd,
                         Token.SpecialChar.Colon,
-                        Token.Type.None,
+                        Token.Type.Number,
                         Token.SpecialChar.BlockStart,
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Type.List,
                         Token.SpecialChar.SquareBracketStart,
-                        Token.Type.None,
+                        Token.Type.Number,
                         Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myList"),
                         Token.SpecialChar.Equals,
@@ -255,15 +255,19 @@ class CollectionDeclarationTests {
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.None),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc")
+                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.Number),
+                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                TreeNode.Command.Expression.LambdaExpression(listOf(), TreeNode.Type.Number, listOf())
                         ),
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Func.ExplicitFunc(listOf(),TreeNode.Type.None)),
+                                TreeNode.Type.List(TreeNode.Type.Number),
                                 TreeNode.Command.Expression.Value.Identifier("myList"),
                                 TreeNode.Command.Expression.Value.Literal.List(
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Identifier("myFunc")
+                                                TreeNode.Command.Expression.FunctionCall(
+                                                        TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                                        listOf()
+                                                        )
                                         )
                                 )
                         )

@@ -20,7 +20,7 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
         is Expression.Value.Literal.Text -> TreeNode.Type.Text
         is Expression.Value.Literal.Tuple -> TreeNode.Type.Tuple(getTypeOfTupleExpression(expr))
         is Expression.Value.Identifier -> retrieveSymbol(expr.name).handle(
-                { it.getTypeDeclaration(listOf())?.let { it } ?:
+                { it.getTypeDeclaration(listOf())?.returnType ?:
                     throw Exception("Can't invoke function, since no overloading with no parameters exist") },
                 { it },
                 { throw Exception("Undeclared identifier") }
@@ -52,7 +52,7 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =
             tuple.elements.map { getTypeOfExpression(it) }
 
-    fun List<TreeNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<TreeNode.Type>) =
+    override fun List<TreeNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<TreeNode.Type>) =
             this.firstOrNull{ it.paramTypes == types }
 
     override val TreeNode.Command.Expression.type get() = getTypeOfExpression(this)
