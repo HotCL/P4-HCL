@@ -200,7 +200,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val returnType = if(current.token == Token.Type.None){
             moveNext()
             TreeNode.Type.None
-        }else parseType()
+        } else parseType()
 
         acceptEndOfLines()
         val body = parseLambdaBody()
@@ -234,8 +234,6 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
     //region ExpressionParsing
     private fun parseExpression(): TreeNode.Command.Expression {
-        // Be aware that below is not correct for the full implementation. Here we expect that if there is only one token
-        // the token will be a literal, but it could also be an identifier.
         when(current.token) {
             Token.SpecialChar.SquareBracketStart -> return parseListDeclaration()
             Token.SpecialChar.ParenthesesStart -> {
@@ -250,17 +248,14 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     }
                 }
             }
-            is Token.Literal.Text -> {
-                return if (isLiteral(peek().token)) acceptLiteral()
-                else parseFunctionCall()
-            }
-            is Token.Literal.Bool -> {
-                return if (isLiteral(peek().token)) acceptLiteral()
-                else parseFunctionCall()
-            }
+            is Token.Literal.Text,
+            is Token.Literal.Bool,
             is Token.Literal.Number -> {
-                return if (isLiteral(peek().token)) acceptLiteral()
-                else parseFunctionCall()
+                return when {
+                    isLiteral(peek().token) -> acceptLiteral()
+                    peek().token is Token.Identifier -> parseFunctionCall(acceptLiteral())
+                    else -> throw Exception("Unexpected token")
+                }
             }
             is Token.Identifier -> {
                 val identifier = retrieveSymbol(current.token.value).handle(
@@ -272,20 +267,20 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                         { it },
                         { throw Exception("Not declared identifier") }
                 )
-                return if (identifier is TreeNode.Type) TreeNode.Command.Expression.Value.Identifier(current.token.value)
+                return if (identifier is TreeNode.Type && isLiteral(peek().token)) acceptIdentifier()
+                else if (identifier is TreeNode.Type) parseFunctionCall(acceptIdentifier())
                 else parseFunctionCall()
-
             }
-            else ->TODO ("Make a function call get and identifier ")
         }
         throw Exception("Unrecognized expression")
     }
 
-    private fun isLiteral(token: Token): Boolean {
-        if (token == Token.SpecialChar.EndOfLine || token == Token.SpecialChar.ListSeparator
-                || token == Token.SpecialChar.ParenthesesEnd) return true
-        return false
-    }
+    // TODO Find a better name for this, as it is also used for identifiers
+    private fun isLiteral(token: Token) = (
+            token == Token.SpecialChar.EndOfLine
+            || token == Token.SpecialChar.ListSeparator
+            || token == Token.SpecialChar.ParenthesesEnd
+    )
 
     private fun parseTupleExpression(): TreeNode.Command.Expression {
         val elements = mutableListOf<TreeNode.Command.Expression>()
@@ -327,8 +322,49 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         return TreeNode.Command.Expression.Value.Literal.List(elements)
     }
 
-    private fun parseFunctionCall(): TreeNode.Command.Expression.FunctionCall {
-        TODO()
+    private fun parseSecondaryFunctionParameter(): TreeNode.Command.Expression {
+        return when(current.token) {
+            Token.SpecialChar.SquareBracketStart,
+            Token.SpecialChar.ParenthesesStart -> parseExpression()
+            is Token.Literal.Text,
+            is Token.Literal.Bool,
+            is Token.Literal.Number -> acceptLiteral()
+            is Token.Identifier -> {
+                retrieveSymbol(current.token.value).handle(
+                        { throw Exception("Function identifier cannot be a parameter without colon") },
+                        { acceptIdentifier() },
+                        { throw Exception("Undeclared identifier") }
+                )
+            }
+            else -> throw Exception("Unrecognized expression")
+        }
+    }
+
+    private fun parseFunctionCall(firstParameter: TreeNode.Command.Expression? = null):
+            TreeNode.Command.Expression.FunctionCall {
+        // TODO Check if there should've been parameters, but they were forgotten
+        if (firstParameter == null) return TreeNode.Command.Expression.FunctionCall(acceptIdentifier(), listOf())
+        else {
+            val functionId = current.token as Token.Identifier
+            val parameters = mutableListOf<TreeNode.Command.Expression>()
+            parameters.add(firstParameter)
+            val functionList = retrieveSymbol(functionId.value).functions
+            moveNext()
+            for (item in functionList.first().paramTypes.drop(1)) {
+                parameters.add(parseSecondaryFunctionParameter())
+            }
+            val functionCall =
+                    retrieveSymbol((functionId).value).handle(
+                            { TreeNode.Command.Expression.FunctionCall(
+                                    TreeNode.Command.Expression.Value.Identifier(functionId.value), parameters)
+                            },
+                            { throw Exception("This token must be a function identifier!") },
+                            { throw Exception("Undeclared identifier") }
+                    )
+            // IntelliJ says that current.token is always an identifier, but this is not true!!
+            return if (current.token is Token.Identifier) parseFunctionCall((functionCall))
+            else functionCall
+        }
     }
 
     //endregion ExpressionParsing
