@@ -20,7 +20,9 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
         is Expression.Value.Literal.Text -> TreeNode.Type.Text
         is Expression.Value.Literal.Tuple -> TreeNode.Type.Tuple(getTypeOfTupleExpression(expr))
         is Expression.Value.Identifier -> retrieveSymbol(expr.name).handle(
-                { TreeNode.Type.Func.ImplicitFunc },
+                // Return ImplicitFunc to show that the identifier matches a function, but not sure which which
+                // overloading version of the function that matches.
+                { if (it.size == 1) it.first() else TreeNode.Type.Func.ImplicitFunc },
                 { it },
                 { throw Exception("Undeclared identifier") }
         )
