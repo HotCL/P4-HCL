@@ -33,6 +33,7 @@ sealed class TreeNode {
         object Text: Type()
         object Bool: Type()
         object None: Type()
+        object Var: Type()
         data class GenericType(val name: String): Type()
         data class List(val elementType: Type): Type()
         sealed class Func: Type() {

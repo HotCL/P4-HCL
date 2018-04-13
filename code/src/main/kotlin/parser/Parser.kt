@@ -6,7 +6,6 @@ import parser.typechecker.TypeChecker
 import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
-import sun.reflect.generics.reflectiveObjects.NotImplementedException
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
@@ -61,13 +60,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         }
     }
 
-    private inline fun<reified T> tryAccept(): Boolean {
-        val token = current.token
-        val result = token is T
-        if (result)
-            moveNext()
-        return result
-    }
+    private inline fun<reified T> tryAccept() = (current.token as? T)?.let { moveNext(); true } ?: false
 
     private fun flushNewLine(requireNewLine: Boolean = true) {
         if (hasNext() && requireNewLine) accept<Token.SpecialChar.EndOfLine>()
@@ -112,35 +105,34 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parseDeclaration(): TreeNode.Command.Declaration {
         val type = parseType(implicitAllowed = true)
         val identifier = acceptIdentifier()
-        val expression = if (current.token == Token.SpecialChar.Equals) {
-            moveNext()
+        val expression = if (tryAccept<Token.SpecialChar.Equals>()) {
             parseExpression()
         } else null
 
-        if (expression == null && type == TreeNode.Type.Func.ImplicitFunc)
-            throw Exception("Cannot declare implicit func without body")
-        if (expression != null && type == TreeNode.Type.Func.ImplicitFunc) {
-            enterSymbol(identifier.name, getTypeOfExpression(expression))
+        if (expression == null && (type == TreeNode.Type.Func.ImplicitFunc || type == TreeNode.Type.Var))
+            throw Exception("Cannot declare implicit type without expression")
+        if (expression != null && (type == TreeNode.Type.Func.ImplicitFunc || type == TreeNode.Type.Var)) {
+            enterSymbol(identifier.name, expression.type)
         }
         else enterSymbol(identifier.name, type)
 
-        if (expression != null) {
+        return if (expression != null) {
             if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
                 throw UnexpectedTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                        type.toString(), getTypeOfExpression(expression).toString())
-        }
-        return TreeNode.Command.Declaration(type, identifier, expression)
+                        type.toString(), expression.type.toString())
+            else TreeNode.Command.Declaration(expression.type, identifier, expression)
+        } else TreeNode.Command.Declaration(type, identifier, expression)
     }
 
     private fun parseAssignment(): TreeNode.Command.Assignment {
         val identifier = acceptIdentifier()
         accept<Token.SpecialChar.Equals>()
         val expression = parseExpression()
-        if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
+        return if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
             throw UnexpectedTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
                                       retrieveSymbol(identifier.name).identifier.toString(),
-                                      getTypeOfExpression(expression).toString())
-        return TreeNode.Command.Assignment(identifier, expression)
+                                      expression.type.toString())
+         else TreeNode.Command.Assignment(identifier, expression)
     }
 
     //region Type declarations
@@ -151,25 +143,21 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             is Token.Type.Number -> TreeNode.Type.Number
             is Token.Type.Text -> TreeNode.Type.Text
             is Token.Type.Bool -> TreeNode.Type.Bool
+            is Token.Type.Var -> if (implicitAllowed) TreeNode.Type.Var
+                                 else throw Exception("Explicit type not allowed here!")
             is Token.Type.Func -> parseFuncType(implicitAllowed)
             is Token.Type.Tuple -> parseTupleType()
             is Token.Type.List -> parseListType()
-            else -> {
-                if(implicitAllowed && tryAccept<Token.Type.Var>())
-                    throw NotImplementedException()
-                else
-                    throw UnexpectedTokenError(currentPosToken, lexer.inputLine(current.lineNumber))
-            }
+            else -> throw UnexpectedTokenError(currentPosToken, lexer.inputLine(current.lineNumber))
         }
     }
 
-    private fun parseTypes(parsingMethod:()->TreeNode.Type): List<TreeNode.Type>{
+    private fun parseTypes(parsingMethod: () -> TreeNode.Type): List<TreeNode.Type> {
         val elementTypes = mutableListOf<TreeNode.Type>()
 
         while (true) {
             elementTypes.add(parsingMethod())
-            if(!tryAccept<Token.SpecialChar.ListSeparator>())
-                return elementTypes
+            if (!tryAccept<Token.SpecialChar.ListSeparator>()) return elementTypes
         }
     }
 
@@ -192,7 +180,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         }
         else
         {
-            if(implicitAllowed)
+            if (implicitAllowed)
                 TreeNode.Type.Func.ImplicitFunc
             else
                 throw ImplicitTypeNotAllowed(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber))
@@ -224,7 +212,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
     private fun parseTupleType(): TreeNode.Type.Tuple {
         accept<Token.SpecialChar.SquareBracketStart>()
-        val elementTypes =parseTypes({parseType()})
+        val elementTypes = parseTypes { parseType() }
         accept<Token.SpecialChar.SquareBracketEnd>()
         return TreeNode.Type.Tuple(elementTypes)
     }
@@ -245,9 +233,9 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 val symbol = retrieveSymbol(token.value)
                 if (symbol.isFunctions) {
                     val funcDecls = symbol.functions
-                    val secondaryParams = funcDecls.first().paramTypes.drop(1).map { parseExpressionSingle() }
+                    val secondaryParams = funcDecls.first().paramTypes.drop(1).map { parseExpressionAtomic() }
                     val inferredParams =
-                            listOf(getTypeOfExpression(expression)) + secondaryParams.map { getTypeOfExpression(it) }
+                            listOf(expression.type) + secondaryParams.map { it.type }
                     val declaration = funcDecls.getTypeDeclaration(inferredParams)
                     if (declaration == null) throw Exception("Function declaration of function ${token.value}" +
                             " not found with params $inferredParams")
@@ -260,9 +248,9 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             else -> expression
         }.let { if (expression != it) parsePotentialFunctionCall(it) else expression }
 
-    private fun parseExpression() = parsePotentialFunctionCall(parseExpressionSingle())
+    private fun parseExpression() = parsePotentialFunctionCall(parseExpressionAtomic())
 
-    private fun parseExpressionSingle(): TreeNode.Command.Expression =
+    private fun parseExpressionAtomic(): TreeNode.Command.Expression =
         when (current.token) {
             Token.SpecialChar.SquareBracketStart -> parseListDeclaration()
             Token.SpecialChar.ParenthesesStart -> {

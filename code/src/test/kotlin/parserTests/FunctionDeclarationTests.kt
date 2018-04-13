@@ -99,7 +99,7 @@ class FunctionDeclarationTests {
         ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ImplicitFunc,
+                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.None),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
                                 TreeNode.Command.Expression.LambdaExpression
                                 (
@@ -154,7 +154,13 @@ class FunctionDeclarationTests {
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ImplicitFunc,
+                                TreeNode.Type.Func.ExplicitFunc(
+                                    listOf(
+                                            TreeNode.Type.Number,
+                                            TreeNode.Type.Text
+                                    ),
+                                    TreeNode.Type.None
+                                ),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
                                 TreeNode.Command.Expression.LambdaExpression
                                 (
@@ -271,7 +277,7 @@ class FunctionDeclarationTests {
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ImplicitFunc,
+                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.None),
                                 TreeNode.Command.Expression.Value.Identifier("myFunc"),
                                 TreeNode.Command.Expression.LambdaExpression(
                                         listOf(),

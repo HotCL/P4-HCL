@@ -69,6 +69,7 @@ class SourceCodePrinter : IPrinter {
         Type.Text -> "text"
         Type.Bool -> "bool"
         Type.None -> "none"
+        Type.Var -> "var"
         is Type.GenericType -> "T"
         is Type.List -> "list[${this.elementType.visit()}]"
         is Type.Func.ExplicitFunc ->

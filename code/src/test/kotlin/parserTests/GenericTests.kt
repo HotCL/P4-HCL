@@ -78,6 +78,96 @@ class GenericTests {
         )
     }
 
+    @Test
+    fun canParseVarAssignmentNumber() {
+        assertThat(
+                listOf(
+                        Token.Type.Var,
+                        Token.Identifier("myId"),
+                        Token.SpecialChar.Equals,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Number,
+                                TreeNode.Command.Expression.Value.Identifier("myId"),
+                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        )
+                )
+        )
+    }
+
+    @Test
+    fun canParseVarAssignmentList() {
+        assertThat(
+                listOf(
+                        Token.Type.Var,
+                        Token.Identifier("myList"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.ListSeparator,
+                        Token.Literal.Number(7.0),
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.List(TreeNode.Type.Number),
+                                TreeNode.Command.Expression.Value.Identifier("myList"),
+                                TreeNode.Command.Expression.Value.Literal.List(
+                                        listOf(
+                                                TreeNode.Command.Expression.Value.Literal.Number(5.0),
+                                                TreeNode.Command.Expression.Value.Literal.Number(7.0)
+                                        )
+                                )
+                        )
+                )
+        )
+    }
+
+    @Test
+    fun canParseVarAssignmentFunction() {
+        assertThat(
+                listOf(
+                        Token.Type.Var,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Type.Number,
+                        Token.Identifier("x"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Bool,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Func.ExplicitFunc(
+                                        listOf(
+                                                TreeNode.Type.Number
+                                        ),
+                                        TreeNode.Type.Bool
+                                ),
+                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                TreeNode.Command.Expression.LambdaExpression(
+                                        listOf(
+                                                TreeNode.ParameterDeclaration(
+                                                    TreeNode.Type.Number,
+                                                    TreeNode.Command.Expression.Value.Identifier("x")
+                                                )
+                                        ),
+                                        TreeNode.Type.Bool,
+                                        listOf()
+                                )
+                        )
+                )
+        )
+    }
+
 
     @Test
     fun canParseNumAssignmentWithIdentifier() {
