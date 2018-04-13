@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import parser.Parser
-import parser.TreeNode
-import sun.reflect.generics.tree.Tree
+import parser.AstNode
 import kotlin.coroutines.experimental.buildSequence
 
 class GenericTests {
@@ -24,10 +23,10 @@ class GenericTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Number,
-                                TreeNode.Command.Expression.Value.Identifier("myId"),
-                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Number,
+                                AstNode.Command.Expression.Value.Identifier("myId"),
+                                AstNode.Command.Expression.Value.Literal.Number(5.0)
                         )
                 )
         )
@@ -44,10 +43,10 @@ class GenericTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Bool,
-                                TreeNode.Command.Expression.Value.Identifier("myBool"),
-                                TreeNode.Command.Expression.Value.Literal.Bool(true)
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Bool,
+                                AstNode.Command.Expression.Value.Identifier("myBool"),
+                                AstNode.Command.Expression.Value.Literal.Bool(true)
                         )
                 )
         )
@@ -66,13 +65,13 @@ class GenericTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Number,
-                                TreeNode.Command.Expression.Value.Identifier("myId")
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Number,
+                                AstNode.Command.Expression.Value.Identifier("myId")
                         ),
-                        TreeNode.Command.Assignment(
-                                TreeNode.Command.Expression.Value.Identifier("myId"),
-                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        AstNode.Command.Assignment(
+                                AstNode.Command.Expression.Value.Identifier("myId"),
+                                AstNode.Command.Expression.Value.Literal.Number(5.0)
                         )
                 )
         )
@@ -89,10 +88,10 @@ class GenericTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Number,
-                                TreeNode.Command.Expression.Value.Identifier("myId"),
-                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Number,
+                                AstNode.Command.Expression.Value.Identifier("myId"),
+                                AstNode.Command.Expression.Value.Literal.Number(5.0)
                         )
                 )
         )
@@ -113,13 +112,13 @@ class GenericTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Number),
-                                TreeNode.Command.Expression.Value.Identifier("myList"),
-                                TreeNode.Command.Expression.Value.Literal.List(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.List(AstNode.Type.Number),
+                                AstNode.Command.Expression.Value.Identifier("myList"),
+                                AstNode.Command.Expression.Value.Literal.List(
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Literal.Number(5.0),
-                                                TreeNode.Command.Expression.Value.Literal.Number(7.0)
+                                                AstNode.Command.Expression.Value.Literal.Number(5.0),
+                                                AstNode.Command.Expression.Value.Literal.Number(7.0)
                                         )
                                 )
                         )
@@ -145,22 +144,22 @@ class GenericTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
                                         listOf(
-                                                TreeNode.Type.Number
+                                                AstNode.Type.Number
                                         ),
-                                        TreeNode.Type.Bool
+                                        AstNode.Type.Bool
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                    TreeNode.Type.Number,
-                                                    TreeNode.Command.Expression.Value.Identifier("x")
+                                                AstNode.ParameterDeclaration(
+                                                    AstNode.Type.Number,
+                                                    AstNode.Command.Expression.Value.Identifier("x")
                                                 )
                                         ),
-                                        TreeNode.Type.Bool,
+                                        AstNode.Type.Bool,
                                         listOf()
                                 )
                         )
@@ -185,15 +184,15 @@ class GenericTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Number,
-                                TreeNode.Command.Expression.Value.Identifier("myNumber"),
-                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Number,
+                                AstNode.Command.Expression.Value.Identifier("myNumber"),
+                                AstNode.Command.Expression.Value.Literal.Number(5.0)
                         ),
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Number,
-                                TreeNode.Command.Expression.Value.Identifier("myId"),
-                                TreeNode.Command.Expression.Value.Identifier("myNumber")
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Number,
+                                AstNode.Command.Expression.Value.Identifier("myId"),
+                                AstNode.Command.Expression.Value.Identifier("myNumber")
                         )
                 )
         )

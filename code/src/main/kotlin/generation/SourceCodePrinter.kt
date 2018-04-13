@@ -1,8 +1,8 @@
 package generation
 
 import parser.AbstractSyntaxTree
-import parser.TreeNode.Command
-import parser.TreeNode.Type
+import parser.AstNode.Command
+import parser.AstNode.Type
 
 /**
  * Outputs in the syntax of the source language, HCL.

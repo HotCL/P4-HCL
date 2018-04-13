@@ -3,7 +3,7 @@ package generationTests.analytics
 import generation.GraphvizPrinter
 import org.junit.jupiter.api.Test
 import parser.AbstractSyntaxTree
-import parser.TreeNode
+import parser.AstNode
 import kotlin.test.assertEquals
 
 
@@ -16,37 +16,37 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintAllLiteralAssignments() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<TreeNode.Command>(
-                TreeNode.Command.Assignment(
-                        TreeNode.Command.Expression.Value.Identifier("a"),
-                        TreeNode.Command.Expression.Value.Literal.Number(5.0)
+        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+                AstNode.Command.Assignment(
+                        AstNode.Command.Expression.Value.Identifier("a"),
+                        AstNode.Command.Expression.Value.Literal.Number(5.0)
                 ),
 
-                TreeNode.Command.Assignment(
-                        TreeNode.Command.Expression.Value.Identifier("b"),
-                        TreeNode.Command.Expression.Value.Literal.Text("hej med dig")
+                AstNode.Command.Assignment(
+                        AstNode.Command.Expression.Value.Identifier("b"),
+                        AstNode.Command.Expression.Value.Literal.Text("hej med dig")
                 ),
 
-                TreeNode.Command.Assignment(
-                        TreeNode.Command.Expression.Value.Identifier("c"),
-                        TreeNode.Command.Expression.Value.Literal.Bool(true)
+                AstNode.Command.Assignment(
+                        AstNode.Command.Expression.Value.Identifier("c"),
+                        AstNode.Command.Expression.Value.Literal.Bool(true)
                 ),
 
-                TreeNode.Command.Assignment(
-                        TreeNode.Command.Expression.Value.Identifier("d"),
-                        TreeNode.Command.Expression.Value.Literal.List(listOf<TreeNode.Command.Expression>
+                AstNode.Command.Assignment(
+                        AstNode.Command.Expression.Value.Identifier("d"),
+                        AstNode.Command.Expression.Value.Literal.List(listOf<AstNode.Command.Expression>
                         (
-                                TreeNode.Command.Expression.Value.Literal.Number(1.0),
-                                TreeNode.Command.Expression.Value.Literal.Number(2.0)
+                                AstNode.Command.Expression.Value.Literal.Number(1.0),
+                                AstNode.Command.Expression.Value.Literal.Number(2.0)
                         ))
                 ),
 
-                TreeNode.Command.Assignment(
-                        TreeNode.Command.Expression.Value.Identifier("e"),
-                        TreeNode.Command.Expression.Value.Literal.Tuple(listOf<TreeNode.Command.Expression>
+                AstNode.Command.Assignment(
+                        AstNode.Command.Expression.Value.Identifier("e"),
+                        AstNode.Command.Expression.Value.Literal.Tuple(listOf<AstNode.Command.Expression>
                         (
-                                TreeNode.Command.Expression.Value.Literal.Number(1.0),
-                                TreeNode.Command.Expression.Value.Literal.Number(2.0)
+                                AstNode.Command.Expression.Value.Literal.Number(1.0),
+                                AstNode.Command.Expression.Value.Literal.Number(2.0)
                         ))
                 )
 
@@ -67,18 +67,18 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintNestedFunctionCall() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<TreeNode.Command>(
-                TreeNode.Command.Expression.FunctionCall(
-                        TreeNode.Command.Expression.Value.Identifier("print"),
+        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+                AstNode.Command.Expression.FunctionCall(
+                        AstNode.Command.Expression.Value.Identifier("print"),
                         listOf(
-                                TreeNode.Command.Expression.FunctionCall(
-                                        TreeNode.Command.Expression.Value.Identifier("+"),
+                                AstNode.Command.Expression.FunctionCall(
+                                        AstNode.Command.Expression.Value.Identifier("+"),
                                         listOf(
-                                                TreeNode.Command.Expression.FunctionCall(
-                                                        TreeNode.Command.Expression.Value.Identifier("getMyAge"),
+                                                AstNode.Command.Expression.FunctionCall(
+                                                        AstNode.Command.Expression.Value.Identifier("getMyAge"),
                                                         listOf()
                                                 ),
-                                                TreeNode.Command.Expression.Value.Literal.Number(1.0)
+                                                AstNode.Command.Expression.Value.Literal.Number(1.0)
                                         )
                                 )
                         )
@@ -95,25 +95,25 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintLambdaExpression() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<TreeNode.Command>(
-                TreeNode.Command.Assignment(
-                        TreeNode.Command.Expression.Value.Identifier("plus"),
-                        TreeNode.Command.Expression.LambdaExpression(
+        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+                AstNode.Command.Assignment(
+                        AstNode.Command.Expression.Value.Identifier("plus"),
+                        AstNode.Command.Expression.LambdaExpression(
                                 listOf(
-                                        TreeNode.ParameterDeclaration(TreeNode.Type.Number,
-                                                TreeNode.Command.Expression.Value.Identifier("a")
+                                        AstNode.ParameterDeclaration(AstNode.Type.Number,
+                                                AstNode.Command.Expression.Value.Identifier("a")
                                         ),
 
-                                        TreeNode.ParameterDeclaration(TreeNode.Type.Number,
-                                                TreeNode.Command.Expression.Value.Identifier("b")
+                                        AstNode.ParameterDeclaration(AstNode.Type.Number,
+                                                AstNode.Command.Expression.Value.Identifier("b")
                                         )
                                 ),
-                                TreeNode.Type.Number,
-                                listOf(TreeNode.Command.Return(TreeNode.Command.Expression.FunctionCall(
-                                        TreeNode.Command.Expression.Value.Identifier("+"),
+                                AstNode.Type.Number,
+                                listOf(AstNode.Command.Return(AstNode.Command.Expression.FunctionCall(
+                                        AstNode.Command.Expression.Value.Identifier("+"),
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Identifier("a"),
-                                                TreeNode.Command.Expression.Value.Identifier("b")
+                                                AstNode.Command.Expression.Value.Identifier("a"),
+                                                AstNode.Command.Expression.Value.Identifier("b")
                                         )
                                 )))
                         )
@@ -135,16 +135,16 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintDeclarationOfAllTypes() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<TreeNode.Command>(
-                TreeNode.Command.Declaration(
-                        TreeNode.Type.Tuple(listOf(
-                                TreeNode.Type.Func.ExplicitFunc(listOf(
-                                        TreeNode.Type.Number,
-                                        TreeNode.Type.Text
-                                ),TreeNode.Type.None),
-                                TreeNode.Type.List(TreeNode.Type.Bool)
+        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+                AstNode.Command.Declaration(
+                        AstNode.Type.Tuple(listOf(
+                                AstNode.Type.Func.ExplicitFunc(listOf(
+                                        AstNode.Type.Number,
+                                        AstNode.Type.Text
+                                ),AstNode.Type.None),
+                                AstNode.Type.List(AstNode.Type.Bool)
                         )),
-                        TreeNode.Command.Expression.Value.Identifier("test"),null
+                        AstNode.Command.Expression.Value.Identifier("test"),null
 
                 )
         ).toMutableList()))
@@ -160,11 +160,11 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintDeclarationWithAssignment() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<TreeNode.Command>(
-                TreeNode.Command.Declaration(
-                        TreeNode.Type.Number,
-                        TreeNode.Command.Expression.Value.Identifier("x"),
-                        TreeNode.Command.Expression.Value.Literal.Number(5.0)
+        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+                AstNode.Command.Declaration(
+                        AstNode.Type.Number,
+                        AstNode.Command.Expression.Value.Identifier("x"),
+                        AstNode.Command.Expression.Value.Literal.Number(5.0)
 
                 )
         ).toMutableList()))

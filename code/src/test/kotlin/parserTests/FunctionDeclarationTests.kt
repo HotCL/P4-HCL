@@ -1,7 +1,7 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.ImplicitTypeNotAllowed
+import com.natpryce.hamkrest.equalTo
 import exceptions.InitializedFunctionParameterError
 import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
@@ -9,8 +9,9 @@ import lexer.Token
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import parser.Parser
-import parser.TreeNode
+import parser.AstNode
 import kotlin.coroutines.experimental.buildSequence
+import kotlin.test.assertEquals
 
 
 class FunctionDeclarationTests {
@@ -29,9 +30,9 @@ class FunctionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(listOf(TreeNode.Type.Number), TreeNode.Type.Text),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc")
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Text),
+                                AstNode.Command.Expression.Value.Identifier("myFunc")
                         )
                 )
         )
@@ -75,8 +76,8 @@ class FunctionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.Text),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc")
+                        AstNode.Command.Declaration(AstNode.Type.Func.ExplicitFunc(listOf(), AstNode.Type.Text),
+                                AstNode.Command.Expression.Value.Identifier("myFunc")
                         )
 
                 )
@@ -98,14 +99,14 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.EndOfLine
         ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.None),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(listOf(), AstNode.Type.None),
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression
                                 (
                                         listOf(),
-                                        TreeNode.Type.None,
-                                        listOf<TreeNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Type.None,
+                                        listOf<AstNode.Command.Expression.LambdaExpression>()
                                 )
 
                         )
@@ -153,32 +154,32 @@ class FunctionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
                                     listOf(
-                                            TreeNode.Type.Number,
-                                            TreeNode.Type.Text
+                                            AstNode.Type.Number,
+                                            AstNode.Type.Text
                                     ),
-                                    TreeNode.Type.None
+                                    AstNode.Type.None
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression
                                 (
                                         listOf
                                         (
-                                                TreeNode.ParameterDeclaration
+                                                AstNode.ParameterDeclaration
                                                 (
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
                                                 ),
-                                                TreeNode.ParameterDeclaration
+                                                AstNode.ParameterDeclaration
                                                 (
-                                                        TreeNode.Type.Text,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam2")
+                                                        AstNode.Type.Text,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam2")
                                                 )
                                         ),
-                                        TreeNode.Type.None,
-                                        listOf<TreeNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Type.None,
+                                        listOf<AstNode.Command.Expression.LambdaExpression>()
                                 )
 
                         )
@@ -210,20 +211,20 @@ class FunctionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(TreeNode.Type.Func.ExplicitFunc(
-                                listOf(TreeNode.Type.Number), //InputTypes
-                                TreeNode.Type.None //ReturnType
+                        AstNode.Command.Declaration(AstNode.Type.Func.ExplicitFunc(
+                                listOf(AstNode.Type.Number), //InputTypes
+                                AstNode.Type.None //ReturnType
                         ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
                                                 )
                                         ),
-                                        TreeNode.Type.None,
-                                        listOf<TreeNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Type.None,
+                                        listOf<AstNode.Command.Expression.LambdaExpression>()
                                 )
 
                         )
@@ -253,6 +254,86 @@ class FunctionDeclarationTests {
 
     }
 
+    @Test
+    fun failsOnOverloadingWithDifferentAmountOfParameters(){
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.None,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine,
+                Token.Type.Func,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ListSeparator,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.None,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine
+        ))
+
+        val exception = Assertions.assertThrows(Exception::class.java,
+                { Parser(lexer).generateAbstractSyntaxTree() })
+        assertThat(exception.message, equalTo("Unable to overload with different amount of parameters!"))
+
+    }
+
+    @Test
+    fun failsOnOverloadingWithSameParameters(){
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ListSeparator,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.Number,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine,
+                Token.Type.Func,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ListSeparator,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.Bool,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine
+        ))
+
+        val exception = Assertions.assertThrows(Exception::class.java,
+                { Parser(lexer).generateAbstractSyntaxTree() })
+        assertThat(exception.message,
+                    equalTo("Function of same name with these parameters has already been declared!"))
+
+    }
+
     @org.junit.jupiter.api.Test
     fun parsesFuncWithBody() {
         assertThat(
@@ -276,21 +357,21 @@ class FunctionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.None),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(listOf(), AstNode.Type.None),
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(),
-                                        TreeNode.Type.None,
+                                        AstNode.Type.None,
                                         listOf(
-                                                TreeNode.Command.Declaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myNum"),
+                                                AstNode.Command.Declaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myNum"),
                                                         null
                                                 ),
-                                                TreeNode.Command.Declaration(
-                                                        TreeNode.Type.Text,
-                                                        TreeNode.Command.Expression.Value.Identifier("myText"),
+                                                AstNode.Command.Declaration(
+                                                        AstNode.Type.Text,
+                                                        AstNode.Command.Expression.Value.Identifier("myText"),
                                                         null
                                                 )
                                         )

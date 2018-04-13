@@ -1,9 +1,9 @@
 package parser
 
-data class AbstractSyntaxTree(val children: MutableList<TreeNode.Command> = mutableListOf())
+data class AbstractSyntaxTree(val children: MutableList<AstNode.Command> = mutableListOf())
 
-sealed class TreeNode {
-    sealed class Command: TreeNode() {
+sealed class AstNode {
+    sealed class Command: AstNode() {
 
         data class Declaration(val type: Type, val identifier: Expression.Value.Identifier,
                                val expression: Expression? = null): Command()
@@ -28,7 +28,7 @@ sealed class TreeNode {
         }
         data class Return(val expression: Expression): Command()
     }
-    sealed class Type: TreeNode() {
+    sealed class Type: AstNode() {
         object Number: Type()
         object Text: Type()
         object Bool: Type()
@@ -43,5 +43,9 @@ sealed class TreeNode {
         data class Tuple(val elementTypes: kotlin.collections.List<Type>): Type()
     }
 
-    data class ParameterDeclaration(val type: Type, val identifier: Command.Expression.Value.Identifier) : TreeNode()
+    data class ParameterDeclaration(val type: Type, val identifier: Command.Expression.Value.Identifier) : AstNode()
 }
+
+typealias AstExpression = AstNode.Command.Expression
+typealias AstIdentifier = AstNode.Command.Expression.Value.Identifier
+typealias AstLiteral = AstNode.Command.Expression.Value.Literal

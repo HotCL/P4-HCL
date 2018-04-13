@@ -1,11 +1,11 @@
 package parser.symboltable
 
-import parser.TreeNode
+import parser.AstNode
 import java.util.*
 
 class SymbolTable : ISymbolTable {
 
-    private val symbolTable: Deque<MutableMap<String, MutableList<TreeNode.Type>>> = ArrayDeque()
+    private val symbolTable: Deque<MutableMap<String, MutableList<AstNode.Type>>> = ArrayDeque()
 
     init { openScope() }
 
@@ -17,16 +17,33 @@ class SymbolTable : ISymbolTable {
         symbolTable.removeLast()
     }
 
-    override fun enterSymbol(name: String, type: TreeNode.Type): Boolean {
+    private fun assertFunctionIsAllowed(func: AstNode.Type.Func.ExplicitFunc, name: String) {
+        retrieveSymbol(name).handle(
+                {
+                    it.forEach {
+                        if (it.paramTypes.size != func.paramTypes.size) {
+                            throw Exception("Unable to overload with different amount of parameters!")
+                        } else if (it.paramTypes == func.paramTypes) {
+                            throw Exception("Function of same name with these parameters has already been declared!")
+                        }
+                    }
+                },
+                {},
+                {}
+        )
+    }
+
+    override fun enterSymbol(name: String, type: AstNode.Type) {
         val entry = symbolTable.last[name]
-        return if (entry != null) {
-            if (entry.first() is TreeNode.Type.Func && type is TreeNode.Type.Func) {
+        if (entry != null) {
+            val entryFirst = entry.first()
+            if (entryFirst is AstNode.Type.Func.ExplicitFunc && type is AstNode.Type.Func.ExplicitFunc) {
+                assertFunctionIsAllowed(type, name)
                 entry.add(type)
-                true
-            } else false
+            } else throw Exception("Identifier $name was already declared!")
         } else {
+            if (type is AstNode.Type.Func.ExplicitFunc) assertFunctionIsAllowed(type, name)
             symbolTable.last[name] = mutableListOf(type)
-            true
         }
     }
 

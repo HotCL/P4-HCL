@@ -6,8 +6,7 @@ import exceptions.WrongTokenTypeError
 import lexer.Token
 import org.junit.jupiter.api.Assertions
 import parser.Parser
-import parser.TreeNode
-import sun.reflect.generics.tree.Tree
+import parser.AstNode
 import kotlin.coroutines.experimental.buildSequence
 
 class CollectionDeclarationTests {
@@ -27,14 +26,14 @@ class CollectionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Tuple(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Tuple(
                                         listOf(
-                                                TreeNode.Type.Number,
-                                                TreeNode.Type.Text
+                                                AstNode.Type.Number,
+                                                AstNode.Type.Text
                                         )
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myTuple")
+                                AstNode.Command.Expression.Value.Identifier("myTuple")
                         )
                 )
         )
@@ -60,17 +59,17 @@ class CollectionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Tuple(listOf(
-                                        TreeNode.Type.Number,
-                                        TreeNode.Type.Text
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Tuple(listOf(
+                                        AstNode.Type.Number,
+                                        AstNode.Type.Text
                                 )
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myTuple"),
-                                TreeNode.Command.Expression.Value.Literal.Tuple(
+                                AstNode.Command.Expression.Value.Identifier("myTuple"),
+                                AstNode.Command.Expression.Value.Literal.Tuple(
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Literal.Number(5.0),
-                                                TreeNode.Command.Expression.Value.Literal.Text("someText")
+                                                AstNode.Command.Expression.Value.Literal.Number(5.0),
+                                                AstNode.Command.Expression.Value.Literal.Text("someText")
                                         )
                                 )
                         )
@@ -134,9 +133,9 @@ class CollectionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Number),
-                                TreeNode.Command.Expression.Value.Identifier("myList")
+                        AstNode.Command.Declaration(
+                                AstNode.Type.List(AstNode.Type.Number),
+                                AstNode.Command.Expression.Value.Identifier("myList")
                         )
                 )
         )
@@ -160,13 +159,13 @@ class CollectionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Number),
-                                TreeNode.Command.Expression.Value.Identifier("MyList"),
-                                TreeNode.Command.Expression.Value.Literal.List(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.List(AstNode.Type.Number),
+                                AstNode.Command.Expression.Value.Identifier("MyList"),
+                                AstNode.Command.Expression.Value.Literal.List(
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Literal.Number(5.0),
-                                                TreeNode.Command.Expression.Value.Literal.Number(10.0)
+                                                AstNode.Command.Expression.Value.Literal.Number(5.0),
+                                                AstNode.Command.Expression.Value.Literal.Number(10.0)
                                         )
                                 )
                         )
@@ -203,21 +202,21 @@ class CollectionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Number),
-                                TreeNode.Command.Expression.Value.Identifier("myNumberList"),
-                                TreeNode.Command.Expression.Value.Literal.List(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.List(AstNode.Type.Number),
+                                AstNode.Command.Expression.Value.Identifier("myNumberList"),
+                                AstNode.Command.Expression.Value.Literal.List(
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Literal.Number(10.0)
+                                                AstNode.Command.Expression.Value.Literal.Number(10.0)
                                         )
                                 )
                         ),
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.List(TreeNode.Type.Number)),
-                                TreeNode.Command.Expression.Value.Identifier("myList"),
-                                TreeNode.Command.Expression.Value.Literal.List(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.List(AstNode.Type.List(AstNode.Type.Number)),
+                                AstNode.Command.Expression.Value.Identifier("myList"),
+                                AstNode.Command.Expression.Value.Literal.List(
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Identifier("myNumberList")
+                                                AstNode.Command.Expression.Value.Identifier("myNumberList")
                                         )
                                 )
                         )
@@ -254,18 +253,18 @@ class CollectionDeclarationTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(listOf(), TreeNode.Type.Number),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(listOf(), TreeNode.Type.Number, listOf())
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(listOf(), AstNode.Type.Number),
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(listOf(), AstNode.Type.Number, listOf())
                         ),
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.List(TreeNode.Type.Number),
-                                TreeNode.Command.Expression.Value.Identifier("myList"),
-                                TreeNode.Command.Expression.Value.Literal.List(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.List(AstNode.Type.Number),
+                                AstNode.Command.Expression.Value.Identifier("myList"),
+                                AstNode.Command.Expression.Value.Literal.List(
                                         listOf(
-                                                TreeNode.Command.Expression.FunctionCall(
-                                                        TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                                AstNode.Command.Expression.FunctionCall(
+                                                        AstNode.Command.Expression.Value.Identifier("myFunc"),
                                                         listOf()
                                                         )
                                         )

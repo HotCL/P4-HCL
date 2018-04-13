@@ -2,13 +2,8 @@ package typeCheckerTests
 
 import com.natpryce.hamkrest.assertion.assertThat
 import lexer.Token
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
-import parser.TreeNode
-import parser.typechecker.TypeChecker
+import parser.AstNode
 import parserTests.matchesAstChildren
-import sun.reflect.generics.tree.Tree
 
 class TyperCheckerTests {
     @org.junit.jupiter.api.Test
@@ -41,27 +36,27 @@ class TyperCheckerTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Number,
-                                TreeNode.Command.Expression.Value.Identifier("myNumber"),
-                                TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Number,
+                                AstNode.Command.Expression.Value.Identifier("myNumber"),
+                                AstNode.Command.Expression.Value.Literal.Number(5.0)
                         ),
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Text,
-                                TreeNode.Command.Expression.Value.Identifier("myText"),
-                                TreeNode.Command.Expression.Value.Literal.Text("someText")
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Text,
+                                AstNode.Command.Expression.Value.Identifier("myText"),
+                                AstNode.Command.Expression.Value.Literal.Text("someText")
                         ),
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Tuple(listOf(
-                                        TreeNode.Type.Number,
-                                        TreeNode.Type.Text
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Tuple(listOf(
+                                        AstNode.Type.Number,
+                                        AstNode.Type.Text
                                 )
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myTuple"),
-                                TreeNode.Command.Expression.Value.Literal.Tuple(
+                                AstNode.Command.Expression.Value.Identifier("myTuple"),
+                                AstNode.Command.Expression.Value.Literal.Tuple(
                                         listOf(
-                                                TreeNode.Command.Expression.Value.Identifier("myNumber"),
-                                                TreeNode.Command.Expression.Value.Identifier("myText")
+                                                AstNode.Command.Expression.Value.Identifier("myNumber"),
+                                                AstNode.Command.Expression.Value.Identifier("myText")
                                         )
                                 )
                         )

@@ -1,6 +1,6 @@
 package parser.symboltable
 
-import parser.TreeNode
+import parser.AstNode
 
 /**
  * The interface which all Symbol Table implementations must implement.
@@ -26,7 +26,7 @@ interface ISymbolTable{
      * @return Whether the symbol could be entered in the symbol table
      *              false if the symbol is already declared in current scope, and is not a function declaration
      */
-    fun enterSymbol(name: String, type: TreeNode.Type): Boolean
+    fun enterSymbol(name: String, type: AstNode.Type)
 
     /**
      * Returns a list of the symbol table's currently valid declarations for name.

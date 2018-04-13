@@ -1,9 +1,9 @@
 package generation
 
 import parser.AbstractSyntaxTree
-import parser.TreeNode
-import parser.TreeNode.Command
-import parser.TreeNode.Type
+import parser.AstNode
+import parser.AstNode.Command
+import parser.AstNode.Type
 
 /**
  * Printer for the Graphviz visualization tool.
@@ -22,11 +22,11 @@ class GraphvizPrinter : IPrinter {
     private fun toLabel(id: Int, label: String)= "$id;\n$id [label=\"$label\"];\n"
     private fun connectNodes(from: Int, to: Int)= "$to -- $from;\n"
 
-    private fun List<TreeNode>.visit(parentId:Int): String {
+    private fun List<AstNode>.visit(parentId:Int): String {
         return this.joinToString("\n") { it.visit(parentId) }
     }
 
-    private fun TreeNode.visit(parentId:Int): String {
+    private fun AstNode.visit(parentId:Int): String {
         val id = getNextId()
         return "# this is: $id - ${this}\n"+when (this) {
             is Command.Assignment -> toLabel(id,this.identifier.name +"=")+
@@ -53,7 +53,7 @@ class GraphvizPrinter : IPrinter {
                 toLabel(id,"call: "+this.identifier.name) + this.parameters.joinToString("\n")
                 {it.visit(id) }
 
-            is TreeNode.ParameterDeclaration -> toLabel(id,"parameter")+
+            is AstNode.ParameterDeclaration -> toLabel(id,"parameter")+
                     this.type.visit(id)+this.identifier.visit(id)
 
             else -> toLabel(id,this.toString())

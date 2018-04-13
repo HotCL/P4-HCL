@@ -1,17 +1,12 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.ImplicitTypeNotAllowed
 import exceptions.WrongTokenTypeError
 import lexer.Token
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import parser.Parser
-import parser.TreeNode
-import sun.reflect.generics.tree.Tree
-import kotlin.coroutines.experimental.buildSequence
+import parser.AstNode
 
 class FunctionCallTests {
     @Test
@@ -35,20 +30,20 @@ class FunctionCallTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
                                         listOf(),
-                                        TreeNode.Type.Text
+                                        AstNode.Type.Text
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(),
-                                        TreeNode.Type.Text,
+                                        AstNode.Type.Text,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
                                 listOf()
                         )
                 )
@@ -81,25 +76,25 @@ class FunctionCallTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
-                                        listOf(TreeNode.Type.Number),
-                                        TreeNode.Type.Text
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.Number),
+                                        AstNode.Type.Text
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam"))
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
-                                        TreeNode.Type.Text,
+                                        AstNode.Type.Text,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0)
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0)
                                 )
                         )
                 )
@@ -239,43 +234,43 @@ class FunctionCallTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
-                                        listOf(TreeNode.Type.Number, TreeNode.Type.Number),
-                                        TreeNode.Type.Number
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.Number, AstNode.Type.Number),
+                                        AstNode.Type.Number
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")),
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam2"))
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")),
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam2"))
                                         ),
-                                        TreeNode.Type.Number,
+                                        AstNode.Type.Number,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
                                         listOf(),
-                                        TreeNode.Type.Number
+                                        AstNode.Type.Number
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc2"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc2"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(),
-                                        TreeNode.Type.Number,
+                                        AstNode.Type.Number,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
                                 listOf(
-                                        TreeNode.Command.Expression.Value.Literal.Number(5.0),
-                                        TreeNode.Command.Expression.FunctionCall(
-                                                TreeNode.Command.Expression.Value.Identifier("myFunc2"),
+                                        AstNode.Command.Expression.Value.Literal.Number(5.0),
+                                        AstNode.Command.Expression.FunctionCall(
+                                                AstNode.Command.Expression.Value.Identifier("myFunc2"),
                                                 listOf()
                                         )
                                 )
@@ -345,28 +340,28 @@ class FunctionCallTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
-                                        listOf(TreeNode.Type.Number),
-                                        TreeNode.Type.Number
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.Number),
+                                        AstNode.Type.Number
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam"))
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
-                                        TreeNode.Type.Number,
+                                        AstNode.Type.Number,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
                                 listOf(
-                                        TreeNode.Command.Expression.FunctionCall(
-                                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                                listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0))
+                                        AstNode.Command.Expression.FunctionCall(
+                                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0))
                                         )
                                 )
                         )
@@ -406,29 +401,29 @@ class FunctionCallTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
-                                        listOf(TreeNode.Type.Number, TreeNode.Type.Text),
-                                        TreeNode.Type.Text
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.Number, AstNode.Type.Text),
+                                        AstNode.Type.Text
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")),
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Text,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam2"))
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")),
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Text,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam2"))
                                         ),
-                                        TreeNode.Type.Text,
+                                        AstNode.Type.Text,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0),
-                                        TreeNode.Command.Expression.Value.Literal.Text("hej")
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0),
+                                        AstNode.Command.Expression.Value.Literal.Text("hej")
                                 )
                         )
                 )
@@ -479,37 +474,37 @@ class FunctionCallTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
-                                        listOf(TreeNode.Type.Number, TreeNode.Type.Text, TreeNode.Type.Text, TreeNode.Type.Text),
-                                        TreeNode.Type.Text
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.Number, AstNode.Type.Text, AstNode.Type.Text, AstNode.Type.Text),
+                                        AstNode.Type.Text
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Number,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam1")),
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Text,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam2")),
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Text,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam3")),
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Text,
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam4"))
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")),
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Text,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam2")),
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Text,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam3")),
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Text,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam4"))
                                         ),
-                                        TreeNode.Type.Text,
+                                        AstNode.Type.Text,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(TreeNode.Command.Expression.Value.Literal.Number(5.0),
-                                        TreeNode.Command.Expression.Value.Literal.Text("hej"),
-                                        TreeNode.Command.Expression.Value.Literal.Text("med"),
-                                        TreeNode.Command.Expression.Value.Literal.Text("dig")
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0),
+                                        AstNode.Command.Expression.Value.Literal.Text("hej"),
+                                        AstNode.Command.Expression.Value.Literal.Text("med"),
+                                        AstNode.Command.Expression.Value.Literal.Text("dig")
                                 )
                         )
                 )

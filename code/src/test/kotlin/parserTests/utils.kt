@@ -9,10 +9,10 @@ import lexer.Token
 import lexer.printTokens
 import parser.AbstractSyntaxTree
 import parser.Parser
-import parser.TreeNode
+import parser.AstNode
 import kotlin.coroutines.experimental.buildSequence
 
-fun matchesAstChildren(vararg expectedAstChildren: TreeNode.Command): Matcher<List<Token>> =
+fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<List<Token>> =
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
                 println("Test for code:\n " + printTokens(actual))
