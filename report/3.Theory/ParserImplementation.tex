@@ -70,7 +70,9 @@ As seen in the listing, the method will parse the type, accept the identifier, a
 \textbf{Deciding what to parse}
 
 The sealed classes along with the pattern matching of kotlin are excellent tools to decide what should be parsed. 
-In listing \ref{lis:parseCommand} a subset of the parse command method is shown. If the current token is a type, a declaration should be passed. If the current token is an identifier it is the next token that determines whether to parse an assignment or an expression.
+In listing \ref{lis:parseCommand} a subset of the parse command method is shown. 
+If the current token is a type, a declaration should be passed. 
+If the current token is an identifier it is the next token that determines whether to parse an assignment or an expression.
 
 \begin{lstlisting}[language=java,label=lis:parseCommand,caption=A simplified version of the parse declaration method from the parser.]
 private fun parseCommand(): AstNode.Command {
