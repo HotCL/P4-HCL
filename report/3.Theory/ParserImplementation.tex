@@ -37,7 +37,8 @@ The line to parse is "num x = 5" The token stream to parse will look as follows:
 	\item End of line
 \end{itemize}
 
-The parser will see that the first token is a number type. Since only declarations have types in its first set, the parser now knows that it should parse a declaration.
+The parser will see that the first token is a number type. 
+Since only declarations have types in its first set, the parser now knows that it should parse a declaration.
 
 The EBNF reveals that a declaration is:
 \begin{itemize}
@@ -68,7 +69,8 @@ As seen in the listing, the method will parse the type, accept the identifier, a
 
 \textbf{Deciding what to parse}
 
-The sealed classes along with the pattern matching of kotlin are excellent tools to decide what should be parsed. In listing \ref{lis:parseCommand} a subset of the parse command method is shown. If the current token is a type, a declaration should be passed. If the current token is an identifier it is the next token that determines whether to parse an assignment or an expression.
+The sealed classes along with the pattern matching of kotlin are excellent tools to decide what should be parsed. 
+In listing \ref{lis:parseCommand} a subset of the parse command method is shown. If the current token is a type, a declaration should be passed. If the current token is an identifier it is the next token that determines whether to parse an assignment or an expression.
 
 \begin{lstlisting}[language=java,label=lis:parseCommand,caption=A simplified version of the parse declaration method from the parser.]
 private fun parseCommand(): AstNode.Command {
@@ -84,6 +86,8 @@ private fun parseCommand(): AstNode.Command {
     return command
 }
 \end{lstlisting}
+
+% we may also need to document some of the complex parts of the parser, but we will wait with that, until it is actually more or less completed.
 
 \textbf{Type checking}
 
