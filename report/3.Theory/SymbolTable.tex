@@ -6,7 +6,6 @@ This section concerns with the implementation of the symbol table.
 first, the interface implemented by the the symbol table will be presented.
 Second, all considerations through the design process will be discussed.
 This will serve as the reasoning behind the final implementation details.
-Last, the problematic aspect of method overloading will be touched upon.
 
 \textbf{Symbol Table Interface}\\
 The interface consists of five methods as seen in snippet 3.6 on page \pageref{lis:STInterface}.
@@ -58,5 +57,4 @@ However, by simply comparing the amount of code necessary to implement the singl
 The choice of using a hash table data structure for the sub-tables themselves was based upon the time complexity of the essential procedures.
 As mentioned earlier, the retrieveSymbol method would be called more frequently than the remaining methods.
 It was therefore deemed sufficient to implemented the data structure with the most efficient search operations.
-Insertion or retrieval in a hash table data structure can be performed in constant time. 
-%conclusions.
+Insertion or retrieval in a hash table data structure can be performed in constant time.
