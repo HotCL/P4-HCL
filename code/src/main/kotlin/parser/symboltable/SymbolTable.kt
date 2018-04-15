@@ -17,33 +17,33 @@ class SymbolTable : ISymbolTable {
         symbolTable.removeLast()
     }
 
-    private fun assertFunctionIsAllowed(func: AstNode.Type.Func.ExplicitFunc, name: String) {
+    private fun checkFunctionIsAllowed(func: AstNode.Type.Func.ExplicitFunc, name: String): EnterSymbolResult =
         retrieveSymbol(name).handle(
                 {
                     it.forEach {
                         if (it.paramTypes.size != func.paramTypes.size) {
-                            throw Exception("Unable to overload with different amount of parameters!")
+                            return@handle EnterSymbolResult.OverloadDifferentParamNums
                         } else if (it.paramTypes == func.paramTypes) {
-                            throw Exception("Function of same name with these parameters has already been declared!")
+                            return@handle EnterSymbolResult.OverloadAlreadyDeclared
                         }
                     }
+                    EnterSymbolResult.Success
                 },
-                {},
-                {}
+                { EnterSymbolResult.Success },
+                { EnterSymbolResult.Success }
         )
-    }
 
-    override fun enterSymbol(name: String, type: AstNode.Type) {
+    override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
         val entry = symbolTable.last[name]
-        if (entry != null) {
+        return if (entry != null) {
             val entryFirst = entry.first()
             if (entryFirst is AstNode.Type.Func.ExplicitFunc && type is AstNode.Type.Func.ExplicitFunc) {
-                assertFunctionIsAllowed(type, name)
-                entry.add(type)
-            } else throw Exception("Identifier $name was already declared!")
+                checkFunctionIsAllowed(type, name).also { if (it == EnterSymbolResult.Success) entry.add(type) }
+            } else EnterSymbolResult.IdentifierAlreadyDeclared
         } else {
-            if (type is AstNode.Type.Func.ExplicitFunc) assertFunctionIsAllowed(type, name)
-            symbolTable.last[name] = mutableListOf(type)
+            val res = if (type is AstNode.Type.Func.ExplicitFunc) checkFunctionIsAllowed(type, name)
+                      else EnterSymbolResult.Success
+            res.also { if (it == EnterSymbolResult.Success) symbolTable.last[name] = mutableListOf(type) }
         }
     }
 

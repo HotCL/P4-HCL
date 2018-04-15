@@ -3,7 +3,9 @@ package symbolTableTests
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import parser.AstNode
+import parser.symboltable.EnterSymbolResult
 import parser.symboltable.SymbolTable
+import parser.typechecker.ExprResult
 
 class SymbolTableTest {
     @Test
@@ -79,6 +81,6 @@ class SymbolTableTest {
         val st = SymbolTable()
         st.enterSymbol("x", AstNode.Type.Number)
         assertTrue(st.retrieveSymbol("x").identifier == AstNode.Type.Number)
-        assertThrows(Exception::class.java) { st.enterSymbol("x", AstNode.Type.Text) }
+        assertTrue(st.enterSymbol("x", AstNode.Type.Text) == EnterSymbolResult.IdentifierAlreadyDeclared)
     }
 }
