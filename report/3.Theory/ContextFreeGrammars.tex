@@ -55,10 +55,10 @@ It's a problem if a compiler is built from an ambiguous grammar, as a statement 
 
 The following is an example of an ambiguous grammar:
 \begin{align*}
-	\texttt{AssignStatement}\to & \texttt{ identifier = Expression}\\
-	\texttt{Expression}\to & \texttt{ Expression + Expression}\\
-	| & \texttt{ Expression * Expression}\\
-	| & \texttt{ number}
+	\texttt{AssignStatement}\to & \texttt{ identifier = Expression} \\
+	\texttt{Expression}\to      & \texttt{ Expression + Expression} \\
+	|                           & \texttt{ Expression * Expression} \\
+	|                           & \texttt{ number}
 \end{align*}
 
 At first glance the grammar seems to accurately describe an assignment to a variable, but it does not describe the order of which the Expression non-terminals are evaluated.

@@ -1,0 +1,112 @@
+\section{Parser}
+
+The second part of the compiler will parse the lexical tokens coming from the lexer. 
+This part of the compiler is called the parser. 
+The parser works by taking a sequence of lexical tokens, and generating a parse tree or transforming them into an abstract syntax tree. 
+
+\subsection{Output data types}
+
+The parser will output some data type, that represents the compiled program in a hierarchical structure. 
+The outputted data type should hold all the information or almost all the information needed to generate the code later. 
+Sometimes the data type will be accommodated by a symbol table in order to generate the desired code.
+
+\textbf{Parse tree}
+
+One of the possible data structures to be outputted from the parser is the parse tree explained in section \ref{CFGdescription}. 
+The parse tree should resemble the structure of the CFG and the concrete input to the parser. 
+The parse tree is easily generated, and often the actual output from the parser. 
+However, the parse tree contains a lot of excessive information, which is not needed to understand the complete meaning of the program. 
+This means that a parse tree is both hard to analyze and slow to traverse. 
+Therefore, another common output type from the parser is the abstract syntax tree.
+
+\textbf{Abstract syntax tree}
+
+The abstract syntax tree is a sparse version of the parse tree. 
+It still contains all the information needed to understand the structure of the program, but in a more compressed way. 
+For instance parentheses can be omitted in the abstract syntax tree.
+
+Recall the parse tree from figure \ref{fig:AmbiguousGrammarEx1} a corresponding abstract syntax tree can bee seen on figure \ref{fig:ast} 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth/2+\textwidth/4]{3.Theory/images/ast.png}
+	\caption{
+		Abstract syntax tree for parse tree in figure \ref{fig:AmbiguousGrammarEx1}.
+	}
+	\label{fig:ast}
+\end{figure}
+
+%\subsection{Grammar}
+%
+%The parser is built upon the CFG defined for the language. 
+%It is the responsibility of the CFG to tell the parser how to parse the language. 
+%For instance, when writing a top down parser, first and follow sets can be generated on behalf of the CFG. 
+%These will help determine what should be parsed next. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% I guess it is not really necessary to talk about CFG, when we already have a big section about it.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Contextual analysis}
+
+Apart from syntactical analysis the parser is also concerned with contextual analysis. 
+The contextual analysis ensures that types are correct, immutable variables are not reassigned and other contextual things that cannot be inferred from the CFG due to its context free nature. 
+The major part of the contextual analysis is the type checking.
+
+\textbf{Type checking}
+
+The type checking part of the parser often utilizes a symbol table.
+
+INSERT JONAS SYMBOL TABLE STUFF HERE.
+
+It is also the responsibility of this part of the parser to provide any relevant type information that may be needed in order to proceed with compilation in later phases. 
+There are several ways to inform the later stages of the compiler about the needed type information. 
+One solution is to store and pass the symbol table to the later stages of the compiler. 
+
+Another way is to decorate the abstract syntax tree with the needed type information. 
+This is called a decorated syntax tree, and will in most cases be the final output of the parser.
+An example of decorating an abstract syntax tree could be when using implicit casts. 
+Most languages have this feature between integers and floating point numbers. 
+So if the user were to do arithmetic with an integer and a floating point number, the integer would then be implicitly casted to a floating point number.
+
+\subsection{Single parse and multi parse}
+
+Depending on the language, a single run through the passer may not be enough to validate the input or generate the output. 
+For instance if the language allows calling of functions or usage of classes that has not yet been declared. 
+In this case the parser should do a single parse to map out the functions and classes that can be used. 
+After that another parse should be done, where the information from the previous parse is utilized to ensure the validity of the input. 
+
+Surely single pass parsers are the fastest. 
+However it does limit the language a bit, and therefore most mainstream compilers are multi parse compilers these days.
+
+\subsection{Parser types}
+
+Parsers comes in a wide variety of different flavors. 
+Generally there are two different approaches to creating a parser.
+
+\textbf{Top down parsing}
+
+LL parsers uses the top down parsing strategy. 
+LL means that the parser is Left to right using Left most derivation. 
+If a CFG is LL(K) it means that the parser needs to do at max K look aheads in order to parse the sentence. 
+LL parsers can be implemented as a table parser, or also often as a recursive decent parser. 
+
+\textbf{Bottom up parsing}
+
+There are a couple of different bottom up parsers. 
+Namely the LR(K) and the LALR parsers are interesting. 
+The bottom up parsers can recognize a lot more languages than the top down parsers.
+However, they are also generally more complex to implement.
+Because of this bottom up parsers are only rarely handmade.
+They will usually be implemented using the shift reduce strategy.
+
+
+\subsection{Parser tools}
+
+Like for the lexer, a vast amount of tools exist in order to ease the parsing part of the compiler. 
+The complexity of the parser depends a lot on the type of language. 
+As mentioned a LL(1) recursive decent parser i fairly simple to write whereas a LALR parser is quite tedious to write. 
+Since only a few languages are simple enough to have a handwritten parser pay off, most compilers will often use tool generated parsers.
+
+One of the most popular choices for parser generators are the previously mentioned ANTLR parser generator. 
+Another common choice is SableCC which is a LALR parser generator.
+SableCC accepts EBNF grammar, and can produce among other things java compatible code.
