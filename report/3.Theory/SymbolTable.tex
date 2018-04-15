@@ -48,4 +48,15 @@ interface ISymbolTable{
 \end{lstlisting}
 
 \textbf{Considerations}\\
+As described previously, scoping is handled with a stack data structure and the sub-symbol tables themselves are handled with a hash table data structure.
+These are not the only implementation scenarios possible.
+Instead of a stack data structure, the scope management could have been implemented using an attribute based data structure.
+Specifically the depth of the scope could be implemented as attribute of the symbol itself.
+By using indexing on the scope management data structure, the entire symbol table could have been implemented as one large table.
+However, by simply comparing the amount of code necessary to implement the single-table and the stack table implementations, it was apparent that the stack table implementation would be simpler to implement.
+
+The choice of using a hash table data structure for the sub-tables themselves was based upon the time complexity of the essential procedures.
+As mentioned earlier, the retrieveSymbol method would be called more frequently than the remaining methods.
+It was therefore deemed sufficient to implemented the data structure with the most efficient search operations.
+Insertion or retrieval in a hash table data structure can be performed in constant time. 
 %conclusions.
