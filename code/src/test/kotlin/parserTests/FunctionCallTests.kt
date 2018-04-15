@@ -195,41 +195,41 @@ class FunctionCallTests {
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
-                        TreeNode.Command.Declaration(
-                                TreeNode.Type.Func.ExplicitFunc(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
                                         listOf(
-                                                TreeNode.Type.Tuple(
+                                                AstNode.Type.Tuple(
                                                         listOf(
-                                                                TreeNode.Type.Number,
-                                                                TreeNode.Type.Text
+                                                                AstNode.Type.Number,
+                                                                AstNode.Type.Text
                                                         )
                                                 )
                                         ),
-                                        TreeNode.Type.Text
+                                        AstNode.Type.Text
                                 ),
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
-                                TreeNode.Command.Expression.LambdaExpression(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
                                         listOf(
-                                                TreeNode.ParameterDeclaration(
-                                                        TreeNode.Type.Tuple(
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Tuple(
                                                                 listOf(
-                                                                        TreeNode.Type.Number,
-                                                                        TreeNode.Type.Text
+                                                                        AstNode.Type.Number,
+                                                                        AstNode.Type.Text
                                                                 )
                                                         ),
-                                                        TreeNode.Command.Expression.Value.Identifier("myParam"))
+                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
-                                        TreeNode.Type.Text,
+                                        AstNode.Type.Text,
                                         listOf()
                                 )
                         ),
-                        TreeNode.Command.Expression.FunctionCall(
-                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
                                 listOf(
-                                        TreeNode.Command.Expression.Value.Literal.Tuple(
+                                        AstNode.Command.Expression.Value.Literal.Tuple(
                                                 listOf(
-                                                        TreeNode.Command.Expression.Value.Literal.Number(5.0),
-                                                        TreeNode.Command.Expression.Value.Literal.Text("hej")
+                                                        AstNode.Command.Expression.Value.Literal.Number(5.0),
+                                                        AstNode.Command.Expression.Value.Literal.Text("hej")
                                                 )
                                         )
                                 )
