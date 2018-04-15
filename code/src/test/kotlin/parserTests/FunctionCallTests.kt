@@ -156,6 +156,89 @@ class FunctionCallTests {
     }
 
     @Test
+    fun canParseFunctionCallWithTupleLiteralAsFirstArgument() {
+        assertThat(
+                listOf(
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Tuple,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Type.Tuple,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myParam"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.ListSeparator,
+                        Token.Literal.Text("hej"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        TreeNode.Command.Declaration(
+                                TreeNode.Type.Func.ExplicitFunc(
+                                        listOf(
+                                                TreeNode.Type.Tuple(
+                                                        listOf(
+                                                                TreeNode.Type.Number,
+                                                                TreeNode.Type.Text
+                                                        )
+                                                )
+                                        ),
+                                        TreeNode.Type.Text
+                                ),
+                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                TreeNode.Command.Expression.LambdaExpression(
+                                        listOf(
+                                                TreeNode.ParameterDeclaration(
+                                                        TreeNode.Type.Tuple(
+                                                                listOf(
+                                                                        TreeNode.Type.Number,
+                                                                        TreeNode.Type.Text
+                                                                )
+                                                        ),
+                                                        TreeNode.Command.Expression.Value.Identifier("myParam"))
+                                        ),
+                                        TreeNode.Type.Text,
+                                        listOf()
+                                )
+                        ),
+                        TreeNode.Command.Expression.FunctionCall(
+                                TreeNode.Command.Expression.Value.Identifier("myFunc"),
+                                listOf(
+                                        TreeNode.Command.Expression.Value.Literal.Tuple(
+                                                listOf(
+                                                        TreeNode.Command.Expression.Value.Literal.Number(5.0),
+                                                        TreeNode.Command.Expression.Value.Literal.Text("hej")
+                                                )
+                                        )
+                                )
+                        )
+                )
+        )
+    }
+
+    @Test
     fun failsToParseFunctionCallWith_FunctionCallWithArguments_AsRightHandSideArgumentWithoutParentheses() {
         val lexer = DummyLexer(listOf(
                 Token.Type.Func,
