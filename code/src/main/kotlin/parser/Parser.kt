@@ -1,6 +1,8 @@
 package parser
 
 import exceptions.*
+import exceptions.typeCheckerExceptions.ListWithMultipleTypesError
+import exceptions.typeCheckerExceptions.UndeclaredIdentifierError
 import parser.typechecker.ITypeChecker
 import parser.typechecker.TypeChecker
 import lexer.ILexer
@@ -118,10 +120,19 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         else enterSymbol(identifier.name, type)
 
         return if (expression != null) {
-            if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
+            try {
+                if (!checkExpressionTypeMatchesSymbolType(expression, identifier.name))
+                    throw UnexpectedTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                            type.toString(), expression.type.toString())
+                else AstNode.Command.Declaration(expression.type, identifier, expression)
+            } catch (e: UndeclaredIdentifierError){
+                throw UndeclaredError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+                        e.idName)
+            } catch (e: ListWithMultipleTypesError){
                 throw UnexpectedTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
-                        type.toString(), expression.type.toString())
-            else AstNode.Command.Declaration(expression.type, identifier, expression)
+                        e.expected, e.actual)
+            }
+
         } else AstNode.Command.Declaration(type, identifier, expression)
     }
 
@@ -240,8 +251,8 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     val inferredParams =
                             listOf(expression.type) + secondaryParams.map { it.type }
                     val declaration = funcDecls.getTypeDeclaration(inferredParams)
-                    if (declaration == null) throw Exception("Function declaration of function ${token.value}" +
-                            " not found with params $inferredParams")
+                    if (declaration == null) throw UndeclaredError(current.lineNumber, current.lineIndex,
+                                                   lexer.inputLine(current.lineNumber), token.value)
                     else AstNode.Command.Expression.FunctionCall(
                             AstNode.Command.Expression.Value.Identifier(token.value),
                             listOf(expression) + secondaryParams
@@ -324,7 +335,9 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 while (current.token != Token.SpecialChar.SquareBracketEnd) {
                     add(parseExpression())
                     if (first().type != last().type)
-                        throw Exception("Element ${last()} did not match type of first element in list")
+                        throw UnexpectedTypeError(current.lineNumber, current.lineIndex,
+                                                  lexer.inputLine(current.lineNumber), first().type.toString(),
+                                                  last().type.toString())
                     if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
                 }
                 accept<Token.SpecialChar.SquareBracketEnd>()

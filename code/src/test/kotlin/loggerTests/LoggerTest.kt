@@ -17,6 +17,30 @@ class TokenTest {
                         " | Function '<' not defined for types: 'num', 'txt' and 'bool'.\n" +
                         " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
     }
+    @org.junit.jupiter.api.Test
+    fun testTypeErrorSingleType() {
+        val error = TypeError(6, 12, "\"notText\" print", "print", listOf("num"))
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: TypeError found at line 6 index 12:\n" +
+                        " | \"notText\" print\n" +
+                        " |             ^--\n" +
+                        " | Function 'print' not defined for types: 'num'.\n" +
+                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+    }
+    @org.junit.jupiter.api.Test
+    fun testTypeErrorNoTypes() {
+        val error = TypeError(6, 0, "print", "print", listOf())
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: TypeError found at line 6 index 0:\n" +
+                        " | print\n" +
+                        " | ^--\n" +
+                        " | Function 'print' not defined for types: No type.\n" +
+                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+    }
 
     @org.junit.jupiter.api.Test
     fun testUndeclaredError() {

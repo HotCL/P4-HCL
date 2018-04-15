@@ -1,5 +1,7 @@
 package parser.typechecker
 
+import exceptions.typeCheckerExceptions.ListWithMultipleTypesError
+import exceptions.typeCheckerExceptions.UndeclaredIdentifierError
 import parser.AstNode.Command.Expression
 import parser.AstNode
 import parser.symboltable.ISymbolTable
@@ -11,6 +13,7 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             retrieveSymbol(symbol).identifier == expr.type
 
     override fun checkExpressionTypesMatch(expr1: Expression, expr2: Expression) = expr1.type == expr2.type
+    //TODO(delete checkExpressionTypesMatch if never used)
 
     override fun getTypeOfExpression(expr: Expression): AstNode.Type = when (expr) {
         is Expression.Value.Literal.Number -> AstNode.Type.Number
@@ -20,18 +23,18 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
         is Expression.Value.Literal.Tuple -> AstNode.Type.Tuple(getTypeOfTupleExpression(expr))
         is Expression.Value.Identifier -> retrieveSymbol(expr.name).handle(
                 { it.getTypeDeclaration(listOf())?.returnType ?:
-                    throw Exception("Can't invoke function, since no overloading with no parameters exist") },
+                    throw UndeclaredIdentifierError(expr.name) },
                 { it },
-                { throw Exception("Undeclared identifier") }
+                { throw UndeclaredIdentifierError(expr.name) }
         )
         is Expression.FunctionCall -> {
             val functionDeclarationsSymbol = retrieveSymbol(expr.identifier.name)
             if (!functionDeclarationsSymbol.isFunctions)
-                throw Exception("Function with name ${expr.identifier.name} was not defined in symbol table")
+                throw UndeclaredIdentifierError(expr.identifier.name)
             val functionDeclarations = functionDeclarationsSymbol.functions
             val parameterTypes = expr.parameters.map { getTypeOfExpression(it) }
             val functionDeclaration = functionDeclarations.getTypeDeclaration(parameterTypes)
-                    ?: throw Exception("No function declaration with provided parameters")
+                    ?: throw UndeclaredIdentifierError(expr.identifier.name)
             functionDeclaration.returnType
         }
         is Expression.LambdaExpression -> AstNode.Type.Func.ExplicitFunc(
@@ -41,11 +44,7 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     }
 
     private fun getTypeOfListExpression(list: Expression.Value.Literal.List): AstNode.Type {
-        val ret = getTypeOfExpression(list.elements[0])
-        list.elements.drop(1).forEach {
-            if (ret != it.type) throw Exception("List has elements of different types")
-        }
-        return ret
+        return getTypeOfExpression(list.elements[0])
     }
 
     private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =

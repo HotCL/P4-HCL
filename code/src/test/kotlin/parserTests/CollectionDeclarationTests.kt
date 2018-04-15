@@ -78,6 +78,39 @@ class CollectionDeclarationTests {
     }
 
     @org.junit.jupiter.api.Test
+    fun parseTupleWithSingleElement() {
+        assertThat(
+                listOf(
+                        Token.Type.Tuple,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myTuple"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.ListSeparator,
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Tuple(listOf(
+                                        AstNode.Type.Number
+                                )
+                                ),
+                                AstNode.Command.Expression.Value.Identifier("myTuple"),
+                                AstNode.Command.Expression.Value.Literal.Tuple(
+                                        listOf(
+                                                AstNode.Command.Expression.Value.Literal.Number(5.0)
+                                        )
+                                )
+                        )
+                )
+        )
+    }
+
+    @org.junit.jupiter.api.Test
     fun failsOnNotEnoughSeparators() {
         val lexer = DummyLexer(buildSequence {
             yield(Token.Type.Tuple)
@@ -225,7 +258,7 @@ class CollectionDeclarationTests {
     }
 
     @org.junit.jupiter.api.Test
-    fun parseListWithFunc() { //TODO(fix this to be List[none] myList = [myFunc]  where myFunc return 'none')
+    fun parseListWithFuncCall() {
         assertThat(
                 listOf(
                         Token.Type.Func,
