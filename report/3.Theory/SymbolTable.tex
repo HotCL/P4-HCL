@@ -1,0 +1,23 @@
+%THIS SECTION IS SUPPOSED TO BE A SUBSECTION TO THE PARSER SECTION.
+%Should present the interface, which all symbol table implementations must implement.
+%Should clarify all considerations through the design process.
+\subsection{Symbol Table}
+This section concerns with the implementation of the symbol table. 
+first, the interface implemented by the the symbol table will be presented.
+Second, all considerations through the design process will be discussed.
+This will serve as the reasoning behind the final implementation details.
+Last, the problematic aspect of method overloading will be touched upon.
+
+\textbf{Symbol Table Interface}\\
+\begin{lstlisting}[language=java,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
+interface ISymbolTable{
+	fun openScope()
+	fun closeScope()
+	fun enterSymbol(name: String, type: TreeNode.Type): Boolean
+	fun retrieveSymbol(name: String): Symbol
+	fun declaredLocally(name: String): Boolean
+}
+\end{lstlisting}
+
+\textbf{Considerations}\\
+%conclusions.
