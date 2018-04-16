@@ -19,7 +19,7 @@ By using indexing on the scope management data structure, the entire symbol tabl
 However, by simply comparing the amount of code necessary to implement the single-table and the stack table implementations, it was apparent that the stack table implementation would be simpler to implement.
 
 The choice of using a hash table data structure for the sub-tables themselves was based upon the time complexity of the essential procedures.
-Insertion or retrieval in a hash table data structure can be performed in constant time, however as the parser will look through multiple scopes retrieval is only constant time in the context of a singular scope.
+Insertion or retrieval in a hash table data structure can be performed in constant time, however as the parser will look through multiple scopes, retrieval is only constant time in the context of a singular scope.
 Retrieval is the method used most often, which means that the running time of the retrieval is most important, however that's not possible because of the above reasons. 
 It is, however, not an major issue as it is not expected that the user of HCL are going to use deep nested scopes, and therefore the running time shouldn't be affected massively.
 
