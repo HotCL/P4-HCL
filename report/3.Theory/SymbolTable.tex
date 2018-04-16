@@ -23,8 +23,6 @@ Insertion or retrieval in a hash table data structure can be performed in consta
 Retrieval is the method used most often, which means that the running time of the retrieval is most important, however that's not possible because of the above reasons. 
 It is, however, not an major issue as it is not expected that the user of HCL are going to use deep nested scopes, and therefore the running time shouldn't be affected massively.
 
-
-
 \textbf{Implementation}\\
 The interface consists of five functions as seen in snippet \ref{lis:STInterface}.
 
@@ -40,7 +38,6 @@ interface ISymbolTable{
 The interface, and implementations of it, are defined by opening and closing scopes as well as entering and retrieving symbols.
 
 When opening a scope, a new scope is added to the list, while the top scope is popped when running the $closeScope()$ method.
-
 
 \begin{lstlisting}[language=java,label=lis:STEnterSymbol,caption=A simplified version of the enterSymbol implementation.]
 override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
