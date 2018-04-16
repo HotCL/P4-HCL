@@ -1,6 +1,6 @@
 package parser.typechecker
 
-import exceptions.typeCheckerExceptions.UndeclaredIdentifierError
+
 import parser.AstNode.Command.Expression
 import parser.AstNode
 import parser.symboltable.ISymbolTable

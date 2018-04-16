@@ -115,13 +115,13 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     error("Function of same name with these parameters has already been declared!")
                 EnterSymbolResult.OverloadDifferentParamNums ->
                     error("Unable to overload with different amount of arguments!")
-                EnterSymbolResult.IdentifierAlreadyDeclared -> error("Identifier already declared!")
+                EnterSymbolResult.IdentifierAlreadyDeclared ->
+                    error("Identifier already declared!")
             }
         }
         else when (enterSymbol(identifier.name, type)) {
             EnterSymbolResult.IdentifierAlreadyDeclared -> error("Identifier already declared!")
         }
-
         return if (expression != null) {
             if (!retrieveSymbol(identifier.name).handle({ true }, { it == expression.type.type() }, { false }))
                 unexpectedTypeError(type.toString(), expression.type.toString())
@@ -235,14 +235,13 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 val symbol = retrieveSymbol(token.value)
                 if (symbol.isFunctions) {
                     val funcDecls = symbol.functions
-                    val secondaryParams = funcDecls.first().paramTypes.drop(1).map { parseExpressionAtomic() }
-                    val argTypes =
-                            listOf(expression.type.type()) + secondaryParams.map { it.type.type() }
+                    val secondaryArguments = funcDecls.first().paramTypes.drop(1).map { parseExpressionAtomic() }
+                    val argTypes = listOf(expression.type.type()) + secondaryArguments.map { it.type.type() }
                     val declaration = funcDecls.getTypeDeclaration(argTypes)
                     if (declaration == null) undeclaredError(token.value)
                     else AstNode.Command.Expression.FunctionCall(
                             AstNode.Command.Expression.Value.Identifier(token.value),
-                            listOf(expression) + secondaryParams
+                            listOf(expression) + secondaryArguments
                     )
                 } else expression
             }

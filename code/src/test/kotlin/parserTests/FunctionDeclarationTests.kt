@@ -83,6 +83,38 @@ class FunctionDeclarationTests {
                 )
         )
     }
+/*
+    @Test
+    fun failsOnAssignmentInLambdaParameterDefinition(){
+        val lexer = DummyLexer(listOf(
+                Token.Type.List,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Number,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier("ret+2"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Literal.Number(),
+                Token.SpecialChar.SquareBracketEnd,
+                Token.SpecialChar.EndOfLine,
+                Token.Type.List,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.List,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Number,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier,
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Identifier,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.SpecialChar.EndOfLine
+        ))
+        Assertions.assertThrows(InitializedFunctionParameterError::class.java,
+                { Parser(lexer).generateAbstractSyntaxTree() })
+
+    }*/
 
     @org.junit.jupiter.api.Test
     fun parsesWithImplicitFuncType() {
