@@ -52,8 +52,8 @@ class SourceCodePrinterTests {
                 "a = 5.0\n"+
                         "b = \"hej med dig\"\n"+
                         "c = True\n"+
-                        "d = [1.0,2.0]\n"+
-                        "e = (1.0,2.0)\n",
+                        "d = [1.0, 2.0]\n"+
+                        "e = (1.0, 2.0)\n",
                 output
         )
     }
