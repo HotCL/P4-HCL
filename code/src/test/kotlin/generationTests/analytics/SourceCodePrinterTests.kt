@@ -45,9 +45,8 @@ class SourceCodePrinterTests {
                         ))
                 )
 
-        ).toMutableList()
-        )
-        )
+        ).toMutableList()))
+
         assertEquals(
                 "a = 5.0\n"+
                         "b = \"hej med dig\"\n"+

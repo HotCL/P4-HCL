@@ -53,7 +53,12 @@ class GraphvizPrinter : IPrinter {
             is TreeNode.ParameterDeclaration -> toLabel(id,"parameter")+
                     this.type.format(id)+this.identifier.format(id)
 
-            else -> toLabel(id,this.toString())
+
+            //else -> toLabel(id,this.toString())
+            is TreeNode.Command.Expression.Value.Identifier -> toLabel(id,"ID=$name")
+            is TreeNode.Command.Expression.Value.Literal.Number -> toLabel(id,"Num=$value")
+            is TreeNode.Command.Expression.Value.Literal.Text -> toLabel(id,"Text=\'$value\'")
+            is TreeNode.Command.Expression.Value.Literal.Bool -> toLabel(id,"Bool=$value")
         }+connectNodes(id,parentId)
     }
 

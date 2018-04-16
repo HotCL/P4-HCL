@@ -49,7 +49,7 @@ The EBNF reveals that a declaration is:
 	\subitem Non-terminal Expression
 \end{itemize}
 
-Based on this, the parse declaration is implemented as seen in listing \ref{lis:parseDeclaration}.
+Based on this, the parse declaration is implemented as seen in snippet \ref{lis:parseDeclaration}.
 Do note, the final parse declaration method is a little more complex due to type inference and type checking.
 
 \begin{lstlisting}[language=java,label=lis:parseDeclaration,caption=A simplified version of the parse declaration method from the parser.]
@@ -65,12 +65,12 @@ private fun parseDeclaration(): TreeNode.Command.Declaration {
 }
 \end{lstlisting}
 
-As seen in the listing, the method will parse the type, accept the identifier, accept the equal sign, and at last it will parse the expression.
+As the snippet shows, the method will parse the type, accept the identifier, accept the equal sign, and at last it will parse the expression.
 
 \textbf{Deciding what to parse}
 
 The sealed classes, along with the pattern matching of kotlin, are excellent tools in deciding what should be parsed. 
-In listing \ref{lis:parseCommand} a subset of the parse command method is shown. 
+In snippet \ref{lis:parseCommand} a subset of the parse command method is shown. 
 If the current token is a type, a declaration should be passed. 
 If the current token is an identifier, it is the next token that determines whether to parse an assignment or an expression.
 
@@ -91,6 +91,7 @@ private fun parseCommand(): AstNode.Command {
 
 % we may also need to document some of the complex parts of the parser, but we will wait with that, until it is actually more or less completed.
 
-\textbf{Type checking}
+\input{3.Theory/TypeChecker.tex}
+\input{3.Theory/SymbolTable.tex}
 
 % This is where Jonas symbol table implementation part should be inserted, maybe with a little explanation of the coupling between the parser and the symbol table (through the type checker.)

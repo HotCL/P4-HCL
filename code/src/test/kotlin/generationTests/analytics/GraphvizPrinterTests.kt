@@ -51,8 +51,17 @@ class GraphvizPrinterTests {
                 )
 
         ).toMutableList()))
+        print(compactOutput(output))
+
         assertEquals(
-                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"Identifier(name=a)\"];1 -- 2;3;3 [label=\"Number(value=5.0)\"];1 -- 3;0 -- 1;4;4 [label=\"=\"];5;5 [label=\"Identifier(name=b)\"];4 -- 5;6;6 [label=\"Text(value=hej med dig)\"];4 -- 6;0 -- 4;7;7 [label=\"=\"];8;8 [label=\"Identifier(name=c)\"];7 -- 8;9;9 [label=\"Bool(value=true)\"];7 -- 9;0 -- 7;10;10 [label=\"=\"];11;11 [label=\"Identifier(name=d)\"];10 -- 11;12;12 [label=\"Literal: List\"];13;13 [label=\"Number(value=1.0)\"];12 -- 13;14;14 [label=\"Number(value=2.0)\"];12 -- 14;10 -- 12;0 -- 10;15;15 [label=\"=\"];16;16 [label=\"Identifier(name=e)\"];15 -- 16;17;17 [label=\"Literal: Tuple\"];18;18 [label=\"Number(value=1.0)\"];17 -- 18;19;19 [label=\"Number(value=2.0)\"];17 -- 19;15 -- 17;0 -- 15;}",
+                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"ID=a\"];1 -- 2;3;3" +
+                        " [label=\"Num=5.0\"];1 -- 3;0 -- 1;4;4 [label=\"=\"];5;5 [label=\"ID=b\"];4 -- 5;6;6 [label=" +
+                        "\"Text='hej med dig'\"];4 -- 6;0 -- 4;7;7 [label=\"=\"];8;8 [label=\"ID=c\"];7 -- 8;9;9 " +
+                        "[label=\"Bool=true\"];7 -- 9;0 -- 7;10;10 [label=\"=\"];11;11 [label=\"ID=d\"];10 -- 11;12;" +
+                        "12 [label=\"Literal: List\"];13;13 [label=\"Num=1.0\"];12 -- 13;14;14 [label=\"Num=2.0\"];" +
+                        "12 -- 14;10 -- 12;0 -- 10;15;15 [label=\"=\"];16;16 [label=\"ID=e\"];15 -- 16;17;17 [label=" +
+                        "\"Literal: Tuple\"];18;18 [label=\"Num=1.0\"];17 -- 18;19;19 [label=\"Num=2.0\"];17 -- 19;15" +
+                        " -- 17;0 -- 15;}",
                 compactOutput(output)
         )
     }
@@ -76,11 +85,13 @@ class GraphvizPrinterTests {
                         )
                 )
         ).toMutableList()))
+
+
         assertEquals(
-                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"call\"];2;2 [label=\"Identifier(name=" +
-                        "print)\"];1 -- 2;3;3 [label=\"call\"];4;4 [label=\"Identifier(name=+)\"];3 -- 4;5;5 [label=" +
-                        "\"call\"];6;6 [label=\"Identifier(name=getMyAge)\"];5 -- 6;3 -- 5;7;7 [label=\"Number(value" +
-                        "=1.0)\"];3 -- 7;1 -- 3;0 -- 1;}",
+                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"call\"];2;2 [label=\"ID=" +
+                        "print\"];1 -- 2;3;3 [label=\"call\"];4;4 [label=\"ID=+\"];3 -- 4;5;5 [label=" +
+                        "\"call\"];6;6 [label=\"ID=getMyAge\"];5 -- 6;3 -- 5;7;7 [label=\"Num=" +
+                        "1.0\"];3 -- 7;1 -- 3;0 -- 1;}",
                 compactOutput(output)
         )
     }
@@ -113,14 +124,13 @@ class GraphvizPrinterTests {
                 )
         ).toMutableList()))
         assertEquals(
-                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"Identifier(name=" +
-                        "plus)\"];1 -- 2;3;3 [label=\"Lambda\"];4;4 [label=\"TYPE:num\"];4;4 [label=\"TYPE:num\"];" +
-                        "3 -- 4;5;5 [label=\"parameter\"];6;6 [label=\"TYPE:num\"];6;6 [label=\"TYPE:num\"];5 -- 6" +
-                        ";7;7 [label=\"Identifier(name=a)\"];5 -- 7;3 -- 5;8;8 [label=\"parameter\"];9;9 [label=\"" +
-                        "TYPE:num\"];9;9 [label=\"TYPE:num\"];8 -- 9;10;10 [label=\"Identifier(name=b)\"];8 -- 10;3" +
-                        " -- 8;11;11 [label=\"return\"];12;12 [label=\"call\"];13;13 [label=\"Identifier(name=+)\"]" +
-                        ";12 -- 13;14;14 [label=\"Identifier(name=a)\"];12 -- 14;15;15 [label=\"Identifier(name=b)\"" +
-                        "];12 -- 15;11 -- 12;3 -- 11;1 -- 3;0 -- 1;}",
+                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"ID=plus\"];1 -- 2;3" +
+                        ";3 [label=\"Lambda\"];4;4 [label=\"TYPE:num\"];4;4 [label=\"TYPE:num\"];3 -- 4;5;5 [label=" +
+                        "\"parameter\"];6;6 [label=\"TYPE:num\"];6;6 [label=\"TYPE:num\"];5 -- 6;7;7 [label=\"ID=a\"" +
+                        "];5 -- 7;3 -- 5;8;8 [label=\"parameter\"];9;9 [label=\"TYPE:num\"];9;9 [label=\"TYPE:num\"]" +
+                        ";8 -- 9;10;10 [label=\"ID=b\"];8 -- 10;3 -- 8;11;11 [label=\"return\"];12;12 [label=\"call\"" +
+                        "];13;13 [label=\"ID=+\"];12 -- 13;14;14 [label=\"ID=a\"];12 -- 14;15;15 [label=\"ID=b\"];12 " +
+                        "-- 15;11 -- 12;3 -- 11;1 -- 3;0 -- 1;}",
                 compactOutput(output)
         )
     }
@@ -140,12 +150,13 @@ class GraphvizPrinterTests {
 
                 )
         ).toMutableList()))
+
         assertEquals(
-                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"Identifier(name=" +
-                        "test)\"];1 -- 2;3;3 [label=\"TYPE:Tuple\"];4;4 [label=\"TYPE:func\"];5;5 [label=\"TYPE:" +
-                        "num\"];5;5 [label=\"TYPE:num\"];4 -- 5;6;6 [label=\"TYPE:text\"];6;6 [label=\"TYPE:text\"" +
-                        "];4 -- 6;3 -- 4;7;7 [label=\"TYPE:List\"];8;8 [label=\"TYPE:bool\"];8;8 [label=\"TYPE:bool" +
-                        "\"];7 -- 8;3 -- 7;1 -- 3;0 -- 1;}",
+                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"ID=test\"];1 -- 2;3;" +
+                        "3 [label=\"TYPE:Tuple\"];4;4 [label=\"TYPE:func\"];5;5 [label=\"TYPE:num\"];5;5 " +
+                        "[label=\"TYPE:num\"];4 -- 5;6;6 [label=\"TYPE:text\"];6;6 [label=\"TYPE:text\"];4 " +
+                        "-- 6;3 -- 4;7;7 [label=\"TYPE:List\"];8;8 [label=\"TYPE:bool\"];8;8 [label=\"TYPE:bool\"];" +
+                        "7 -- 8;3 -- 7;1 -- 3;0 -- 1;}",
                 compactOutput(output)
         )
     }
@@ -160,10 +171,10 @@ class GraphvizPrinterTests {
 
                 )
         ).toMutableList()))
+
         assertEquals(
-                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"Identifier(name=x" +
-                        ")\"];1 -- 2;3;3 [label=\"TYPE:num\"];3;3 [label=\"TYPE:num\"];1 -- 3;4;4 [label=\"Number(va" +
-                        "lue=5.0)\"];1 -- 4;0 -- 1;}",
+                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"=\"];2;2 [label=\"ID=x\"];1 -- 2;3;3 " +
+                        "[label=\"TYPE:num\"];3;3 [label=\"TYPE:num\"];1 -- 3;4;4 [label=\"Num=5.0\"];1 -- 4;0 -- 1;}",
                 compactOutput(output)
         )
     }
