@@ -76,11 +76,11 @@ class GraphvizPrinterTests {
                         )
                 )
         ).toMutableList()))
-
         assertEquals(
-                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"call: print\"];2;2 [label=\"call: " +
-                        "+\"];3;3 [label=\"call: getMyAge\"];2 -- 3;4;4 [label=\"Number(value=1.0)\"];2 -- 4;1 -- " +
-                        "2;0 -- 1;}",
+                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"call\"];2;2 [label=\"Identifier(name=" +
+                        "print)\"];1 -- 2;3;3 [label=\"call\"];4;4 [label=\"Identifier(name=+)\"];3 -- 4;5;5 [label=" +
+                        "\"call\"];6;6 [label=\"Identifier(name=getMyAge)\"];5 -- 6;3 -- 5;7;7 [label=\"Number(value" +
+                        "=1.0)\"];3 -- 7;1 -- 3;0 -- 1;}",
                 compactOutput(output)
         )
     }
@@ -118,8 +118,9 @@ class GraphvizPrinterTests {
                         "3 -- 4;5;5 [label=\"parameter\"];6;6 [label=\"TYPE:num\"];6;6 [label=\"TYPE:num\"];5 -- 6" +
                         ";7;7 [label=\"Identifier(name=a)\"];5 -- 7;3 -- 5;8;8 [label=\"parameter\"];9;9 [label=\"" +
                         "TYPE:num\"];9;9 [label=\"TYPE:num\"];8 -- 9;10;10 [label=\"Identifier(name=b)\"];8 -- 10;3" +
-                        " -- 8;11;11 [label=\"return\"];12;12 [label=\"call: +\"];13;13 [label=\"Identifier(name=a)" +
-                        "\"];12 -- 13;14;14 [label=\"Identifier(name=b)\"];12 -- 14;11 -- 12;3 -- 11;1 -- 3;0 -- 1;}",
+                        " -- 8;11;11 [label=\"return\"];12;12 [label=\"call\"];13;13 [label=\"Identifier(name=+)\"]" +
+                        ";12 -- 13;14;14 [label=\"Identifier(name=a)\"];12 -- 14;15;15 [label=\"Identifier(name=b)\"" +
+                        "];12 -- 15;11 -- 12;3 -- 11;1 -- 3;0 -- 1;}",
                 compactOutput(output)
         )
     }

@@ -19,7 +19,7 @@ class SourceCodePrinter : IPrinter {
         is Command.Return -> "return ${expression.format()}"
     }
 
-    private fun Command.Assignment.format(): String = "${identifier.name} = ${expression.format()}"
+    private fun Command.Assignment.format() = "${identifier.name} = ${expression.format()}"
 
     private fun Command.Declaration.format() =
             "${type.format()} ${identifier.name}${expression?.let{ " = ${it.format()}" } ?: ""}"
@@ -61,8 +61,5 @@ class SourceCodePrinter : IPrinter {
         is Type.GenericType -> name
         is Type.List -> "list[${elementType.format()}]"
         is Type.Tuple -> "tuple[${elementTypes.joinToString { it.format() }}]"
-        else -> {
-            throw NotImplementedError()
-        }
     }
 }
