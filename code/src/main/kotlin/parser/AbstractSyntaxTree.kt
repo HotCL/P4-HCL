@@ -23,7 +23,8 @@ sealed class AstNode {
                 }
             }
             data class LambdaExpression(val paramDeclarations: List<ParameterDeclaration>, val returnType: Type,
-                                        val body: List<Command>): Expression()
+                                        val body: LambdaBody): Expression()
+            data class LambdaBody(val commands: List<Command>): Expression()
             data class FunctionCall(val identifier: Value.Identifier, val arguments: List<Expression>): Expression()
         }
         data class Return(val expression: Expression): Command()

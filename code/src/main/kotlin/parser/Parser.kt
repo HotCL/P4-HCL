@@ -21,6 +21,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     }
 
     private fun parseCommand(): AstNode.Command {
+        flushNewLine(false)
         val command = when (current.token) {
             is Token.Type -> parseDeclaration()
             is Token.Identifier -> {
@@ -29,10 +30,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 }
                 else parseExpression()
             }
-
-            // eh wut? in what case is "{ .* }" a singular command ?
-            Token.SpecialChar.BlockStart -> AstNode.Command.Expression.LambdaExpression(listOf(), AstNode.Type.None,
-                                                                       parseLambdaBody())
+            Token.SpecialChar.BlockStart -> parsePotentialFunctionCall(null)
             is Token.Literal, //Fallthrough
             Token.SpecialChar.SquareBracketStart,
             Token.SpecialChar.Colon,
@@ -41,7 +39,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             Token.Return -> parseReturnStatement()
             else -> unexpectedTokenError(current.token)
         }
-        flushNewLine()
+        flushNewLine(current.token !in listOf(Token.SpecialChar.BlockEnd))
         return command
     }
 
@@ -143,14 +141,14 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
-            is Token.Type.Number -> AstNode.Type.Number
-            is Token.Type.Text -> AstNode.Type.Text
-            is Token.Type.Bool -> AstNode.Type.Bool
-            is Token.Type.Var -> if (implicitAllowed) AstNode.Type.Var
+            Token.Type.Number -> AstNode.Type.Number
+            Token.Type.Text -> AstNode.Type.Text
+            Token.Type.Bool -> AstNode.Type.Bool
+            Token.Type.Var -> if (implicitAllowed) AstNode.Type.Var
                                  else error("Explicit type not allowed here!")
-            is Token.Type.Func -> parseFuncType(implicitAllowed)
-            is Token.Type.Tuple -> parseTupleType()
-            is Token.Type.List -> parseListType()
+            Token.Type.Func -> parseFuncType(implicitAllowed)
+            Token.Type.Tuple -> parseTupleType()
+            Token.Type.List -> parseListType()
             else -> unexpectedTokenError(currentPosToken.token)
         }
     }
@@ -193,20 +191,31 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         } else parseType()
 
         flushNewLine(false)
-        val body = parseLambdaBody()
-        return AstNode.Command.Expression.LambdaExpression(parameters, returnType, body)
+        val lambda = parseLambdaBody(parameters)
+        if (lambda.type != returnType) error("Error! Declared return type did not match actual return type")
+        return AstNode.Command.Expression.LambdaExpression(parameters, returnType, lambda.lambdaBody)
     }
 
-    private fun parseLambdaBody(): List<AstNode.Command> {
+    private fun parseLambdaBody(inputParams: List<AstNode.ParameterDeclaration>): LambdaBodyWithType {
         val commands = mutableListOf<AstNode.Command>()
+        flushNewLine(false)
         accept<Token.SpecialChar.BlockStart>()
         openScope()
+        inputParams.forEach { enterSymbol(it.identifier.name, it.type) }
         while (current.token != Token.SpecialChar.BlockEnd) {
             commands.add(parseCommand())
         }
+        val body = AstNode.Command.Expression.LambdaBody(
+                if (commands.size == 1 && commands[0] is AstNode.Command.Expression)
+                    listOf(AstNode.Command.Return(commands[0] as AstNode.Command.Expression))
+                else
+                    commands
+        )
+        val ret = LambdaBodyWithType(body, body.type.type())
         closeScope()
+        flushNewLine(false)
         accept<Token.SpecialChar.BlockEnd>()
-        return commands
+        return ret
     }
 
     private fun parseTupleType(): AstNode.Type.Tuple {
@@ -226,26 +235,78 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
     //region ExpressionParsing
 
-    private fun parseExpression() = parsePotentialFunctionCall(parseExpressionAtomic())
+    private fun parseExpression() = parsePotentialFunctionCall(if (current.token == Token.SpecialChar.BlockStart) null
+                                                               else parseExpressionAtomic())
 
-    private fun parsePotentialFunctionCall(expression: AstExpression): AstExpression =
+    private fun getUpcomingIdentifierName(): String {
+        var scopeDepth = 0
+        var ahead = 0
+        while (true) {
+            if (hasAhead(ahead)) {
+                val token = lookAhead(ahead++).token
+                when (token) {
+                    Token.SpecialChar.BlockStart -> scopeDepth += 1
+                    Token.SpecialChar.BlockEnd -> scopeDepth -= 1
+                    is Token.Identifier -> if (scopeDepth == 0) return token.value
+                }
+            } else error("Expected to find identifier, but did not!")
+        }
+    }
+
+    private fun getLambdaParameter(func: List<AstNode.Type.Func.ExplicitFunc>, index: Int): AstExpression {
+        val funcAcceptingLambda = func.firstOrNull{
+            it.paramTypes[index] is AstNode.Type.Func.ExplicitFunc
+        } ?: error("No function found that takes a lambda at the current position")
+        val lambdaFuncType = funcAcceptingLambda.paramTypes[index] as AstNode.Type.Func.ExplicitFunc
+        val lambdaParams = when (lambdaFuncType.paramTypes.size) {
+            0 -> emptyList()
+            1 -> listOf(AstNode.ParameterDeclaration(lambdaFuncType.paramTypes[0],
+                    AstNode.Command.Expression.Value.Identifier("value")))
+            else -> {
+                lambdaFuncType.paramTypes.mapIndexed { idx, type ->
+                    AstNode.ParameterDeclaration(type,
+                            AstNode.Command.Expression.Value.Identifier(
+                                    "value${if (idx != 0) "${idx + 1}" else ""}"
+                            )
+                    )
+                }
+            }
+        }
+        val lambdaBody = parseLambdaBody(lambdaParams)
+        return AstNode.Command.Expression.LambdaExpression(
+                lambdaParams,
+                lambdaBody.type,
+                lambdaBody.lambdaBody)
+    }
+
+    private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstExpression =
         when (current.token) {
+            is Token.SpecialChar.BlockStart -> {
+                val symbol = retrieveSymbol(getUpcomingIdentifierName())
+                if (!symbol.isFunctions) error("Identifier has to be function")
+                val lambdaParameter = getLambdaParameter(symbol.functions, 0)
+                parsePotentialFunctionCall(lambdaParameter)
+            }
             is Token.Identifier -> {
                 val token = accept<Token.Identifier>()
                 val symbol = retrieveSymbol(token.value)
                 if (symbol.isFunctions) {
                     val funcDecls = symbol.functions
-                    val secondaryArguments = funcDecls.first().paramTypes.drop(1).map { parseExpressionAtomic() }
-                    val argTypes = listOf(expression.type.type()) + secondaryArguments.map { it.type.type() }
+                    val secondaryArguments = funcDecls.first().paramTypes.drop(1).mapIndexed { index, _ ->
+                        if (current.token != Token.SpecialChar.BlockStart) parseExpressionAtomic() else {
+                            getLambdaParameter(funcDecls, index + 1)
+                        }
+                    }
+                    val argTypes = listOf(expression!!.type.type()) + secondaryArguments.map { it.type.type() }
                     val declaration = funcDecls.getTypeDeclaration(argTypes)
                     if (declaration == null) undeclaredError(token.value)
                     else AstNode.Command.Expression.FunctionCall(
                             AstNode.Command.Expression.Value.Identifier(token.value),
                             listOf(expression) + secondaryArguments
                     )
-                } else expression
+                } else expression!!
             }
-            else -> expression
+            else -> expression!!
         }.let { if (expression != it) parsePotentialFunctionCall(it) else expression }
 
 
@@ -263,6 +324,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     }
                 }
             }
+            Token.SpecialChar.BlockStart -> error("Unable to evaluate lambda body as expression!")
             is Token.Literal.Text,
             is Token.Literal.Bool,
             is Token.Literal.Number -> acceptLiteral()
@@ -270,32 +332,21 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 accept<Token.SpecialChar.Colon>()
                 val token = accept<Token.Identifier>()
                 retrieveSymbol(token.value).handle(
-                        {
-                            AstIdentifier(token.value)
-                        },
-                        {
-                            wrongTokenTypeError("Function", token)
-                        },
-                        {
-                            undeclaredError(token.value)
-                        }
+                        { AstIdentifier(token.value) },
+                        { wrongTokenTypeError("Function", token) },
+                        { undeclaredError(token.value) }
                 )
-
             }
             is Token.Identifier -> {
                 val token = accept<Token.Identifier>()
                 retrieveSymbol(token.value).handle(
                         {
                             if (it.first().paramTypes.isEmpty()) {
-                                AstNode.Command.Expression.FunctionCall(
-                                        AstIdentifier(token.value), listOf()
-                                )
+                                AstNode.Command.Expression.FunctionCall(AstIdentifier(token.value), listOf())
                             } else error("Function ${token.value} can not be invoked with 0 arguments")
                         },
                         { AstIdentifier(token.value) },
-                        {
-                            undeclaredError(token.value)
-                        }
+                        { undeclaredError(token.value) }
                 )
             }
             else -> unexpectedTokenError(current.token)
@@ -348,6 +399,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         is ExprResult.Success -> this.type
         ExprResult.NoEmptyOverloading ,
         ExprResult.UndeclaredIdentifier,
-        ExprResult.NoFuncDeclarationForArgs -> undeclaredError((current.token as Token.Identifier).value)
+        ExprResult.NoFuncDeclarationForArgs -> undeclaredError((current.token as? Token.Identifier)?.value ?: "")
+        ExprResult.BodyWithMultiReturnTypes -> error("Lambda body with multiple return types")
     }
 }

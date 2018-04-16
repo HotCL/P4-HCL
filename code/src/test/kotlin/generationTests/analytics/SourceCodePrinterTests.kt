@@ -100,13 +100,14 @@ class SourceCodePrinterTests {
                                         )
                                 ),
                                 AstNode.Type.Number,
+                                AstNode.Command.Expression.LambdaBody(
                                 listOf(AstNode.Command.Return(AstNode.Command.Expression.FunctionCall(
                                         AstNode.Command.Expression.Value.Identifier("+"),
                                         listOf(
                                                 AstNode.Command.Expression.Value.Identifier("a"),
                                                 AstNode.Command.Expression.Value.Identifier("b")
                                         )
-                                )))
+                                ))))
                         )
 
                 )

@@ -7,5 +7,6 @@ sealed class ExprResult {
     object NoEmptyOverloading : ExprResult()
     object UndeclaredIdentifier : ExprResult()
     object NoFuncDeclarationForArgs : ExprResult()
+    object BodyWithMultiReturnTypes : ExprResult()
     val forceType get() = (this as Success).type
 }
