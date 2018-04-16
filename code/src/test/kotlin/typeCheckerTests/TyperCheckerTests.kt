@@ -1,8 +1,12 @@
 package typeCheckerTests
 
 import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.UnexpectedTypeError
 import lexer.Token
+import org.junit.jupiter.api.Assertions
 import parser.AstNode
+import parser.Parser
+import parserTests.DummyLexer
 import parserTests.matchesAstChildren
 
 class TyperCheckerTests {
@@ -63,4 +67,5 @@ class TyperCheckerTests {
                 )
         )
     }
+
 }

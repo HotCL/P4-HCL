@@ -27,15 +27,14 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             is Token.Identifier -> {
                 if (peek().token == Token.SpecialChar.Equals) {
                     parseAssignment()
-                }
-                else parseExpression()
+                } else parseExpression()
             }
             Token.SpecialChar.BlockStart -> parsePotentialFunctionCall(null)
             is Token.Literal, //Fallthrough
             Token.SpecialChar.SquareBracketStart,
             Token.SpecialChar.Colon,
             Token.SpecialChar.ParenthesesStart
-                -> parseExpression()
+            -> parseExpression()
             Token.Return -> parseReturnStatement()
             else -> unexpectedTokenError(current.token)
         }
@@ -80,7 +79,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     }
 
     private fun parseSingleParameter(): AstNode.ParameterDeclaration {
-        val type = parseType()
+        val type = parseType(genericAllowed = true)
         val identifier = acceptIdentifier()
         if (current.token == Token.SpecialChar.Equals) initializedFunctionParameterError()
         return AstNode.ParameterDeclaration(type, identifier)
@@ -101,30 +100,34 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parseDeclaration(): AstNode.Command.Declaration {
         val type = parseType(implicitAllowed = true)
         val identifier = acceptIdentifier()
-        val expression = if (tryAccept<Token.SpecialChar.Equals>()) {
-            parseExpression()
-        } else null
 
-        if (expression == null && (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var))
-            error("Cannot declare implicit type without expression")
-        if (expression != null && (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)) {
+        if (tryAccept<Token.SpecialChar.Equals>()) {
+            val expression = parseExpression()
+            if (type != AstNode.Type.Func.ImplicitFunc && type != AstNode.Type.Var && expression.type.type() != type)
+                unexpectedTypeError(type.toString(),expression.type.type().toString())
+
             when (enterSymbol(identifier.name, expression.type.type())) {
                 EnterSymbolResult.OverloadAlreadyDeclared ->
                     error("Function of same name with these parameters has already been declared!")
                 EnterSymbolResult.OverloadDifferentParamNums ->
                     error("Unable to overload with different amount of arguments!")
-                EnterSymbolResult.IdentifierAlreadyDeclared ->
+                EnterSymbolResult.IdentifierAlreadyDeclared -> error("Identifier already declared!")
+            }
+
+            return AstNode.Command.Declaration(expression.type.type(), identifier, expression)
+        } else {
+            if (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)
+                error("Cannot declare implicit type without expression")
+            if (type is AstNode.Type.Func)
+                error("cannot declare function without body")
+
+            enterSymbol(identifier.name, type).let {
+                if (it == EnterSymbolResult.IdentifierAlreadyDeclared)
                     error("Identifier already declared!")
             }
+
+            return AstNode.Command.Declaration(type, identifier, null)
         }
-        else when (enterSymbol(identifier.name, type)) {
-            EnterSymbolResult.IdentifierAlreadyDeclared -> error("Identifier already declared!")
-        }
-        return if (expression != null) {
-            if (!retrieveSymbol(identifier.name).handle({ true }, { it == expression.type.type() }, { false }))
-                unexpectedTypeError(type.toString(), expression.type.toString())
-            else AstNode.Command.Declaration(expression.type.type(), identifier, expression)
-        } else AstNode.Command.Declaration(type, identifier, expression)
     }
 
     private fun parseAssignment(): AstNode.Command.Assignment {
@@ -133,22 +136,28 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val expression = parseExpression()
         return if (!retrieveSymbol(identifier.name).handle({ true }, { it == expression.type.type() }, { false }))
             unexpectedTypeError(retrieveSymbol(identifier.name).identifier.toString(), expression.type.toString())
-         else AstNode.Command.Assignment(identifier, expression)
+        else AstNode.Command.Assignment(identifier, expression)
     }
+    private fun parseTypeOrGeneric(){
 
+    }
     //region Type declarations
-    private fun  parseType(implicitAllowed: Boolean = false): AstNode.Type {
+    private fun  parseType(implicitAllowed: Boolean = false, genericAllowed:Boolean = false): AstNode.Type {
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
             Token.Type.Number -> AstNode.Type.Number
             Token.Type.Text -> AstNode.Type.Text
             Token.Type.Bool -> AstNode.Type.Bool
-            Token.Type.Var -> if (implicitAllowed) AstNode.Type.Var
-                                 else error("Explicit type not allowed here!")
+            Token.Type.Var ->
+                if (implicitAllowed) AstNode.Type.Var
+                else error("Explicit type not allowed here!")
             Token.Type.Func -> parseFuncType(implicitAllowed)
-            Token.Type.Tuple -> parseTupleType()
-            Token.Type.List -> parseListType()
+            Token.Type.Tuple -> parseTupleType(genericAllowed)
+            Token.Type.List -> parseListType(genericAllowed)
+            is Token.Identifier ->
+                if(genericAllowed) AstNode.Type.GenericType(currentPosToken.token.value)
+                else unexpectedTokenError(currentPosToken.token)
             else -> unexpectedTokenError(currentPosToken.token)
         }
     }
@@ -171,7 +180,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             val parameters = parseTypes({
                 if (peek().token == Token.SpecialChar.SquareBracketEnd && tryAccept<Token.Type.None>())
                     AstNode.Type.None
-                else parseType()
+                else parseType(genericAllowed = true)
             })
             accept<Token.SpecialChar.SquareBracketEnd>()
             val returnType = parameters.last()
@@ -188,7 +197,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val returnType = if (current.token == Token.Type.None) {
             moveNext()
             AstNode.Type.None
-        } else parseType()
+        } else parseType(genericAllowed = true)
 
         flushNewLine(false)
         val lambda = parseLambdaBody(parameters)
@@ -218,16 +227,16 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         return ret
     }
 
-    private fun parseTupleType(): AstNode.Type.Tuple {
+    private fun parseTupleType(genericAllowed: Boolean): AstNode.Type.Tuple {
         accept<Token.SpecialChar.SquareBracketStart>()
-        val elementTypes = parseTypes { parseType() }
+        val elementTypes = parseTypes { parseType(genericAllowed = genericAllowed) }
         accept<Token.SpecialChar.SquareBracketEnd>()
         return AstNode.Type.Tuple(elementTypes)
     }
 
-    private fun parseListType(): AstNode.Type.List {
+    private fun parseListType(genericAllowed: Boolean): AstNode.Type.List {
         accept<Token.SpecialChar.SquareBracketStart>()
-        val elementType: AstNode.Type = parseType()
+        val elementType: AstNode.Type = parseType(genericAllowed = genericAllowed)
         accept<Token.SpecialChar.SquareBracketEnd>()
         return AstNode.Type.List(elementType)
     }
@@ -280,43 +289,47 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     }
 
     private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstExpression =
-        when (current.token) {
-            is Token.SpecialChar.BlockStart -> {
-                val symbol = retrieveSymbol(getUpcomingIdentifierName())
-                if (!symbol.isFunctions) error("Identifier has to be function")
-                val lambdaParameter = getLambdaParameter(symbol.functions, 0)
-                parsePotentialFunctionCall(lambdaParameter)
-            }
-            is Token.Identifier -> {
-                val token = accept<Token.Identifier>()
-                val symbol = retrieveSymbol(token.value)
-                if (symbol.isFunctions) {
-                    val funcDecls = symbol.functions
-                    val secondaryArguments = funcDecls.first().paramTypes.drop(1).mapIndexed { index, _ ->
-                        if (current.token != Token.SpecialChar.BlockStart) parseExpressionAtomic() else {
-                            getLambdaParameter(funcDecls, index + 1)
+            when (current.token) {
+                is Token.SpecialChar.BlockStart -> {
+                    val symbol = retrieveSymbol(getUpcomingIdentifierName())
+                    if (!symbol.isFunctions) error("Identifier has to be function")
+                    val lambdaParameter = getLambdaParameter(symbol.functions, 0)
+                    parsePotentialFunctionCall(lambdaParameter)
+                }
+                is Token.Identifier -> {
+                    val token = accept<Token.Identifier>()
+                    val symbol = retrieveSymbol(token.value)
+                    if (symbol.isFunctions) {
+                        val funcDecls = symbol.functions
+                        val secondaryArguments = funcDecls.first().paramTypes.drop(1).mapIndexed { index, _ ->
+                            if (current.token != Token.SpecialChar.BlockStart) parseExpressionAtomic() else {
+                                getLambdaParameter(funcDecls, index + 1)
+                            }
                         }
-                    }
-                    val argTypes = listOf(expression!!.type.type()) + secondaryArguments.map { it.type.type() }
-                    val declaration = funcDecls.getTypeDeclaration(argTypes)
-                    if (declaration == null) undeclaredError(token.value)
-                    else AstNode.Command.Expression.FunctionCall(
-                            AstNode.Command.Expression.Value.Identifier(token.value),
-                            listOf(expression) + secondaryArguments
-                    )
-                } else expression!!
-            }
-            else -> expression!!
-        }.let { if (expression != it) parsePotentialFunctionCall(it) else expression }
+                        val argTypes = listOf(expression!!.type.type()) + secondaryArguments.map { it.type.type() }
+                        val declaration = funcDecls.getTypeDeclaration(argTypes)
+                        if (declaration == null) undeclaredError(token.value)
+                        else AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier(token.value),
+                                listOf(expression) + secondaryArguments
+                        )
+                    } else expression
+                }
+                else -> expression
+            }.let { if (expression != it) parsePotentialFunctionCall(it) else expression!! }
 
 
     private fun parseExpressionAtomic(): AstExpression =
         when (current.token) {
             Token.SpecialChar.SquareBracketStart -> parseListDeclaration()
             Token.SpecialChar.ParenthesesStart -> {
-                if (peek().token is Token.Type || peek().token == Token.SpecialChar.ParenthesesEnd) {
+                if (peek().token is Token.Type ||
+                        (peek().token is Token.Identifier && hasAhead(2) &&
+                                lookAhead(2).token is Token.Identifier) ||
+                        peek().token == Token.SpecialChar.ParenthesesEnd) {
                     parseLambdaDeclaration()
                 }
+
                 else {
                     if (upcomingTuple()) parseTupleExpression() else {
                         accept<Token.SpecialChar.ParenthesesStart>()
@@ -324,18 +337,23 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     }
                 }
             }
-            Token.SpecialChar.BlockStart -> error("Unable to evaluate lambda body as expression!")
             is Token.Literal.Text,
             is Token.Literal.Bool,
             is Token.Literal.Number -> acceptLiteral()
             is Token.SpecialChar.Colon -> {
                 accept<Token.SpecialChar.Colon>()
                 val token = accept<Token.Identifier>()
+
                 retrieveSymbol(token.value).handle(
-                        { AstIdentifier(token.value) },
+                        {
+                            if(it.any {it.containsGeneric()})
+                                genericPassedFunctionException()
+                            AstIdentifier(token.value)
+                        },
                         { wrongTokenTypeError("Function", token) },
                         { undeclaredError(token.value) }
                 )
+
             }
             is Token.Identifier -> {
                 val token = accept<Token.Identifier>()
@@ -368,30 +386,30 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     }
 
     private fun parseTupleExpression() =
-        AstNode.Command.Expression.Value.Literal.Tuple(
-            mutableListOf<AstNode.Command.Expression>().apply {
-                accept<Token.SpecialChar.ParenthesesStart>()
-                while (current.token != Token.SpecialChar.ParenthesesEnd) {
-                    add(parseExpression())
-                    if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
-                }
-                accept<Token.SpecialChar.ParenthesesEnd>()
-            }
-        )
+            AstNode.Command.Expression.Value.Literal.Tuple(
+                    mutableListOf<AstNode.Command.Expression>().apply {
+                        accept<Token.SpecialChar.ParenthesesStart>()
+                        while (current.token != Token.SpecialChar.ParenthesesEnd) {
+                            add(parseExpression())
+                            if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
+                        }
+                        accept<Token.SpecialChar.ParenthesesEnd>()
+                    }
+            )
 
     private fun parseListDeclaration() =
-        AstNode.Command.Expression.Value.Literal.List(
-            mutableListOf<AstNode.Command.Expression>().apply {
-                accept<Token.SpecialChar.SquareBracketStart>()
-                while (current.token != Token.SpecialChar.SquareBracketEnd) {
-                    add(parseExpression())
-                    if (first().type != last().type)
-                        unexpectedTypeError(first().type.toString(), last().type.toString())
-                    if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
-                }
-                accept<Token.SpecialChar.SquareBracketEnd>()
-            }
-        )
+            AstNode.Command.Expression.Value.Literal.List(
+                    mutableListOf<AstNode.Command.Expression>().apply {
+                        accept<Token.SpecialChar.SquareBracketStart>()
+                        while (current.token != Token.SpecialChar.SquareBracketEnd) {
+                            add(parseExpression())
+                            if (first().type != last().type)
+                                unexpectedTypeError(first().type.toString(), last().type.toString())
+                            if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
+                        }
+                        accept<Token.SpecialChar.SquareBracketEnd>()
+                    }
+            )
 
     //endregion ExpressionParsing
 
@@ -401,5 +419,14 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         ExprResult.UndeclaredIdentifier,
         ExprResult.NoFuncDeclarationForArgs -> undeclaredError((current.token as? Token.Identifier)?.value ?: "")
         ExprResult.BodyWithMultiReturnTypes -> error("Lambda body with multiple return types")
+    }
+
+
+    fun AstNode.Type.containsGeneric() : Boolean = when(this) {
+        is AstNode.Type.List -> this.elementType.containsGeneric()
+        is AstNode.Type.Tuple -> this.elementTypes.any {it.containsGeneric()}
+        is AstNode.Type.Func.ExplicitFunc -> this.paramTypes.any {it.containsGeneric()} || this.returnType.containsGeneric()
+        is AstNode.Type.GenericType -> true
+        else -> false
     }
 }

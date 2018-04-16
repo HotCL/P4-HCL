@@ -2,6 +2,7 @@ package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
 import exceptions.ImplicitTypeNotAllowed
+import exceptions.UnexpectedTypeError
 import lexer.Token
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -10,7 +11,7 @@ import parser.Parser
 import parser.AstNode
 import kotlin.coroutines.experimental.buildSequence
 
-class GenericTests {
+class MiscellaneousTests {
 
     @Test
     fun canParseNumDeclaration() {
@@ -30,6 +31,20 @@ class GenericTests {
                         )
                 )
         )
+    }
+
+    @Test
+    fun failOnWrongType() {
+        val lexer = DummyLexer(listOf(
+                        Token.Type.Bool,
+                        Token.Identifier("myId"),
+                        Token.SpecialChar.Equals,
+                        Token.Literal.Number(5.0),
+                        Token.SpecialChar.EndOfLine
+                ))
+
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+
     }
 
     @Test

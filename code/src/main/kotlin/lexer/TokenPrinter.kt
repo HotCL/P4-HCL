@@ -5,7 +5,7 @@ fun printTokens(tokens: List<Token>) = tokens.joinToString(" ") { formatToken(it
 private fun formatToken(token: Token) = when (token) {
     is Token.Identifier -> token.value
     is Token.Literal.Bool -> token.value.toString()
-    is Token.Literal.Text -> token.value
+    is Token.Literal.Text -> "\"${token.value}\""
     is Token.Literal.Number -> token.value.toString()
     Token.Return -> "return"
     Token.Type.Bool -> "bool"
@@ -26,5 +26,4 @@ private fun formatToken(token: Token) = when (token) {
     Token.SpecialChar.BlockEnd -> "}"
     Token.SpecialChar.BlockStart -> "{"
     Token.SpecialChar.Colon -> ":"
-    Token.SpecialChar.LineContinue -> ";"
 }

@@ -9,7 +9,7 @@ class TokenTest {
     @org.junit.jupiter.api.Test
     fun testTokens() {
         val tokens = listOf("Identifier", "\"Text\"", "5", "true", "var", "num", "bool", "text", "func",
-                                       "tuple", "list", "{", "}", "\n", "[", "]", "(", ")", ",", ";", ":", "=",
+                                       "tuple", "list", "{", "}", "\n", "[", "]", "(", ")", ",", ":", "=",
                                        "return").mapIndexed { index, lexeme ->
             when(lexeme) {
                 "Identifier" -> Token.Identifier(lexeme)
@@ -34,7 +34,6 @@ class TokenTest {
                 "(" -> Token.SpecialChar.ParenthesesStart
                 ")" -> Token.SpecialChar.ParenthesesEnd
                 "," -> Token.SpecialChar.ListSeparator
-                ";" -> Token.SpecialChar.LineContinue
                 "=" -> Token.SpecialChar.Equals
                 else -> throw Exception("Unexpected lexeme '$lexeme' in token test")
             }.let {

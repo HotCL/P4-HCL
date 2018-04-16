@@ -48,8 +48,17 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             val functionDeclarations = functionDeclarationsSymbol.functions
             val argumentTypes = expr.arguments.map { it.type.forceType }
             val functionDeclaration = functionDeclarations.getTypeDeclaration(argumentTypes)
-            functionDeclaration?.let { ExprResult.Success(functionDeclaration.returnType) } ?:
-                                       ExprResult.UndeclaredIdentifier
+            if(functionDeclaration == null)
+                ExprResult.UndeclaredIdentifier
+            else {
+                val returnType =
+                        if(functionDeclaration.returnType !is AstNode.Type.GenericType) functionDeclaration.returnType
+                        else functionDeclaration.paramTypes.zip(argumentTypes).getGenericTypeType(functionDeclaration.returnType.name)
+                if(returnType == null)
+                    ExprResult.UndeclaredIdentifier
+                else
+                    ExprResult.Success(returnType)
+            }
         }
         is Expression.LambdaExpression -> ExprResult.Success(AstNode.Type.Func.ExplicitFunc(
                 expr.paramDeclarations.map { it.type }, expr.returnType)
@@ -61,8 +70,105 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =
             tuple.elements.map { it.type.forceType }
 
-    override fun List<AstNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<AstNode.Type>) =
-            this.firstOrNull{ it.paramTypes == types }
+    override fun List<AstNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<AstNode.Type>):
+            AstNode.Type.Func.ExplicitFunc? {
+        val genericTypes = mutableMapOf<String,AstNode.Type>()
+
+        return this.firstOrNull{
+            it.paramTypes.zip(types).all{
+                if(it.first == it.second)
+                {
+                    if(it.first is AstNode.Type.GenericType)
+                        TODO("throw ambigous type error")
+                    true
+                }
+                else it.matchGenerics(genericTypes)
+            }
+        }
+    }
+
+    /**
+     * Pair = declaredType and argumentType
+     * It is certain that argumentType doesn't contain any generics. This is a rule of the language
+     */
+    private fun List<Pair<AstNode.Type,AstNode.Type>>.getGenericTypeType(typeName:String) : AstNode.Type? = this.map {
+        it.getGenericTypeType(typeName)
+    }.firstOrNull { it != null }
+
+    private fun Pair<AstNode.Type,AstNode.Type>.getGenericTypeType(typeName:String) : AstNode.Type? {
+
+        val declaredType = first
+        val argumentType = second
+
+        return when(declaredType){
+            is AstNode.Type.GenericType ->
+                if(declaredType.name == typeName) argumentType
+                else null
+
+            is AstNode.Type.List ->
+                if(argumentType is AstNode.Type.List)
+                    Pair(declaredType.elementType, argumentType.elementType).getGenericTypeType(typeName)
+                else throw Exception()
+
+            is AstNode.Type.Func.ExplicitFunc ->
+                if(argumentType is AstNode.Type.Func.ExplicitFunc &&
+                        declaredType.paramTypes.count() == argumentType.paramTypes.count())
+                    declaredType.paramTypes.zip(argumentType.paramTypes).getGenericTypeType(typeName)
+                else throw Exception()
+
+            is AstNode.Type.Tuple ->
+                if(argumentType is AstNode.Type.Tuple &&
+                        declaredType.elementTypes.count() == argumentType.elementTypes.count())
+                    declaredType.elementTypes.zip(argumentType.elementTypes).getGenericTypeType(typeName)
+                else throw Exception()
+
+            else -> null
+        }
+    }
+
+    /**
+     * Pair = declaredType and argumentType
+     * It is certain that argumentType doesn't contain any generics. This is a rule of the language
+     */
+    private fun Pair<AstNode.Type,AstNode.Type>.matchGenerics(genericTypes:MutableMap<String,AstNode.Type>): Boolean{
+        val declaredType = first
+        val argumentType = second
+
+        return when(declaredType){
+
+            is AstNode.Type.List ->
+                if(argumentType is AstNode.Type.List)
+                    Pair(declaredType.elementType, argumentType.elementType).matchGenerics(genericTypes)
+                else false
+
+            is AstNode.Type.Func.ExplicitFunc ->
+                if(argumentType is AstNode.Type.Func.ExplicitFunc &&
+                        declaredType.paramTypes.count() == argumentType.paramTypes.count())
+                    declaredType.paramTypes.zip(argumentType.paramTypes).all{
+                        it.matchGenerics(genericTypes)
+                    } && Pair(declaredType.returnType,argumentType.returnType).matchGenerics(genericTypes)
+                else false
+
+            is AstNode.Type.Tuple ->
+                if(argumentType is AstNode.Type.Tuple &&
+                        declaredType.elementTypes.count() == argumentType.elementTypes.count())
+                    declaredType.elementTypes.zip(argumentType.elementTypes).all{
+                        it.matchGenerics(genericTypes)
+                    }
+                else false
+            else -> {
+                if(declaredType is AstNode.Type.GenericType)
+                {
+                    if(genericTypes[declaredType.name] == null)
+                        genericTypes[declaredType.name] = argumentType
+                    genericTypes[declaredType.name] == argumentType
+                }
+                else declaredType == argumentType
+            }
+
+        }
+    }
+
 
     override val AstNode.Command.Expression.type get() = getTypeOfExpression(this)
 }
