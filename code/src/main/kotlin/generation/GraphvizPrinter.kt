@@ -29,10 +29,10 @@ class GraphvizPrinter : IPrinter {
     private fun TreeNode.visit(parentId:Int): String {
         val id = getNextId()
         return "# this is: $id - ${this}\n"+when (this) {
-            is Command.Assignment -> toLabel(id,this.identifier.name +"=")+
+            is Command.Assignment -> toLabel(id,"=")+this.identifier.visit(id)+
                     this.expression.visit(id)
 
-            is Command.Declaration -> toLabel(id,"${this.identifier.name}=")+
+            is Command.Declaration -> toLabel(id,"=")+this.identifier.visit(id)+
                     this.type.visit(id)+if(this.expression != null) this.expression.visit(id) else ""
 
             is Command.Expression.LambdaExpression -> toLabel(id,"Lambda")+this.returnType.visit(id)+
