@@ -1,0 +1,68 @@
+graph "test" {
+0;
+0 [label="program"];
+# this is: 1 - Assignment(identifier=Identifier(name=a), expression=FunctionCall(identifier=Identifier(name=*), parameters=[Identifier(name=x), FunctionCall(identifier=Identifier(name=*), parameters=[FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=4.0), Number(value=5.0)]), FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=6.0), Number(value=12.0)])])]))
+1;
+1 [label="="];
+# this is: 2 - Identifier(name=a)
+2;
+2 [label="Identifier(name=a)"];
+1 -- 2;
+# this is: 3 - FunctionCall(identifier=Identifier(name=*), parameters=[Identifier(name=x), FunctionCall(identifier=Identifier(name=*), parameters=[FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=4.0), Number(value=5.0)]), FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=6.0), Number(value=12.0)])])])
+3;
+3 [label="call"];
+# this is: 4 - Identifier(name=*)
+4;
+4 [label="Identifier(name=*)"];
+3 -- 4;
+# this is: 5 - Identifier(name=x)
+5;
+5 [label="Identifier(name=x)"];
+3 -- 5;
+
+# this is: 6 - FunctionCall(identifier=Identifier(name=*), parameters=[FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=4.0), Number(value=5.0)]), FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=6.0), Number(value=12.0)])])
+6;
+6 [label="call"];
+# this is: 7 - Identifier(name=*)
+7;
+7 [label="Identifier(name=*)"];
+6 -- 7;
+# this is: 8 - FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=4.0), Number(value=5.0)])
+8;
+8 [label="call"];
+# this is: 9 - Identifier(name=+)
+9;
+9 [label="Identifier(name=+)"];
+8 -- 9;
+# this is: 10 - Number(value=4.0)
+10;
+10 [label="Number(value=4.0)"];
+8 -- 10;
+
+# this is: 11 - Number(value=5.0)
+11;
+11 [label="Number(value=5.0)"];
+8 -- 11;
+6 -- 8;
+
+# this is: 12 - FunctionCall(identifier=Identifier(name=+), parameters=[Number(value=6.0), Number(value=12.0)])
+12;
+12 [label="call"];
+# this is: 13 - Identifier(name=+)
+13;
+13 [label="Identifier(name=+)"];
+12 -- 13;
+# this is: 14 - Number(value=6.0)
+14;
+14 [label="Number(value=6.0)"];
+12 -- 14;
+
+# this is: 15 - Number(value=12.0)
+15;
+15 [label="Number(value=12.0)"];
+12 -- 15;
+6 -- 12;
+3 -- 6;
+1 -- 3;
+0 -- 1;
+}
