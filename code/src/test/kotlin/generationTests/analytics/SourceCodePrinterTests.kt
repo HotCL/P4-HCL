@@ -147,7 +147,6 @@ class SourceCodePrinterTests {
                         TreeNode.Type.Number,
                         TreeNode.Command.Expression.Value.Identifier("x"),
                         TreeNode.Command.Expression.Value.Literal.Number(5.0)
-
                 )
         ).toMutableList()))
 
