@@ -381,7 +381,7 @@ class FunctionDeclarationTests {
         val exception = Assertions.assertThrows(Exception::class.java,
                 { Parser(lexer).generateAbstractSyntaxTree() })
         assertThat(exception.message,
-                equalTo("Function of same name with these arguments has already been declared!"))
+                equalTo("Function of same name with these parameters has already been declared!"))
 
     }
 

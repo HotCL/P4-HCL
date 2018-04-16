@@ -26,7 +26,7 @@ interface ISymbolTable{
      * @return Whether the symbol could be entered in the symbol table
      *              false if the symbol is already declared in current scope, and is not a function declaration
      */
-    fun enterSymbol(name: String, type: AstNode.Type)
+    fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult
 
     /**
      * Returns a list of the symbol table's currently valid declarations for name.
