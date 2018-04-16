@@ -6,76 +6,11 @@
 In order for the parser to handle symbols and their types, a symbol table is needed to store symbol information.
 This allows the parser to do type checking.
 
-With this in mind, an explanation of the symbol table is explained shown in this section.
-Firstly, the interface implemented by the symbol table will be presented.
-Secondly, all considerations through the design process will be discussed.
-This will serve as the reasoning behind the final implementation details.
-
-\textbf{Symbol Table Interface}\\
-The interface consists of five functions as seen in snippet \ref{lis:STInterface}.
-
-\begin{lstlisting}[language=java,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
-interface ISymbolTable{
-	fun openScope()
-	fun closeScope()
-	fun enterSymbol(name: String, type: TreeNode.Type): Boolean
-	fun retrieveSymbol(name: String): Symbol
-	fun declaredLocally(name: String): Boolean
-}
-\end{lstlisting}
-
-The methods on line 2 and 3 concerns with the handling of scopes.
-Scopes are handled by a stack data structure.
-Intuitively, each element on the stack consists of a local symbol table concerning the current scope.
-
-The $openScope()$ method opens a new scope in the symbol table.
-This is done by pushing a new sub-symbol table onto the stack.
-
-The $closeScope()$ method closes the most recently opened sub-symbol table.
-This is done by popping the table from the stack.
-Symbol references subsequently revert to outer scopes.
-
-The methods on line 4 and 5 concerns with the handling of entering and retrieval of symbol information.
-Since retrieval is the most heavily utilized method in the symbol table implementation, it is essential that time spent on the procedure is minimal.
-Because of this, all symbol tables uses a hash table data structure for insertion and retrieval of symbols. 
-
-The $enterSymbol(name: String, type: TreeNode.Type): Boolean$ method enters a new symbol into the current scope on top of the stack.
-The \texttt{name} parameter of type \texttt{String} must be matched with the identifier name in question.
-The \texttt{type} parameter of type \texttt{Treenode.Type} must be matched with a valid AST-node type.
-The method returns a boolean value indicating whether the operation was successful.
-
-The $retrieveSymbol(name: String): Symbol$ method retrieves the symbol stored in the top sub-symbol table on the stack with the name indicated by the \texttt{name} parameter of type \texttt{String}.
-
-The method on line 6 is concerned with testing whether a symbol is declared in the local scope.
-
-The $declaredLocally(name: String): Boolean$ method tests whether name is present in the symbol table's current scope.
-
-\textbf{Implementation}\\
-The implementation of the $enterSymbol$ method is the most complex one in the symbol table. 
-This is because when entering a new symbol it is relevant to make sure that the symbol doesn't already exist in the current scope.
-Scopes are further explained in the scope section, section \ref{sec:scopeRules}.
-In the case of a function, it is possible to enter multiple symbols with the same name, as long as they have different parameter-type signatures. 
-Functions, however, have to have the same amount of parameters.
-The implementation is shown in snippet \ref{lis:STEnterSymbol}.
-
-\begin{lstlisting}[language=java,label=lis:STEnterSymbol,caption=Implementation of enterSymbol.]
-override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
-	val entry = symbolTable.last[name]
-	return if (entry != null) {
-		val entryFirst = entry.first()
-			if (entryFirst is AstNode.Type.Func.ExplicitFunc && type is AstNode.Type.Func.ExplicitFunc) {
-			checkFunctionIsAllowed(type, name).also { if (it == EnterSymbolResult.Success) entry.add(type) }
-		} else EnterSymbolResult.IdentifierAlreadyDeclared
-		} else {
-			val res = if (type is AstNode.Type.Func.ExplicitFunc) checkFunctionIsAllowed(type, name)
-			else EnterSymbolResult.Success
-			res.also { if (it == EnterSymbolResult.Success) symbolTable.last[name] = mutableListOf(type) }
-	}
-}
-\end{lstlisting}
+With this in mind, an explanation of the symbol table is explained in this section. 
+Firstly the considerations from which the symbol table was implemented, followed by an explaination of the implementation
 
 \textbf{Considerations}\\
-As described previously, scoping is handled with a stack data structure and the sub-symbol tables themselves are handled with a hash table data structure.
+Scoping is handled with a stack data structure and the sub-symbol tables themselves are handled with a hash table data structure.
 This is not the only way to implement symbol tables.
 Instead of a stack data structure, the scope management could have been implemented using an attribute based data structure.
 
@@ -84,6 +19,45 @@ By using indexing on the scope management data structure, the entire symbol tabl
 However, by simply comparing the amount of code necessary to implement the single-table and the stack table implementations, it was apparent that the stack table implementation would be simpler to implement.
 
 The choice of using a hash table data structure for the sub-tables themselves was based upon the time complexity of the essential procedures.
-As mentioned earlier, the $retrieveSymbol$ method would be called more frequently than the remaining methods.
-It was therefore deemed sufficient to implement the data structure with the most efficient search operations.
-Insertion or retrieval in a hash table data structure can be performed in constant time.
+Insertion or retrieval in a hash table data structure can be performed in constant time, however as the parser will look through multiple scopes retrieval is only constant time in the context of a singular scope.
+Retrieval is the method used most often, which means that the running time of the retrieval is most important, however that's not possible because of the above reasons. 
+It is, however, not an major issue as it is not expected that the user of HCL are going to use deep nested scopes, and therefore the running time shouldn't be affected massively.
+
+
+
+\textbf{Implementation}\\
+The interface consists of five functions as seen in snippet \ref{lis:STInterface}.
+
+\begin{lstlisting}[language=java,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
+interface ISymbolTable{
+	fun openScope()
+	fun closeScope()
+	fun enterSymbol(name: String, type: TreeNode.Type): EnterSymbolResult
+	fun retrieveSymbol(name: String): Symbol
+	fun declaredLocally(name: String): Boolean
+}
+\end{lstlisting}
+The interface, and implementations of it, are defined by opening and closing scopes as well as entering and retrieving symbols.
+
+When opening a scope, a new scope is added to the list, while the top scope is popped when running the $closeScope()$ method.
+
+
+\begin{lstlisting}[language=java,label=lis:STEnterSymbol,caption=A simplified version of the enterSymbol implementation.]
+override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
+	val entry = symbolTable.last[name]
+	return if (entry != null) {
+		if (entry.first() is ExplicitFunc && type is ExplicitFunc) {
+			checkFunctionIsAllowed(type, name).also { if (it == EnterSymbolResult.Success) entry.add(type) }
+		} else EnterSymbolResult.IdentifierAlreadyDeclared
+	} else {
+	// add new symbol
+	....
+	}
+}
+\end{lstlisting}
+
+The implementation of the $enterSymbol$ method, as shown in snippet \ref{lis:STEnterSymbol}, is the most complex one in the symbol table. 
+This is because when entering a new symbol it is relevant to make sure that the symbol doesn't already exist in the current scope.
+Scopes are further explained in section \ref{sec:scopeRules}.
+In the case of a function, it is possible to enter multiple symbols with the same name, as long as they have different parameter-type signatures. 
+Functions, however, have to have the same amount of parameters.
