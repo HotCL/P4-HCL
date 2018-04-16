@@ -51,7 +51,6 @@ class FunctionCallTests {
         )
     }
 
-
     @Test
     fun canParseFunctionCallWithOverloading() {
         assertThat(

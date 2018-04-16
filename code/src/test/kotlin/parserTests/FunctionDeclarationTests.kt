@@ -2,9 +2,7 @@ package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import exceptions.InitializedFunctionParameterError
-import exceptions.UnexpectedTokenError
-import exceptions.WrongTokenTypeError
+import exceptions.*
 import lexer.Token
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -27,16 +25,120 @@ class FunctionDeclarationTests {
                         Token.Type.Text,
                         Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Type.Number,
+                        Token.Identifier("myParam1"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("myFunc")
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression
+                                (
+                                        listOf
+                                        (
+                                                AstNode.ParameterDeclaration
+                                                (
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
+                                                )
+                                        ),
+                                        AstNode.Type.Text,
+                                        listOf<AstNode.Command.Expression.LambdaExpression>()
+                                )
                         )
                 )
         )
     }
+
+    @Test
+    fun failOnTypesNotMatchingWithExpression() {
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Number,
+                Token.SpecialChar.ListSeparator,
+                Token.Type.Text,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Text,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.Text,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine
+        ))
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+    }
+
+    @Test
+    fun failOnReturnTypeNotMatchingWithExpression() {
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Number,
+                Token.SpecialChar.ListSeparator,
+                Token.Type.Text,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Number,
+                Token.Identifier("myParam1"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.Number,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine
+        ))
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+    }
+
+    @Test
+    fun failOnFuncSetToNonFunc() {
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Number,
+                Token.SpecialChar.ListSeparator,
+                Token.Type.Text,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.Literal.Number(5.0),
+                Token.SpecialChar.EndOfLine
+        ))
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+    }
+
+
+    @Test
+    fun failOnUndeclaredFunction() {
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Number,
+                Token.SpecialChar.ListSeparator,
+                Token.Type.Text,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier("toString"),
+                Token.SpecialChar.EndOfLine
+        ))
+        Assertions.assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+    }
+
 
     @org.junit.jupiter.api.Test
     fun failsOnLackingSeperator() {
@@ -54,13 +156,13 @@ class FunctionDeclarationTests {
 
     @org.junit.jupiter.api.Test
     fun failsOnEmptyTypeSet() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.Type.Func)
-            yield(Token.SpecialChar.SquareBracketStart)
-            yield(Token.SpecialChar.SquareBracketEnd)
-            yield(Token.Identifier("myFunc"))
-            yield(Token.SpecialChar.EndOfLine)
-        })
+        val lexer = DummyLexer(listOf(
+                Token.Type.Func,
+                Token.SpecialChar.SquareBracketStart,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier("myFunc")
+                //should fail before this token
+        ))
         Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
@@ -73,11 +175,24 @@ class FunctionDeclarationTests {
                         Token.Type.Text,
                         Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine
                 ),
                 matchesAstChildren(
                         AstNode.Command.Declaration(AstNode.Type.Func.ExplicitFunc(listOf(), AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("myFunc")
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression
+                                (
+                                        listOf(),
+                                        AstNode.Type.Text,
+                                        listOf()
+                                )
                         )
 
                 )

@@ -60,5 +60,6 @@ class SourceCodePrinter : IPrinter {
         is Type.GenericType -> name
         is Type.List -> "list[${elementType.format()}]"
         is Type.Tuple -> "tuple[${elementTypes.joinToString { it.format() }}]"
+        else -> throw NotImplementedError()
     }
 }

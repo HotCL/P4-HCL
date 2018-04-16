@@ -103,13 +103,12 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parseDeclaration(): AstNode.Command.Declaration {
         val type = parseType(implicitAllowed = true)
         val identifier = acceptIdentifier()
-        val expression = if (tryAccept<Token.SpecialChar.Equals>()) {
-            parseExpression()
-        } else null
 
-        if (expression == null && (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var))
-            error("Cannot declare implicit type without expression")
-        if (expression != null && (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)) {
+        if (tryAccept<Token.SpecialChar.Equals>()) {
+            val expression = parseExpression()
+            if (type != AstNode.Type.Func.ImplicitFunc && type != AstNode.Type.Var && expression.type.type() != type)
+                unexpectedTypeError(type.toString(),expression.type.type().toString())
+
             when (enterSymbol(identifier.name, expression.type.type())) {
                 EnterSymbolResult.OverloadAlreadyDeclared ->
                     error("Function of same name with these parameters has already been declared!")
@@ -117,16 +116,21 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     error("Unable to overload with different amount of arguments!")
                 EnterSymbolResult.IdentifierAlreadyDeclared -> error("Identifier already declared!")
             }
-        }
-        else when (enterSymbol(identifier.name, type)) {
-            EnterSymbolResult.IdentifierAlreadyDeclared -> error("Identifier already declared!")
-        }
 
-        return if (expression != null) {
-            if (!retrieveSymbol(identifier.name).handle({ true }, { it == expression.type.type() }, { false }))
-                unexpectedTypeError(type.toString(), expression.type.toString())
-            else AstNode.Command.Declaration(expression.type.type(), identifier, expression)
-        } else AstNode.Command.Declaration(type, identifier, expression)
+            return AstNode.Command.Declaration(expression.type.type(), identifier, expression)
+        } else {
+            if (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)
+                error("Cannot declare implicit type without expression")
+            if (type is AstNode.Type.Func)
+                error("cannot declare function without body")
+
+            enterSymbol(identifier.name, type).let {
+                if(it == EnterSymbolResult.IdentifierAlreadyDeclared)
+                    error("Identifier already declared!")
+            }
+
+            return AstNode.Command.Declaration(type, identifier, null)
+        }
     }
 
     private fun parseAssignment(): AstNode.Command.Assignment {
