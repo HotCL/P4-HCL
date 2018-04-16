@@ -3,6 +3,9 @@ package parser.symboltable
 import parser.AstNode
 import java.util.*
 
+/**
+ * The generic implementation of the ISymbolTable
+ */
 class SymbolTable : ISymbolTable {
 
     private val symbolTable: Deque<MutableMap<String, MutableList<AstNode.Type>>> = ArrayDeque()

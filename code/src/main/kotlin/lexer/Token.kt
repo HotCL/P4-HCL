@@ -23,7 +23,6 @@ sealed class Token {
         object ParenthesesEnd : SpecialChar()
         object EndOfLine : SpecialChar()
         object ListSeparator : SpecialChar()
-        object LineContinue : SpecialChar()
         object Equals : SpecialChar()
         object Colon : SpecialChar()
     }

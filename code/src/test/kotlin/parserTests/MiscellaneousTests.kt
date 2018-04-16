@@ -11,7 +11,7 @@ import parser.Parser
 import parser.AstNode
 import kotlin.coroutines.experimental.buildSequence
 
-class GenericTests {
+class MiscellaneousTests {
 
     @Test
     fun canParseNumDeclaration() {

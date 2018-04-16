@@ -26,5 +26,4 @@ private fun formatToken(token: Token) = when (token) {
     Token.SpecialChar.BlockEnd -> "}"
     Token.SpecialChar.BlockStart -> "{"
     Token.SpecialChar.Colon -> ":"
-    Token.SpecialChar.LineContinue -> ";"
 }
