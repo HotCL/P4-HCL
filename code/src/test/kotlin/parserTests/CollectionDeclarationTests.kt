@@ -60,11 +60,7 @@ class CollectionDeclarationTests {
                 ),
                 matchesAstChildren(
                         TreeNode.Command.Declaration(
-                                TreeNode.Type.Tuple(listOf(
-                                        TreeNode.Type.Number,
-                                        TreeNode.Type.Text
-                                )
-                                ),
+                                TreeNode.Type.Tuple(listOf(TreeNode.Type.Number, TreeNode.Type.Text)),
                                 TreeNode.Command.Expression.Value.Identifier("myTuple"),
                                 TreeNode.Command.Expression.Value.Literal.Tuple(
                                         listOf(
@@ -94,7 +90,8 @@ class CollectionDeclarationTests {
             yield(Token.SpecialChar.ParenthesesEnd)
             yield(Token.SpecialChar.EndOfLine)
         })
-        val exception = Assertions.assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        val exception = Assertions.assertThrows(Exception::class.java) {
+            Parser(lexer).generateAbstractSyntaxTree() }
         Assertions.assertEquals("Unrecognized expression", exception.message)
     }
 
@@ -119,7 +116,7 @@ class CollectionDeclarationTests {
         })
         Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
-//endregion TupleTypeDcl
+    //endregion TupleTypeDcl
 
     //region ListTypeDcl
     @org.junit.jupiter.api.Test
