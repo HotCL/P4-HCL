@@ -114,8 +114,8 @@ class TokenTest {
                 "- ERROR: InitializedFunctionParameterError found at line 0 index 15:\n" +
                         " | var x = (num z = 5): none {}\n" +
                         " |                ^--\n" +
-                        " | Cannot initialize function parameters in declaration.\n" +
-                        " | -->help: Function parameters are initialized when the function is called.\n",
+                        " | Cannot initialize function arguments in declaration.\n" +
+                        " | -->help: Function arguments are initialized when the function is called.\n",
                 logger.buffer.toString())
     }
 

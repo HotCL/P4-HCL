@@ -22,9 +22,9 @@ class SymbolTable : ISymbolTable {
                 {
                     it.forEach {
                         if (it.paramTypes.size != func.paramTypes.size) {
-                            throw Exception("Unable to overload with different amount of parameters!")
+                            throw Exception("Unable to overload with different amount of arguments!")
                         } else if (it.paramTypes == func.paramTypes) {
-                            throw Exception("Function of same name with these parameters has already been declared!")
+                            throw Exception("Function of same name with these arguments has already been declared!")
                         }
                     }
                 },

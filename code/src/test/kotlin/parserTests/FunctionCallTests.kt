@@ -1,6 +1,7 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.UndeclaredError
 import exceptions.WrongTokenTypeError
 import lexer.Token
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -45,6 +46,89 @@ class FunctionCallTests {
                         AstNode.Command.Expression.FunctionCall(
                                 AstNode.Command.Expression.Value.Identifier("myFunc"),
                                 listOf()
+                        )
+                )
+        )
+    }
+
+
+    @Test
+    fun canParseFunctionCallWithOverloading() {
+        assertThat(
+                listOf(
+
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Number,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("toString"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Type.Number,
+                        Token.Identifier("myParam"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine,
+
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Text,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("toString"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Type.Text,
+                        Token.Identifier("myParam"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine,
+
+                        Token.Literal.Number(5.0),
+                        Token.Identifier("toString"),
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Text),
+                                AstNode.Command.Expression.Value.Identifier("toString"),
+                                AstNode.Command.Expression.LambdaExpression(
+                                        listOf(
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Number,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
+                                        ),
+                                        AstNode.Type.Text,
+                                        listOf()
+                                )
+                        ),
+
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Text), AstNode.Type.Text),
+                                AstNode.Command.Expression.Value.Identifier("toString"),
+                                AstNode.Command.Expression.LambdaExpression(
+                                        listOf(
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Text,
+                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
+                                        ),
+                                        AstNode.Type.Text,
+                                        listOf()
+                                )
+                        ),
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("toString"),
+                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0)
+                                )
                         )
                 )
         )
@@ -100,6 +184,114 @@ class FunctionCallTests {
                 )
         )
     }
+    @Test
+    fun canParseFunctionCallHighOrder() {
+        assertThat(
+                listOf(
+                        Token.Type.Var,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myParam"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine,
+
+                        Token.Type.Var,
+                        Token.Identifier("myTextFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine,
+                        Token.SpecialChar.Colon,
+                        Token.Identifier("myTextFunc"),
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text)),
+                                        AstNode.Type.Text
+                                ),
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
+                                        listOf(
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text),
+                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
+                                        ),
+                                        AstNode.Type.Text,
+                                        listOf()
+                                )
+                        ),
+
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text),
+                                AstNode.Command.Expression.Value.Identifier("myTextFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
+                                        listOf(),
+                                        AstNode.Type.Text,
+                                        listOf()
+                                )
+                        ),
+                        AstNode.Command.Expression.FunctionCall(
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                listOf(AstNode.Command.Expression.Value.Identifier("myTextFunc"))
+                        )
+                )
+        )
+    }
+    @Test
+    fun failParseFunctionCallHighOrderWithWrongSignature() {
+
+        val lexer = DummyLexer(listOf(
+                Token.Type.Var,
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Func,
+                Token.SpecialChar.SquareBracketStart,
+                Token.Type.Text,
+                Token.SpecialChar.SquareBracketEnd,
+                Token.Identifier("myParam"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.Text,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine,
+
+                Token.Type.Var,
+                Token.Identifier("myTextFunc"),
+                Token.SpecialChar.Equals,
+                Token.SpecialChar.ParenthesesStart,
+                Token.Type.Text,
+                Token.Identifier("myParam"),
+                Token.SpecialChar.ParenthesesEnd,
+                Token.SpecialChar.Colon,
+                Token.Type.Text,
+                Token.SpecialChar.BlockStart,
+                Token.SpecialChar.BlockEnd,
+                Token.SpecialChar.EndOfLine,
+                Token.SpecialChar.Colon,
+                Token.Identifier("myTextFunc"),
+                Token.Identifier("myFunc"),
+                Token.SpecialChar.EndOfLine
+        ))
+        assertThrows(UndeclaredError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+    }
 
     @Test
     fun failsParseFunctionCallNeedsOneArgumentButGetsZero() {
@@ -124,6 +316,7 @@ class FunctionCallTests {
                 Token.Identifier("myFunc"),
                 Token.SpecialChar.EndOfLine
         ))
+        //TODO use less generic error
         assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 

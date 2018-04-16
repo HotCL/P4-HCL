@@ -156,11 +156,11 @@ class FunctionDeclarationTests {
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(
-                                    listOf(
-                                            AstNode.Type.Number,
-                                            AstNode.Type.Text
-                                    ),
-                                    AstNode.Type.None
+                                        listOf(
+                                                AstNode.Type.Number,
+                                                AstNode.Type.Text
+                                        ),
+                                        AstNode.Type.None
                                 ),
                                 AstNode.Command.Expression.Value.Identifier("myFunc"),
                                 AstNode.Command.Expression.LambdaExpression
@@ -255,6 +255,57 @@ class FunctionDeclarationTests {
     }
 
     @Test
+    fun canDeclareFunctionWithFunctionAsParameter() {
+        assertThat(
+                listOf(
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.SpecialChar.ListSeparator,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Type.Text,
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myParam"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Type.Text,
+                        Token.SpecialChar.BlockStart,
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine
+                ),
+                matchesAstChildren(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text)),
+                                        AstNode.Type.Text
+                                ),
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression(
+                                        listOf(
+                                                AstNode.ParameterDeclaration(
+                                                        AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text),
+                                                        AstNode.Command.Expression.Value.Identifier("myParam")
+                                                )
+                                        ),
+                                        AstNode.Type.Text,
+                                        listOf<AstNode.Command.Expression.LambdaExpression>()
+                                )
+
+                        )
+                )
+        )
+    }
+
+    @Test
     fun failsOnOverloadingWithDifferentAmountOfParameters(){
         val lexer = DummyLexer(listOf(
                 Token.Type.Func,
@@ -288,7 +339,7 @@ class FunctionDeclarationTests {
 
         val exception = Assertions.assertThrows(Exception::class.java,
                 { Parser(lexer).generateAbstractSyntaxTree() })
-        assertThat(exception.message, equalTo("Unable to overload with different amount of parameters!"))
+        assertThat(exception.message, equalTo("Unable to overload with different amount of arguments!"))
 
     }
 
@@ -330,7 +381,7 @@ class FunctionDeclarationTests {
         val exception = Assertions.assertThrows(Exception::class.java,
                 { Parser(lexer).generateAbstractSyntaxTree() })
         assertThat(exception.message,
-                    equalTo("Function of same name with these parameters has already been declared!"))
+                equalTo("Function of same name with these arguments has already been declared!"))
 
     }
 

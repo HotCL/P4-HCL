@@ -50,7 +50,7 @@ class GraphvizPrinter : IPrinter {
             is Type -> this.visitType(id)
 
             is Command.Expression.FunctionCall ->
-                toLabel(id,"call: "+this.identifier.name) + this.parameters.joinToString("\n")
+                toLabel(id,"call: "+this.identifier.name) + this.arguments.joinToString("\n")
                 {it.visit(id) }
 
             is AstNode.ParameterDeclaration -> toLabel(id,"parameter")+

@@ -30,10 +30,13 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 }
                 else parseExpression()
             }
+
+            // eh wut? in what case is "{ .* }" a singular command ?
             Token.SpecialChar.BlockStart -> AstNode.Command.Expression.LambdaExpression(listOf(), AstNode.Type.None,
                                                                        parseLambdaBody())
             is Token.Literal, //Fallthrough
             Token.SpecialChar.SquareBracketStart,
+            Token.SpecialChar.Colon,
             Token.SpecialChar.ParenthesesStart
                 -> parseExpression()
             Token.Return -> parseReturnStatement()
@@ -240,6 +243,9 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 //endregion
 
     //region ExpressionParsing
+
+    private fun parseExpression() = parsePotentialFunctionCall(parseExpressionAtomic())
+
     private fun parsePotentialFunctionCall(expression: AstExpression): AstExpression =
         when (current.token) {
             is Token.Identifier -> {
@@ -248,9 +254,10 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 if (symbol.isFunctions) {
                     val funcDecls = symbol.functions
                     val secondaryParams = funcDecls.first().paramTypes.drop(1).map { parseExpressionAtomic() }
-                    val inferredParams =
+                    val argTypes =
                             listOf(expression.type) + secondaryParams.map { it.type }
-                    val declaration = funcDecls.getTypeDeclaration(inferredParams)
+                    val declaration = funcDecls.getTypeDeclaration(argTypes)
+
                     if (declaration == null) throw UndeclaredError(current.lineNumber, current.lineIndex,
                                                    lexer.inputLine(current.lineNumber), token.value)
                     else AstNode.Command.Expression.FunctionCall(
@@ -262,7 +269,6 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             else -> expression
         }.let { if (expression != it) parsePotentialFunctionCall(it) else expression }
 
-    private fun parseExpression() = parsePotentialFunctionCall(parseExpressionAtomic())
 
     private fun parseExpressionAtomic(): AstExpression =
         when (current.token) {
@@ -281,6 +287,24 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             is Token.Literal.Text,
             is Token.Literal.Bool,
             is Token.Literal.Number -> acceptLiteral()
+            is Token.SpecialChar.Colon -> {
+                accept<Token.SpecialChar.Colon>()
+                val token = accept<Token.Identifier>()
+                retrieveSymbol(token.value).handle(
+                        {
+                            AstIdentifier(token.value)
+                        },
+                        {
+                            throw WrongTokenTypeError(current.lineNumber, current.lineIndex,
+                                    "Function", token.value,token)
+                        },
+                        {
+                            throw UndeclaredError(current.lineNumber, current.lineIndex,
+                                    lexer.inputLine(current.lineIndex), token.value)
+                        }
+                )
+
+            }
             is Token.Identifier -> {
                 val token = accept<Token.Identifier>()
                 retrieveSymbol(token.value).handle(

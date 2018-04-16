@@ -53,12 +53,12 @@ class SourceCodePrinter : IPrinter {
 
 
     private fun Command.Expression.FunctionCall.visit(): String =
-            if(parameters.count()==0) this.identifier.name
+            if(arguments.count()==0) this.identifier.name
             else
             {
-                "${this.parameters[0].visit()} ${this.identifier.name}" +
-                        if(parameters.count()>1)
-                            " ${this.parameters.subList(1,this.parameters.count()).
+                "${this.arguments[0].visit()} ${this.identifier.name}" +
+                        if(arguments.count()>1)
+                            " ${this.arguments.subList(1,this.arguments.count()).
                                     joinToString(" " ) { it.visit() }}"
                         else ""
 

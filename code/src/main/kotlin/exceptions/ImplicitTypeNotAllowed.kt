@@ -6,7 +6,7 @@ import lexer.Token
  */
 class ImplicitTypeNotAllowed(lineNumber: Int, lineIndex: Int, lineText: String)
     : ParserException(lineNumber, lineIndex, lineText){
-    override val errorMessage = "Cannot initialize function parameters in declaration."
-    override val helpText = "Function parameters are initialized when the function is called."
+    override val errorMessage = "Cannot initialize function arguments in declaration."
+    override val helpText = "Function arguments are initialized when the function is called."
 }
 

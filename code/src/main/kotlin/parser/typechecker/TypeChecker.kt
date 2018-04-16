@@ -1,6 +1,5 @@
 package parser.typechecker
 
-import exceptions.typeCheckerExceptions.ListWithMultipleTypesError
 import exceptions.typeCheckerExceptions.UndeclaredIdentifierError
 import parser.AstNode.Command.Expression
 import parser.AstNode
@@ -22,8 +21,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
         is Expression.Value.Literal.Text -> AstNode.Type.Text
         is Expression.Value.Literal.Tuple -> AstNode.Type.Tuple(getTypeOfTupleExpression(expr))
         is Expression.Value.Identifier -> retrieveSymbol(expr.name).handle(
-                { it.getTypeDeclaration(listOf())?.returnType ?:
-                    throw UndeclaredIdentifierError(expr.name) },
+                // todo get correct type and not just first
+                { it.first() },
                 { it },
                 { throw UndeclaredIdentifierError(expr.name) }
         )
@@ -32,8 +31,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             if (!functionDeclarationsSymbol.isFunctions)
                 throw UndeclaredIdentifierError(expr.identifier.name)
             val functionDeclarations = functionDeclarationsSymbol.functions
-            val parameterTypes = expr.parameters.map { getTypeOfExpression(it) }
-            val functionDeclaration = functionDeclarations.getTypeDeclaration(parameterTypes)
+            val argumentTypes = expr.arguments.map { getTypeOfExpression(it) }
+            val functionDeclaration = functionDeclarations.getTypeDeclaration(argumentTypes)
                     ?: throw UndeclaredIdentifierError(expr.identifier.name)
             functionDeclaration.returnType
         }

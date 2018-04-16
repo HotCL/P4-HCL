@@ -24,7 +24,7 @@ sealed class AstNode {
             }
             data class LambdaExpression(val paramDeclarations: List<ParameterDeclaration>, val returnType: Type,
                                         val body: List<Command>): Expression()
-            data class FunctionCall(val identifier: Value.Identifier, val parameters: List<Expression>): Expression()
+            data class FunctionCall(val identifier: Value.Identifier, val arguments: List<Expression>): Expression()
         }
         data class Return(val expression: Expression): Command()
     }
@@ -38,7 +38,7 @@ sealed class AstNode {
         data class List(val elementType: Type): Type()
         sealed class Func: Type() {
             data class ExplicitFunc(val paramTypes: kotlin.collections.List<Type>, val returnType: Type): Func()
-            object ImplicitFunc: Func()
+            object ImplicitFunc: Func() //TODO make this obsolete probably
         }
         data class Tuple(val elementTypes: kotlin.collections.List<Type>): Type()
     }
