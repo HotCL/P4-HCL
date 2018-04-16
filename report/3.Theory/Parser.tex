@@ -37,16 +37,6 @@ A corresponding AST can bee seen on figure \ref{fig:ast}.
 	\label{fig:ast}
 \end{figure}
 
-%\subsection{Grammar}
-%
-%The parser is built upon the CFG defined for the language. 
-%It is the responsibility of the CFG to tell the parser how to parse the language. 
-%For instance, when writing a top down parser, first and follow sets can be generated on behalf of the CFG. 
-%These will help determine what should be parsed next. 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% I guess it is not really necessary to talk about CFG, when we already have a big section about it.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{Contextual analysis}
 
 Apart from syntactical analysis, the parser is also concerned with contextual analysis. 
@@ -98,7 +88,6 @@ The bottom-up parsers can recognize a lot more languages than the top-down parse
 However, they are also generally more complex to implement.
 Because of this, bottom-up parsers are only rarely handmade.
 They will usually be implemented using the shift-reduce strategy.
-
 
 \subsection{Parser tools}
 
