@@ -34,6 +34,7 @@ class DummyLexer(private val tokens: Sequence<Token>): ILexer {
     override fun getTokenSequence() = buildSequence {
         tokens.forEach { yield(PositionalToken(it, -1, -1)) }
     }
+
     constructor(tokens: List<Token>) : this(buildSequence { yieldAll(tokens) })
 
     override fun inputLine(lineNumber: Int) = "Dummy lexer does not implement input line"

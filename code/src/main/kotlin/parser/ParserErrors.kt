@@ -28,6 +28,10 @@ fun Parser.initializedFunctionParameterError(): Nothing {
     throw InitializedFunctionParameterError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber))
 }
 
+fun Parser.genericPassedFunctionException(): Nothing {
+    throw GenericPassedFunctionException(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber))
+}
+
 fun Parser.error(msg: String): Nothing {
     throw Exception(msg)
 }

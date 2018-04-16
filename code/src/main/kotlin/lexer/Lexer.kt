@@ -32,7 +32,7 @@ class Lexer(private val inputContent: String) : ILexer {
                     currentString.setLength(0)
                     return@lineIterator
                 }
-                if (char == '\\' && inputLine(lineNumber).get(indexNumber+1) == '\n'){
+                if (char == '\\' && inputLine(lineNumber)[indexNumber+1] == '\n'){
                     currentString.setLength(0)
                     return@lineIterator
                 }
