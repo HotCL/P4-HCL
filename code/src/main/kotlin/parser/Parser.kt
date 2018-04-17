@@ -185,7 +185,6 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             accept<Token.SpecialChar.SquareBracketEnd>()
             val returnType = parameters.last()
 
-
             AstNode.Type.Func.ExplicitFunc(parameters.dropLast(1), returnType)
         }
         else if (implicitAllowed) AstNode.Type.Func.ImplicitFunc else implicitTypeNotAllowedError()
@@ -247,7 +246,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parseExpression() = parsePotentialFunctionCall(if (current.token == Token.SpecialChar.BlockStart) null
                                                                else parseExpressionAtomic())
 
-    private fun getUpcomingIdentifierName(): String {
+    private fun getUpcomingIdentifierName(): String? {
         var scopeDepth = 0
         var ahead = 0
         while (true) {
@@ -256,7 +255,13 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 when (token) {
                     Token.SpecialChar.BlockStart -> scopeDepth += 1
                     Token.SpecialChar.BlockEnd -> scopeDepth -= 1
-                    is Token.Identifier -> if (scopeDepth == 0) return token.value
+                }
+                if (scopeDepth == 0) {
+                    if (hasAhead(ahead + 1)) {
+                        return (lookAhead(ahead + 1).token as? Token.Identifier)?.let {
+                            return it.value
+                        }
+                    } else return null
                 }
             } else error("Expected to find identifier, but did not!")
         }
@@ -291,10 +296,16 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstExpression =
             when (current.token) {
                 is Token.SpecialChar.BlockStart -> {
-                    val symbol = retrieveSymbol(getUpcomingIdentifierName())
-                    if (!symbol.isFunctions) error("Identifier has to be function")
-                    val lambdaParameter = getLambdaParameter(symbol.functions, 0)
-                    parsePotentialFunctionCall(lambdaParameter)
+                    val upcomingId = getUpcomingIdentifierName()
+                    if (upcomingId != null) {
+                        val symbol = retrieveSymbol(upcomingId)
+                        if (!symbol.isFunctions) error("Identifier has to be function")
+                        val lambdaParameter = getLambdaParameter(symbol.functions, 0)
+                        parsePotentialFunctionCall(lambdaParameter)
+                    } else {
+                        val lambda = parseLambdaBody(emptyList())
+                        AstNode.Command.Expression.LambdaExpression(listOf(), lambda.type, lambda.lambdaBody)
+                    }
                 }
                 is Token.Identifier -> {
                     val token = accept<Token.Identifier>()
