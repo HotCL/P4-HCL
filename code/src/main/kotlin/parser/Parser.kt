@@ -108,10 +108,10 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
             when (enterSymbol(identifier.name, expression.type.type())) {
                 EnterSymbolResult.OverloadAlreadyDeclared ->
-                    error("Function of same name with these parameters has already been declared!")
+                    alreadyDeclaredException()
                 EnterSymbolResult.OverloadDifferentParamNums ->
-                    error("Unable to overload with different amount of arguments!")
-                EnterSymbolResult.IdentifierAlreadyDeclared -> error("Identifier already declared!")
+                    overloadWithDifferentAmountOfArgumentsException()
+                EnterSymbolResult.IdentifierAlreadyDeclared -> alreadyDeclaredException()
             }
 
             return AstNode.Command.Declaration(expression.type.type(), identifier, expression)
@@ -123,7 +123,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
             enterSymbol(identifier.name, type).let {
                 if (it == EnterSymbolResult.IdentifierAlreadyDeclared)
-                    error("Identifier already declared!")
+                    alreadyDeclaredException()
             }
 
             return AstNode.Command.Declaration(type, identifier, null)
@@ -151,7 +151,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             Token.Type.Bool -> AstNode.Type.Bool
             Token.Type.Var ->
                 if (implicitAllowed) AstNode.Type.Var
-                else error("Explicit type not allowed here!")
+                else implicitTypeNotAllowedError()
             Token.Type.Func -> parseFuncType(implicitAllowed)
             Token.Type.Tuple -> parseTupleType(genericAllowed)
             Token.Type.List -> parseListType(genericAllowed)
@@ -200,7 +200,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
         flushNewLine(false)
         val lambda = parseLambdaBody(parameters)
-        if (lambda.type != returnType) error("Error! Declared return type did not match actual return type")
+        if (lambda.type != returnType) unexpectedReturnTypeError(returnType.toString(),lambda.type.toString())
         return AstNode.Command.Expression.LambdaExpression(parameters, returnType, lambda.lambdaBody)
     }
 
@@ -320,15 +320,15 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 else -> expression
             }.let { if (expression != it) parsePotentialFunctionCall(it) else expression!! }
 
+    private fun isLambdaParameters() = peek().token is Token.Type ||
+            (peek().token is Token.Identifier && hasAhead(2) && lookAhead(2).token is Token.Identifier) ||
+            peek().token == Token.SpecialChar.ParenthesesEnd
 
     private fun parseExpressionAtomic(): AstExpression =
             when (current.token) {
                 Token.SpecialChar.SquareBracketStart -> parseListDeclaration()
                 Token.SpecialChar.ParenthesesStart -> {
-                    if (peek().token is Token.Type ||
-                            (peek().token is Token.Identifier && hasAhead(2) &&
-                                    lookAhead(2).token is Token.Identifier) ||
-                            peek().token == Token.SpecialChar.ParenthesesEnd) {
+                    if (isLambdaParameters()) {
                         parseLambdaDeclaration()
                     }
 
@@ -423,10 +423,11 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     }
 
 
-    fun AstNode.Type.containsGeneric() : Boolean = when(this) {
+    private fun AstNode.Type.containsGeneric() : Boolean = when(this) {
         is AstNode.Type.List -> this.elementType.containsGeneric()
         is AstNode.Type.Tuple -> this.elementTypes.any {it.containsGeneric()}
-        is AstNode.Type.Func.ExplicitFunc -> this.paramTypes.any {it.containsGeneric()} || this.returnType.containsGeneric()
+        is AstNode.Type.Func.ExplicitFunc ->
+            this.paramTypes.any {it.containsGeneric()} || this.returnType.containsGeneric()
         is AstNode.Type.GenericType -> true
         else -> false
     }

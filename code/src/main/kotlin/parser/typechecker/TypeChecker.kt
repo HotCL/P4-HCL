@@ -5,6 +5,7 @@ import parser.AstNode.Command.Expression
 import parser.AstNode
 import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
+import parser.exceptionCantHappenException
 
 class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
@@ -91,9 +92,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
      * Pair = declaredType and argumentType
      * It is certain that argumentType doesn't contain any generics. This is a rule of the language
      */
-    private fun List<Pair<AstNode.Type,AstNode.Type>>.getTypeFromGenericType(typeName:String) : AstNode.Type? = this.map {
-        it.getTypeFromGenericType(typeName)
-    }.firstOrNull { it != null }
+    private fun List<Pair<AstNode.Type,AstNode.Type>>.getTypeFromGenericType(typeName:String) : AstNode.Type? =
+            map { it.getTypeFromGenericType(typeName) }.firstOrNull { it != null }
 
     private fun Pair<AstNode.Type,AstNode.Type>.getTypeFromGenericType(typeName:String) : AstNode.Type? {
 
@@ -107,19 +107,19 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             is AstNode.Type.List ->
                 if(argumentType is AstNode.Type.List)
                     Pair(declaredType.elementType, argumentType.elementType).getTypeFromGenericType(typeName)
-                else throw Exception()
+                else exceptionCantHappenException()
 
             is AstNode.Type.Func.ExplicitFunc ->
                 if(argumentType is AstNode.Type.Func.ExplicitFunc &&
                         declaredType.paramTypes.count() == argumentType.paramTypes.count())
                     declaredType.paramTypes.zip(argumentType.paramTypes).getTypeFromGenericType(typeName)
-                else throw Exception()
+                else exceptionCantHappenException()
 
             is AstNode.Type.Tuple ->
                 if(argumentType is AstNode.Type.Tuple &&
                         declaredType.elementTypes.count() == argumentType.elementTypes.count())
                     declaredType.elementTypes.zip(argumentType.elementTypes).getTypeFromGenericType(typeName)
-                else throw Exception()
+                else exceptionCantHappenException()
 
             else -> null
         }

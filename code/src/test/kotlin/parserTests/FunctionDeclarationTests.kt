@@ -5,6 +5,7 @@ import com.natpryce.hamkrest.equalTo
 import exceptions.*
 import lexer.Token
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import parser.Parser
 import parser.AstNode
@@ -501,10 +502,8 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.EndOfLine
         ))
 
-        val exception = Assertions.assertThrows(Exception::class.java,
+        Assertions.assertThrows(OverloadWithDifferentAmountOfArgumentsException::class.java,
                 { Parser(lexer).generateAbstractSyntaxTree() })
-        assertThat(exception.message, equalTo("Unable to overload with different amount of arguments!"))
-
     }
 
     @Test
@@ -544,10 +543,8 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.EndOfLine
         ))
 
-        val exception = Assertions.assertThrows(Exception::class.java,
+        Assertions.assertThrows(AlreadyDeclaredException::class.java,
                 { Parser(lexer).generateAbstractSyntaxTree() })
-        assertThat(exception.message,
-                equalTo("Function of same name with these parameters has already been declared!"))
 
     }
 

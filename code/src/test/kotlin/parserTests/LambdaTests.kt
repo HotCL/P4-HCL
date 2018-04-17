@@ -3,8 +3,10 @@ package parserTests
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import exceptions.UndeclaredError
+import exceptions.UnexpectedReturnTypeError
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class LambdaTests {
     @Test
@@ -74,7 +76,7 @@ class LambdaTests {
         val exception = parseExpectException("" +
                 "var f = (): num { \"fail\" }"
         )
-        assertThat(exception.message, equalTo("Error! Declared return type did not match actual return type"))
+        assertTrue(exception is UnexpectedReturnTypeError)
     }
 
     @Test
@@ -85,7 +87,7 @@ class LambdaTests {
                 "   z\n" +
                 "}"
         )
-        assertThat(exception.message, equalTo("Error! Declared return type did not match actual return type"))
+        assertTrue(exception is UnexpectedReturnTypeError)
     }
 
     @Test
