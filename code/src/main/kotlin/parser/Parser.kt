@@ -244,7 +244,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     //region ExpressionParsing
 
     private fun parseExpression() = parsePotentialFunctionCall(if (current.token == Token.SpecialChar.BlockStart) null
-                                                               else parseExpressionAtomic())
+    else parseExpressionAtomic())
 
     private fun getUpcomingIdentifierName(): String? {
         var scopeDepth = 0
@@ -331,55 +331,55 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
 
     private fun parseExpressionAtomic(): AstExpression =
-        when (current.token) {
-            Token.SpecialChar.SquareBracketStart -> parseListDeclaration()
-            Token.SpecialChar.ParenthesesStart -> {
-                if (peek().token is Token.Type ||
-                        (peek().token is Token.Identifier && hasAhead(2) &&
-                                lookAhead(2).token is Token.Identifier) ||
-                        peek().token == Token.SpecialChar.ParenthesesEnd) {
-                    parseLambdaDeclaration()
-                }
+            when (current.token) {
+                Token.SpecialChar.SquareBracketStart -> parseListDeclaration()
+                Token.SpecialChar.ParenthesesStart -> {
+                    if (peek().token is Token.Type ||
+                            (peek().token is Token.Identifier && hasAhead(2) &&
+                                    lookAhead(2).token is Token.Identifier) ||
+                            peek().token == Token.SpecialChar.ParenthesesEnd) {
+                        parseLambdaDeclaration()
+                    }
 
-                else {
-                    if (upcomingTuple()) parseTupleExpression() else {
-                        accept<Token.SpecialChar.ParenthesesStart>()
-                        parseExpression().apply { accept<Token.SpecialChar.ParenthesesEnd>() }
+                    else {
+                        if (upcomingTuple()) parseTupleExpression() else {
+                            accept<Token.SpecialChar.ParenthesesStart>()
+                            parseExpression().apply { accept<Token.SpecialChar.ParenthesesEnd>() }
+                        }
                     }
                 }
-            }
-            is Token.Literal.Text,
-            is Token.Literal.Bool,
-            is Token.Literal.Number -> acceptLiteral()
-            is Token.SpecialChar.Colon -> {
-                accept<Token.SpecialChar.Colon>()
-                val token = accept<Token.Identifier>()
+                is Token.Literal.Text,
+                is Token.Literal.Bool,
+                is Token.Literal.Number -> acceptLiteral()
+                is Token.SpecialChar.Colon -> {
+                    accept<Token.SpecialChar.Colon>()
+                    val token = accept<Token.Identifier>()
 
-                retrieveSymbol(token.value).handle(
-                        {
-                            if(it.any {it.containsGeneric()})
-                                genericPassedFunctionException()
-                            AstIdentifier(token.value)
-                        },
-                        { wrongTokenTypeError("Function", token) },
-                        { undeclaredError(token.value) }
-                )
+                    retrieveSymbol(token.value).handle(
+                            {
+                                if(it.any {it.containsGeneric()})
+                                    genericPassedFunctionException()
+                                AstIdentifier(token.value)
+                            },
+                            { wrongTokenTypeError("Function", token) },
+                            { undeclaredError(token.value) }
+                    )
 
+                }
+                is Token.Identifier -> {
+                    val token = accept<Token.Identifier>()
+                    retrieveSymbol(token.value).handle(
+                            {
+                                if (it.first().paramTypes.isEmpty()) {
+                                    AstNode.Command.Expression.FunctionCall(AstIdentifier(token.value), listOf())
+                                } else error("Function ${token.value} can not be invoked with 0 arguments")
+                            },
+                            { AstIdentifier(token.value) },
+                            { undeclaredError(token.value) }
+                    )
+                }
+                else -> unexpectedTokenError(current.token)
             }
-            is Token.Identifier -> {
-                val token = accept<Token.Identifier>()
-                retrieveSymbol(token.value).handle(
-                        {
-                            if (it.first().paramTypes.isEmpty()) {
-                                AstNode.Command.Expression.FunctionCall(AstIdentifier(token.value), listOf())
-                            } else error("Function ${token.value} can not be invoked with 0 arguments")
-                        },
-                        { AstIdentifier(token.value) },
-                        { undeclaredError(token.value) }
-                )
-            }
-            else -> unexpectedTokenError(current.token)
-        }
 
     private fun upcomingTuple(): Boolean {
         var lookAhead = 1

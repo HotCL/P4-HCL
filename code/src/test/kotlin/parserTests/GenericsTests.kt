@@ -252,6 +252,8 @@ class GenericsTests{
                         Token.Type.Func,
                         Token.SpecialChar.SquareBracketStart,
                         Token.Identifier("T"),
+                        Token.SpecialChar.ListSeparator,
+                        Token.Identifier("T"),
                         Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myFunc"),
                         Token.SpecialChar.Equals,
@@ -283,7 +285,7 @@ class GenericsTests{
                                                         AstNode.Command.Expression.Value.Identifier("myParam1")
                                                 )
                                         ),
-                                        AstNode.Type.Text,
+                                        AstNode.Type.GenericType("T"),
                                         AstNode.Command.Expression.LambdaBody(listOf(
                                                 AstNode.Command.Return(
                                                         AstNode.Command.Expression.Value.Identifier("myParam1")
@@ -514,9 +516,9 @@ class GenericsTests{
                                         ),
                                         AstNode.Type.GenericType("T"),
                                         AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Expression.FunctionCall(
+                                                AstNode.Command.Return(AstNode.Command.Expression.FunctionCall(
                                                         AstNode.Command.Expression.Value.Identifier("myParam1"),
-                                                        listOf())
+                                                        listOf()))
                                         ))
                                 )
                         ),

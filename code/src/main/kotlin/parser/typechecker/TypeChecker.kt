@@ -53,11 +53,11 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             else {
                 val returnType =
                         if(functionDeclaration.returnType !is AstNode.Type.GenericType) functionDeclaration.returnType
-                        else functionDeclaration.paramTypes.zip(argumentTypes).getGenericTypeType(functionDeclaration.returnType.name)
-                if(returnType == null)
-                    ExprResult.UndeclaredIdentifier
-                else
-                    ExprResult.Success(returnType)
+                        else (functionDeclaration.paramTypes.zip(argumentTypes).
+                                getTypeFromGenericType(functionDeclaration.returnType.name)
+                                ?: functionDeclaration.returnType)
+
+                ExprResult.Success(returnType)
             }
         }
         is Expression.LambdaExpression -> ExprResult.Success(AstNode.Type.Func.ExplicitFunc(
@@ -91,15 +91,14 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
      * Pair = declaredType and argumentType
      * It is certain that argumentType doesn't contain any generics. This is a rule of the language
      */
-    private fun List<Pair<AstNode.Type,AstNode.Type>>.getGenericTypeType(typeName:String) : AstNode.Type? = this.map {
-        it.getGenericTypeType(typeName)
+    private fun List<Pair<AstNode.Type,AstNode.Type>>.getTypeFromGenericType(typeName:String) : AstNode.Type? = this.map {
+        it.getTypeFromGenericType(typeName)
     }.firstOrNull { it != null }
 
-    private fun Pair<AstNode.Type,AstNode.Type>.getGenericTypeType(typeName:String) : AstNode.Type? {
+    private fun Pair<AstNode.Type,AstNode.Type>.getTypeFromGenericType(typeName:String) : AstNode.Type? {
 
         val declaredType = first
         val argumentType = second
-
         return when(declaredType){
             is AstNode.Type.GenericType ->
                 if(declaredType.name == typeName) argumentType
@@ -107,19 +106,19 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
             is AstNode.Type.List ->
                 if(argumentType is AstNode.Type.List)
-                    Pair(declaredType.elementType, argumentType.elementType).getGenericTypeType(typeName)
+                    Pair(declaredType.elementType, argumentType.elementType).getTypeFromGenericType(typeName)
                 else throw Exception()
 
             is AstNode.Type.Func.ExplicitFunc ->
                 if(argumentType is AstNode.Type.Func.ExplicitFunc &&
                         declaredType.paramTypes.count() == argumentType.paramTypes.count())
-                    declaredType.paramTypes.zip(argumentType.paramTypes).getGenericTypeType(typeName)
+                    declaredType.paramTypes.zip(argumentType.paramTypes).getTypeFromGenericType(typeName)
                 else throw Exception()
 
             is AstNode.Type.Tuple ->
                 if(argumentType is AstNode.Type.Tuple &&
                         declaredType.elementTypes.count() == argumentType.elementTypes.count())
-                    declaredType.elementTypes.zip(argumentType.elementTypes).getGenericTypeType(typeName)
+                    declaredType.elementTypes.zip(argumentType.elementTypes).getTypeFromGenericType(typeName)
                 else throw Exception()
 
             else -> null
