@@ -94,7 +94,6 @@ class GraphvizPrinterTests {
         )
     }
 
-    @Disabled
     @Test
     fun canPrintLambdaExpression() {
         val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
@@ -123,15 +122,14 @@ class GraphvizPrinterTests {
 
                 )
         ).toMutableList()))
-
         assertEquals(
-                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"plus=\"];2;2 [label=\"Lambda\"];3;3 " +
-                        "[label=\"TYPE:num\"];3;3 [label=\"TYPE:num\"];2 -- 3;4;4 [label=\"parameter\"];5;5 [label=" +
-                        "\"TYPE:num\"];5;5 [label=\"TYPE:num\"];4 -- 5;6;6 [label=\"Identifier(name=a)\"];4 -- 6;2 " +
-                        "-- 4;7;7 [label=\"parameter\"];8;8 [label=\"TYPE:num\"];8;8 [label=\"TYPE:num\"];7 -- 8;9;9" +
-                        " [label=\"Identifier(name=b)\"];7 -- 9;2 -- 7;10;10 [label=\"return\"];11;11 [label=\"call:" +
-                        " +\"];12;12 [label=\"Identifier(name=a)\"];11 -- 12;13;13 [label=\"Identifier(name=b)\"];11" +
-                        " -- 13;10 -- 11;2 -- 10;1 -- 2;0 -- 1;}",
+                "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"plus=\"];2;2 [label=\"Lambda\"];3;3" +
+                        " [label=\"TYPE:num\"];3;3 [label=\"TYPE:num\"];2 -- 3;4;4 [label=\"parameter\"];5;5 " +
+                        "[label=\"TYPE:num\"];5;5 [label=\"TYPE:num\"];4 -- 5;6;6 [label=\"Identifier(name=a)\"];4" +
+                        " -- 6;2 -- 4;7;7 [label=\"parameter\"];8;8 [label=\"TYPE:num\"];8;8 [label=\"TYPE:num\"];7" +
+                        " -- 8;9;9 [label=\"Identifier(name=b)\"];7 -- 9;2 -- 7;10;10 [label=\"body\"];11;11 " +
+                        "[label=\"return\"];12;12 [label=\"call: +\"];13;13 [label=\"Identifier(name=a)\"];12 --" +
+                        " 13;14;14 [label=\"Identifier(name=b)\"];12 -- 14;11 -- 12;10 -- 11;2 -- 10;1 -- 2;0 -- 1;}",
                 compactOutput(output)
         )
     }

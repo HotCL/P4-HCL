@@ -1,8 +1,8 @@
 package lexer
 
-fun printTokens(tokens: List<Token>) = tokens.joinToString(" ") { formatToken(it) }
+fun formatTokens(tokens: List<Token>) = tokens.joinToString(" ") { formatToken(it) }
 
-private fun formatToken(token: Token) = when (token) {
+fun formatToken(token: Token) = when (token) {
     is Token.Identifier -> token.value
     is Token.Literal.Bool -> token.value.toString()
     is Token.Literal.Text -> "\"${token.value}\""

@@ -43,7 +43,7 @@ class GraphvizPrinter : IPrinter {
 
             is Command.Expression.Value.Literal.Tuple -> toLabel(id,"Literal: Tuple")+
                     this.elements.joinToString("\n") { it.visit(id) }
-
+            is Command.Expression.LambdaBody -> toLabel(id,"body")+this.commands.visit(id)
             is Command.Return -> toLabel(id,"return")+
                     this.expression.visit(id)
 

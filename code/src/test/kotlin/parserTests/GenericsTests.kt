@@ -6,7 +6,6 @@ import exceptions.UndeclaredError
 import exceptions.UnexpectedTokenError
 import exceptions.UnexpectedTypeError
 import lexer.Token
-import lexer.printTokens
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import parser.AstNode
@@ -374,22 +373,27 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Type.Number,
                 Token.SpecialChar.BlockStart,
-                Token.Literal.Number(3.0),
+                Token.Literal.Number(2.0),
+                Token.Identifier("passFunc"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
                 Token.Type.Func,
                 Token.SpecialChar.SquareBracketStart,
                 Token.Identifier("T"),
+                Token.SpecialChar.ListSeparator,
+                Token.Identifier("T"),
                 Token.SpecialChar.SquareBracketEnd,
                 Token.Identifier("passFunc"),
                 Token.SpecialChar.Equals,
                 Token.SpecialChar.ParenthesesStart,
+                Token.Identifier("T"),
+                Token.Identifier("value"),
                 Token.SpecialChar.ParenthesesEnd,
                 Token.SpecialChar.Colon,
                 Token.Identifier("T"),
                 Token.SpecialChar.BlockStart,
-                Token.Identifier("passFunc"),
+                Token.Identifier("value"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
