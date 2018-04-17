@@ -29,8 +29,8 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     parseAssignment()
                 } else parseExpression()
             }
-            Token.SpecialChar.BlockStart -> parsePotentialFunctionCall(null)
             is Token.Literal, //Fallthrough
+            Token.SpecialChar.BlockStart,
             Token.SpecialChar.SquareBracketStart,
             Token.SpecialChar.Colon,
             Token.SpecialChar.ParenthesesStart
