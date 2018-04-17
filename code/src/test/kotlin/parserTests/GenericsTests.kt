@@ -145,6 +145,8 @@ class GenericsTests{
                         Token.SpecialChar.SquareBracketEnd,
                         Token.SpecialChar.ListSeparator,
                         Token.Identifier("T"),
+                        Token.SpecialChar.ListSeparator,
+                        Token.Identifier("T"),
                         Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myFunc"),
                         Token.SpecialChar.Equals,
@@ -162,10 +164,14 @@ class GenericsTests{
                         Token.Identifier("T3"),
                         Token.SpecialChar.SquareBracketEnd,
                         Token.Identifier("myParam1"),
+                        Token.SpecialChar.ListSeparator,
+                        Token.Identifier("T"),
+                        Token.Identifier("myT"),
                         Token.SpecialChar.ParenthesesEnd,
                         Token.SpecialChar.Colon,
                         Token.Identifier("T"),
                         Token.SpecialChar.BlockStart,
+                        Token.Identifier("myT"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
 
@@ -183,6 +189,7 @@ class GenericsTests{
                         Token.SpecialChar.ListSeparator,
                         Token.Literal.Text("test"),
                         Token.SpecialChar.ParenthesesEnd,
+                        Token.Literal.Number(9.0),
 
 
                         Token.SpecialChar.EndOfLine
@@ -195,9 +202,8 @@ class GenericsTests{
                                                 AstNode.Type.List(AstNode.Type.GenericType("T")),
                                                 AstNode.Type.Tuple(listOf(
                                                         AstNode.Type.Number,
-                                                        AstNode.Type.GenericType("T3")))
-
-
+                                                        AstNode.Type.GenericType("T3"))),
+                                                AstNode.Type.GenericType("T")
                                         ),
                                         AstNode.Type.GenericType("T")),
                                 AstNode.Command.Expression.Value.Identifier("myFunc"),
@@ -216,10 +222,19 @@ class GenericsTests{
                                                                 AstNode.Type.Number,
                                                                 AstNode.Type.GenericType("T3"))),
                                                         AstNode.Command.Expression.Value.Identifier("myParam1")
+                                                ),
+                                                AstNode.ParameterDeclaration
+                                                (
+                                                        AstNode.Type.GenericType("T"),
+                                                        AstNode.Command.Expression.Value.Identifier("myT")
                                                 )
                                         ),
                                         AstNode.Type.GenericType("T"),
-                                        AstNode.Command.Expression.LambdaBody(listOf())
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                    AstNode.Command.Expression.Value.Identifier("myT")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Declaration(
@@ -237,7 +252,8 @@ class GenericsTests{
                                                         AstNode.Command.Expression.Value.Literal.Number(1.0),
                                                         AstNode.Command.Expression.Value.Literal.Text("test")
 
-                                                ))
+                                                )),
+                                                AstNode.Command.Expression.Value.Literal.Number(9.0)
                                         )
                                 )
                         )
@@ -315,6 +331,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Identifier("T"),
                 Token.SpecialChar.BlockStart,
+                Token.Identifier("myParam"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -357,6 +374,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Type.Number,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Number(3.0),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -371,6 +389,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Identifier("T"),
                 Token.SpecialChar.BlockStart,
+                Token.Identifier("passFunc"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -412,6 +431,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Identifier("T"),
                 Token.SpecialChar.BlockStart,
+                Token.Identifier("myParam"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -446,9 +466,11 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Type.Text,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Text("haha"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine
         ))
+
         Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
