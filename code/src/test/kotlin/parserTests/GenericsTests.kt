@@ -329,6 +329,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Identifier("T"),
                 Token.SpecialChar.BlockStart,
+                Token.Identifier("myParam"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -371,6 +372,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Type.Number,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Number(3.0),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -385,6 +387,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Identifier("T"),
                 Token.SpecialChar.BlockStart,
+                Token.Identifier("passFunc"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -426,6 +429,7 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Identifier("T"),
                 Token.SpecialChar.BlockStart,
+                Token.Identifier("myParam"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -460,9 +464,11 @@ class GenericsTests{
                 Token.SpecialChar.Colon,
                 Token.Type.Text,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Text("haha"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine
         ))
+
         Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
