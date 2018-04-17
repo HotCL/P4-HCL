@@ -175,6 +175,23 @@ class LambdaTests {
     }
 
     @Test
+    fun succeedsOnReturning2TimesFunction() {
+        "var x = (): func[func[num]] { { { 7 } } }\n" +
+        "var a = x\n" +
+        "var b = a\n" +
+        "var c = b" becomes "func[func[func[num]]] x = (): func[func[num]] {\n" +
+        "return (): func[num] {\n" +
+        "return (): num {\n" +
+        "return 7.0\n" +
+        "}\n" +
+        "}\n" +
+        "}\n" +
+        "func[func[num]] a = x\n" +
+        "func[num] b = a\n" +
+        "num c = b"
+    }
+
+    @Test
     fun failsOnOverloadedFunctionsWithLambdaTypeNotDeclared() {
         assertTrue(parseExpectException("var x = (func[num] f): num { f }\n" +
         "var x = (func[bool] f): bool { f }\n" +
