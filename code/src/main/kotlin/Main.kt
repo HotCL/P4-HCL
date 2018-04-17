@@ -1,14 +1,22 @@
+import generation.SourceCodePrinter
 import lexer.Lexer
 import parser.Parser
 
 fun main(args: Array<String>) {
     val code = "" +
-            "list[num] myList = [5]\n" +
-            "list[list[num]] myListList = [myList]"
+            "var apply = (func[num, num] f, num x): num {\n" +
+            "x f\n" +
+            "}\n" +
+            "var x = { \n" +
+            "var z = value \n" +
+            "return z\n" +
+            "} apply 7"
 
     val lexer = Lexer(code)
     println("Tokens: \n" + lexer.getTokenSequence().joinToString(",\n") { "${it.token::class.qualifiedName}" })
     val parser = Parser(lexer)
-    println("Ast: " + parser.generateAbstractSyntaxTree())
+    val ast = parser.generateAbstractSyntaxTree()
+    println("Ast: $ast")
+    println(SourceCodePrinter().generateOutput(ast))
 }
 

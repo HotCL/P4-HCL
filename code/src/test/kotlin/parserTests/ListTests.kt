@@ -129,6 +129,7 @@ class ListTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Number,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Number(5.0),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Type.List,
@@ -146,8 +147,11 @@ class ListTests {
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(listOf(), AstNode.Type.Number),
                                 AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(listOf(), AstNode.Type.Number, listOf())
-                        ),
+                                AstNode.Command.Expression.LambdaExpression(listOf(), AstNode.Type.Number,
+                                        AstNode.Command.Expression.LambdaBody(listOf(AstNode.Command.Return(
+                                                AstNode.Command.Expression.Value.Literal.Number(5.0)
+                                        )))
+                        )),
                         AstNode.Command.Declaration(
                                 AstNode.Type.List(AstNode.Type.Number),
                                 AstNode.Command.Expression.Value.Identifier("myList"),

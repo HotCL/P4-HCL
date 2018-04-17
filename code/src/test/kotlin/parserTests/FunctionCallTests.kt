@@ -1,6 +1,7 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.equalTo
 import exceptions.UndeclaredError
 import exceptions.WrongTokenTypeError
 import lexer.Token
@@ -25,6 +26,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Identifier("myFunc"),
@@ -40,7 +42,11 @@ class FunctionCallTests {
                                 AstNode.Command.Expression.LambdaExpression(
                                         listOf(),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -71,6 +77,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
 
@@ -89,6 +96,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
 
@@ -107,7 +115,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
 
@@ -121,7 +133,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -152,6 +168,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Literal.Number(5.0),
@@ -172,7 +189,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -200,6 +221,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
 
@@ -211,6 +233,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.SpecialChar.Colon,
@@ -232,7 +255,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                    AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
 
@@ -242,7 +269,11 @@ class FunctionCallTests {
                                 AstNode.Command.Expression.LambdaExpression(
                                         listOf(),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                    AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -269,6 +300,7 @@ class FunctionCallTests {
                 Token.SpecialChar.Colon,
                 Token.Type.Text,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Text("HEY HEY"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
 
@@ -282,6 +314,7 @@ class FunctionCallTests {
                 Token.SpecialChar.Colon,
                 Token.Type.Text,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Text("BLA BLA"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
                 Token.SpecialChar.Colon,
@@ -337,6 +370,7 @@ class FunctionCallTests {
                 Token.SpecialChar.Colon,
                 Token.Type.Text,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Text("HEY"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
                 Token.Literal.Number(5.0),
@@ -344,6 +378,7 @@ class FunctionCallTests {
                 Token.Literal.Number(5.0),
                 Token.SpecialChar.EndOfLine
         ))
+
         assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
@@ -376,6 +411,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.SpecialChar.ParenthesesStart,
@@ -412,7 +448,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -453,6 +493,7 @@ class FunctionCallTests {
                 Token.SpecialChar.Colon,
                 Token.Type.Number,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Number(5.0),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
                 Token.Literal.Number(5.0),
@@ -488,6 +529,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Number,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Number(5.0),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Type.Func,
@@ -501,6 +543,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Number,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Number(5.0),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Literal.Number(5.0),
@@ -525,7 +568,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam2"))
                                         ),
                                         AstNode.Type.Number,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                    AstNode.Command.Expression.Value.Literal.Number(5.0)
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Declaration(
@@ -537,7 +584,11 @@ class FunctionCallTests {
                                 AstNode.Command.Expression.LambdaExpression(
                                         listOf(),
                                         AstNode.Type.Number,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Number(5.0)
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -577,6 +628,7 @@ class FunctionCallTests {
                 Token.SpecialChar.Colon,
                 Token.Type.Text,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Text("HEY"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine,
                 Token.Literal.Number(5.0),
@@ -607,6 +659,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Number,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Number(5.0),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Literal.Number(5.0),
@@ -628,7 +681,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam"))
                                         ),
                                         AstNode.Type.Number,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Number(5.0)
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -668,6 +725,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Literal.Number(5.0),
@@ -692,7 +750,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam2"))
                                         ),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -739,6 +801,7 @@ class FunctionCallTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("HEY"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
                         Token.Literal.Number(5.0),
@@ -771,7 +834,11 @@ class FunctionCallTests {
                                                         AstNode.Command.Expression.Value.Identifier("myParam4"))
                                         ),
                                         AstNode.Type.Text,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(

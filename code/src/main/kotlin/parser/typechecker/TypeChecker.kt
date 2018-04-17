@@ -1,6 +1,6 @@
 package parser.typechecker
 
-import exceptions.typeCheckerExceptions.UndeclaredIdentifierError
+
 import parser.AstNode.Command.Expression
 import parser.AstNode
 import parser.symboltable.ISymbolTable
@@ -32,6 +32,16 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
                 { ExprResult.Success(it) },
                 { ExprResult.UndeclaredIdentifier }
         )
+        is Expression.LambdaBody -> {
+            val returnStatements = expr.commands.filterIsInstance<AstNode.Command.Return>()
+            if (returnStatements.isEmpty()) ExprResult.Success(AstNode.Type.None) else {
+                if (returnStatements.all { returnStatements.first().expression.type == it.expression.type } ) {
+                    returnStatements.first().expression.type
+                } else {
+                    ExprResult.BodyWithMultiReturnTypes
+                }
+            }
+        }
         is Expression.FunctionCall -> {
             val functionDeclarationsSymbol = retrieveSymbol(expr.identifier.name)
             if (!functionDeclarationsSymbol.isFunctions) ExprResult.NoFuncDeclarationForArgs

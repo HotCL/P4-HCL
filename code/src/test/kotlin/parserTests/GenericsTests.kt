@@ -33,6 +33,7 @@ class GenericsTests{
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("yeah"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine
                 ),
@@ -53,7 +54,11 @@ class GenericsTests{
                                                 )
                                         ),
                                         AstNode.Type.Text,
-                                        listOf<AstNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("yeah")
+                                                )
+                                        ))
                                 )
                         )
                 )
@@ -79,6 +84,7 @@ class GenericsTests{
                         Token.SpecialChar.Colon,
                         Token.Type.Text,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Text("generics!"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
 
@@ -104,7 +110,11 @@ class GenericsTests{
                                                 )
                                         ),
                                         AstNode.Type.Text,
-                                        listOf<AstNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Text("generics!")
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(
@@ -209,7 +219,7 @@ class GenericsTests{
                                                 )
                                         ),
                                         AstNode.Type.GenericType("T"),
-                                        listOf<AstNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Command.Expression.LambdaBody(listOf())
                                 )
                         ),
                         AstNode.Command.Declaration(
@@ -413,6 +423,7 @@ class GenericsTests{
                         Token.SpecialChar.Colon,
                         Token.Identifier("T"),
                         Token.SpecialChar.BlockStart,
+                        Token.Identifier("myParam1"),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
 
@@ -424,6 +435,7 @@ class GenericsTests{
                         Token.SpecialChar.Colon,
                         Token.Type.Number,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Number(5.0),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine,
 
@@ -456,7 +468,11 @@ class GenericsTests{
                                                 )
                                         ),
                                         AstNode.Type.GenericType("T"),
-                                        listOf<AstNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Expression.FunctionCall(
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1"),
+                                                        listOf())
+                                        ))
                                 )
                         ),
                         AstNode.Command.Declaration(
@@ -468,7 +484,11 @@ class GenericsTests{
                                 (
                                         listOf(),
                                         AstNode.Type.Number,
-                                        listOf<AstNode.Command.Expression.LambdaExpression>()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Number(5.0)
+                                                )
+                                        ))
                                 )
                         ),
                         AstNode.Command.Expression.FunctionCall(

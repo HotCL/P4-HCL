@@ -155,6 +155,7 @@ class MiscellaneousTests {
                         Token.SpecialChar.Colon,
                         Token.Type.Bool,
                         Token.SpecialChar.BlockStart,
+                        Token.Literal.Bool(true),
                         Token.SpecialChar.BlockEnd,
                         Token.SpecialChar.EndOfLine
                 ),
@@ -175,7 +176,11 @@ class MiscellaneousTests {
                                                 )
                                         ),
                                         AstNode.Type.Bool,
-                                        listOf()
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Literal.Bool(true)
+                                                )
+                                        ))
                                 )
                         )
                 )
