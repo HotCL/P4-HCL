@@ -246,20 +246,16 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parseExpression() = parsePotentialFunctionCall(if (current.token == Token.SpecialChar.BlockStart) null
     else parseExpressionAtomic())
 
-    private fun getUpcomingIdentifierName(): String? {
-        var scopeDepth = 0
-        var ahead = 0
-        while (hasAhead(ahead)) {
-            val token = lookAhead(ahead++).token
-            when (token) {
+    private fun getUpcomingIdentifierNameForLambda(): String? {
+        var scopeDepth = 1
+        return findElement({
+            when (it.token) {
                 Token.SpecialChar.BlockStart -> scopeDepth += 1
                 Token.SpecialChar.BlockEnd -> scopeDepth -= 1
+                is Token.Identifier -> if (scopeDepth == 0) return@findElement it.token.value
             }
-            if (scopeDepth == 0) {
-                return if (hasAhead(ahead)) (lookAhead(ahead).token as? Token.Identifier)?.value else null
-            }
-        }
-        error("Expected to find identifier, but did not!")
+            null
+        }, { scopeDepth == 0 && it.token !is Token.Identifier }, 1)
     }
 
     private fun getLambdaParameter(func: List<AstNode.Type.Func.ExplicitFunc>, index: Int): AstExpression {
@@ -291,7 +287,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstExpression =
             when (current.token) {
                 is Token.SpecialChar.BlockStart -> {
-                    val upcomingId = getUpcomingIdentifierName()
+                    val upcomingId = getUpcomingIdentifierNameForLambda()
                     if (upcomingId != null) {
                         val symbol = retrieveSymbol(upcomingId)
                         if (!symbol.isFunctions) error("Identifier has to be function")
@@ -377,18 +373,17 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             }
 
     private fun upcomingTuple(): Boolean {
-        var lookAhead = 1
         var depth = 0
-        while (hasAhead(lookAhead++)) {
-            when (lookAhead(lookAhead).token) {
-                Token.SpecialChar.ParenthesesEnd -> if (depth == 0) return false else depth--
+        return findElement({
+            when(it.token) {
+                Token.SpecialChar.ParenthesesEnd -> if (depth == 0) return@findElement false else depth--
                 Token.SpecialChar.ParenthesesStart,
                 Token.SpecialChar.SquareBracketStart -> depth++
                 Token.SpecialChar.SquareBracketEnd -> depth--
-                Token.SpecialChar.ListSeparator -> if (depth == 0) return true
+                Token.SpecialChar.ListSeparator -> if (depth == 0) return@findElement true
             }
-        }
-        error("Unclosed parentheses")
+            null
+        }, { false }, 1)?.let { it } ?: error("Unclosed parentheses")
     }
 
     private fun parseTupleExpression() =
