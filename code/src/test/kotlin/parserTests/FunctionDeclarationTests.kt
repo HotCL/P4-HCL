@@ -85,7 +85,7 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine
         ))
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() 1}
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
