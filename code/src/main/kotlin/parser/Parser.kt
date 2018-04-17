@@ -257,8 +257,8 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     Token.SpecialChar.BlockEnd -> scopeDepth -= 1
                 }
                 if (scopeDepth == 0) {
-                    if (hasAhead(ahead + 1)) {
-                        return (lookAhead(ahead + 1).token as? Token.Identifier)?.let {
+                    if (hasAhead(ahead)) {
+                        return (lookAhead(ahead).token as? Token.Identifier)?.let {
                             return it.value
                         }
                     } else return null
