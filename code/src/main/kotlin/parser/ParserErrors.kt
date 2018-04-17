@@ -8,6 +8,11 @@ fun Parser.unexpectedTypeError(expectedType: String, actualType: String): Nothin
             actualType)
 }
 
+fun Parser.unexpectedReturnTypeError(expectedType: String, actualType: String): Nothing {
+    throw UnexpectedReturnTypeError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+            expectedType, actualType)
+}
+
 fun Parser.unexpectedTokenError(token: Token): Nothing {
     throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber), token)
 }
@@ -32,6 +37,21 @@ fun Parser.genericPassedFunctionException(): Nothing {
     throw GenericPassedFunctionException(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber))
 }
 
-fun Parser.error(msg: String): Nothing {
+fun Parser.alreadyDeclaredException(): Nothing {
+    throw AlreadyDeclaredException(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber))
+}
+
+fun Parser.overloadWithDifferentAmountOfArgumentsException(): Nothing {
+    throw OverloadWithDifferentAmountOfArgumentsException(current.lineNumber, current.lineIndex,
+            lexer.inputLine(current.lineNumber))
+}
+
+fun exceptionCantHappenException(): Nothing {
+    throw Exception("If you used the parser correctly, this shouldn't happen. So you must have been tweaking " +
+            "the sourcecode and now it wont work.")
+}
+
+
+fun error(msg: String): Nothing {
     throw Exception(msg)
 }

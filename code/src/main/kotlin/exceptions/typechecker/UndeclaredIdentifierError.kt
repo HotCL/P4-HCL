@@ -1,3 +1,3 @@
-package exceptions.typeCheckerExceptions
+package exceptions.typechecker
 
 class UndeclaredIdentifierError(val idName: String): Exception()

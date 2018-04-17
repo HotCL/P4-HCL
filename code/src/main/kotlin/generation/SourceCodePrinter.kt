@@ -59,7 +59,7 @@ class SourceCodePrinter : IPrinter {
         Type.Bool -> "bool"
         Type.None -> "none"
         Type.Func.ImplicitFunc -> "func"
-        Type.Var -> throw Exception("Impossible")
+        Type.Var -> error("Impossible")
         is Type.Func.ExplicitFunc -> "func[${if (!paramTypes.isEmpty())"${paramTypes.joinToString { it.format() }}, "
                                             else ""}${returnType.format()}]"
         is Type.GenericType -> name

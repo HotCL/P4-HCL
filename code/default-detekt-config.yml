@@ -366,5 +366,5 @@ style:
   UtilityClassWithPublicConstructor:
     active: false
   WildcardImport:
-    active: true
+    active: false
     excludeImports: 'java.util.*,kotlinx.android.synthetic.*'
