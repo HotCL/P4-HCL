@@ -236,6 +236,11 @@ class GenericsTests{
     }
 
     @Test
+    fun identifyFunctionTest(){
+        TODO("https://en.wikipedia.org/wiki/Identity_function")
+    }
+
+    @Test
     fun failOnCallExpressionWrongType() {
         val lexer = DummyLexer(listOf(
                 Token.Type.Func,
