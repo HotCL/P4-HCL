@@ -188,7 +188,7 @@ class LambdaTests {
         "}\n" +
         "func[func[num]] a = x\n" +
         "func[num] b = a\n" +
-        "num c = b"
+        "num c = b\n"
     }
 
     @Test
