@@ -9,12 +9,6 @@ import parser.exceptionCantHappenException
 
 class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
-    override fun checkExpressionTypeMatchesSymbolType(expr: Expression, symbol: String) =
-            retrieveSymbol(symbol).handle({ true }, { it == expr.type }, { false })
-
-    override fun checkExpressionTypesMatch(expr1: Expression, expr2: Expression) = expr1.type == expr2.type
-    //TODO(delete checkExpressionTypesMatch if never used)
-
     override fun getTypeOfExpression(expr: Expression): ExprResult = when (expr) {
         is Expression.Value.Literal.Number -> ExprResult.Success(AstNode.Type.Number)
         is Expression.Value.Literal.Bool -> ExprResult.Success(AstNode.Type.Bool)
