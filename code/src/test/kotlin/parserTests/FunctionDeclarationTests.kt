@@ -81,11 +81,11 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.Colon,
                 Token.Type.Text,
                 Token.SpecialChar.BlockStart,
+                Token.Literal.Text("thomas"),
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine
         ))
-        Parser(lexer).generateAbstractSyntaxTree()
-        //Assertions.assertThrows(UnexpectedTypeError::class.java) {  }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() 1}
     }
 
     @Test
