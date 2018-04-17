@@ -247,7 +247,52 @@ class GenericsTests{
 
     @Test
     fun identifyFunctionTest(){
-        TODO("https://en.wikipedia.org/wiki/Identity_function")
+        assertThat(
+                listOf(
+                        Token.Type.Func,
+                        Token.SpecialChar.SquareBracketStart,
+                        Token.Identifier("T"),
+                        Token.SpecialChar.SquareBracketEnd,
+                        Token.Identifier("myFunc"),
+                        Token.SpecialChar.Equals,
+                        Token.SpecialChar.ParenthesesStart,
+                        Token.Identifier("T"),
+                        Token.Identifier("myParam1"),
+                        Token.SpecialChar.ParenthesesEnd,
+                        Token.SpecialChar.Colon,
+                        Token.Identifier("T"),
+                        Token.SpecialChar.BlockStart,
+                        Token.Identifier("myParam1"),
+                        Token.SpecialChar.BlockEnd,
+                        Token.SpecialChar.EndOfLine
+
+                ),
+                matchesAstChildren(
+                        AstNode.Command.Declaration(
+                                AstNode.Type.Func.ExplicitFunc(
+                                        listOf(AstNode.Type.GenericType("T")),
+                                        AstNode.Type.GenericType("T")),
+                                AstNode.Command.Expression.Value.Identifier("myFunc"),
+                                AstNode.Command.Expression.LambdaExpression
+                                (
+                                        listOf
+                                        (
+                                                AstNode.ParameterDeclaration
+                                                (
+                                                        AstNode.Type.GenericType("T"),
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
+                                                )
+                                        ),
+                                        AstNode.Type.Text,
+                                        AstNode.Command.Expression.LambdaBody(listOf(
+                                                AstNode.Command.Return(
+                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
+                                                )
+                                        ))
+                                )
+                        )
+                )
+        )
     }
 
     @Test
