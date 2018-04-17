@@ -35,12 +35,4 @@ interface ISymbolTable{
      */
     fun retrieveSymbol(name: String): Symbol
 
-    /**
-     * Tests whether name is present in the symbol table's current scope.
-     * True is returned if it is.
-     * Otherwise False is returned.
-     * @param name The name of the identifier.
-     * @return Whether the symbol is declared locally
-     */
-    fun declaredLocally(name: String): Boolean
 }

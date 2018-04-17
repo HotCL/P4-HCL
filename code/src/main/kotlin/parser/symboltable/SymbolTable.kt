@@ -56,5 +56,4 @@ class SymbolTable : ISymbolTable {
             // Example: single list. ((1, 2, 3), (4, 5, 6), (7, 8, 9) flatMapped == (1, 2, 3, 4, 5, 6, 7, 8, 9)).
             Symbol(symbolTable.reversed().map { it[name] }.flatMap { it ?: mutableListOf() })
 
-    override fun declaredLocally(name: String) = symbolTable.last[name] != null
 }
