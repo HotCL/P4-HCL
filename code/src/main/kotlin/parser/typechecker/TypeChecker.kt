@@ -5,7 +5,6 @@ import parser.AstNode.Command.Expression
 import parser.AstNode
 import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
-import parser.exceptionCantHappenException
 
 class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
@@ -99,21 +98,18 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
                 else null
 
             is AstNode.Type.List ->
-                if(argumentType is AstNode.Type.List)
-                    Pair(declaredType.elementType, argumentType.elementType).getTypeFromGenericType(typeName)
-                else exceptionCantHappenException()
-
+                    Pair(declaredType.elementType, (argumentType as AstNode.Type.List).elementType).
+                            getTypeFromGenericType(typeName)
+            // expecting count to be the same, as matchGenerics should be run before using getTypeFromGenericType
             is AstNode.Type.Func.ExplicitFunc ->
-                if(argumentType is AstNode.Type.Func.ExplicitFunc &&
-                        declaredType.paramTypes.count() == argumentType.paramTypes.count())
-                    declaredType.paramTypes.zip(argumentType.paramTypes).getTypeFromGenericType(typeName)
-                else exceptionCantHappenException()
+                    declaredType.paramTypes.zip((argumentType as AstNode.Type.Func.ExplicitFunc).paramTypes).
+                            getTypeFromGenericType(typeName)
 
+
+            // expecting count to be the same, as matchGenerics should be run before using getTypeFromGenericType
             is AstNode.Type.Tuple ->
-                if(argumentType is AstNode.Type.Tuple &&
-                        declaredType.elementTypes.count() == argumentType.elementTypes.count())
-                    declaredType.elementTypes.zip(argumentType.elementTypes).getTypeFromGenericType(typeName)
-                else exceptionCantHappenException()
+                    declaredType.elementTypes.zip((argumentType as AstNode.Type.Tuple).elementTypes).
+                            getTypeFromGenericType(typeName)
 
             else -> null
         }
@@ -121,7 +117,6 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
     /**
      * Pair = declaredType and argumentType
-     * It is certain that argumentType doesn't contain any generics. This is a rule of the language
      */
     private fun Pair<AstNode.Type,AstNode.Type>.matchGenerics(genericTypes:MutableMap<String,AstNode.Type>): Boolean{
         val declaredType = first
@@ -137,9 +132,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             is AstNode.Type.Func.ExplicitFunc ->
                 if(argumentType is AstNode.Type.Func.ExplicitFunc &&
                         declaredType.paramTypes.count() == argumentType.paramTypes.count())
-                    declaredType.paramTypes.zip(argumentType.paramTypes).all{
-                        it.matchGenerics(genericTypes)
-                    } && Pair(declaredType.returnType,argumentType.returnType).matchGenerics(genericTypes)
+                    Pair(declaredType.returnType,argumentType.returnType).matchGenerics(genericTypes) &&
+                            declaredType.paramTypes.zip(argumentType.paramTypes).all{ it.matchGenerics(genericTypes) }
                 else false
 
             is AstNode.Type.Tuple ->

@@ -11,5 +11,6 @@ abstract class CompilationException(val lineNumber: Int,
                                     val lineText: String): Exception(){
     val errorType = this::class.simpleName
     abstract val errorMessage: String
+    override val message: String? get() = errorMessage
     abstract val helpText: String
 }

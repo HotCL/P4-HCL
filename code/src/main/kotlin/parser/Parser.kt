@@ -138,9 +138,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             unexpectedTypeError(retrieveSymbol(identifier.name).identifier.toString(), expression.type.toString())
         else AstNode.Command.Assignment(identifier, expression)
     }
-    private fun parseTypeOrGeneric(){
 
-    }
     //region Type declarations
     private fun  parseType(implicitAllowed: Boolean = false, genericAllowed:Boolean = false): AstNode.Type {
         val currentPosToken = current

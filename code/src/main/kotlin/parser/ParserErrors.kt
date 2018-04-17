@@ -46,12 +46,8 @@ fun Parser.overloadWithDifferentAmountOfArgumentsException(): Nothing {
             lexer.inputLine(current.lineNumber))
 }
 
-fun exceptionCantHappenException(): Nothing {
-    throw Exception("If you used the parser correctly, this shouldn't happen. So you must have been tweaking " +
-            "the sourcecode and now it wont work.")
-}
 
-
-fun error(msg: String): Nothing {
-    throw Exception(msg)
+fun Parser.error(msg: String, helpText: String= ""): Nothing {
+    throw GenericParserException(current.lineNumber,current.lineIndex, lexer.inputLine(current.lineNumber),
+            msg,helpText)
 }
