@@ -249,22 +249,17 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     private fun getUpcomingIdentifierName(): String? {
         var scopeDepth = 0
         var ahead = 0
-        while (true) {
-            if (hasAhead(ahead)) {
-                val token = lookAhead(ahead++).token
-                when (token) {
-                    Token.SpecialChar.BlockStart -> scopeDepth += 1
-                    Token.SpecialChar.BlockEnd -> scopeDepth -= 1
-                }
-                if (scopeDepth == 0) {
-                    if (hasAhead(ahead)) {
-                        return (lookAhead(ahead).token as? Token.Identifier)?.let {
-                            return it.value
-                        }
-                    } else return null
-                }
-            } else error("Expected to find identifier, but did not!")
+        while (hasAhead(ahead)) {
+            val token = lookAhead(ahead++).token
+            when (token) {
+                Token.SpecialChar.BlockStart -> scopeDepth += 1
+                Token.SpecialChar.BlockEnd -> scopeDepth -= 1
+            }
+            if (scopeDepth == 0) {
+                return if (hasAhead(ahead)) (lookAhead(ahead).token as? Token.Identifier)?.value else null
+            }
         }
+        error("Expected to find identifier, but did not!")
     }
 
     private fun getLambdaParameter(func: List<AstNode.Type.Func.ExplicitFunc>, index: Int): AstExpression {
