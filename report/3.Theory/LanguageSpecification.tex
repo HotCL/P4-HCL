@@ -5,7 +5,6 @@ During the analysis phase of the project, it was decided that the language, woul
 The language designed should therefore reflect this decision, by being useful, approachable and easy to understand for users that might not know programming and programming fundamentals.
 This decision puts restrictions on the design of the language, however it also gives a degree of freedom in the design, as the users have no previous experience with other languages.
 
-
 It was decided that the syntax of the language should reflect the spoken English language to some extend.
 The idea of drawing inspiration from the spoken English language is supposed to give the users of the language an easier time expressing what they want the code to do, giving the language an almost "pseudo-code-like" syntax.
 In conjunction to designing after the spoken English language and the interest in utilizing high-order functions, the language design also draws inspiration from the functional programming paradigm.
@@ -51,7 +50,7 @@ Most of the operators in the language are defined as functions.
 This means that all arithmetic operators are infix-functions that take two numbers as parameters. 
 The only operators that remains operators are the assign-operator (\textbf{=}) and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
-Not having operators for arithmetic operations also means that there is no native operator precedence in the language.
+Not having operators for arithmetic operations also means that there are no native operator precedence in the language.
 This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses.
 
 \subsection{Functions}
@@ -190,7 +189,6 @@ var isAwesome = (num number): bool {
 The main reasoning for including function overloading is simplicity for the user.
 For instance for printing. 
 The print function should be able to print all basic types, so that the user does not have to worry about the type of what he is about to print.
-
 
 \subsection{Generics}
 The language will include simple generics.
