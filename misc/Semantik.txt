@@ -1,0 +1,75 @@
+
+Conventions
+t1,t2,....,tn is written as t~
+t1 ... tn is written as t* (t+ if non-empty)
+
+
+
+
+
+
+
+Metavariables & Syntax for values
+
+a in A_expr
+b in B_expr
+t in Txt_expr
+tf in {tt, ff}
+n in Num
+str in " SIGMA-STAR "  (any string made from our alphabet)
+x in Var
+S in Stmt
+p in P_navne
+RESERVED in SIGMA-STAR       (our reserved words as well as identifiers already in use)
+FreeId in SIGMA-STAR \ RESERVED  (identifiers not already in use)
+
+
+
+
+:p ::= function pointer (where p in P_navne)
+L ::= lambda
+
+
+
+
+a ::= n | x | a1+a2 | a1-a2 | a1*a2 | a1/a2 | (a)
+b ::= tf | x | a1<a2 | a1>a2 | a1<=a2 | a1>=a2 | a1=a2 | a1!=a2 | b1 AND b2 | b1 OR b2 | NOT b | (b)
+t ::= str | x | t1+t2 | (t)
+list ::= [expr~] | x | (list)
+tuple ::= (expr~) | x | (tuple)
+S ::= x := expr | S1;S2 | b then L | b thenElse L1 L2 | b whileTrue L | list forEach L | funcall | Dv | return expr | epsilon
+Dv ::= implicitOrType x := exprOrFunc; Dv | type x; Dv | epsilon
+
+implicitOrType ::= type | var
+genericsOrNoneOrType ::= type | generics | none
+genericsOrType ::= type | generics
+generics ::= FreeId
+type ::= num | text | bool | list | tuple | func
+
+pv ::= a | b | t                %primitive value
+npv ::= list | tuple | pv | x   %non-primitive value
+expr ::= npv | funcall | (expr)
+exprOrLambda ::= expr | L
+exprOrFunc ::= expr | ([genericsOrType x]~) : genericsOrNoneOrType L
+funcall ::= p | exprOrLambda p exprOrLambda*
+L ::= { S } | { } | :p
+
+
+
+
+L = set of configurations (upside-down L)
+T = set of final configurations
+R = all real numbers
+-> = transition function
+
+(L_A_expr, -a>, T_A_expr)
+    L_A_expr = A_expr U R
+    T_A_expr = R
+
+(L_B_expr, -b>, T_B_expr)
+    L_B_expr = B_expr U {tt, ff}
+    T_B_expr = {tt, ff}
+
+(L_Txt_expr, -txt>, T_Txt_expr)
+    L_Txt_expr = Txt_expr U {SIGMA-STAR}
+    T_Txt_expr = {SIGMA-STAR}
