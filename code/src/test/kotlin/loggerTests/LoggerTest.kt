@@ -15,7 +15,8 @@ class TokenTest {
                         " | var b = 4 < \"5\"\n" +
                         " |           ^--\n" +
                         " | Function '<' not defined for types: 'num', 'txt' and 'bool'.\n" +
-                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString()
+        )
     }
 
     @org.junit.jupiter.api.Test
@@ -28,7 +29,8 @@ class TokenTest {
                         " | txt s = textString\n" +
                         " |         ^--\n" +
                         " | Undeclared identifier 'textString' found.\n" +
-                        " | -->help: Declare identifier before use.\n", logger.buffer.toString())
+                        " | -->help: Declare identifier before use.\n", logger.buffer.toString()
+        )
     }
 
     @org.junit.jupiter.api.Test
@@ -41,7 +43,8 @@ class TokenTest {
                         " | x = someUninitializedVariable + 10\n" +
                         " |     ^--\n" +
                         " | Use of uninitialized variable 'someUninitializedVariable' found.\n" +
-                        " | -->help: Try initializing variable before use.\n", logger.buffer.toString())
+                        " | -->help: Try initializing variable before use.\n", logger.buffer.toString()
+        )
     }
 
     @org.junit.jupiter.api.Test
@@ -54,7 +57,8 @@ class TokenTest {
                         " | x = 42/0\n" +
                         " |       ^--\n" +
                         " | Division by 0 found\n" +
-                        " | -->help: Check your variables\n", logger.buffer.toString())
+                        " | -->help: Check your variables\n", logger.buffer.toString()
+        )
     }
     @org.junit.jupiter.api.Test
     fun testMissingArgumentError() {
@@ -66,7 +70,8 @@ class TokenTest {
                         " | 2 someFunction\n" +
                         " |   ^--\n" +
                         " | Missing argument for function 'someFunction'.\n" +
-                        " | -->help: Have you included all arguments for function?\n", logger.buffer.toString())
+                        " | -->help: Have you included all arguments for function?\n", logger.buffer.toString()
+        )
     }
     @org.junit.jupiter.api.Test
     fun testMissingEncapsulation() {
@@ -78,6 +83,37 @@ class TokenTest {
                         " | ({()}\n" +
                         " | ^--\n" +
                         " | Missing closing character for '('\n" +
-                        " | -->help: Remember to always close encapsulations.\n", logger.buffer.toString())
+                        " | -->help: Remember to always close encapsulations.\n", logger.buffer.toString()
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun testInitializedFunctionParameterError() {
+        val error = InitializedFunctionParameterError(0, 15, "var x = (num z = 5): none {}")
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: InitializedFunctionParameterError found at line 0 index 15:\n" +
+                        " | var x = (num z = 5): none {}\n" +
+                        " |                ^--\n" +
+                        " | Cannot initialize function parameters in declaration.\n" +
+                        " | -->help: Function parameters are initialized when the function is called.\n",
+                logger.buffer.toString()
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun testNoneAsInputError() {
+        val error = NoneAsInputError(0, 9, "var x = (none z): none {}")
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: NoneAsInputError found at line 0 index 9:\n" +
+                        " | var x = (none z): none {}\n" +
+                        " |          ^--\n" +
+                        " | Functions can not have input-parameter of type 'none'.\n" +
+                        " | -->help: 'none' can only be used as a functions return-type.\n",
+                logger.buffer.toString()
+        )
     }
 }
