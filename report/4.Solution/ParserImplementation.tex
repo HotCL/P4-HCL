@@ -1,8 +1,6 @@
 \section{Parser implementation}
-
-Since the chosen compiler implementation language, kotlin, is completely interoperable with java, both SableCC and ANLTR could be obvious choices for parser-generation if the group decided to go with a generated parser. 
-However, for the parser of HCL it was decided that since HCL's CFG is LL(k), the parser should be handwritten. 
-This is partially due to the control that a handwritten parser offers, but primarily out of curiosity and for educational purposes.
+\label{parserImplemention}
+In the following section, the parser implementation details will be touched upon.
 
 Due to the nature of HCL, the parser can be implemented as a single pass parser. 
 This is because the user may not access any variables that has not yet been declared. 
@@ -12,16 +10,15 @@ Both syntactical and contextual analysis is done within the parser.
 This means that there is no additional post parser type-checking or contextual analysis step. 
 A major reason for doing in line contextual analysis is the way functions are invoked in HCL. 
 The only way to know if an identifier is a function call, is by analyzing the types. 
-This means that in order to create a proper AST, the type-checking must be done in line. 
+This means that to create a proper AST, the type-checking must be done in line. 
 It could also potentially be done afterwards, but that would require quite a large amount of post processing, which would be a lot more complex, than just doing type-checking within the parser. 
 This also means that the outputted AST is in fact already a decorated syntax tree. 
 For instance, function calls already has information on its return type, even though the function may have multiple return types based on the overloading of the function.
 
 \subsection{Implementing a recursive decent parser}
-
-A LL(K) recursive decent parser will do look aheads until it is aware what branch should be parsed.
+A LL(K) recursive decent parser will do lookaheads until it is aware what branch should be parsed.
 This can be figured out from the first and follow sets, that can be produced from the CFG.
-Once it figures out which non-terminal to parse it will call a method that should parse that part.
+Once it determines which non-terminal to parse it will call a method that attempts to parse that part.
 The method can then accept terminals or parse further non-terminals.
 It should be the responsibility of the accept method to advance the lexical token stream.
 
@@ -45,11 +42,13 @@ The EBNF reveals that a declaration is:
 	\item Non-terminal Type
 	\item Terminal Identifier
 	\item Optional
-	\subitem Terminal Equals
-	\subitem Non-terminal Expression
+	\begin{itemize}
+		\item Terminal Equals
+		\item Non-terminal Expression
+	\end{itemize}
 \end{itemize}
 
-Based on this, the parse declaration is implemented as seen in snippet \ref{lis:parseDeclaration}.
+Based on this, the \textit{parseDeclaration} is implemented as seen in snippet \ref{lis:parseDeclaration}.
 Do note, the final parse declaration method is a little more complex due to type inference and type checking.
 
 \begin{lstlisting}[language=java,label=lis:parseDeclaration,caption=A simplified version of the parse declaration method from the parser.]
@@ -65,11 +64,10 @@ private fun parseDeclaration(): TreeNode.Command.Declaration {
 }
 \end{lstlisting}
 
-As the snippet shows, the method will parse the type, accept the identifier, accept the equal sign, and at last it will parse the expression.
+As the snippet shows, the method will parse the type, accept the identifier, accept the equal sign, and finally it will parse the expression.
 
-\textbf{Deciding what to parse}
-
-The sealed classes, along with the pattern matching of kotlin, are excellent tools in deciding what should be parsed. 
+\textbf{Deciding what to parse}\\
+The sealed classes, along with the pattern matching of Kotlin, are excellent tools in deciding what should be parsed. 
 In snippet \ref{lis:parseCommand} a subset of the parse command method is shown. 
 If the current token is a type, a declaration should be passed. 
 If the current token is an identifier, it is the next token that determines whether to parse an assignment or an expression.
@@ -90,5 +88,4 @@ private fun parseCommand(): AstNode.Command {
 \end{lstlisting}
 
 % we may also need to document some of the complex parts of the parser, but we will wait with that, until it is actually more or less completed.
-
 \input{4.Solution/SymbolTable.tex}

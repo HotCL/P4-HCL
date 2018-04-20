@@ -1,16 +1,16 @@
 % This section is meant to introduce high-order functions, so we can refer to this section in the implementation part of the report.
 \section{High-order functions}
 High-order functions is a concept that has been discussed and valued as an important key feature of HCL.
-This section is only meant to introduce high-order functions to the reader.
+This section is only meant to introduce high-order functions to the reader. %Because Ingo was confus
 High-order functions allow for some powerful elements to be added to the language.
-Along with this, high-order functions may also drastically improve development time, since it allows for more generic functions that can be concretized through the high-order functions.
+Along with this, high-order functions may also drastically improve development time, since it allows for more generic functions that can be specialized through high-order functionality.
 
 \subsection{Explanation of high-order functions}
-High-order functions are functions that either returns a function or takes a functions as one of its parameters. 
+High-order functions either returns a function or have a function as one of its parameters. 
 This language feature is often utilized together with the three functions map, filter and reduce. 
-To understand what these does, and why they are useful have a look at the example pseudo code in \ref{lis:hofExamples}. 
-One thing to note, is that the function parameters in the example is passed as lambda functions. 
-Lambda functions are anonymous inline functions, which are very useful along with high-order functions, since it will allow you to specify the functionality without having to declare an entire function.
+To demonstrate, these are shown in snippet \ref{lis:hofExamples}. 
+Note that the function parameters in the example are passed as lambda expressions.
+Lambda functions are anonymous inline functions, which are useful when used along with high-order functions, since the functionality can be specified, without having to declare an entire function.
 
 \begin{lstlisting}[language=Python,label=lis:hofExamples,caption=An example of the map\, filter and reduce functions.,firstnumber=1]
 myList = [5, 10, 15, 20, 25]
@@ -20,39 +20,38 @@ myNewNum = myList.filter{ num => num % 10 == 0 }.map{ num => num * x }.reduce{ s
 print(myNewNum) // 500
 \end{lstlisting}
 
-First a list with the numbers 5, 10, 15, 20 and 25 is initialized. 
+In the example, a list, \texttt{myList}, with the numbers 5, 10, 15, 20 and 25 is initialized. 
 The 3 functions are chained to get the sum of all these numbers squared, where the initial number was a divisor of 10.
-The first function used is the filter function. 
+The first function used is the \texttt{filter} function. 
 It takes a list along with a predicate and returns a new list with all the elements that matched the predicate.
-In the example the predicate is whether the number is a divisor of 10.
+In the example, the predicate is whether the number is a divisor of 10.
 
-Next is the map function. 
+Next is the \texttt{map} function. 
 This function takes a list of numbers along with a modify function. 
 It will apply the modify function on all the elements in the list, and return a list with all the modified elements.
-In the example the modify function will simply square the input number. 
-This means that the returned list will have all the input numbers squared.
+In the example, the modify function will simply square the input number. 
 
-The last one is the reduce function (often also called the fold function).
-This function will take a list and a fold function as input. 
-The fold function will have an accumulator and the current element as function parameters.
+The last function is the \texttt{reduce} function (often called the fold function).
+This function receives a list and a fold function as input. 
+The fold function will have an accumulator and the current element as parameters.
 In the example, the numbers in the list are accumulated.
 
 \subsection{Benefits of high-order functions}
-The major benefit from the high-order functions is the ability to create abstract functions that will have their behaviour defined through the input function. 
-The map, filter, and reduce functions are by themselves very useful, but they are also often used to create a lot more concrete functions. 
-For instance a "sum by" function, which is a combination of the reduce and map function. 
+The major benefit of high-order functions, is the ability to create abstract functions that will have their behavior defined through the input function. 
+The \texttt{map}, \texttt{filter}, and \texttt{reduce} functions are by themselves useful, but they are also often used to create specialized functions. 
+For instance a \texttt{sum by} function, which is a combination of the \texttt{reduce} and \texttt{map} function. 
 
-Another common example is for sorting. 
+Another common example is sorting. 
 A generic sorting algorithm can be implemented, and a comparator function can then be passed to the sorting algorithm to tell it how to compare the different elements.
-This could be useful; for instance when comparing a person class. 
-The developer may want to sort the persons in alphabetical order, based upon their age or something else. 
+An example could be when comparing \texttt{person} objects.
+The developer may want to sort the persons in alphabetical order, based upon their age, or something else. 
 The only thing that the sorting function needs is a function that can compare the persons that are to be sorted.
 
 \subsection{High-order functions in HCL}\label{subsec:hofhcl}
-Although some of the use cases of high-order functions may be too complex for the new users, who are the target group of HCL, the high-order functions are still valued an important feature.
+Although some of the use cases of high-order functions may be too complex for new programmers, the high-order functions are still valued as an important feature.
 This is due to several reasons.
 
-First of all, new users will often tend to do some basic mathematical computations. 
+First of all, new programmers will often tend to do some basic mathematical computations. 
 The high-order functions like map, reduce and filter will make these computations a lot easier when dealing with collections. 
 
-Secondly, high-order functions are a useful programming concept that HCL should strive to make intuitive and understandable for new users, so that they will be able to use and understand it in their next language.
+Secondly, high-order functions are a useful programming concept that HCL should strive to make intuitive and understandable for new programmers, so that they will be able to use and understand it in their next language.

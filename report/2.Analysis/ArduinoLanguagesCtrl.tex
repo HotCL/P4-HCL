@@ -1,9 +1,9 @@
 % This section is meant to introduce some of the already existing languages for the arduino platform.
 % This section is mostly meant to give examples of arduino specific languages, so we can get examples of how arduino specific languages implement arduino specific functionality.
 \section{Existing languages}
-Before doing any work on the group's own language, it was decided to look into the high-level languages that already exist for the Arduino platform, and what distinguishes them from each other.
-This was done in part to find out what kind of competition there may be for HCL, and in part to gain inspiration from the existing languages.
-There is a variety of languages to choose from when programming for the Arduino.
+Before doing any work on HCL, it was deemed necessary to look into the high-level languages that already exist for the Arduino platform, and what distinguishes them from each other.
+This was done in part to find out what kind of competition there may be to HCL, and in part to gain inspiration from the existing languages.
+There is a variety of languages to choose from when programming for the Arduino platform.
 Some of these are:
 
 \begin{itemize}
@@ -16,21 +16,21 @@ Some of these are:
 
 % Source: arduino.cc
 \label{arduinoC}
-\textbf{Arduino C++} is a subset of the C++ language with its own libraries, designed specifically for the Arduino.
+\textbf{Arduino C++} is a subset of the C++ language with its own libraries, designed specifically for the Arduino platform.
 Because of this, it is compatible with the C and C++ languages.
-There are a few changes made to the language, but the basic functionality and syntax of C and C++ are still present, meaning users are able to use both the imperative- and the object-oriented paradigms of C and C++ respectively to program the Arduino.
+There are a few changes made to the language, but the basic functionality and syntax of C and C++ are still present, meaning users are able to use both the imperative- and the object-oriented paradigms, respectively, to program the Arduino.
 
-The following is a brief overview of the basic syntax of the Arduino C++.
-Snippets \ref{lis:arduinoExample} and \ref{lis:arduinoHeader} show an example program showcasing the syntax.
+The following is a brief overview of the basic syntax of Arduino C++.
+Snippets \ref{lis:arduinoExample} and \ref{lis:arduinoHeader} showcases the syntax.
 All information is taken from the official Arduino reference\cite{ArduinoReference}.
 
 The language requires two functions to be declared;
 the \texttt{setup} function which is called at startup,
 and the \texttt{loop} function with is called in an infinite loop after the \texttt{setup} code is run.
 
-All \textit{statements} are finished with a semi-colon.
+All \textit{statements} are terminated with a semi-colon.
 
-\textit{Variables} are declared by specifying a type and following it up with an identifier (snippet \ref{lis:arduinoExample}, line 11).
+\textit{Variables} are declared by specifying a type followed by an identifier (snippet \ref{lis:arduinoExample}, line 11).
 Declarations can be prefixed with the \texttt{const} keyword to make the variable immutable, or \texttt{static} to mark it as persistent between function calls.
 All variables have to be initialized before they are used. 
 
@@ -40,7 +40,7 @@ If it is a class function, the class must be specified in the declaration (snipp
 
 \textit{Classes} are declared with the keyword \texttt{class} followed by a name and the class body encapsulated in curly-brackets (snippet \ref{lis:arduinoHeader}, line 1).
 The class' field is declared in the body, but isn't initialized here.
-Similarly, functions aren't given bodies in the class declaration either.
+Similarly, functions are not given bodies in the class declaration either.
 Instead, the functions must be given a body outside of the class, and the variables must be initialized in the constructor function, also outside of the body.
 
 \textit{Preprocessor directives} such as including a header file, or setting up macros are written with a pound symbol (snippet \ref{lis:arduinoExample}, lines 6-9).
@@ -102,14 +102,14 @@ class Blinker
 
 % Source: concurrency.cc
 \textbf{Occam-pi} is a language that focuses on making parallel programming easy for programmers.
-It is based on Occam that first appeared in 1983.
+It is based on Occam, which first appeared in 1983.
 The full documentation of Occam-pi can be read on the official website of the language, \url{concurrency.cc}, but following here is a short description of some of the syntax, and an example program in Snippet \ref{lis:occamExample}.
 
 \textit{Variables} are declared by initializing them with the colon-equals operator (lines 6-7). 
 Type is automatically inferred by the expression on the right hand side of the initializing assignment.
 
 \textit{Functions} in Occam-pi are declared using the keyword \texttt{PROC} followed by a name and the function parameters enclosed in parentheses (line 5).
-Unlike C, Occam-pi doesn't use curly-brackets to encapsulate the body.
+Unlike C, Occam-pi does not use curly-brackets to encapsulate the body.
 Instead, the body is indented using a tab, similar to the Python language.
 The end of the function is marked using a colon.
 One of the key features of Occam-pi is the fact that it separates expressions that are evaluated sequentially and ones that are evaluated concurrently using the \texttt{SEQ} and \texttt{PAR} keywords.
@@ -135,18 +135,20 @@ PROC main ()
 
 % Source: http://www.harbaum.org/till/nanovm/index.shtml
 \textbf{NanoVM} is a virtual machine (VM) for the Atmel AVR ATMega8 CPU.
-It allows programmers to write code in a subset of Java that can be run by Arduino and similar microcomputers.
+NanoVM allows programmers to write code in a subset of Java that can be run on the Arduino architecture and similar microcomputers.
 The VM includes many of the features that have made the Java VM (JVM) popular such as object-oriented programming, automatic dynamic memory allocation, and garbage collection.
 It comes packaged with native classes such as Object, System, and PrintStream.
 
 The following is a short description of the basic Java syntax. 
 Snippets \ref{lis:javaExample} and \ref{lis:javaPrinter} showcase the syntax.
 
-The program is started by calling the \texttt{main} function (snippet \ref{lis:javaExample}, line 5).
+The program begins by calling the \texttt{main} function (snippet \ref{lis:javaExample}, line 5).
 
-All statements are finished with a semi-colon.
+All statements are terminated with a semi-colon.
 
-In Java all variables and functions must be declared inside a class, and each class must be declared in a file for itself.
+In Java all variables and functions must be declared inside a class.
+
+In Java each separate file can only contain one public class, which must have the same name as the file itself. 
 
 \textit{Class fields} and methods are declared identically to how variables are declared in Arduino C++, except each field variable is prefixed with an optional access modifier (snippet \ref{lis:javaExample}, lines 3, 5).
 Variables can be made into class variables (called so because the variables belong to the class instead of instances of the class) with the \texttt{static} keyword before the name in the declaration.
@@ -174,7 +176,7 @@ public class Printer {
 }
 \end{lstlisting}
 
-The downsides of using NanoVM instead of Arduino C++ is, as stated on the official website of NanoVM\footnote{http://www.harbaum.org/till/nanovm/index.shtml} that the VM's interpreter doesn't perform as well as C compiled to AVR code, and it reserves some of the RAM used for applications to run the VM.
+The downsides of using NanoVM instead of Arduino C++, as stated on the official website of NanoVM\footnote{http://www.harbaum.org/till/nanovm/index.shtml}, is that the VM's interpreter does not perform as well as C compiled to AVR code, and it reserves some of the RAM used for applications to run the VM.
 NanoVM also has to be installed on the CPU's flash memory, which will overwrite the bootloader.
 
 \textbf{Juniper} is a functional programming language designed specifically for the Arduino.
@@ -184,8 +186,7 @@ The following is a description of the basic syntax of Juniper.
 Figure \ref{lis:juniperExample} showcases the syntax.
 
 \textit{Variables} are declared using the \texttt{let} keyword followed by a name, an equal sign, and an expression (line 4).
-Variables are by default immutable, ie. 
-they can't be assigned another value after declaration, but they can be made mutable by inserting the \texttt{mutable} keyword before the name in their declaration.
+Variables are by default immutable, but they can be made mutable by inserting the \texttt{mutable} keyword before the name in their declaration.
 
 \textit{Functions} are declared using the \texttt{fun} keyword followed by a name, parameters enclosed in parentheses, an equal sign, and the function body encapsulated in parentheses (line 9).
 
@@ -227,7 +228,7 @@ fun main() = (
 \end{lstlisting}
 
 \textbf{ArduinoBlocks} is a drag and drop programming language, similar to the language Scratch, wherein the user writes programs by grouping "blocks" together to form functions.
-It provides a simple graphical user-interface and functions for various add-on modules for the Arduino, and the user isn't required to write much when programming in ArduinoBlocks.
+It provides a simple graphical user-interface and functions for various add-on modules for the Arduino platform, and the user isn't required to write much when programming in ArduinoBlocks.
 
 Figure \ref{fig:arduinoBlocks} shows how the programming interface for ArduinoBlocks looks.
 
@@ -239,5 +240,5 @@ Figure \ref{fig:arduinoBlocks} shows how the programming interface for ArduinoBl
 \end{figure}
 
 % Source: https://code.google.com/archive/p/dk-basic/
-These are, of course, not all the available languages for programming for Arduino.
-The project group is also aware of a language called DK-BASIC, a subset of BASIC designed to work on Arduino, but that language is still in its alpha stage, so it won't get more than a mention here.
+%These are, of course, not all the available languages for programming for Arduino.
+%The project group is also aware of a language called DK-BASIC, a subset of BASIC designed to work on Arduino, but that language is still in its alpha stage, so it won't get more than a mention here.
