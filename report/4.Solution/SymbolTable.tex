@@ -54,6 +54,6 @@ override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
 
 The implementation of the $enterSymbol$ method, as shown in snippet \ref{lis:STEnterSymbol}, is the most complex one in the symbol table. 
 This is because when entering a new symbol it is relevant to make sure that the symbol doesn't already exist in the current scope.
-%Scopes are further explained in section \ref{sec:scopeRules}. %Does not exist yet
+%Scopes are further explained in section \ref{sec:scopeRules} %Does not exist yet
 In the case of a function, it is possible to enter multiple symbols with the same name, as long as they have different parameter-type signatures. 
 However, functions must have the same amount of parameters.
