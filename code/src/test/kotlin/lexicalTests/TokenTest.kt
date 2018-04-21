@@ -14,28 +14,28 @@ class TokenTest {
             when(lexeme) {
                 "Identifier" -> Token.Identifier(lexeme)
                 "\"Text\"" -> Token.Literal.Text(lexeme.drop(1).dropLast(1))
-                "5"      -> Token.Literal.Number(lexeme)
+                "5"      -> Token.Literal.Number(lexeme.toDouble())
                 "true"   -> Token.Literal.Bool(true)
-                "return" -> Token.Return()
-                "tuple" -> Token.Type.Tuple()
-                "bool" -> Token.Type.Bool()
-                "text" -> Token.Type.Text()
-                "func" -> Token.Type.Func()
-                "list" -> Token.Type.List()
-                "none" -> Token.Type.None()
-                "var" -> Token.Type.Var()
-                "num" -> Token.Type.Number()
-                "\n" -> Token.SpecialChar.EndOfLine()
-                ":" -> Token.SpecialChar.Colon()
-                "{" -> Token.SpecialChar.BlockStart()
-                "}" -> Token.SpecialChar.BlockEnd()
-                "[" -> Token.SpecialChar.SquareBracketStart()
-                "]" -> Token.SpecialChar.SquareBracketEnd()
-                "(" -> Token.SpecialChar.ParenthesesStart()
-                ")" -> Token.SpecialChar.ParenthesesEnd()
-                "," -> Token.SpecialChar.ListSeparator()
-                ";" -> Token.SpecialChar.LineContinue()
-                "=" -> Token.SpecialChar.Equals()
+                "return" -> Token.Return
+                "tuple" -> Token.Type.Tuple
+                "bool" -> Token.Type.Bool
+                "text" -> Token.Type.Text
+                "func" -> Token.Type.Func
+                "list" -> Token.Type.List
+                "none" -> Token.Type.None
+                "var" -> Token.Type.Var
+                "num" -> Token.Type.Number
+                "\n" -> Token.SpecialChar.EndOfLine
+                ":" -> Token.SpecialChar.Colon
+                "{" -> Token.SpecialChar.BlockStart
+                "}" -> Token.SpecialChar.BlockEnd
+                "[" -> Token.SpecialChar.SquareBracketStart
+                "]" -> Token.SpecialChar.SquareBracketEnd
+                "(" -> Token.SpecialChar.ParenthesesStart
+                ")" -> Token.SpecialChar.ParenthesesEnd
+                "," -> Token.SpecialChar.ListSeparator
+                ";" -> Token.SpecialChar.LineContinue
+                "=" -> Token.SpecialChar.Equals
                 else -> throw Exception("Unexpected lexeme '$lexeme' in token test")
             }.let {
                 PositionalToken(it, index, 0)

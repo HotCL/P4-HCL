@@ -12,7 +12,7 @@ To understand what these does, and why they are useful have a look at the exampl
 One thing to note, is that the function parameters in the example is passed as lambda functions. 
 Lambda functions are anonymous inline functions, which are very useful along with high-order functions, since it will allow you to specify the functionality without having to declare an entire function.
 
-\begin{lstlisting}[language=Python,label=lis:hofExamples,caption=An example of the map\, filter and reduce functions.,firstnumber=1]
+\begin{lstlisting}[language=Python,label=lis:hofExamples,caption=An example of the map{,} filter and reduce functions.,firstnumber=1]
 myList = [5, 10, 15, 20, 25]
 
 myNewNum = myList.filter{ num => num % 10 == 0 }.map{ num => num * x }.reduce{ sumOfNums, num => sumOfNums + num }
