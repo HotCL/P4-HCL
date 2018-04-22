@@ -13,40 +13,40 @@
 
 \subsection{Big-Step Semantic for Expressions}
 %Quick introduction.
-Assignment\\
+\textbf{Assignment}\\
 \begin{math}
 	env_v, env_p \vdash \langle x := e, sto \rangle \rightarrow sto[l \mapsto v]\\
 	\texttt{where } env_v, sto \vdash e \rightarrow_e v
 	\texttt{ and } env_v \ x = l
 \end{math}
 
-Parentheses\\
+\textbf{Parentheses}\\
 \begin{math}
 	\cfrac{env_v, sto \vdash e \rightarrow_e v}
 	{env_v, sto \vdash (e) \rightarrow_e v}
 \end{math}
 
-Variables\\
+\textbf{Variables}\\
 \begin{math}
 	env_v, sto \vdash x \rightarrow_e v\\
 	\texttt{if } env_v \ x = l
 	\texttt{ and } sto \ l = v
 \end{math}
 
-Plus\\
+\textbf{Plus}\\
 \begin{math}
 	\cfrac{env_v, sto \vdash a_1 \rightarrow_a v_1 \quad env_v, sto \vdash a_2 \rightarrow_a v_2}
 	{env_v, sto \vdash a_1 + a_2 \rightarrow_a v}\\
 	\texttt{where } v = v_1 + v_2
 \end{math}
 
-Logical AND $\rightarrow$ true\\
+\textbf{Logical AND $\rightarrow$ true}\\
 \begin{math}
 	\cfrac{env_v, sto \vdash b_1 \rightarrow_b true \quad env_v, sto \vdash b_2 \rightarrow_b true}
 	{env_v, sto \vdash b_1 \wedge b_2 \rightarrow_b true}
 \end{math}
 
-Logical AND $\rightarrow$ false\\
+\textbf{Logical AND $\rightarrow$ false}\\
 \begin{math}
 	\cfrac{env_v, sto \vdash b_i \rightarrow_b false}{env_v, sto \vdash b_1 \wedge b_2 \rightarrow_b false} \quad i \in \{1,2\}
 \end{math}
@@ -56,6 +56,25 @@ Logical AND $\rightarrow$ false\\
 
 \subsection{Big-Step Semantic for Variable Declarations}
 %Quick introduction.
+\textbf{Declaration and assignment}\\
+\begin{math}
+	\cfrac{env_p \vdash \langle D_v, \ env_v[x \mapsto l][next \mapsto l'], \ sto[l \mapsto v] \rangle \rightarrow (env_v', sto')}{env_p \vdash \langle T \ x := e; \ D_v, \ env_v, \ sto \rangle \rightarrow (env_v', \ sto')}\\
+	\texttt{where } env_v, \ sto \vdash e \rightarrow_e v\\
+	\texttt{and } l = env_v \ next\\
+	\texttt{and } l' = new \ l
+\end{math}
+
+\textbf{Declaration without assignment}\\
+\begin{math}
+	\cfrac{env_p \vdash \langle D_v, \ env_v[x \mapsto l][next \mapsto l'], \ sto \rangle \rightarrow (env_v', sto)}{env_p \vdash \langle T \ x; \ D_v, \ env_v, \ sto \rangle \rightarrow (env_v', sto)}\\
+	\texttt{where } l = env_v \ next\\
+	\texttt{and } l' = new \ l
+\end{math}
+
+\textbf{Empty declaration}\\
+\begin{math}
+	env_p \vdash \langle \epsilon, \ env_v, \ sto \rangle \rightarrow (env_v, sto)
+\end{math}
 
 \subsection{Big-Step Semantic for Procedure Declarations}
 %Quick introduction.
