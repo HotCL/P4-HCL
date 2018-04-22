@@ -1,10 +1,18 @@
-\section{Semantics of HCL}
-
 % How to do quick maths tutorial (HD).
 % The lines in the derivations are just fraction lines (made with \cfrac{}{}).
 % Sideways T (turnstile - bom in Danish) is \vdash.
 % The weird, tall "<" ">" brackets are \langle and \rangle.
 
+\section{Semantics of HCL}
+%Introduction -- Contains all asumptions -> Environment, Store Model.
+%										    Fully static scope rules.
+%											Rundown of content.
+
+\subsection{Abstract Syntax}
+%Quick introduction.
+
+\subsection{Big-Step Semantic for Expressions}
+%Quick introduction.
 Assignment\\
 \begin{math}
 	env_v, env_p \vdash \langle x := e, sto \rangle \rightarrow sto[l \mapsto v]\\
@@ -42,3 +50,14 @@ Logical AND $\rightarrow$ false\\
 \begin{math}
 	\cfrac{env_v, sto \vdash b_i \rightarrow_b false}{env_v, sto \vdash b_1 \wedge b_2 \rightarrow_b false} \quad i \in \{1,2\}
 \end{math}
+
+\subsection{Big-Step Semantic for Statements}
+%Quick introduction.
+
+\subsection{Big-Step Semantic for Variable Declarations}
+%Quick introduction.
+
+\subsection{Big-Step Semantic for Procedure Declarations}
+%Quick introduction.
+
+%Conclusion.
