@@ -28,31 +28,26 @@ FreeId in SIGMA-STAR \ RESERVED  (identifiers not already in use)
 
 :p ::= function pointer (where p in P_navne)
 L ::= lambda
+e ::= expression
+f ::= function
+T ::= type
 
 
-
-
-a ::= n | x | a1+a2 | a1-a2 | a1*a2 | a1/a2 | (a)
-b ::= tf | x | a1<a2 | a1>a2 | a1<=a2 | a1>=a2 | a1=a2 | a1!=a2 | b1 AND b2 | b1 OR b2 | NOT b | (b)
-t ::= str | x | t1+t2 | (t)
-list ::= [expr~] | x | (list)
-tuple ::= (expr~) | x | (tuple)
-S ::= x := expr | S1;S2 | b then L | b thenElse L1 L2 | b whileTrue L | list forEach L | funcall | Dv | return expr | epsilon
-Dv ::= implicitOrType x := exprOrFunc; Dv | type x; Dv | epsilon
-
-implicitOrType ::= type | var
-genericsOrNoneOrType ::= type | generics | none
-genericsOrType ::= type | generics
-generics ::= FreeId
-type ::= num | text | bool | list | tuple | func
+a ::= n | x | a1 + a2 | a1 - a2 | a1 * a2 | a1 / a2
+b ::= tf | x | a1 < a2 | a1 > a2 | a1 <= a2 | a1 >= a2 | a1 = a2 | b1 AND b2 | b1 OR b2 | NOT b
+t ::= str | x | t1 + t2
+list ::= [e~] | x
+tuple ::= (e~) | x
+S ::= x := eOrF | S1;S2 | b then L | b thenElse L1 L2 | b whileTrue L | list forEach L | fcall | Dv | Dp | return e | epsilon
+Dv ::= T x := e; Dv | T x; Dv | epsilon
+Dp ::= T f := ([T x]~): T { S }; Dp | T f; Dp | epsilon
 
 pv ::= a | b | t                %primitive value
 npv ::= list | tuple | pv | x   %non-primitive value
-expr ::= npv | funcall | (expr)
-exprOrLambda ::= expr | L
-exprOrFunc ::= expr | ([genericsOrType x]~) : genericsOrNoneOrType L
-funcall ::= p | exprOrLambda p exprOrLambda*
-L ::= { S } | { } | :p
+e ::= npv | fcall | (e)
+eOrL ::= e | L
+fcall ::= p | eOrL p eOrL*
+L ::= { S } | :p
 
 
 

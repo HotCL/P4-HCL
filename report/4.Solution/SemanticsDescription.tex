@@ -8,73 +8,163 @@
 %										    Fully static scope rules.
 %											Rundown of content.
 
+
+
+
+
 \subsection{Abstract Syntax}
 %Quick introduction.
 
+
+
+
+
 \subsection{Big-Step Semantic for Expressions}
 %Quick introduction.
-\textbf{Assignment}\\
-\begin{math}
-	env_v, env_p \vdash \langle x := e, sto \rangle \rightarrow sto[l \mapsto v]\\
-	\texttt{where } env_v, sto \vdash e \rightarrow_e v
-	\texttt{ and } env_v \ x = l
-\end{math}
-
 \textbf{Parentheses}\\
 \begin{math}
-	\cfrac{env_v, sto \vdash e \rightarrow_e v}
-	{env_v, sto \vdash (e) \rightarrow_e v}
+	\cfrac
+		{env_v,\ sto \vdash e \rightarrow_e v}
+		{env_v,\ sto \vdash (e) \rightarrow_e v}
 \end{math}
 
 \textbf{Variables}\\
 \begin{math}
-	env_v, sto \vdash x \rightarrow_e v\\
-	\texttt{if } env_v \ x = l
-	\texttt{ and } sto \ l = v
+	env_v,\ sto \vdash x \rightarrow_e v\\
+	\texttt{if } env_v\ x = l
+	\texttt{ and } sto\ l = v
 \end{math}
 
 \textbf{Plus}\\
 \begin{math}
-	\cfrac{env_v, sto \vdash a_1 \rightarrow_a v_1 \quad env_v, sto \vdash a_2 \rightarrow_a v_2}
-	{env_v, sto \vdash a_1 + a_2 \rightarrow_a v}\\
+	\cfrac
+		{env_v,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_v, sto \vdash a_2 \rightarrow_a v_2}
+		{env_v,\ sto \vdash a_1 + a_2 \rightarrow_a v}\\
 	\texttt{where } v = v_1 + v_2
 \end{math}
 
 \textbf{Logical AND $\rightarrow$ true}\\
 \begin{math}
-	\cfrac{env_v, sto \vdash b_1 \rightarrow_b true \quad env_v, sto \vdash b_2 \rightarrow_b true}
-	{env_v, sto \vdash b_1 \wedge b_2 \rightarrow_b true}
+	\cfrac
+		{env_v,\ sto \vdash b_1 \rightarrow_b true \quad env_v, sto \vdash b_2 \rightarrow_b true}
+		{env_v,\ sto \vdash b_1 \wedge b_2 \rightarrow_b true}
 \end{math}
 
 \textbf{Logical AND $\rightarrow$ false}\\
 \begin{math}
-	\cfrac{env_v, sto \vdash b_i \rightarrow_b false}{env_v, sto \vdash b_1 \wedge b_2 \rightarrow_b false} \quad i \in \{1,2\}
+	\cfrac
+		{env_v,\ sto \vdash b_i \rightarrow_b false}
+		{env_v,\ sto \vdash b_1 \wedge b_2 \rightarrow_b false} \quad i \in \{1,2\}
 \end{math}
+
+
+
+
 
 \subsection{Big-Step Semantic for Statements}
 %Quick introduction.
+\textbf{Assignment}\\
+\begin{math}
+	env_v,\ env_p \vdash \langle x := e, sto \rangle \rightarrow sto[l \mapsto v]\\
+	\texttt{where } env_v,\ sto \vdash e \rightarrow_e v
+	\texttt{ and } env_v\ x = l
+\end{math}
+
+\textbf{Sequence}\\
+\begin{math}
+	\cfrac
+		{env_v,\ env_p \vdash \langle S_1,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle S_2,\ sto'' \rangle \rightarrow sto'}
+		{env_v,\ env_p \vdash \langle S_1;S_2,\ sto \rangle \rightarrow sto'}
+\end{math}
+
+\textbf{If-function-true}\\
+\begin{math}
+	\cfrac
+		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'}
+		{env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
+	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
+\end{math}
+%TODO: Explain that "{ S }" can be replaced with :f.
+
+\textbf{If-function-false}\\
+\begin{math}
+	env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto\\
+	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
+\end{math}
+
+\textbf{If-else-function-true}\\
+\begin{math}
+	\cfrac
+		{env_v,\ env_p \vdash \langle S_1,\ sto \rangle \rightarrow sto'}
+		{env_v,\ env_p \vdash \langle b \texttt{ thenElse } \{\ S_1\ \}\ \{\ S_2\ \},\ sto \rangle \rightarrow sto'}\\
+	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
+\end{math}
+
+\textbf{If-else-function-false}\\
+\begin{math}
+	\cfrac
+		{env_v,\ env_p \vdash \langle S_2,\ sto \rangle \rightarrow sto'}
+		{env_v,\ env_p \vdash \langle b \texttt{ thenElse } \{\ S_1\ \}\ \{\ S_2\ \},\ sto \rangle \rightarrow sto'}\\
+	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
+\end{math}
+
+\textbf{While-function-true}\\
+\begin{math}
+	\cfrac
+		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle  b \texttt{ whileTrue } \{\ S\ \} ,\ sto'' \rangle \rightarrow sto'}
+		{env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \} ,\ sto \rangle \rightarrow sto'}\\
+	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
+\end{math}
+
+\textbf{While-function-false}\\
+\begin{math}
+	env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \},\ sto \rangle \rightarrow sto\\
+	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
+\end{math}
+
+\textbf{Foreach-function}\\
+\begin{math}
+	\cfrac
+		{env_v,\ env_p \vdash \langle T\ i := 0;\ i\ <\ (sizeof_{list} - 1) \texttt{ whileTrue } \{\ S;i := i + 1\ \},\ sto \rangle \rightarrow sto'}
+		{env_v,\ env_p \vdash \langle list \texttt{ forEach } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
+		\texttt{where } sizeof_{list} = \text{number of elements in list}
+\end{math}
+
+
+
+
+
+
 
 \subsection{Big-Step Semantic for Variable Declarations}
 %Quick introduction.
 \textbf{Declaration and assignment}\\
 \begin{math}
-	\cfrac{env_p \vdash \langle D_v, \ env_v[x \mapsto l][next \mapsto l'], \ sto[l \mapsto v] \rangle \rightarrow (env_v', sto')}{env_p \vdash \langle T \ x := e; \ D_v, \ env_v, \ sto \rangle \rightarrow (env_v', \ sto')}\\
-	\texttt{where } env_v, \ sto \vdash e \rightarrow_e v\\
-	\texttt{and } l = env_v \ next\\
-	\texttt{and } l' = new \ l
+	\cfrac
+		{\langle D_v,\ env_v[x \mapsto l][next \mapsto l'],\ sto[l \mapsto v] \rangle \rightarrow (env_v',\ sto')}
+		{\langle T\ x := e;\ D_v,\ env_v,\ sto \rangle \rightarrow (env_v',\ sto')}\\
+	\texttt{where } env_v,\ sto \vdash e \rightarrow_e v\\
+	\texttt{and } l = env_v\ next\\
+	\texttt{and } l' = new\ l
 \end{math}
 
 \textbf{Declaration without assignment}\\
 \begin{math}
-	\cfrac{env_p \vdash \langle D_v, \ env_v[x \mapsto l][next \mapsto l'], \ sto \rangle \rightarrow (env_v', sto)}{env_p \vdash \langle T \ x; \ D_v, \ env_v, \ sto \rangle \rightarrow (env_v', sto)}\\
-	\texttt{where } l = env_v \ next\\
-	\texttt{and } l' = new \ l
+	\cfrac
+		{\langle D_v,\ env_v[x \mapsto l][next \mapsto l'],\ sto \rangle \rightarrow (env_v',\ sto)}
+		{\langle T\ x;\ D_v,\ env_v,\ sto \rangle \rightarrow (env_v',\ sto)}\\
+	\texttt{where } l = env_v\ next\\
+	\texttt{and } l' = new\ l
 \end{math}
 
 \textbf{Empty declaration}\\
 \begin{math}
-	env_p \vdash \langle \epsilon, \ env_v, \ sto \rangle \rightarrow (env_v, sto)
+	\langle \epsilon,\ env_v,\ sto \rangle \rightarrow (env_v,\ sto)
 \end{math}
+
+
+
+
 
 \subsection{Big-Step Semantic for Procedure Declarations}
 %Quick introduction.
