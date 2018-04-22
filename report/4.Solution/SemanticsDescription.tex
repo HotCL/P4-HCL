@@ -166,7 +166,20 @@
 
 
 
-\subsection{Big-Step Semantic for Procedure Declarations}
+\subsection{Big-Step Semantic for Function Declarations}
 %Quick introduction.
+\textbf{Declaration and assignment}\\
+\begin{math}
+	\cfrac
+		{env_v \vdash \langle D_p,\ env_p[f \mapsto S] \rangle \rightarrow env_p'}
+		{env_v \vdash \langle T\ f := (p*): T\ \{\ S\ \};\ D_p,\ env_p \rangle \rightarrow env_p'} %p is parameter declaration
+\end{math}
+
+\textbf{Empty declaration}\\
+\begin{math}
+env_v \vdash \langle \epsilon,\ env_p \rangle \rightarrow env_p
+\end{math}
+
+
 
 %Conclusion.
