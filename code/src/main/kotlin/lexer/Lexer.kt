@@ -28,7 +28,7 @@ class Lexer(private val inputContent: String) : ILexer {
                 }
                 if (char !in listOf(' ', '\t')) currentString.append(char)
                 if (char == '#') {
-                    yield(PositionalToken(Token.SpecialChar.EndOfLine(), lineNumber, indexNumber))
+                    yield(PositionalToken(Token.SpecialChar.EndOfLine, lineNumber, indexNumber))
                     currentString.setLength(0)
                     return@lineIterator
                 }
@@ -40,18 +40,18 @@ class Lexer(private val inputContent: String) : ILexer {
                             char.isSpecialChar() -> char.getSpecialCharTokenOrNull()
                             isNextSpecialCharWhiteSpaceOrComment(lineNumber, indexNumber) -> when (this) {
                             // types
-                                "var" -> Token.Type.Var()
-                                "none" -> Token.Type.None()
-                                "txt" -> Token.Type.Text()
-                                "num" -> Token.Type.Number()
-                                "bool" -> Token.Type.Bool()
-                                "tuple" -> Token.Type.Tuple()
-                                "list" -> Token.Type.List()
-                                "func" -> Token.Type.Func()
+                                "var" -> Token.Type.Var
+                                "none" -> Token.Type.None
+                                "txt" -> Token.Type.Text
+                                "num" -> Token.Type.Number
+                                "bool" -> Token.Type.Bool
+                                "tuple" -> Token.Type.Tuple
+                                "list" -> Token.Type.List
+                                "func" -> Token.Type.Func
                             //bool
                                 "true" -> Token.Literal.Bool(true)
                                 "false" -> Token.Literal.Bool(false)
-                                "return" -> Token.Return()
+                                "return" -> Token.Return
                             // identifier or number literal
                                 else -> getLiteralOrIdentifier()
                             }
@@ -80,7 +80,7 @@ class Lexer(private val inputContent: String) : ILexer {
 
     private fun String.getLiteralOrIdentifier() = when {
     // Number literal
-        matches("-?\\d+(\\.\\d+)?".toRegex()) -> Token.Literal.Number(this)
+        matches("-?\\d+(\\.\\d+)?".toRegex()) -> Token.Literal.Number(this.toDouble())
     // string/txt literal
         startsWith('\'') && endsWith('\'') -> Token.Literal.Text(this.drop(1).dropLast(1))
         startsWith('"') && endsWith('"') -> Token.Literal.Text(this.drop(1).dropLast(1))
@@ -89,17 +89,17 @@ class Lexer(private val inputContent: String) : ILexer {
     }
 
     private fun Char.getSpecialCharTokenOrNull(): Token? = when(this) {
-        '=' -> Token.SpecialChar.Equals()
-        '[' -> Token.SpecialChar.SquareBracketStart()
-        ']' -> Token.SpecialChar.SquareBracketEnd()
-        '{' -> Token.SpecialChar.BlockStart()
-        '}' -> Token.SpecialChar.BlockEnd()
-        '(' -> Token.SpecialChar.ParenthesesStart()
-        ')' -> Token.SpecialChar.ParenthesesEnd()
-        ',' -> Token.SpecialChar.ListSeparator()
-        '\\' -> Token.SpecialChar.LineContinue()
-        ':' -> Token.SpecialChar.Colon()
-        in endLines -> Token.SpecialChar.EndOfLine()
+        '=' -> Token.SpecialChar.Equals
+        '[' -> Token.SpecialChar.SquareBracketStart
+        ']' -> Token.SpecialChar.SquareBracketEnd
+        '{' -> Token.SpecialChar.BlockStart
+        '}' -> Token.SpecialChar.BlockEnd
+        '(' -> Token.SpecialChar.ParenthesesStart
+        ')' -> Token.SpecialChar.ParenthesesEnd
+        ',' -> Token.SpecialChar.ListSeparator
+        '\\' -> Token.SpecialChar.LineContinue
+        ':' -> Token.SpecialChar.Colon
+        in endLines -> Token.SpecialChar.EndOfLine
         else -> null
     }
 }
