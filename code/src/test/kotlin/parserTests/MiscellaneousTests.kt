@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import parser.Parser
 import parser.AstNode
+import parser.ParserWithoutBuiltins
 import kotlin.coroutines.experimental.buildSequence
 
 class MiscellaneousTests {
@@ -43,7 +44,7 @@ class MiscellaneousTests {
                         Token.SpecialChar.EndOfLine
                 ))
 
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
 
@@ -228,7 +229,7 @@ class MiscellaneousTests {
                 Token.Identifier("myFunc"),
                 Token.SpecialChar.EndOfLine
         ))
-        Assertions.assertThrows(ImplicitTypeNotAllowed::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(ImplicitTypeNotAllowed::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -238,6 +239,6 @@ class MiscellaneousTests {
             yield(Token.SpecialChar.EndOfLine)
         })
 
-        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 }
