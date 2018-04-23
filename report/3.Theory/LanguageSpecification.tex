@@ -203,7 +203,7 @@ Since tuples are distinguished by the types within it, there are a theoretical i
 
 To get a better grasp of how generics are used in HCL, consider the following implementation of the map function:
 \begin{lstlisting}
-var map = (list[T1] elementsToMap, func[T1, T2] mapFunction) -> list[T2] {
+var map = (list[T1] elementsToMap, func[T1, T2] mapFunction): list[T2] {
 	list[T2] mappedValues = []
 	elementsToMap onEach {mappedValues add (value mapFunction)}
 	return mappedValues
