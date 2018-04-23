@@ -350,7 +350,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                                     genericPassedFunctionException()
                                 AstIdentifier(token.value)
                             },
-                            { wrongTokenTypeError("Function", token) },
+                            { undeclaredError(token.value) },
                             { undeclaredError(token.value) }
                     )
 

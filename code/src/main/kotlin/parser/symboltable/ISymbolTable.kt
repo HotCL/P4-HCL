@@ -21,7 +21,7 @@ interface ISymbolTable{
 
     /**
      * Enters name in the symbol table's current scope.
-     * @param name The name of the identfier.
+     * @param name The name of the identifier.
      * @param type The Type attributes of the identifier.
      * @return Whether the symbol could be entered in the symbol table
      * false if the symbol is already declared in current scope, and is not a function declaration

@@ -15,7 +15,7 @@ fun formatToken(token: Token) = when (token) {
     Token.Type.Number -> "num"
     Token.Type.Tuple -> "tuple"
     Token.Type.Var -> "var"
-    Token.Type.Text -> "text"
+    Token.Type.Text -> "txt"
     Token.SpecialChar.ListSeparator -> ","
     Token.SpecialChar.ParenthesesEnd -> ")"
     Token.SpecialChar.ParenthesesStart -> "("
