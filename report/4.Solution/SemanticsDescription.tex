@@ -8,54 +8,333 @@
 %										    Fully static scope rules.
 %											Rundown of content.
 
+The notation used to formalize the semantics of HCL in the following section will be operational structural semantics.
 
+%...
+As mentioned before in the previous chapters, HCL contains an atypical few number of operators.
+To ease the reader's understanding of HCL's semantics, all functions part of HCL's standard library will be adopted to the notation of the semantics. 
+%...
 
+%...
+All transitions are written using Big-Step semantics, BSS for short.
+%...
 
+%...
+The Environment-store-model will be used to describe how the state of variables and procedures are bound.
+%...
+
+%...
+In the following section, semicolons used in semantic rules are to be left associative.
+For example; $S_1;S_2;S_3$ must be read as $S_1;(S_2;S_3)$.
+The components of this statement are $S_1$ and $S_2;S_3$.
+%...
 
 \subsection{Abstract Syntax}
-%Quick introduction.
+The abstract syntax will now be presented.
+For convenience, the following notational conventions will be followed throughout this section.
 
+In the rest of the section $t1, ... , tn$ will be abbreviated with $t\textasciitilde$ and $t1 ... tn$ with $t^*$ ($t^+$ in the non-empty case).
 
+The syntax categories and meta-variables used in the semantic can be seen in table \ref{tab:metaVarab}. 
+\begin{center}
+	\begin{table}[ht]
+		\centering
+		\caption{The meta-variables used in the operational semantics of HCL}
+		\label{tab:metaVar}
+		\begin{tabular}{ll}
+			\textbf{Metavariable} & \textbf{Name} \\
+			$a \in A_{exp}$ 	  & Arithmetic expression \\
+			$n \in Num$			  & Numbers \\
+			$x \in Var$           & Variable \\
+			$tf \in B_{exp}$	  & Boolean \\
+			$t \in Txt_{exp}$     & Text \\
+			$e \in Exp$			  & Expression \\
+			$D_V \in Dcl_V$		  & Variable declaration \\
+			$T \in Type$          & Types
+		\end{tabular}
+	\end{table}
+\end{center}
 
+The abstract syntax of HCL can be seen below.
 
+$a ::= n | x | a_1+a_2 | a_1-a_2 | a_1*a_2 | a_1/a_2 | (a)$\\
+$b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1=a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not$\\
+$t ::= str| x | t_1 + t_2$\\
+$D_v ::= T\ x\ :=\ e;\ D_v | T\ x;\ D_v | \epsilon$
+
+\textbf{\large{Conventions}} \\
+For each variable $x$, an arbitrary variable-environment $env_V$ describes which address $adr$, $x$ is bound to.
+For simplicity, the set of all possible addresses, denoted $Adr$, is assumed to be equal to the set of all integers.
+\begin{center}
+	$Adr = \mathbb{Z}$
+\end{center}
+The set of all variable-environments, denoted \textbf{$Env_V$}, is the set of all partial functions from variables to addresses.
+\begin{center}
+	$Env_V = Var \cup \{next\} \rightharpoonup Adr$
+\end{center}
+For every $adr$, the function $new : Adr \rightarrow Adr$ returns the next $adr$, whether it is free or not.
+\begin{center}
+	$new (adr) = adr + 1$
+\end{center}
+A store $sto$ describes what values $v$ are pointed to by the addresses found in $Adr$.
+
+With the variable bindings found in $env_V$ and the address content found in $sto$, the expressions are capable of returning the values of the $sto$.
+This means that every transition of expressions must be on the form.
+\begin{center}
+	$env_V,sto \vdash e \rightarrow v$
+\end{center} 
 
 \subsection{Big-Step Semantic for Expressions}
 %Quick introduction.
-\textbf{Parentheses}\\
-\begin{math}
-	\cfrac
-		{env_v,\ sto \vdash e \rightarrow_e v}
-		{env_v,\ sto \vdash (e) \rightarrow_e v}
-\end{math}
 
-\textbf{Variables}\\
-\begin{math}
-	env_v,\ sto \vdash x \rightarrow_e v\\
-	\texttt{if } env_v\ x = l
+\textbf{\large{General Rules for Expressions}} \\
+All expression in the abstract syntax have two rewriting rules in common.
+The variable rule and the parenthesis rule.
+To avoid the possibility of cluttering the section, these rules are described below, using the metavariable $e \in Exp$, where the syntax category $Exp$ is the set of all expressions.
+
+\textbf{[$Parent_{BSS}$]}
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash e \rightarrow_e v}
+		{env_V,\ sto \vdash (e) \rightarrow_e v}
+	\end{math}
+\end{center}
+
+\textbf{[$Var_{BSS}$]}
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash x \rightarrow_e v
+	\texttt{ if } env_V\ x = l
 	\texttt{ and } sto\ l = v
-\end{math}
+	\end{math}
+\end{center}
 
-\textbf{Plus}\\
-\begin{math}
-	\cfrac
-		{env_v,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_v, sto \vdash a_2 \rightarrow_a v_2}
-		{env_v,\ sto \vdash a_1 + a_2 \rightarrow_a v}\\
-	\texttt{where } v = v_1 + v_2
-\end{math}
+\textbf{\large{Arithmetic Expressions}}\\
+Arithmetic expressions returns a value $v$, where $v \in \mathbb{Z}$ or $v \in \mathbb{R}$.
+The transitions-system for $A_{exp}$ is $(A_{exp} \cup D, \rightarrow_a, D)$, 
+where $D = \mathbb{Z} \cup \mathbb{R}$.
+The transitions can be seen below.
 
-\textbf{Logical AND $\rightarrow$ true}\\
-\begin{math}
+\textbf{[$Add_{BSS}$]}\\
+\begin{center}
+	\begin{math}
 	\cfrac
-		{env_v,\ sto \vdash b_1 \rightarrow_b true \quad env_v, sto \vdash b_2 \rightarrow_b true}
-		{env_v,\ sto \vdash b_1 \wedge b_2 \rightarrow_b true}
-\end{math}
+		{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+		{env_V,\ sto \vdash a_1 + a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 + v_2$
+\end{center}
 
-\textbf{Logical AND $\rightarrow$ false}\\
-\begin{math}
+\textbf{[$Minus_{BSS}$]}\\
+\begin{center}
+	\begin{math}
 	\cfrac
-		{env_v,\ sto \vdash b_i \rightarrow_b false}
-		{env_v,\ sto \vdash b_1 \wedge b_2 \rightarrow_b false} \quad i \in \{1,2\}
-\end{math}
+		{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+		{env_V,\ sto \vdash a_1 - a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 - v_2$
+\end{center}
+
+\textbf{[$Mult_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 * a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 * v_2$
+\end{center}
+
+\textbf{[$Div_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 / a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 / v_2$
+\end{center}
+
+\textbf{[$Num_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		env_V,\ sto \vdash n \rightarrow_a v
+	\end{math}
+	\texttt{ if } $\mathbb{N}[n] = v$
+\end{center}
+
+\textbf{\large{Boolean Expressions}}\\
+Boolean expressions returns a value $v$, where $v \in \{True, False\}$.
+The transition-system for $B_{exp}$ is $(B_{exp} \cup \{True, False,\} \rightarrow_b, \{True, False\})$.
+The transition can be seen below.
+
+\textbf{[$EqualTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+			{env_V,\ sto \vdash a_1 = a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 = v_2$
+\end{center}
+
+\textbf{[$EqualFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 = a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 \neq v_2$
+\end{center}
+
+\textbf{[$LessThanTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 < a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 < v_2$
+\end{center}
+
+\textbf{[$LessThanFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 < a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 \not< v_2$
+\end{center}
+
+\textbf{[$GreaterThanTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 > a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 > v_2$
+\end{center}
+
+\textbf{[$GreaterThanFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 > a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 \not> v_2$
+\end{center}
+
+\textbf{[$LessThanOrEqualTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 <= a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 <= v_2$
+\end{center}
+
+\textbf{[$LessThanOrEqualFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 <= a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 \not<\not= v_2$
+\end{center}
+
+\textbf{[$AndTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash b_1 \rightarrow_b True \quad env_V, sto \vdash b_2 \rightarrow_b True}
+		{env_V,\ sto \vdash b_1\ and\ b_2 \rightarrow_b True}
+	\end{math}
+\end{center}
+
+\textbf{[$AndFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash b_1 \rightarrow_b False \quad env_V,\ sto \vdash b_2 \rightarrow_b False}
+		{env_V,\ sto \vdash b_1\ and\ b_2 \rightarrow_b False}
+	\end{math}
+\end{center}
+
+\textbf{[$Not_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash b \rightarrow_b v_2}
+	{env_V,\ sto \vdash b\ not \rightarrow_b v_1}
+	\end{math}
+	
+	\texttt{ where } $v_1 \in Bool - v_2$
+\end{center}
+
+\textbf{[$TFLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash tf \rightarrow_b v
+	\end{math}
+	\texttt{ if } $\mathbb{B}[tf] = v$
+\end{center}
+
+\textbf{\large{Text Expressions}}\\
+Text Expressions returns a value $v$, where $v$ is a sequence of characters from an arbitrary alphabet enclosed in $"$.
+In other words, $v$ is a string.
+The transition-system for $Txt_{exp}$ is $(Txt_{exp} \cup \{\Sigma^*\},\ \rightarrow_t, \{\Sigma^*\})$.
+Here $\Sigma$ is an arbitrary alphabet legal in the context.
+
+\textbf{[$TextConc_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash t_1 \rightarrow_b v_1 \quad env_V,\ sto \vdash t_2 \rightarrow_b v_2}
+		{env_V,\ sto \vdash t \rightarrow_b v}
+	\end{math}
+	
+	\texttt{ where } $v = v_1\ \circ\ v_2$
+\end{center}
+
+\textbf{[$TextLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash t \rightarrow_b v
+	\end{math}
+	\texttt{ if } $\mathbb{T}[t] = "v"$
+\end{center}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -136,31 +415,71 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 \subsection{Big-Step Semantic for Variable Declarations}
-%Quick introduction.
-\textbf{Declaration and assignment}\\
-\begin{math}
-	\cfrac
-		{\langle D_v,\ env_v[x \mapsto l][next \mapsto l'],\ sto[l \mapsto v] \rangle \rightarrow (env_v',\ sto')}
-		{\langle T\ x := e;\ D_v,\ env_v,\ sto \rangle \rightarrow (env_v',\ sto')}\\
-	\texttt{where } env_v,\ sto \vdash e \rightarrow_e v\\
-	\texttt{and } l = env_v\ next\\
-	\texttt{and } l' = new\ l
-\end{math}
+Variable declarations $Dcl_V$ can change the variable environment $Env_v$ by declaring new variables in $Var$.
+They can also change the store by binding variables to new addresses.
 
-\textbf{Declaration without assignment}\\
-\begin{math}
-	\cfrac
-		{\langle D_v,\ env_v[x \mapsto l][next \mapsto l'],\ sto \rangle \rightarrow (env_v',\ sto)}
-		{\langle T\ x;\ D_v,\ env_v,\ sto \rangle \rightarrow (env_v',\ sto)}\\
-	\texttt{where } l = env_v\ next\\
-	\texttt{and } l' = new\ l
-\end{math}
+The transition-system for $Dcl_V$ is ($(Dcl_V\ X\ Env_V\ X\ Sto) \cup Env_V\ X\ Sto, \rightarrow_{D_{V}}, Env_V\ X\ Sto$).
 
-\textbf{Empty declaration}\\
-\begin{math}
+This means that the transitions must be on the form.
+
+\begin{center}
+	$\langle D_V,env_V,sto \rangle \rightarrow_{D_V} (env_V^{'} , sto^{'})$
+\end{center}
+
+The transitions are shown below.
+
+\textbf{[$Dcl_V Ass_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{\langle D_V,\ env_V[x \mapsto l][next \mapsto l'],\ sto[l \mapsto v] \rangle \rightarrow_{D_V} (env_V',\ sto')}
+		{\langle T\ x := e;\ D_V,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V',\ sto')}
+	\end{math}
+	
+	\texttt{ where } $env_V,\ sto \vdash e \rightarrow_e v$
+	\texttt{ and } $l = env_V\ next$
+	\texttt{ and } $l' = new\ l$
+\end{center}
+
+\textbf{[$Dcl_V NoAss_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{\langle D_v,\ env_v[x \mapsto l][next \mapsto l'],\ sto \rangle \rightarrow_{D_V} (env_v',\ sto)}
+		{\langle T\ x;\ D_v,\ env_v,\ sto \rangle \rightarrow_{D_V} (env_v',\ sto)}
+	\end{math}
+	
+	\texttt{ where } $l = env_v\ next$
+	\texttt{ and } $l' = new\ l$
+\end{center}
+
+\textbf{[$Dcl_V Empty_{BSS}$]}\\
+\begin{center}
+	\begin{math}
 	\langle \epsilon,\ env_v,\ sto \rangle \rightarrow (env_v,\ sto)
-\end{math}
+	\end{math}
+\end{center}
+
+
+
+
+
+
+
+
+
+
 
 
 
