@@ -2,33 +2,32 @@
 % The section itself might not be used a whole lot during the design and implementation, as these are not the arduino platform.
 % Still, it is good to give examples of implementations.
 \section{Educational single-board computers}
-While the group pretty quickly decided on developing for the Arduino platform, both because it is often used in the danish school system, as well as being the offered platform from AAU, it was still deemed necessary to look at other educational computer platforms. 
+While the group quickly decided on developing for the Arduino platform, it was still deemed necessary to look at other educational computer platforms. 
 
 Apart from the Arduino board, a lot of other single-board computers(SBCs) have been created with educational purposes in mind.
-To figure out why these SBCs are so popular for technical learning, some of the most popular ones were analysed.
-This should help to figure out which functionality the HCL programming language should include in order to comply with the educational intend of the SBCs.\cite{SBC}
+To figure out why these SBCs are so popular for technical learning, some of the most popular ones were analyzed.
+This should help to figure out which functionality HCL should include in order to comply with the educational intend of the SBCs\cite{SBC}.
 
 \subsection{Raspberry Pi}
 The Raspberry Pi is one of the most widely known SBCs. 
-It is a complete ARM-based computer, and may run anything ARM based on it, including both linux and windows based ARM operating systems. 
-This first of all makes it a common entry point into the GNU/Linux operating system stack, which is generally considered to be highly educational in regards to how computers work.
-The default Raspberry Pi distribution ships with both scratch and python, allowing the user to quickly get started with programming.\cite{RaspberryPi}
+It is a complete ARM-based computer, and may run anything ARM based, including both Linux and Windows based ARM operating systems. 
+This makes it a common entry point into the GNU/Linux operating system stack, which is generally considered to be highly educational in regards to how computers work.
+The default Raspberry Pi distribution ships with both Scratch and Python, allowing the user to quickly get started with programming\cite{RaspberryPi}.
 
 On top of this, one of the major selling points of the Raspberry Pi is the GPIO\footnote{general purpose input output} pins. 
-These allow the user to attach all kind of devices to the board, this includes both sensors, lights, cameras and breadboards. 
-The Raspberry Pi allows the user to easily interact with the GPIO pins, making it an ideal device for both IoT, home automation and robotics.\cite{RaspberryPi}
+These allow the user to attach all kinds of devices to the board, including sensors, lights, cameras and breadboards. 
+The Raspberry Pi allows the user to easily interact with the GPIO pins, making it an ideal device for both Internet of Things (IoT), home automation and robotics\cite{RaspberryPi}.
 
 \subsection{Lego Mindstorm}
 Lego Mindstorm is a robot kit from Lego. 
 The intend is to built a robot out of Lego, with the belonging motors and sensors which can then be controlled by the "head". 
 The head is a small computer, which can control and monitor all the attached motors and sensors. 
-The computer can be programmed from either a tablet or a computer using a drag and drop programming environment similar to that of scratches (\ref{sec:scratch}). 
-\cite{LegoMindstorms}
+The computer can be programmed from either a tablet or a computer using a drag and drop programming environment similar to that of Scratch (\ref{sec:Scratch})\cite{LegoMindstorms}.
 
 \subsection{Takeaway}
 Apart from being cheap, the big motivation behind these SBCs seem to be the extensibility through attachments. 
 This allows the users to create something very concrete. 
-For instance, it may be more rewarding for the user to get an actual lamp to blink or a car to drive, rather than just outputting something on the computer screen. 
-The attachments will in the end allow the user to build something robotic, which is a common desire or goal for both new and experienced programmers.\cite{EducationalRobotics}
+For instance, it may be more rewarding for the user to get an actual lamp to blink or a car to drive, rather than just outputting something to the console. 
+The attachments will allow the user to build something robotic, which is a common desire or goal for both new and experienced developers\cite{EducationalRobotics}.
 
-Since the Arduino also has the ability to connect various devices through its GPIO pins, it would be ideal to incorporate some easy to use GPIO handling into the HCL programming language.
+Since the Arduino platform also has the ability to connect various devices through its GPIO pins, it would be ideal to incorporate some easy to use GPIO handling into HCL.

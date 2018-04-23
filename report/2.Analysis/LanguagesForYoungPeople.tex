@@ -2,46 +2,45 @@
 % This section will be used to establish examples of good languages for introducing programming for beginners.
 \section{Languages for beginners}
 
-There are a wide variety of different tools, games and languages with the intend to teach students how to program. 
+There are a wide variety of different tools, games and languages with the intent to teach students how to program. 
 These span from very specific game creation tools, to general purpose programming languages. 
-In order to gather some inspiration for the group's own programming language, some of the existing solutions, and most common languages for beginners have been analysed.
+In order to gather some inspiration for the group's own programming language, some of the existing solutions, and most common languages for beginners have been analyzed.
 
 \subsection{Scratch}
-\label{sec:scratch}
+\label{sec:Scratch}
 Scratch is a programming language that lets the user program interactive stories, animations and games. 
 It is one of the most common programming languages among youngsters and students who are just getting into programming. 
 It is designed for children from the age of 8 to 16, and aims to help children "think creatively, reason systematically, and work collaboratively". 
-In scratch the user do not actually have to write any code, since it utilizes drag and drop elements to build and structure your program. 
-Although no exact programming is actually done, scratch helps to bring an understanding of the common programming concepts like variables, loops and conditionals.\cite{ScratchWebsite}
+In Scratch the user do not actually have to write any code, since it utilizes drag and drop elements to build and structure the program. 
+Although no exact programming is actually done, Scratch helps to bring an understanding of the common programming concepts like variables, loops and conditionals\cite{ScratchWebsite}.
 
-Scratch is one of the most popular block building programming languages, but there are a lot of different languages challenging it, for instance google's refinement of scratch which is called blockly.\cite{Blockly}
+Scratch is one of the most popular block building programming languages, but there are a lot of different languages challenging it, for instance Google's refinement of Scratch which is called Blockly\cite{Blockly}.
 
-\subsection{Game maker}
-Game maker is a powerful tool for developing games. 
-It is arguably more complicated than scratch, but also more powerful and still aiming to be easy to use. 
-Quoting their website: 
+\subsection{GameMaker}
+GameMaker is a tool for developing games. 
+It is arguably more complicated than Scratch, but also brings more functionality, while still aiming to be easy to use. 
+Quoting the GameMaker website: 
 
 \textit{"Making games development accessible to everyone means taking away the barriers to getting started. 
-Using our intuitive ‘Drag and Drop’ development environment you can have your game up and running in a matter of minutes without ever having to write any code!"}.
-\cite{GameMaker}
+Using our intuitive ‘Drag and Drop’ development environment you can have your game up and running in a matter of minutes without ever having to write any code!"}\cite{GameMaker}.
  
-Besides using drag and drop like scratch, game maker also created a very simple programming language called "GML".
+Besides using drag and drop, like Scratch, GameMaker also created a very simple programming language called "GML".
 GML resembles the syntax of common languages like C and Java. 
-However, it is a simple language, for instance type declaration is not needed or even supported. 
-However, one thing to note is that the type system is indeed static, but types are inferred. 
-As such types may not be altered at runtime.\cite{GML}
+However, it is a simple language, for instance type declaration is not needed or even supported.
+One thing to note is that the type system is indeed static, but types are inferred. 
+As such types may not be altered at runtime\cite{GML}.
 
 \subsection{Python}
 Although not directly aimed at students or youngsters, Python is a common entry point for many newcomers. 
 Python also advertises itself as easy to learn for both new and experienced programmers. 
-It provides a simple syntax, along with dynamic typing and type inference.\cite{PythonWebsite}
-An example of pythons simple syntax free of all the usual ceremonials is easily represented just from the simple "Hello World" program.
+It provides a simple syntax, along with dynamic typing and type inference\cite{PythonWebsite}.
+An example of Python's simple syntax is demonstrated in the "Hello World" program, presented below.
 
 \begin{lstlisting}[language=Python,label=lis:PythonHelloWorld,caption=Hello World in python]
 print("Hello World")
 \end{lstlisting}
 
-now compare this to that of C++:
+Now compare this to that of C++:
 
 \begin{lstlisting}[language=C++,label=lis:C++HelloWorld,caption=Hello World in C++]
 #include <iostream>
@@ -54,17 +53,17 @@ int main() {
 }
 \end{lstlisting}
 
-The C++ "Hello World" could potentially lead to a lot of questions, and all this just to be able to print to the screen.
+The C++ "Hello World" program can be quite confusing for novices, as there is overhead.
 
-Besides the easy and simple syntax python also includes a large collection of libraries to ease the development of different tasks.\cite{PythonLibraries}
-This means you will be using less time reinventing the wheel and thus faster accomplishing the desired end goal.\cite{PythonXKCD}
+Besides the easy and simple syntax, Python also includes a large collection of libraries\cite{PythonLibraries}.
+This means the developer will be using less time reinventing the wheel and thus faster accomplishing the desired end goal\cite{PythonXKCD}.
 
 \subsection{Takeaways}
-Although the above three languages only makes up a small subset of the analysed languages, they seem to be very representative for the general takeaways. 
-Languages intended for beginners will often require little to no code to be written. 
-This seems to be because they want to learn the students about the general programming concepts, before having to worry about syntax and formalities. 
-Expanding on this, these languages also removes explicit type declaration, making the programmer write less ceremonial code.
+Although the above three languages only makes up a small subset of the languages analyzed, they represent aspects of languages aimed at beginners.
+Languages intended for beginners will often require little to no overhead. 
+This is because the intent is to teach the students about programming concepts, before having to worry about syntax and formalities. 
+These languages all use implicit type declarations.
 
 Moreover the languages strives to have a simple, easy to learn syntax. 
-Finally the languages generally want to provide a lot of methods and libraries for the user to use, so that he will not have to code these from scratch. 
-This enables the programmer to spend more time telling what should be done, rather than how it should be done.
+Finally the language developers generally want to provide a lot of libraries. 
+This enables the programmer to spend more time describing what should be done, rather than how to do it.
