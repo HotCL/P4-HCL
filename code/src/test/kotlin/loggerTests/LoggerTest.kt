@@ -15,8 +15,31 @@ class TokenTest {
                         " | var b = 4 < \"5\"\n" +
                         " |           ^--\n" +
                         " | Function '<' not defined for types: 'num', 'txt' and 'bool'.\n" +
-                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString()
-        )
+                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+    }
+    @org.junit.jupiter.api.Test
+    fun testTypeErrorSingleType() {
+        val error = TypeError(6, 12, "\"notText\" print", "print", listOf("num"))
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: TypeError found at line 6 index 12:\n" +
+                        " | \"notText\" print\n" +
+                        " |             ^--\n" +
+                        " | Function 'print' not defined for types: 'num'.\n" +
+                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+    }
+    @org.junit.jupiter.api.Test
+    fun testTypeErrorNoTypes() {
+        val error = TypeError(6, 0, "print", "print", listOf())
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: TypeError found at line 6 index 0:\n" +
+                        " | print\n" +
+                        " | ^--\n" +
+                        " | Function 'print' not defined for types: No type.\n" +
+                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -29,8 +52,7 @@ class TokenTest {
                         " | txt s = textString\n" +
                         " |         ^--\n" +
                         " | Undeclared identifier 'textString' found.\n" +
-                        " | -->help: Declare identifier before use.\n", logger.buffer.toString()
-        )
+                        " | -->help: Declare identifier before use.\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -43,8 +65,7 @@ class TokenTest {
                         " | x = someUninitializedVariable + 10\n" +
                         " |     ^--\n" +
                         " | Use of uninitialized variable 'someUninitializedVariable' found.\n" +
-                        " | -->help: Try initializing variable before use.\n", logger.buffer.toString()
-        )
+                        " | -->help: Try initializing variable before use.\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -57,8 +78,7 @@ class TokenTest {
                         " | x = 42/0\n" +
                         " |       ^--\n" +
                         " | Division by 0 found\n" +
-                        " | -->help: Check your variables\n", logger.buffer.toString()
-        )
+                        " | -->help: Check your variables\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testMissingArgumentError() {
@@ -70,8 +90,7 @@ class TokenTest {
                         " | 2 someFunction\n" +
                         " |   ^--\n" +
                         " | Missing argument for function 'someFunction'.\n" +
-                        " | -->help: Have you included all arguments for function?\n", logger.buffer.toString()
-        )
+                        " | -->help: Have you included all arguments for function?\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testMissingEncapsulation() {
@@ -83,8 +102,7 @@ class TokenTest {
                         " | ({()}\n" +
                         " | ^--\n" +
                         " | Missing closing character for '('\n" +
-                        " | -->help: Remember to always close encapsulations.\n", logger.buffer.toString()
-        )
+                        " | -->help: Remember to always close encapsulations.\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -96,10 +114,9 @@ class TokenTest {
                 "- ERROR: InitializedFunctionParameterError found at line 0 index 15:\n" +
                         " | var x = (num z = 5): none {}\n" +
                         " |                ^--\n" +
-                        " | Cannot initialize function parameters in declaration.\n" +
-                        " | -->help: Function parameters are initialized when the function is called.\n",
-                logger.buffer.toString()
-        )
+                        " | Cannot initialize function arguments in declaration.\n" +
+                        " | -->help: Function arguments are initialized when the function is called.\n",
+                logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -113,7 +130,20 @@ class TokenTest {
                         " |          ^--\n" +
                         " | Functions can not have input-parameter of type 'none'.\n" +
                         " | -->help: 'none' can only be used as a functions return-type.\n",
-                logger.buffer.toString()
-        )
+                logger.buffer.toString())
+    }
+    @org.junit.jupiter.api.Test
+    fun testUnexpectedTypeError() {
+        val error = UnexpectedTypeError(50, 8, "num x = \"five\"", "num",
+                              "txt")
+        val logger = TestLogger()
+        logger.logCompilationError(error)
+        assertEquals(
+                "- ERROR: UnexpectedTypeError found at line 50 index 8:\n" +
+                        " | num x = \"five\"\n" +
+                        " |         ^--\n" +
+                        " | Cannot implicit cast type 'txt' to type 'num'.\n" +
+                        " | -->help: Try casting your types to match eachother.\n",
+                logger.buffer.toString())
     }
 }
