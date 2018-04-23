@@ -32,6 +32,10 @@ class Lexer(private val inputContent: String) : ILexer {
                     currentString.setLength(0)
                     return@lineIterator
                 }
+                if (char == '\\' && inputLine(lineNumber)[indexNumber+1] == '\n'){
+                    currentString.setLength(0)
+                    return@lineIterator
+                }
 
                 with(currentString.toString()) {
                     (if (isNotEmpty())
@@ -97,7 +101,6 @@ class Lexer(private val inputContent: String) : ILexer {
         '(' -> Token.SpecialChar.ParenthesesStart
         ')' -> Token.SpecialChar.ParenthesesEnd
         ',' -> Token.SpecialChar.ListSeparator
-        '\\' -> Token.SpecialChar.LineContinue
         ':' -> Token.SpecialChar.Colon
         in endLines -> Token.SpecialChar.EndOfLine
         else -> null

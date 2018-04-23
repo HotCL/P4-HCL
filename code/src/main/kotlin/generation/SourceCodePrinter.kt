@@ -1,8 +1,8 @@
 package generation
 
 import parser.AbstractSyntaxTree
-import parser.TreeNode.Command
-import parser.TreeNode.Type
+import parser.AstNode.Command
+import parser.AstNode.Type
 
 /**
  * Outputs in the syntax of the source language, HCL.
@@ -10,7 +10,7 @@ import parser.TreeNode.Type
 class SourceCodePrinter : IPrinter {
     override fun generateOutput(ast: AbstractSyntaxTree) = ast.children.format()
 
-    private fun List<Command>.format() = "${joinToString("\n") { it.format() }}\n"
+    private fun List<Command>.format(): String = "${joinToString("\n") { it.format() }}\n"
 
     private fun Command.format() = when (this) {
         is Command.Assignment -> format()
@@ -19,7 +19,7 @@ class SourceCodePrinter : IPrinter {
         is Command.Return -> "return ${expression.format()}"
     }
 
-    private fun Command.Assignment.format() = "${identifier.name} = ${expression.format()}"
+    private fun Command.Assignment.format(): String = "${identifier.name} = ${expression.format()}"
 
     private fun Command.Declaration.format() =
             "${type.format()} ${identifier.name}${expression?.let{ " = ${it.format()}" } ?: ""}"
@@ -33,6 +33,7 @@ class SourceCodePrinter : IPrinter {
         is Command.Expression.Value.Literal.List -> format()
         is Command.Expression.LambdaExpression -> format()
         is Command.Expression.FunctionCall -> format()
+        is Command.Expression.LambdaBody -> this.commands.format()
     }
 
     private fun Command.Expression.Value.Literal.Tuple.format(): String =
@@ -46,10 +47,11 @@ class SourceCodePrinter : IPrinter {
             "(${paramDeclarations.joinToString { "${it.type.format()} ${it.identifier.name}" }}): " +
             "${returnType.format()} {\n${body.format()}}"
 
-
     private fun Command.Expression.FunctionCall.format(): String =
-            "${parameters.firstOrNull()?.format()?.let { "$it " } ?: ""}${identifier.name}" +
-            parameters.drop(1).run { if (isEmpty()) "" else  " ${joinToString { it.format() }}"}
+            "${arguments.firstOrNull()?.format()?.let { "$it " } ?: ""}${identifier.name}" +
+                    arguments.drop(1).run { if (isEmpty()) "" else  " " +
+                            joinToString(" ") { it.format() }
+                    }
 
     private fun Type.format(): String = when(this){
         Type.Number -> "num"
@@ -57,7 +59,9 @@ class SourceCodePrinter : IPrinter {
         Type.Bool -> "bool"
         Type.None -> "none"
         Type.Func.ImplicitFunc -> "func"
-        is Type.Func.ExplicitFunc -> "func[${paramTypes.joinToString { it.format() }}, ${returnType.format()}]"
+        Type.Var -> error("Impossible")
+        is Type.Func.ExplicitFunc -> "func[${if (!paramTypes.isEmpty())"${paramTypes.joinToString { it.format() }}, "
+                                            else ""}${returnType.format()}]"
         is Type.GenericType -> name
         is Type.List -> "list[${elementType.format()}]"
         is Type.Tuple -> "tuple[${elementTypes.joinToString { it.format() }}]"
