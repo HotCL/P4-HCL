@@ -45,27 +45,45 @@ The syntax categories and meta-variables used in the semantic can be seen in tab
 \begin{center}
 	\begin{table}[ht]
 		\centering
-		\caption{The meta-variables used in the operational semantics of HCL}
+		\caption{The syntax categories and meta-variables used in the operational semantics of HCL}
 		\label{tab:metaVar}
 		\begin{tabular}{ll}
 			\textbf{Metavariable} & \textbf{Name} \\
 			$a \in A_{exp}$ 	  & Arithmetic expression \\
-			$n \in Num$			  & Numbers \\
+			$n \in Num$			  & Number Literal \\
 			$x \in Var$           & Variable \\
-			$tf \in B_{exp}$	  & Boolean \\
-			$t \in Txt_{exp}$     & Text \\
-			$e \in Exp$			  & Expression \\
+			$b \in B_{exp}$		  & Boolean expression\\ 
+			$tf \in {True,False}$ & Boolean literal \\
+			$t \in Txt_{exp}$     & Text expression\\
+			$str \in {\Sigma^*}$  & String Literal \\
+			$list \in list_{exp}$ & List expression \\
+			$lst \in List$		  & List literal\\
+			$tupple \in tpl_{exp}$& Tupple expression\\
+			$tpl \in Tupple$	  & Tupple Literal\\
+			$L \in Lambda$		  & Lambda expression\\
+			$e \in Exp$			  & Expression\\
+			$el \in Lit$		  & Expression Literal\\
+			
+			$f \in Fnames$        & Function names\\
+			$L \in Lambda$        & Statement Lambdas\\
+			$S \in Stm$           & Statement\\
+			
 			$D_V \in Dcl_V$		  & Variable declaration \\
-			$T \in Type$          & Types
+			
+			$T \in Type$          & Types \\
 		\end{tabular}
 	\end{table}
 \end{center}
 
+For the rest of this section, it will be assumed that functions exists with domains equal to the sets of literals associated with the various expressions' syntax categories, and with co-domains equal to the values extracted from those literals.
 The abstract syntax of HCL can be seen below.
 
 $a ::= n | x | a_1+a_2 | a_1-a_2 | a_1*a_2 | a_1/a_2 | (a)$\\
-$b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1=a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not$\\
-$t ::= str| x | t_1 + t_2$\\
+$b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1=a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not | (b)$\\
+$t ::= str| x | t_1 + t_2 | (t)$\\
+$list ::= lst | x | (list)$\\
+$tupple ::= tpl | x | (tupple)$\\
+$e ::= a | b | t | list | tupple | call$\\
 $D_v ::= T\ x\ :=\ e;\ D_v | T\ x;\ D_v | \epsilon$
 
 \textbf{\large{Conventions}} \\
@@ -309,7 +327,7 @@ The transition can be seen below.
 \end{center}
 
 \textbf{\large{Text Expressions}}\\
-Text Expressions returns a value $v$, where $v$ is a sequence of characters from an arbitrary alphabet enclosed in $"$.
+Text Expressions returns a value $v$, where $v$ is a sequence of characters from an arbitrary alphabet enclosed in $"$, abbreviated $str$.
 In other words, $v$ is a string.
 The transition-system for $Txt_{exp}$ is $(Txt_{exp} \cup \{\Sigma^*\},\ \rightarrow_t, \{\Sigma^*\})$.
 Here $\Sigma$ is an arbitrary alphabet legal in the context.
@@ -333,7 +351,35 @@ Here $\Sigma$ is an arbitrary alphabet legal in the context.
 	\texttt{ if } $\mathbb{T}[t] = "v"$
 \end{center}
 
+\textbf{\Large{List Expressions}}\\
+List expressions returns a value $v$, where $v$ consists of a sequence of expression values separated with commas, encapsulated in $[]$.
+$v$ is denoted $lst$, and is on the form $[(el \cup Lambda)~]$.
+The set of which it is an element of is denoted $Lit$.
+The transition-system for $list_{exp}$ is $(list_{exp} \cup List, \rightarrow_{list}, List)$.
+The single transition not yet handled is shown below.
 
+\textbf{[$ListLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash lst \rightarrow_b v
+	\end{math}
+	\texttt{ if } $\mathbb{LST}[lst] = v$
+\end{center}
+
+\textbf{\Large{Tupple Expressions}}\\
+Tupple expressions returns a value $v$, where $v$ consists of a sequence of expression values separated with commas, encapsulated in $()$.
+$v$ is denoted $tpl$, and is on the form $((el \cup Lambda)~)$.
+The set of which it is an element of is denoted $Tupple$.
+The transition-system for $tupple_{exp}$ is $(tupple_{tupple_exp} \cup Tupple, \rightarrow_{tupple}, Tupple)$.
+The single transition not yet handled is shown below.
+
+\textbf{[$ListLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash tpl \rightarrow_b v
+	\end{math}
+	\texttt{ if } $\mathbb{TPL}[tpl] = v$
+\end{center}
 
 
 
