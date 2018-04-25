@@ -1,6 +1,6 @@
 #ifndef ARRAYLIST_H
 #define ARRAYLIST_H
-#endif
+
 //Har literally bare liftet fra Java arraylist og set hvad jeg har troet der skulle med fra den
 template <class T> 
 class ARRAYLIST_H
@@ -34,3 +34,4 @@ class ARRAYLIST_H
         void removeElementAt(int index);
         void remove(T item);
 }
+#endif
