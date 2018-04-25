@@ -2,7 +2,7 @@
 % The lines in the derivations are just fraction lines (made with \cfrac{}{}).
 % Sideways T (turnstile - bom in Danish) is \vdash.
 % The weird, tall "<" ">" brackets are \langle and \rangle.
-
+\newpage
 \section{Semantics of HCL}
 This section concerns with the semantics of HCL.
 For the sake of easing the reading of this section, semicolons used in semantic rules are to be left associative.
@@ -75,7 +75,7 @@ $a ::= n | x | a_1+a_2 | a_1-a_2 | a_1*a_2 | a_1/a_2 | (a)$\\
 $b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1==a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not | (b)$\\
 $t ::= str| x | t_1 + t_2 | t\ toString | (t)$\\
 $list ::= lst | x | list\ @\ a | (list)$\\
-$tupple ::= tpl | x | tupple\ @ | (tupple)$\\
+$tupple ::= tpl | x | tupple\ @\ a| (tupple)$\\
 $e ::= a | b | t | list | tupple | call_{exp}$\\
 $eOrL ::= e | L$\\
 %...
