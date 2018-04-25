@@ -10,9 +10,10 @@ void arraylist<T>::resize()
     T *temp = new T[arrlength * 2];
     for (int i = 0; i <arrlength; i++)
         temp[i] = data[i];
-        data = temp;
-        arrlength *= 2; 
-        delete *temp;       
+    delete *data; 
+    data = temp;
+    arrlength *= 2; 
+              
 }
 
 template <class T>
