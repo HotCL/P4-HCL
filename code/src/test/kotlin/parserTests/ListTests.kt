@@ -7,6 +7,7 @@ import lexer.Token
 import org.junit.jupiter.api.Assertions
 import parser.Parser
 import parser.AstNode
+import parser.ParserWithoutBuiltins
 import kotlin.coroutines.experimental.buildSequence
 
 class ListTests {
@@ -183,7 +184,7 @@ class ListTests {
             yield(Token.SpecialChar.SquareBracketEnd)
             yield(Token.SpecialChar.EndOfLine)
         })
-        Assertions.assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
 
@@ -204,6 +205,6 @@ class ListTests {
             yield(Token.SpecialChar.SquareBracketEnd)
             yield(Token.SpecialChar.EndOfLine)
         })
-        Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 }

@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
 import parser.Parser
 import parser.AstNode
+import parser.ParserWithoutBuiltins
 import kotlin.coroutines.experimental.buildSequence
 
 fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<List<Token>> =
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
                 println("Test for code:\n " + formatTokens(actual))
-                val actualAst = Parser(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
+                val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
                 else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n" +
@@ -31,7 +32,7 @@ fun matchesAstWithActualLexer(expected: String): Matcher<String> =
         object : Matcher<String> {
             override fun invoke(actual: String): MatchResult {
                 println("Test for code: \n$actual")
-                val actualAst = Parser(Lexer(actual)).generateAbstractSyntaxTree()
+                val actualAst = ParserWithoutBuiltins(Lexer(actual)).generateAbstractSyntaxTree()
                 val actualAstString = SourceCodePrinter().generateOutput(actualAst)
                 return if (actualAstString == expected) MatchResult.Match
                 else MatchResult.Mismatch("Expected AST equal to this:\n$expected\n" +
@@ -56,5 +57,5 @@ class DummyLexer(private val tokens: Sequence<Token>): ILexer {
 infix fun String.becomes(expectedPrettyPrint: String) = assertThat(this, matchesAstWithActualLexer(expectedPrettyPrint))
 
 fun parseExpectException(content: String) = Assertions.assertThrows(Exception::class.java) {
-    Parser(Lexer(content)).generateAbstractSyntaxTree()
+    ParserWithoutBuiltins(Lexer(content)).generateAbstractSyntaxTree()
 }

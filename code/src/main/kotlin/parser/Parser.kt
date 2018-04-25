@@ -1,5 +1,6 @@
 package parser
 
+import builtins.HclBuiltinFunctions
 import parser.typechecker.ITypeChecker
 import parser.typechecker.TypeChecker
 import lexer.ILexer
@@ -10,9 +11,12 @@ import parser.typechecker.ExprResult
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
-class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
+open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
+        // Add builtin functions
+        children.addAll(HclBuiltinFunctions.functions)
+        // Parse
         while (hasNext()) {
             if (current.token != Token.SpecialChar.EndOfLine) {
                 children.add(parseCommand())
@@ -20,7 +24,7 @@ class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         }
     }
 
-    private fun parseCommand(): AstNode.Command {
+    protected fun parseCommand(): AstNode.Command {
         flushNewLine(false)
         val command = when (current.token) {
             is Token.Type -> parseDeclaration()

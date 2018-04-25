@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import parser.AstNode
 import parser.Parser
+import parser.ParserWithoutBuiltins
 
 class GenericsTests{
 
@@ -344,7 +345,7 @@ class GenericsTests{
         ))
 
 
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
 
@@ -407,7 +408,7 @@ class GenericsTests{
         ))
 
         Assertions.assertThrows(GenericPassedFunctionException::class.java) {
-            Parser(lexer).generateAbstractSyntaxTree()
+            ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree()
         }
 
     }
@@ -448,7 +449,7 @@ class GenericsTests{
                 Token.SpecialChar.EndOfLine
 
         ))
-        Assertions.assertThrows(UndeclaredError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
 
@@ -475,7 +476,7 @@ class GenericsTests{
                 Token.SpecialChar.EndOfLine
         ))
 
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
 
@@ -582,7 +583,7 @@ class GenericsTests{
                 Token.SpecialChar.EndOfLine
         ))
 
-        Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
     @org.junit.jupiter.api.Test
@@ -593,7 +594,7 @@ class GenericsTests{
                 Token.SpecialChar.EndOfLine
         ))
 
-        Assertions.assertThrows(UndeclaredError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
 }
