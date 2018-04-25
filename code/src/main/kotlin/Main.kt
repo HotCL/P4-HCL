@@ -17,6 +17,6 @@ fun main(args: Array<String>) {
     val parser = Parser(lexer)
     val ast = parser.generateAbstractSyntaxTree()
     println("Ast: $ast")
-    println(SourceCodePrinter().generateOutput(ast))
+    println(SourceCodePrinter().generate(ast))
 }
 

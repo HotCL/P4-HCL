@@ -40,7 +40,7 @@ detekt {
     }
     idea {
         path = "$projectDir/.idea"
-        codeStyleScheme = "$projectDir/.idea/idea-code-style.xml"
+        codeStyleScheme = "$projectDir/.idea/idea-cpp-style.xml"
         inspectionsProfile = "$projectDir/.idea/inspect.xml"
         report = "project.projectDir/reports"
         mask = "*.kt,"
@@ -59,15 +59,15 @@ dokka {
 
     impliedPlatforms = ["JVM"] // See platforms section of documentation
 
-        // Specifies the location of the project source code on the Web.
+        // Specifies the location of the project source cpp on the Web.
     // If provided, Dokka generates "source" links for each declaration.
     // Repeat for multiple mappings
     linkMapping {
         // Source directory
         dir = "src/main/kotlin"
 
-        // URL showing where the source code can be accessed through the web browser
-        url = "https://github.com/HotCL/P4-HCL/blob/master/code/src/main/kotlin/"
+        // URL showing where the source cpp can be accessed through the web browser
+        url = "https://github.com/HotCL/P4-HCL/blob/master/cpp/src/main/kotlin/"
 
         // Suffix which is used to append the line number to the URL. Use #L for GitHub
         suffix = "#L"
