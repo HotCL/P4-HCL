@@ -4,38 +4,24 @@
 % The weird, tall "<" ">" brackets are \langle and \rangle.
 
 \section{Semantics of HCL}
-%Introduction -- Contains all asumptions -> Environment, Store Model.
-%										    Fully static scope rules.
-%											Rundown of content.
-
-The notation used to formalize the semantics of HCL in the following section will be operational structural semantics.
-
-%...
-As mentioned before in the previous chapters, HCL contains an atypical few number of operators.
-To ease the reader's understanding of HCL's semantics, all functions part of HCL's standard library will be adopted to the notation of the semantics. 
-%...
-
-%...
-All transitions are written using Big-Step semantics, BSS for short.
-%...
-
-%...
-The Environment-store-model will be used to describe how the state of variables and procedures are bound.
-%...
-
-%...
-In the following section, semicolons used in semantic rules are to be left associative.
+This section concerns with the semantics of HCL.
+For the sake of easing the reading of this section, semicolons used in semantic rules are to be left associative.
 For example; $S_1;S_2;S_3$ must be read as $S_1;(S_2;S_3)$.
 The components of this statement are $S_1$ and $S_2;S_3$.
-%...
-
-%...
+The notation used to formalize the semantics of HCL in the following section will be operational structural semantics.
+All build-in functionality of HCL will have a defined semantic at the end of this section.
+All transitions are written using Big-Step semantics, BSS for short.
+The Environment-store-model will be used to describe how the state of variables and procedures are bound.
 HCL allows for the use of ';' and '{\}n' for line endings.
 for simplicity, will the abstract syntax and rules in this section utilize ';' for line endings. 
-%...
 
 \subsection{Scoping of HCL}
-%...
+The scope rules of a language determines which variable environment and procedure environment are being accessed, when using the name of a variable or function name.
+Since the semantics of HCL will be stated using operational structural semantics, the scope rule can be shown by simple accessing the environment required by the scope rules.
+The scope rules of HCL are fully static.
+This means that the bindings accessed when using variable or functions names, will be the ones that were bound when the variable or function was declared.
+The reader should note that, since HCL is utilizing fully static scope rules, transitions for function calls needs special components to successfully enable recursive calling of function.
+In other words, when make a recursive call in HCL the bindings of the procedure environment will be dynamic.
 
 \subsection{Abstract Syntax}
 The abstract syntax will now be presented.
@@ -97,8 +83,7 @@ $Fcall ::= f | eOrL\ f\ eOrL^*$\\
 %...
 $L ::= \{\ S\ \} | \{\ S\ return\ e\ \} | \{\ S\ return\ S\ \} | \{\ S;\ e\ \}$\\
 %...
-$S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | list\ forEach\ L | p | eOrL\ p\ eOrL^* | Fcall | D_V | D_P | \epsilon$\\
-%...
+$S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | list\ forEach\ L | p | eOrL\ p\ eOrL^* | D_V | D_P | \epsilon$\\
 $D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$\\
 $D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S | \epsilon$
 
@@ -125,7 +110,8 @@ This means that every transition of expressions must be on the form.
 \end{center} 
 
 \subsection{Big-Step Semantic for Expressions}
-%Quick introduction.
+An expression is any syntactic component that returns or has a value. In HCL most expressions behave the same, but a few transition-systems uses special notation.
+When this is the case, it will be made apparent before that transition-system.
 
 \textbf{\large{General Rules for Expressions}} \\
 All expression in the abstract syntax have two rewriting rules in common.
@@ -423,7 +409,6 @@ $v$ is denoted $tpl$, and is on the form $((el \cup Lambda)~)$.
 The set of which it is an element of is denoted $Tupple$.
 The transition-system for $tupple_{exp}$ is $(tupple_{tupple_exp} \cup Tupple, \rightarrow_{tupple}, Tupple)$.
 The transitions are shown below.
-The reader should note that, since HCL is utilizing fully static scope rules, transitions for function calls needs more components to successfully enable recursive calling of function.
 
 \texttt{[$TplAt_{BSS}$]}\\
 \begin{center}
@@ -545,6 +530,31 @@ The transitions are shown below.
 	\texttt{ and } $l = env_V\ next$
 \end{center}
 
+\texttt{[$VarDclStm_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{\langle D_V, env_V, sto \rangle \rightarrow_{D_V} (env_V', sto')}
+			{env_V, env_P \vdash \langle D_V, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+\end{center}
+
+\texttt{[$ProcDclStm_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V' \vdash \langle D_P, env_P \rangle \rightarrow_{D_P} env_P'}
+			{env_V, env_P \vdash \langle D_P, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+\end{center}
+
+\texttt{[$EmptyStm_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle \epsilon, sto \rangle \rightarrow_{stm} sto}
+	\end{math}
+\end{center}
+
 \subsection{Big-Step Semantic for Variable Declarations}
 Variable declarations $Dcl_V$ can change the variable environment $Env_v$ by declaring new variables in $Var$.
 They can also change the store by binding variables to new addresses.
@@ -649,6 +659,7 @@ The transitions are shown below.
 	\end{math}
 \end{center}
 
-
-
-%Conclusion.
+In conclusion, HCL is best described as a functional language with side effects. Because of this it is possible to define the semantics using operational structural semantics.
+HCL follows a structural like pattern in most of it's functionality, excluding the high-order functionality present in the syntax.
+The semantics presented in this section should give any reader familiar with operational semantics the proper knowledge to fully understand the functionality of HCL.
+Now that the semantics of HCL have been defined, it is now relevant to define the type rules of HCL.
