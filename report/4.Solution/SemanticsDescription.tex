@@ -34,6 +34,9 @@ HCL allows for the use of ';' and '{\}n' for line endings.
 for simplicity, will the abstract syntax and rules in this section utilize ';' for line endings. 
 %...
 
+\subsection{Scoping of HCL}
+%...
+
 \subsection{Abstract Syntax}
 The abstract syntax will now be presented.
 For convenience, the following notational conventions will be followed throughout this section.
@@ -94,7 +97,7 @@ $Fcall ::= f | eOrL\ f\ eOrL^*$\\
 %...
 $L ::= \{\ S\ \} | \{\ S\ return\ e\ \} | \{\ S\ return\ S\ \} | \{\ S;\ e\ \}$\\
 %...
-$S ::= x = e | x = f | S_1;S_2 | b\ then\ L | L\ while\ b | list\ forEach\ L | p | Fcall | D_V | D_P | \epsilon$\\
+$S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | list\ forEach\ L | p | eOrL\ p\ eOrL^* | Fcall | D_V | D_P | \epsilon$\\
 %...
 $D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$\\
 $D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S | \epsilon$
@@ -420,6 +423,7 @@ $v$ is denoted $tpl$, and is on the form $((el \cup Lambda)~)$.
 The set of which it is an element of is denoted $Tupple$.
 The transition-system for $tupple_{exp}$ is $(tupple_{tupple_exp} \cup Tupple, \rightarrow_{tupple}, Tupple)$.
 The transitions are shown below.
+The reader should note that, since HCL is utilizing fully static scope rules, transitions for function calls needs more components to successfully enable recursive calling of function.
 
 \texttt{[$TplAt_{BSS}$]}\\
 \begin{center}
@@ -440,72 +444,106 @@ The transitions are shown below.
 	\texttt{ if } $\mathbb{TPL}[tpl] = v$
 \end{center}
 
-%\textbf{\Large{Function call Expression}}\\
-%Functions returns a value $v$, where $v$ is extracted from an expression literal.
-%The set of function call expression are a special case of expression, since they need to know the procedure environment $env_P$.
-%This is required since the call needs to know the expression after the return keyword.
-%The transition-system for functions is $(Fnames, \rightarrow_{f}, Lit)$.
+\subsection{Big-Step Semantic for Statements}
+Statements $Stm$ can change the change the store, because they can change the value of an existing variable.
+The transition-system for $stm$ is $(Stm\ X\ Sto\ X \cup Sto, \rightarrow_{stm}, Sto)$.
+Given the variable bindings $env_V$ and the procedure bindings $env_P$, the execution of the statement $S$ will 
+result in $sto$ changing to $sto'$.
 
-%\texttt{[$FncCall_{BSS}$]}\\
-%\begin{center}
-%	\begin{math}
-%		{env_V, sto}
-%		{env_V, env_P, sto \vdash eOrL\ f\ eOrL^* \rightarrow_{f} v}
-%	\end{math}
-%\end{center}
+This means that the transitions must be on the form.
 
-%\subsection{Big-Step Semantic for Statements}
-%Quick introduction.
-%\textbf{Assignment}\\
-%\begin{math}
-%	env_v,\ env_p \vdash \langle x := e, sto \rangle \rightarrow sto[l \mapsto v]\\
-%	\texttt{where } env_v,\ sto \vdash e \rightarrow_e v
-%	\texttt{ and } env_v\ x = l
-%\end{math}
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+\end{center}
 
-%\textbf{Sequence}\\
-%\begin{math}
-%	\cfrac
-%		{env_v,\ env_p \vdash \langle S_1,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle S_2,\ sto'' \rangle \rightarrow sto'}
-%		{env_v,\ env_p \vdash \langle S_1;S_2,\ sto \rangle \rightarrow sto'}
-%\end{math}
+The transitions are shown below.
 
-%\textbf{If-function-true}\\
-%\begin{math}
-%	\cfrac
-%		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'}
-%		{env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
-%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
-%\end{math}
-%%TODO: Explain that "{ S }" can be replaced with :f.
+\texttt{[$Ass_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle x = e, sto \rangle \rightarrow_{stm} sto[l \vdash v]}
+	\end{math}
+	
+	\texttt{ where } $env_V, sto \vdash e \rightarrow_e v$
+	\texttt{ and } $env_V\ x = l$
+\end{center}
 
-%\textbf{If-function-false}\\
-%\begin{math}
-%	env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto\\
-%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
-%\end{math}
+\texttt{[$Comp_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle S_1, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_P \vdash \langle S_2, sto'' \rangle \rightarrow_{stm} sto'}
+			{env_V, env_P \vdash \langle S_1; S_2, sto \rangle \rightarrow_{sto'}}
+	\end{math}
+\end{center}
 
-%\textbf{While-function-true}\\
-%\begin{math}
-%	\cfrac
-%		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle  b %\texttt{ whileTrue } \{\ S\ \} ,\ sto'' \rangle \rightarrow sto'}
-%		{env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \} ,\ sto \rangle \rightarrow sto'}\\
-%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
-%\end{math}
+\texttt{[$Then-True_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle L,sto \rangle \rightarrow_{stm} sto'}
+			{env_V, env_P \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b True$
+\end{center}
 
-%\textbf{While-function-false}\\
-%\begin{math}
-%	env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \},\ sto \rangle \rightarrow sto\\
-%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
-%\end{math}
+\texttt{[$Then-False_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, env_P \vdash \langle \epsilon,sto \rangle \rightarrow_{stm} sto}
+	{env_V, env_P \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} sto}
+	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b False$
+\end{center}
 
-%\textbf{Foreach-function}\\
-%\begin{math}
-%	\cfrac
-%		{env_v,\ env_p \vdash \langle T\ i := 0;\ i\ <\ (sizeof_{list} - 1) \texttt{ whileTrue } \{\ S;i := i + 1\ %\},\ sto \rangle \rightarrow sto'}
-%		{env_v,\ env_p \vdash \langle list \texttt{ forEach } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
-%		\texttt{where } sizeof_{list} = \text{number of elements in list}
-%\end{math}
+\texttt{[$While-False_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle L\ while\ b, sto \rangle \rightarrow_{stm} sto}
+	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b False$
+\end{center}
+
+\texttt{[$While-True_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle L, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_P \vdash \langle L\ while\ b, sto'' \rangle \rightarrow_{stm} sto'}
+			{env, env_P \vdash \langle L\ while\ b, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+\end{center}
+
+\texttt{[$ProcCall-NoParams_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_v'[x \vdash l][nest \vdash new\ l], env_P'[p \vdash (L, e, env_V', env_P')] \vdash \langle L, sto[l \vdash v] \rangle \rightarrow_{stm} sto'}
+			{env_v, env_P \vdash \langle p, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+	
+	\texttt{ where } $env_P\ p = (L, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and } $l = env_V\ next$
+\end{center}
+
+\texttt{[$ProcCall-Params_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_v'[x \vdash l][nest \vdash new\ l], env_P'[p \vdash (L, x\sim, e, env_V', env_P')] \vdash \langle L, sto[l \vdash v] \rangle \rightarrow_{stm} sto'}
+	{env_v, env_P \vdash \langle x\ p\ x\sim, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+	
+	\texttt{ where } $env_P\ p = (L, x\sim, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and } $l = env_V\ next$
+\end{center}
 
 \subsection{Big-Step Semantic for Variable Declarations}
 Variable declarations $Dcl_V$ can change the variable environment $Env_v$ by declaring new variables in $Var$.
@@ -566,7 +604,7 @@ The transitions are shown below.
 	\end{math}
 \end{center}
 
-\subsection{Procedure and Function Declarations}
+\subsection{Big-Step Semantics for Procedure and Function Declarations}
 Function declarations $Dcl_P$ can change the procedure environment $Env_P$ by declaring new functions in $Fnames$.
 
 The transition-system for $Dcl_P$ is ($Fnames \rightharpoonup Stm\ X\ Var\ X\ Exp\ X\ Env_V\ X\ Env_P$).
