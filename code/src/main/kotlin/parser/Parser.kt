@@ -13,9 +13,15 @@ import utils.IBufferedLaabStream
 
 open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
+    // Used for recursive calls
+    var currentFucntionName: String? = null
     override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
         // Add builtin functions
-        children.addAll(HclBuiltinFunctions.functions)
+        HclBuiltinFunctions.functions.forEach {
+            children.add(it)
+            enterSymbol(it.identifier.name, it.expression!!.type.type())
+        }
+
         // Parse
         while (hasNext()) {
             if (current.token != Token.SpecialChar.EndOfLine) {
@@ -105,10 +111,13 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val type = parseType(implicitAllowed = true)
         val identifier = acceptIdentifier()
 
-        if (tryAccept<Token.SpecialChar.Equals>()) {
+        return if (tryAccept<Token.SpecialChar.Equals>()) {
+            // Only valid if upcoming expression is a function
+            currentFucntionName = identifier.name
             val expression = parseExpression()
+            currentFucntionName = null
             if (type != AstNode.Type.Func.ImplicitFunc && type != AstNode.Type.Var && expression.type.type() != type)
-                unexpectedTypeError(type.toString(),expression.type.type().toString())
+                unexpectedTypeError(type.toString(), expression.type.type().toString())
 
             when (enterSymbol(identifier.name, expression.type.type())) {
                 EnterSymbolResult.OverloadAlreadyDeclared ->
@@ -118,7 +127,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 EnterSymbolResult.IdentifierAlreadyDeclared -> alreadyDeclaredException()
             }
 
-            return AstNode.Command.Declaration(expression.type.type(), identifier, expression)
+            AstNode.Command.Declaration(expression.type.type(), identifier, expression)
         } else {
             if (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)
                 error("Cannot declare implicit type without expression")
@@ -130,7 +139,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     alreadyDeclaredException()
             }
 
-            return AstNode.Command.Declaration(type, identifier, null)
+            AstNode.Command.Declaration(type, identifier, null)
         }
     }
 
@@ -201,8 +210,15 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         } else parseType(genericAllowed = true)
 
         flushNewLine(false)
-        val lambda = parseLambdaBody(parameters)
-        if (lambda.type != returnType) unexpectedReturnTypeError(returnType.toString(),lambda.type.toString())
+
+        // add recursive call if valid
+        val recCall = currentFucntionName?.let { listOf(AstNode.ParameterDeclaration(
+                AstNode.Type.Func.ExplicitFunc(parameters.map { it.type }, returnType),
+                AstNode.Command.Expression.Value.Identifier(it)))
+        } ?: listOf()
+
+        val lambda = parseLambdaBody(parameters + recCall)
+        if (lambda.type != returnType) unexpectedReturnTypeError(returnType.toString(), lambda.type.toString())
         return AstNode.Command.Expression.LambdaExpression(parameters, returnType, lambda.lambdaBody)
     }
 
