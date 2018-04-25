@@ -79,10 +79,10 @@ For the rest of this section, it will be assumed that functions exists with doma
 The abstract syntax of HCL can be seen below.
 
 $a ::= n | x | a_1+a_2 | a_1-a_2 | a_1*a_2 | a_1/a_2 | (a)$\\
-$b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1=a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not | (b)$\\
-$t ::= str| x | t_1 + t_2 | (t)$\\
-$list ::= lst | x | (list)$\\
-$tupple ::= tpl | x | (tupple)$\\
+$b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1==a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not | (b)$\\
+$t ::= str| x | t_1 + t_2 | t toString | (t)$\\
+$list ::= lst | x | list @ a | (list)$\\
+$tupple ::= tpl | x | tupple @ | (tupple)$\\
 $e ::= a | b | t | list | tupple | call$\\
 $D_v ::= T\ x\ :=\ e;\ D_v | T\ x;\ D_v | \epsilon$
 
@@ -173,7 +173,7 @@ The transitions can be seen below.
 	\end{math}
 	
 	
-	\texttt{where} $v = v_1 * v_2$
+	\texttt{where} $v = v_1 \cdot v_2$
 \end{center}
 
 \textbf{[$Div_{BSS}$]}\\
@@ -206,7 +206,7 @@ The transition can be seen below.
 	\begin{math}
 		\cfrac
 			{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-			{env_V,\ sto \vdash a_1 = a_2 \rightarrow_b True}
+			{env_V,\ sto \vdash a_1 == a_2 \rightarrow_b True}
 	\end{math}
 	
 	\texttt{ if } $v_1 = v_2$
@@ -217,7 +217,7 @@ The transition can be seen below.
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1 = a_2 \rightarrow_b False}
+	{env_V,\ sto \vdash a_1 == a_2 \rightarrow_b False}
 	\end{math}
 	
 	\texttt{ if } $v_1 \neq v_2$
@@ -337,10 +337,21 @@ Here $\Sigma$ is an arbitrary alphabet legal in the context.
 	\begin{math}
 	\cfrac
 		{env_V,\ sto \vdash t_1 \rightarrow_b v_1 \quad env_V,\ sto \vdash t_2 \rightarrow_b v_2}
-		{env_V,\ sto \vdash t \rightarrow_b v}
+		{env_V,\ sto \vdash t_1 + t_2 \rightarrow_b v}
 	\end{math}
 	
 	\texttt{ where } $v = v_1\ \circ\ v_2$
+\end{center}
+
+\texttt{[$TextToString_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, sto \vdash e \rightarrow_{e} v'}
+			{env_V, sto \vdash e\ toString \rightarrow_{t} v}
+	\end{math}
+	
+	\texttt{ where } $v = "v'"$
 \end{center}
 
 \textbf{[$TextLit_{BSS}$]}\\
@@ -355,13 +366,37 @@ Here $\Sigma$ is an arbitrary alphabet legal in the context.
 List expressions returns a value $v$, where $v$ consists of a sequence of expression values separated with commas, encapsulated in $[]$.
 $v$ is denoted $lst$, and is on the form $[(el \cup Lambda)~]$.
 The set of which it is an element of is denoted $Lit$.
-The transition-system for $list_{exp}$ is $(list_{exp} \cup List, \rightarrow_{list}, List)$.
-The single transition not yet handled is shown below.
+The transition-system for $list_{exp}$ is $(list_{exp} \cup List, \rightarrow_{list}, List \cup e)$.
+The transitions are shown below.
+The length transition returns a value $v$, where $v \in Z$.
+Even though this is an exception to the general description of a list expression, the transition has the same format as the rest of the transitions.
+
+\texttt{[$ListLength_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, sto \vdash num \rightarrow_{a} v}
+			{env_V, sto \vdash list\ length \rightarrow_{list} v}
+	\end{math}
+	
+	\texttt{ where } $num = |list|$
+\end{center}
+
+\texttt{[$ListAt_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash ls_v' \rightarrow_e v}
+			{env_V, sto \vdash list\ @\ a \rightarrow_{list} v}
+	\end{math}
+	
+	\texttt{ where } $ls_v'\ is\ the\ v'th\ element\ of\ list$
+\end{center}
 
 \textbf{[$ListLit_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-	env_V,\ sto \vdash lst \rightarrow_b v
+	env_V,\ sto \vdash lst \rightarrow_{list} v
 	\end{math}
 	\texttt{ if } $\mathbb{LST}[lst] = v$
 \end{center}
@@ -371,12 +406,23 @@ Tupple expressions returns a value $v$, where $v$ consists of a sequence of expr
 $v$ is denoted $tpl$, and is on the form $((el \cup Lambda)~)$.
 The set of which it is an element of is denoted $Tupple$.
 The transition-system for $tupple_{exp}$ is $(tupple_{tupple_exp} \cup Tupple, \rightarrow_{tupple}, Tupple)$.
-The single transition not yet handled is shown below.
+The transitions are shown below.
+
+\texttt{[$TplAt_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash tp_v' \rightarrow_e v}
+	{env_V, sto \vdash tupple\ @\ a \rightarrow_{tupple} v}
+	\end{math}
+	
+	\texttt{ where } $tp_v'\ is\ the\ v'th\ element\ of\ tupple$
+\end{center}
 
 \textbf{[$ListLit_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-	env_V,\ sto \vdash tpl \rightarrow_b v
+	env_V,\ sto \vdash tpl \rightarrow_{tupple} v
 	\end{math}
 	\texttt{ if } $\mathbb{TPL}[tpl] = v$
 \end{center}
@@ -496,7 +542,7 @@ The transitions are shown below.
 	\begin{math}
 	\cfrac
 		{\langle D_V,\ env_V[x \mapsto l][next \mapsto l'],\ sto[l \mapsto v] \rangle \rightarrow_{D_V} (env_V',\ sto')}
-		{\langle T\ x := e;\ D_V,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V',\ sto')}
+		{\langle T\ x = e;\ S,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V',\ sto')}
 	\end{math}
 	
 	\texttt{ where } $env_V,\ sto \vdash e \rightarrow_e v$
@@ -509,7 +555,7 @@ The transitions are shown below.
 	\begin{math}
 	\cfrac
 		{\langle D_v,\ env_v[x \mapsto l][next \mapsto l'],\ sto \rangle \rightarrow_{D_V} (env_v',\ sto)}
-		{\langle T\ x;\ D_v,\ env_v,\ sto \rangle \rightarrow_{D_V} (env_v',\ sto)}
+		{\langle T\ x;\ S,\ env_v,\ sto \rangle \rightarrow_{D_V} (env_v',\ sto)}
 	\end{math}
 	
 	\texttt{ where } $l = env_v\ next$
