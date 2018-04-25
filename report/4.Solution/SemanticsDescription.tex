@@ -29,6 +29,11 @@ For example; $S_1;S_2;S_3$ must be read as $S_1;(S_2;S_3)$.
 The components of this statement are $S_1$ and $S_2;S_3$.
 %...
 
+%...
+HCL allows for the use of ';' and '{\}n' for line endings.
+for simplicity, will the abstract syntax and rules in this section utilize ';' for line endings. 
+%...
+
 \subsection{Abstract Syntax}
 The abstract syntax will now be presented.
 For convenience, the following notational conventions will be followed throughout this section.
@@ -63,14 +68,13 @@ The syntax categories and meta-variables used in the semantic can be seen in tab
 			$L \in Lambda$		  & Lambda expression\\
 			$e \in Exp$			  & Expression\\
 			$el \in Lit$		  & Expression Literal\\
-			
-			$f \in Fnames$        & Function names\\
+			$p \in Pnames$        & Procedure names\\
 			$L \in Lambda$        & Statement Lambdas\\
 			$S \in Stm$           & Statement\\
-			
+			$f \in Fnames$ 		  & Function names\\
 			$D_V \in Dcl_V$		  & Variable declaration \\
 			
-			$T \in Type$          & Types \\
+			$T \in Type$          & Types
 		\end{tabular}
 	\end{table}
 \end{center}
@@ -80,11 +84,14 @@ The abstract syntax of HCL can be seen below.
 
 $a ::= n | x | a_1+a_2 | a_1-a_2 | a_1*a_2 | a_1/a_2 | (a)$\\
 $b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1==a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not | (b)$\\
-$t ::= str| x | t_1 + t_2 | t toString | (t)$\\
-$list ::= lst | x | list @ a | (list)$\\
-$tupple ::= tpl | x | tupple @ | (tupple)$\\
-$e ::= a | b | t | list | tupple | call$\\
-$D_v ::= T\ x\ :=\ e;\ D_v | T\ x;\ D_v | \epsilon$
+$t ::= str| x | t_1 + t_2 | t\ toString | (t)$\\
+$list ::= lst | x | list\ @\ a | (list)$\\
+$tupple ::= tpl | x | tupple\ @ | (tupple)$\\
+$e ::= a | b | t | list | tupple | call_{exp}$\\
+$f ::= f | eOrL\ f\ eOrL^*$\\
+$eOrL ::= e | L$\\
+$pOrf ::= f | p$\\
+$D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$
 
 \textbf{\large{Conventions}} \\
 For each variable $x$, an arbitrary variable-environment $env_V$ describes which address $adr$, $x$ is bound to.
@@ -427,101 +434,72 @@ The transitions are shown below.
 	\texttt{ if } $\mathbb{TPL}[tpl] = v$
 \end{center}
 
+%\textbf{\Large{Function call Expression}}\\
+%Functions returns a value $v$, where $v$ is extracted from an expression literal.
+%The set of function call expression are a special case of expression, since they need to know the procedure environment $env_P$.
+%This is required since the call needs to know the expression after the return keyword.
+%The transition-system for functions is $(Fnames, \rightarrow_{f}, Lit)$.
 
+%\texttt{[$FncCall_{BSS}$]}\\
+%\begin{center}
+%	\begin{math}
+%		{env_V, sto}
+%		{env_V, env_P, sto \vdash eOrL\ f\ eOrL^* \rightarrow_{f} v}
+%	\end{math}
+%\end{center}
 
-
-
-
-
-
-
-
-
-
-\subsection{Big-Step Semantic for Statements}
+%\subsection{Big-Step Semantic for Statements}
 %Quick introduction.
-\textbf{Assignment}\\
-\begin{math}
-	env_v,\ env_p \vdash \langle x := e, sto \rangle \rightarrow sto[l \mapsto v]\\
-	\texttt{where } env_v,\ sto \vdash e \rightarrow_e v
-	\texttt{ and } env_v\ x = l
-\end{math}
+%\textbf{Assignment}\\
+%\begin{math}
+%	env_v,\ env_p \vdash \langle x := e, sto \rangle \rightarrow sto[l \mapsto v]\\
+%	\texttt{where } env_v,\ sto \vdash e \rightarrow_e v
+%	\texttt{ and } env_v\ x = l
+%\end{math}
 
-\textbf{Sequence}\\
-\begin{math}
-	\cfrac
-		{env_v,\ env_p \vdash \langle S_1,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle S_2,\ sto'' \rangle \rightarrow sto'}
-		{env_v,\ env_p \vdash \langle S_1;S_2,\ sto \rangle \rightarrow sto'}
-\end{math}
+%\textbf{Sequence}\\
+%\begin{math}
+%	\cfrac
+%		{env_v,\ env_p \vdash \langle S_1,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle S_2,\ sto'' \rangle \rightarrow sto'}
+%		{env_v,\ env_p \vdash \langle S_1;S_2,\ sto \rangle \rightarrow sto'}
+%\end{math}
 
-\textbf{If-function-true}\\
-\begin{math}
-	\cfrac
-		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'}
-		{env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
-	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
-\end{math}
-%TODO: Explain that "{ S }" can be replaced with :f.
+%\textbf{If-function-true}\\
+%\begin{math}
+%	\cfrac
+%		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'}
+%		{env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
+%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
+%\end{math}
+%%TODO: Explain that "{ S }" can be replaced with :f.
 
-\textbf{If-function-false}\\
-\begin{math}
-	env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto\\
-	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
-\end{math}
+%\textbf{If-function-false}\\
+%\begin{math}
+%	env_v,\ env_p \vdash \langle b \texttt{ then } \{\ S\ \},\ sto \rangle \rightarrow sto\\
+%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
+%\end{math}
 
-\textbf{If-else-function-true}\\
-\begin{math}
-	\cfrac
-		{env_v,\ env_p \vdash \langle S_1,\ sto \rangle \rightarrow sto'}
-		{env_v,\ env_p \vdash \langle b \texttt{ thenElse } \{\ S_1\ \}\ \{\ S_2\ \},\ sto \rangle \rightarrow sto'}\\
-	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
-\end{math}
+%\textbf{While-function-true}\\
+%\begin{math}
+%	\cfrac
+%		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle  b %\texttt{ whileTrue } \{\ S\ \} ,\ sto'' \rangle \rightarrow sto'}
+%		{env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \} ,\ sto \rangle \rightarrow sto'}\\
+%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
+%\end{math}
 
-\textbf{If-else-function-false}\\
-\begin{math}
-	\cfrac
-		{env_v,\ env_p \vdash \langle S_2,\ sto \rangle \rightarrow sto'}
-		{env_v,\ env_p \vdash \langle b \texttt{ thenElse } \{\ S_1\ \}\ \{\ S_2\ \},\ sto \rangle \rightarrow sto'}\\
-	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
-\end{math}
+%\textbf{While-function-false}\\
+%\begin{math}
+%	env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \},\ sto \rangle \rightarrow sto\\
+%	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
+%\end{math}
 
-\textbf{While-function-true}\\
-\begin{math}
-	\cfrac
-		{env_v,\ env_p \vdash \langle S,\ sto \rangle \rightarrow sto'' \quad env_v,\ env_p \vdash \langle  b \texttt{ whileTrue } \{\ S\ \} ,\ sto'' \rangle \rightarrow sto'}
-		{env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \} ,\ sto \rangle \rightarrow sto'}\\
-	\texttt{if } env_v,\ sto \vdash b \rightarrow_b true
-\end{math}
-
-\textbf{While-function-false}\\
-\begin{math}
-	env_v,\ env_p \vdash \langle b \texttt{ whileTrue } \{\ S\ \},\ sto \rangle \rightarrow sto\\
-	\texttt{if } env_v,\ sto \vdash b \rightarrow_b false
-\end{math}
-
-\textbf{Foreach-function}\\
-\begin{math}
-	\cfrac
-		{env_v,\ env_p \vdash \langle T\ i := 0;\ i\ <\ (sizeof_{list} - 1) \texttt{ whileTrue } \{\ S;i := i + 1\ \},\ sto \rangle \rightarrow sto'}
-		{env_v,\ env_p \vdash \langle list \texttt{ forEach } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
-		\texttt{where } sizeof_{list} = \text{number of elements in list}
-\end{math}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%\textbf{Foreach-function}\\
+%\begin{math}
+%	\cfrac
+%		{env_v,\ env_p \vdash \langle T\ i := 0;\ i\ <\ (sizeof_{list} - 1) \texttt{ whileTrue } \{\ S;i := i + 1\ %\},\ sto \rangle \rightarrow sto'}
+%		{env_v,\ env_p \vdash \langle list \texttt{ forEach } \{\ S\ \},\ sto \rangle \rightarrow sto'}\\
+%		\texttt{where } sizeof_{list} = \text{number of elements in list}
+%\end{math}
 
 \subsection{Big-Step Semantic for Variable Declarations}
 Variable declarations $Dcl_V$ can change the variable environment $Env_v$ by declaring new variables in $Var$.
@@ -537,7 +515,7 @@ This means that the transitions must be on the form.
 
 The transitions are shown below.
 
-\textbf{[$Dcl_V Ass_{BSS}$]}\\
+\textbf{[$Dcl_VAssExp_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -550,7 +528,20 @@ The transitions are shown below.
 	\texttt{ and } $l' = new\ l$
 \end{center}
 
-\textbf{[$Dcl_V NoAss_{BSS}$]}\\
+\texttt{[$Dcl_VAssFnc_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{\langle D_V,\ env_V[x \mapsto l][next \mapsto l'],\ sto[l \mapsto v] \rangle \rightarrow_{D_V} (env_V',\ sto')}
+			{\langle T\ x = f;\ S,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V',\ sto')}		
+	\end{math}
+	
+	\texttt{ where } $env_V,\ sto \vdash f \rightarrow_{call_{exp}} v$
+	\texttt{ and } $l = env_V\ next$
+	\texttt{ and } $l' = new\ l$
+\end{center}
+
+\textbf{[$Dcl_VNoAss_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -562,40 +553,26 @@ The transitions are shown below.
 	\texttt{ and } $l' = new\ l$
 \end{center}
 
-\textbf{[$Dcl_V Empty_{BSS}$]}\\
+\textbf{[$Dcl_VEmpty_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\langle \epsilon,\ env_v,\ sto \rangle \rightarrow (env_v,\ sto)
 	\end{math}
 \end{center}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Big-Step Semantic for Function Declarations}
+%\subsection{Big-Step Semantic for Function Declarations}
 %Quick introduction.
-\textbf{Declaration and assignment}\\
-\begin{math}
-	\cfrac
-		{env_v \vdash \langle D_p,\ env_p[f \mapsto S] \rangle \rightarrow env_p'}
-		{env_v \vdash \langle T\ f := (p*): T\ \{\ S\ \};\ D_p,\ env_p \rangle \rightarrow env_p'} %p is parameter declaration
-\end{math}
+%\textbf{Declaration and assignment}\\
+%\begin{math}
+%	\cfrac
+%		{env_v \vdash \langle D_p,\ env_p[f \mapsto S] \rangle \rightarrow env_p'}
+%		{env_v \vdash \langle T\ f := (p*): T\ \{\ S\ \};\ D_p,\ env_p \rangle \rightarrow env_p'} %p is parameter %declaration
+%\end{math}
 
-\textbf{Empty declaration}\\
-\begin{math}
-env_v \vdash \langle \epsilon,\ env_p \rangle \rightarrow env_p
-\end{math}
+%\textbf{Empty declaration}\\
+%\begin{math}
+%env_v \vdash \langle \epsilon,\ env_p \rangle \rightarrow env_p
+%\end{math}
 
 
 
