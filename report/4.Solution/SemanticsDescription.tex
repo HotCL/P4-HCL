@@ -91,7 +91,8 @@ $e ::= a | b | t | list | tupple | call_{exp}$\\
 $f ::= f | eOrL\ f\ eOrL^*$\\
 $eOrL ::= e | L$\\
 $pOrf ::= f | p$\\
-$D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$
+$D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$\\
+$D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S | \epsilon$
 
 \textbf{\large{Conventions}} \\
 For each variable $x$, an arbitrary variable-environment $env_V$ describes which address $adr$, $x$ is bound to.
@@ -560,19 +561,50 @@ The transitions are shown below.
 	\end{math}
 \end{center}
 
-%\subsection{Big-Step Semantic for Function Declarations}
-%Quick introduction.
-%\textbf{Declaration and assignment}\\
-%\begin{math}
-%	\cfrac
-%		{env_v \vdash \langle D_p,\ env_p[f \mapsto S] \rangle \rightarrow env_p'}
-%		{env_v \vdash \langle T\ f := (p*): T\ \{\ S\ \};\ D_p,\ env_p \rangle \rightarrow env_p'} %p is parameter %declaration
-%\end{math}
+\subsection{Procedure and Function Declarations}
+Function declarations $Dcl_P$ can change the procedure environment $Env_P$ by declaring new functions in $Fnames$.
 
-%\textbf{Empty declaration}\\
-%\begin{math}
-%env_v \vdash \langle \epsilon,\ env_p \rangle \rightarrow env_p
-%\end{math}
+The transition-system for $Dcl_P$ is ($Fnames \rightharpoonup Stm\ X\ Var\ X\ Exp\ X\ Env_V\ X\ Env_P$).
+This means that the transitions must be on the form.
+
+\begin{center}
+	$\langle D_P, env_V, env_P \rangle \rightarrow_{D_P} (env_P)$
+\end{center}
+
+Procedures are functions with no return value and therefore are statements.
+Any function returning a value is an expression.
+For simplicity, all functions will be denoted f in the function declaration transitions.
+
+Declarations of functions must remember the expression directly following the return keyword, this is accomplished by binding the function in the procedure environment with this expression.
+This is not the case for procedures, since they do not return a value.
+The rules for procedures and functions are the same, except for the value $e$ being an expression in functions, it is $none$ in procedure rules.
+
+The transitions are shown below.
+
+\texttt{[$Dcl_PAss_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, e, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
+			{env_v \vdash \langle T\ f\ =\ ([T\ x]\sim):\ T\ L;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
+	\end{math}
+\end{center}
+
+\texttt{[$Dcl_PNoAss_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, e, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
+	{env_v \vdash \langle T\ f;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
+	\end{math}
+\end{center}
+
+\texttt{[$Dcl_Pempty_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V \vdash \langle \epsilon, env_P \rangle \rightarrow_{D_P}\ env_P'}
+	\end{math}
+\end{center}
 
 
 
