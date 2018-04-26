@@ -78,14 +78,12 @@ $list ::= lst | x | list\ @\ a | (list)$\\
 $tupple ::= tpl | x | tupple\ @\ a| (tupple)$\\
 $e ::= a | b | t | list | tupple | call_{exp}$\\
 $eOrL ::= e | L$\\
-%...
-$Fcall ::= f | eOrL\ f\ eOrL^*$\\
-%...
+$F_{call} ::= f | eOrL\ f\ eOrL^*$\\
+$F_{exp} ::= F_{call} |  pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S$\\
 $L ::= \{\ S\ \} | \{\ S\ return\ e\ \} | \{\ S\ return\ S\ \} | \{\ S;\ e\ \}$\\
-%...
-$S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | list\ forEach\ L | p | eOrL\ p\ eOrL^* | D_V | D_P | \epsilon$\\
+$S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | list\ forEach\ L | p | eOrL\ p\ eOrL^* | F_{exp} | D_V | D_P | \epsilon$\\
 $D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$\\
-$D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S | \epsilon$
+$D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S | \epsilon$
 
 \textbf{\large{Conventions}} \\
 For each variable $x$, an arbitrary variable-environment $env_V$ describes which address $adr$, $x$ is bound to.
@@ -638,23 +636,22 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, v, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
+			{env_V \vdash \langle L, env_P[f \vdash (L, x\sim, v, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
 			{env_v \vdash \langle T\ f\ =\ ([T\ x]\sim):\ T\ L;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
 	\end{math}
 	
 	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
 \end{center}
 
-%
 \texttt{[$Dcl_PNoAss_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
-	{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, v, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
+	{env_V \vdash \langle L, env_P[f \vdash (env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
 	{env_v \vdash \langle T\ f;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
 	\end{math}
 \end{center}
-%
+
 \texttt{[$Dcl_Pempty_{BSS}$]}\\
 \begin{center}
 	\begin{math}
