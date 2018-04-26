@@ -1,0 +1,60 @@
+%THIS SECTION IS SUPPOSED TO BE A SUBSECTION TO THE PARSER SECTION.
+%Should present the interface, which all symbol table implementations must implement.
+%Should clarify all considerations through the design process.
+\subsection{Symbol Table}
+\label{sec:symbolTable}
+In order for the parser to handle symbols and their types, a symbol table is needed to store symbol information.
+This allows the parser to do type checking.
+
+With this in mind, an explanation of the symbol table is explained in this section. 
+Firstly the considerations from which the symbol table was implemented, followed by an explaination of the implementation
+
+\textbf{Considerations}\\
+Scoping is handled with a stack data structure and the sub-symbol tables themselves are handled with a hash table data structure.
+This is not the only way to implement symbol tables.
+Instead of a stack data structure, the scope management could have been implemented using an attribute based data structure.
+
+Specifically the depth of the scope could be implemented as attribute of the symbol itself.
+By using indexing on the scope management data structure, the entire symbol table could have been implemented as one large table.
+However, by simply comparing the amount of code necessary to implement the single-table and the stack table implementations, it was apparent that the stack table implementation would be simpler to implement.
+
+The choice of using a hash table data structure for the sub-tables themselves was based upon the time complexity of the essential procedures.
+Insertion or retrieval in a hash table data structure can be performed in constant time, however as the parser will look through multiple scopes, retrieval is only constant time in the context of a singular scope.
+Retrieval is the method used most often, which means that the running time of the retrieval is most important, however that's not possible because of the above reasons. 
+It is, however, not an major issue as it is not expected that the user of HCL are going to use deep nested scopes, and therefore the running time shouldn't be affected massively.
+
+\textbf{Implementation}\\
+The interface consists of five functions as seen in snippet \ref{lis:STInterface}.
+
+\begin{lstlisting}[language=java,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
+interface ISymbolTable{
+	fun openScope()
+	fun closeScope()
+	fun enterSymbol(name: String, type: TreeNode.Type): EnterSymbolResult
+	fun retrieveSymbol(name: String): Symbol
+	fun declaredLocally(name: String): Boolean
+}
+\end{lstlisting}
+The interface, and implementations of it, are defined by opening and closing scopes as well as entering and retrieving symbols.
+
+When opening a scope, a new scope is added to the list, while the top scope is popped when running the $closeScope()$ method.
+
+\begin{lstlisting}[language=java,label=lis:STEnterSymbol,caption=A simplified version of the enterSymbol implementation.]
+override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
+	val entry = symbolTable.last[name]
+	return if (entry != null) {
+		if (entry.first() is ExplicitFunc && type is ExplicitFunc) {
+			checkFunctionIsAllowed(type, name).also { if (it == EnterSymbolResult.Success) entry.add(type) }
+		} else EnterSymbolResult.IdentifierAlreadyDeclared
+	} else {
+	// add new symbol
+	....
+	}
+}
+\end{lstlisting}
+
+The implementation of the $enterSymbol$ method, as shown in snippet \ref{lis:STEnterSymbol}, is the most complex one in the symbol table. 
+This is because when entering a new symbol it is relevant to make sure that the symbol doesn't already exist in the current scope.
+Scopes are further explained in section \ref{sec:scopeRules}.
+In the case of a function, it is possible to enter multiple symbols with the same name, as long as they have different parameter-type signatures. 
+Functions, however, have to have the same amount of parameters.

@@ -7,6 +7,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.15"
@@ -79,8 +80,8 @@ jacoco {
 }
 
 jacocoCoverage {
-    reportThreshold 0.5, BRANCH
-    reportThreshold 0.5, COMPLEXITY
+    reportThreshold 0.7, COMPLEXITY
+    reportThreshold 0.7, BRANCH
     reportThreshold 0.8
 }
 
@@ -88,7 +89,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             // TODO: Remove TreeNode exclusion from below once test has been created for the AST (Primarily used through parser tests)
-            fileTree(dir: it, exclude: ['**/Main*', '**/TreeNode*'])
+            fileTree(dir: it, exclude: ['**/Main*', '**/AstNode*','**/ExprResult*','**/LambdaBodyWithType*','**/exceptions/*'])
         })
     }
 }
@@ -123,6 +124,7 @@ mainClassName = 'MainKt'
 
 repositories {
     mavenCentral()
+    maven { url "http://dl.bintray.com/jetbrains/spek" }
 }
 
 sourceSets {
@@ -136,13 +138,20 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile 'com.natpryce:hamkrest:1.4.2.2'
 
+    testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+
+    testCompile 'org.jetbrains.spek:spek-api:1.1.5'
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    testRuntime('org.jetbrains.spek:spek-junit-platform-engine:1.1.5')
 
     // To use Log4J's LogManager
     testRuntime("org.apache.logging.log4j:log4j-core:${log4jVersion}")
     testRuntime("org.apache.logging.log4j:log4j-jul:${log4jVersion}")
+
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
 }
 
 compileKotlin {

@@ -2,7 +2,7 @@ package symbolTableTests
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import parser.TreeNode
+import parser.AstNode
 import parser.symboltable.Symbol
 
 class SymbolTest {
@@ -22,13 +22,13 @@ class SymbolTest {
 
     @Test
     fun testSymbolClassId() {
-        val symbol = Symbol(listOf(TreeNode.Type.Number()))
+        val symbol = Symbol(listOf(AstNode.Type.Number))
         assertTrue(!symbol.undeclared)
         assertTrue(symbol.isIdentifier)
         assertTrue(!symbol.isFunctions)
         symbol.handle(
                 { assertTrue(false) },
-                { id -> assertTrue(id is TreeNode.Type.Number) },
+                { id -> assertTrue(id == AstNode.Type.Number) },
                 { assertTrue(false) }
         )
     }
@@ -36,18 +36,18 @@ class SymbolTest {
     @Test
     fun testSymbolClassFunDeclarations() {
         val symbol = Symbol(listOf(
-                TreeNode.Type.Func(listOf(TreeNode.Type.Number()), TreeNode.Type.Number()),
-                TreeNode.Type.Func(listOf(TreeNode.Type.Text()), TreeNode.Type.Text())
+                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Number),
+                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Text), AstNode.Type.Text)
         ))
         assertTrue(!symbol.undeclared)
         assertTrue(!symbol.isIdentifier)
         assertTrue(symbol.isFunctions)
         symbol.handle(
                 { funDeclarations ->
-                    assertTrue(funDeclarations[0].paramTypes[0] is TreeNode.Type.Number)
-                    assertTrue(funDeclarations[0].returnType is TreeNode.Type.Number)
-                    assertTrue(funDeclarations[1].paramTypes[0] is TreeNode.Type.Text)
-                    assertTrue(funDeclarations[1].returnType is TreeNode.Type.Text)
+                    assertTrue(funDeclarations[0].paramTypes[0] == AstNode.Type.Number)
+                    assertTrue(funDeclarations[0].returnType == AstNode.Type.Number)
+                    assertTrue(funDeclarations[1].paramTypes[0] == AstNode.Type.Text)
+                    assertTrue(funDeclarations[1].returnType == AstNode.Type.Text)
                 },
                 { assertTrue(false) },
                 { assertTrue(false) }
