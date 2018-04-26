@@ -61,8 +61,8 @@ The syntax categories and meta-variables used in the semantic can be seen in tab
 			$L \in Lambda$        & Statement Lambdas\\
 			$S \in Stm$           & Statement\\
 			$f \in Fnames$ 		  & Function names\\
-			$D_V \in Dcl_V$		  & Variable declaration \\
-			
+			$D_V \in Dcl_V$		  & Variable declarations\\
+			$D_P \in Dcl_P$       & Function declarations\\
 			$T \in Type$          & Types
 		\end{tabular}
 	\end{table}
@@ -74,16 +74,16 @@ The abstract syntax of HCL can be seen below.
 $a ::= n | x | a_1+a_2 | a_1-a_2 | a_1*a_2 | a_1/a_2 | (a)$\\
 $b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1==a_2 | b_1\ and\ b_2 | b_1\ or\ b_2 | b\ not | (b)$\\
 $t ::= str| x | t_1 + t_2 | t\ toString | (t)$\\
-$list ::= lst | x | list\ @\ a | (list)$\\
+$list ::= lst | x | list\ length | list\ @\ a | (list)$\\
 $tupple ::= tpl | x | tupple\ @\ a| (tupple)$\\
-$e ::= a | b | t | list | tupple | call_{exp}$\\
+$e ::= a | b | t | list | tupple | F_{exp}$\\
+$pOrf ::= f | p$\\
 $eOrL ::= e | L$\\
-$F_{call} ::= f | eOrL\ f\ eOrL^*$\\
-$F_{exp} ::= F_{call} |  pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S$\\
+$F_{exp} ::= f | eOrL\ f\ eOrL^*$\\
 $L ::= \{\ S\ \} | \{\ S\ return\ e\ \} | \{\ S\ return\ S\ \} | \{\ S;\ e\ \}$\\
-$S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | list\ forEach\ L | p | eOrL\ p\ eOrL^* | F_{exp} | D_V | D_P | \epsilon$\\
+$S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | p | eOrL\ p\ eOrL^* | D_V | D_P | \epsilon$\\
 $D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$\\
-$D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S | \epsilon$
+$D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S | pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S | \epsilon$
 
 \textbf{\large{Conventions}} \\
 For each variable $x$, an arbitrary variable-environment $env_V$ describes which address $adr$, $x$ is bound to.
@@ -432,6 +432,7 @@ Statements $Stm$ can change the change the store, because they can change the va
 The transition-system for $stm$ is $(Stm\ X\ Sto\ X \cup Sto, \rightarrow_{stm}, Sto)$.
 Given the variable bindings $env_V$ and the procedure bindings $env_P$, the execution of the statement $S$ will 
 result in $sto$ changing to $sto'$.
+the formal parameters for the procedure calls in the transitions below, are denoted with $x$.
 
 This means that the transitions must be on the form.
 
@@ -498,8 +499,10 @@ The transitions are shown below.
 	\begin{math}
 		\cfrac
 			{env_V, env_P \vdash \langle L, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_P \vdash \langle L\ while\ b, sto'' \rangle \rightarrow_{stm} sto'}
-			{env, env_P \vdash \langle L\ while\ b, sto \rangle \rightarrow_{stm} sto'}
+			{env_V, env_P \vdash \langle L\ while\ b, sto \rangle \rightarrow_{stm} sto'}
 	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b True$
 \end{center}
 
 \texttt{[$ProcCall-NoParams_{BSS}$]}\\
@@ -551,6 +554,45 @@ The transitions are shown below.
 	\begin{math}
 		{env_V, env_P \vdash \langle \epsilon, sto \rangle \rightarrow_{stm} sto}
 	\end{math}
+\end{center}
+
+\subsection{Big-Step Semantics for function Expressions}
+Function expressions returns a value $v$, where $v \in Lit$.
+All function expressions are function calls.
+These are similar to procedure calls, except for the fact that function calls evaluates to a value.
+Since the parameters of a function, can be both expression and lambdas, it is necessary to have a transition for each of the two cases.
+since these two pair of rules would be almost identical, the formal parameters in the transitions below are denoted with $x$.
+The transition-system for $F_{exp}$ is ($Fnames\ X\ Dcl_P\ X Sto\ \cup Sto, \rightarrow_{F_{exp}}, Lit$).
+
+Which means that the transitions must be on the form.
+\begin{center}
+	$env_V, env_P, sto \vdash f \rightarrow_{exp} v$
+\end{center}
+The transitions are shown below.
+
+\texttt{[$FuncCall-NoParams_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_v'[x \vdash l][nest \vdash new\ l], env_P'[f \vdash (L, e, env_V', env_P')] \vdash \langle L, sto[l \vdash v] \rangle \rightarrow_{stm} v}
+	{env_v, sto \vdash f \rightarrow_{F_{exp}} v}
+	\end{math}
+	
+	\texttt{ where } $env_P\ f = (L, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and } $l = env_V\ next$
+\end{center}
+
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_v'[x \vdash l][nest \vdash new\ l], env_P'[f \vdash (L, x\sim, e, env_V', env_P')] \vdash \langle L, sto[l \vdash v] \rangle \rightarrow_{stm} sto'}
+	{env_v, sto \vdash x f x\sim \rightarrow_{F_{exp}} v}
+	\end{math}
+	
+	\texttt{ where } $env_P\ f = (L, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and } $l = env_V\ next$
 \end{center}
 
 \subsection{Big-Step Semantic for Variable Declarations}
@@ -650,6 +692,17 @@ The transitions are shown below.
 	{env_V \vdash \langle L, env_P[f \vdash (env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
 	{env_v \vdash \langle T\ f;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
 	\end{math}
+\end{center}
+
+\texttt{[$PreDcl_Ass_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V \vdash \langle L, env_P[f \vdash (L, x\sim, v, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
+	{env_v \vdash \langle f\ =\ ([T\ x]\sim):\ T\ L;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
+	\end{math}
+	
+	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
 \end{center}
 
 \texttt{[$Dcl_Pempty_{BSS}$]}\\
