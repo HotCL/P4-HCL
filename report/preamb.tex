@@ -79,12 +79,22 @@
 	morestring=[s]{"""*}{*"""},
 }
 
-%\lstdefinestyle{HCL}{language=hcl, frame, lr, rulecolor=\color{blue!80!black}}
-%\renewcommand{\lstlistingname}{Snippet}
-%\lstdefinelanguage{HCL}
-%{
-%	keywords{}
-%}
+\lstdefinestyle{HCL}{language=hcl, frame, lr, rulecolor=\color{blue!80!black}}
+\renewcommand{\lstlistingname}{Snippet}
+\lstdefinelanguage{HCL}
+{
+	keywords={true, false, return, return}, 
+	keywordstyle=\color{ForestGreen}\bfseries,
+	ndkeywords={txt, num, bool, tuple, list, func},
+	ndkeywordstyle=\color{BurntOrange}\bfseries,
+	emph={map, filter, reduce, print, add}, %add all included functions here
+	emphstyle={\color{RoyalBlue}},
+	identifierstyle=\color{Maroon},
+	sensitive=true,
+	commentstyle=\color{Gray}\ttfamily,
+	comment=[l]{\#},
+	stringstyle=\color{black}\ttfamily,	
+}
                                             
 \lstdefinestyle{CSharp}{language=[sharp]c, frame=lr, rulecolor=\color{blue!80!black}}
 
