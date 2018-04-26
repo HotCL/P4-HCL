@@ -76,11 +76,11 @@ $b ::= tf| x | a_1<a_2 | a_1>a_2 | a_1<=a_2| a_1>=a_2| a_1==a_2 | b_1\ and\ b_2 
 $t ::= str| x | t_1 + t_2 | t\ toString | (t)$\\
 $list ::= lst | x | list\ length | list\ @\ a | (list)$\\
 $tupple ::= tpl | x | tupple\ @\ a| (tupple)$\\
-$e ::= a | b | t | list | tupple | F_{exp}$\\
+$e ::= a | b | t | list | tupple | F_{exp} | L$\\
 $pOrf ::= f | p$\\
 $eOrL ::= e | L$\\
 $F_{exp} ::= f | eOrL\ f\ eOrL^*$\\
-$L ::= \{\ S\ \} | \{\ S\ return\ e\ \} | \{\ S\ return\ S\ \} | \{\ S;\ e\ \}$\\
+$L ::= \{\ S\ \} | \{\ S\ return\ e\ \} | \{\ S;\ e\ \}$\\
 $S ::= x = e | S_1;S_2 | b\ then\ L | L\ while\ b | p | eOrL\ p\ eOrL^* | D_V | D_P | \epsilon$\\
 $D_v ::= T\ x\ =\ e;\ S | T\ x\ = call_{exp};\ S | T\ x;\ D_v | \epsilon$\\
 $D_p ::= T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S |T\ pOrf;\ S | pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S | \epsilon$
@@ -710,6 +710,48 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		{env_V \vdash \langle \epsilon, env_P \rangle \rightarrow_{D_P}\ env_P'}
+	\end{math}
+\end{center}
+
+\subsection{Lambda Expression}
+Lambda expression in HCL can change only the store by binding a value $v$ to the address $adr$ of the lambda itself in the procedure environment.
+With the the given variable environment $env_V$ and procedure environment $env_P$ the execution of the statement $S$ will change the store $sto$ to $sto'$ and the expression $e$ will be evaluated to $v$.
+The transition-system for $L$ is ($Lambda\ X\ Env_V\ X\ Env_P, \rightarrow_L, sto \cup Lit$).
+The transitions must therefore be on the form.
+\begin{center}
+	$env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto'$
+\end{center}
+
+The transitions are shown below.
+
+\texttt{[$Lmb-ExpRetn_{BSS}$]}
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto', v}
+			{env_V, env_P \vdash \langle \{\ S\ return\ e \}, sto \rangle \rightarrow_L sto', v}
+	\end{math}
+	
+	\texttt{ where } $ env_V, sto' \rightarrow_e v$
+\end{center}
+
+\texttt{[$Lmb-ImpRetn_{BSS}$]}
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto', v}
+	{env_V, env_P \vdash \langle \{\ S\ e\ \}, sto \rangle \rightarrow_L sto', v}
+	\end{math}
+	
+	\texttt{ where } $ env_V, sto' \rightarrow_e v$
+\end{center}
+
+\texttt{[$Lmb-Noretn_{BSS}$]}
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto'}
+			{env_V, env_P \vdash \langle \{\ S\ \}, sto \rangle \rightarrow_L sto'}
 	\end{math}
 \end{center}
 
