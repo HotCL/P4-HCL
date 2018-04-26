@@ -617,7 +617,7 @@ The transitions are shown below.
 \subsection{Big-Step Semantics for Procedure and Function Declarations}
 Function declarations $Dcl_P$ can change the procedure environment $Env_P$ by declaring new functions in $Fnames$.
 
-The transition-system for $Dcl_P$ is ($Fnames \rightharpoonup Stm\ X\ Var\ X\ Exp\ X\ Env_V\ X\ Env_P$).
+The transition-system for $Dcl_P$ is ($Fnames \rightharpoonup Lambda\ X\ Var\ X\ Exp\ X\ Env_V\ X\ Env_P$).
 This means that the transitions must be on the form.
 
 \begin{center}
@@ -628,9 +628,9 @@ Procedures are functions with no return value and therefore are statements.
 Any function returning a value is an expression.
 For simplicity, all functions will be denoted f in the function declaration transitions.
 
-Declarations of functions must remember the expression directly following the return keyword, this is accomplished by binding the function in the procedure environment with this expression.
+Declarations of functions must remember the expression directly following the return keyword, this is accomplished by binding the function in the procedure environment with the value of this expression.
 This is not the case for procedures, since they do not return a value.
-The rules for procedures and functions are the same, except for the value $e$ being an expression in functions, it is $none$ in procedure rules.
+The rules for procedures and functions are the same, except for the value $v$ being $none$ in procedure rules.
 
 The transitions are shown below.
 
@@ -638,20 +638,23 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, e, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
+			{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, v, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
 			{env_v \vdash \langle T\ f\ =\ ([T\ x]\sim):\ T\ L;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
 	\end{math}
+	
+	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
 \end{center}
 
+%
 \texttt{[$Dcl_PNoAss_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
-	{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, e, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
+	{env_V \vdash \langle S, env_P[f \vdash (L, x\sim, v, env_V, env_P)] \rangle \rightarrow_{D_P} env_P'}
 	{env_v \vdash \langle T\ f;\ S,env_P \rangle \rightarrow_{D_P} env_P'}
 	\end{math}
 \end{center}
-
+%
 \texttt{[$Dcl_Pempty_{BSS}$]}\\
 \begin{center}
 	\begin{math}
