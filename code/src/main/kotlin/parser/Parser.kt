@@ -14,7 +14,7 @@ import utils.IBufferedLaabStream
 open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     // Used for recursive calls
-    var currentFucntionName: String? = null
+    private var currentFunctionName: String? = null
     override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
         // Add builtin functions
         HclBuiltinFunctions.functions.forEach {
@@ -113,9 +113,9 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
         return if (tryAccept<Token.SpecialChar.Equals>()) {
             // Only valid if upcoming expression is a function
-            currentFucntionName = identifier.name
+            currentFunctionName = identifier.name
             val expression = parseExpression()
-            currentFucntionName = null
+            currentFunctionName = null
             if (type != AstNode.Type.Func.ImplicitFunc && type != AstNode.Type.Var && expression.type.type() != type)
                 unexpectedTypeError(type.toString(), expression.type.type().toString())
 
@@ -212,7 +212,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         flushNewLine(false)
 
         // add recursive call if valid
-        val recCall = currentFucntionName?.let { listOf(AstNode.ParameterDeclaration(
+        val recCall = currentFunctionName?.let { listOf(AstNode.ParameterDeclaration(
                 AstNode.Type.Func.ExplicitFunc(parameters.map { it.type }, returnType),
                 AstNode.Command.Expression.Value.Identifier(it)))
         } ?: listOf()
