@@ -11,7 +11,6 @@ In conjunction to designing according to the English language and the interest i
 In an effort to accommodate these ideas, it was decided that almost all operations in HCL would be done using functions. 
 
 Since HCL is supposed to be used in correlation with the Arduino platform, it is necessary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account, which are explained in section \ref{arduinoC}.
-
 In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter, is established. 
 The code within this body is mapped to the Arduino's \textbf{\textit{loop}} function.
 Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the Arduino's \textbf{\textit{setup}} function.
@@ -20,7 +19,6 @@ The following is a rundown of the features and conventions of HCL's syntax, that
 
 \subsection{Types}
 HCL includes only three primitive types, numbers (\textbf{\textit{num}}), strings (\textbf{\textit{txt}}) and the boolean type (\textbf{\textit{bool}}).\\
-
 Numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
 Booleans are represented using \textbf{True} or \textbf{False}.
 
