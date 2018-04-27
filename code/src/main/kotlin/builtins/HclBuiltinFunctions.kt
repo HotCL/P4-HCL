@@ -2,13 +2,12 @@ package builtins
 
 import parser.AstNode
 import parser.AstNode.Type
-import kotlin.reflect.full.createInstance
 
 private data class Parameter(val identifier: String, val type: Type)
 
 object HclBuiltinFunctions {
     val functions =
-    // Operators
+            // Operators
             listOf(
                     buildOperatorNumNumToNum("+"),
                     buildOperatorNumNumToNum("plus", "+"),
@@ -33,7 +32,13 @@ object HclBuiltinFunctions {
             listOf(
                     buildThenFunction(),
                     buildWhileFunction(),
-                    buildGetLengthFunction()
+                    buildGetListLengthFunction()
+            ) +
+            // Standard functions
+            listOf(
+                    buildToStringFunction<Type.Number>(),
+                    buildToStringFunction<Type.Text>(), //Redundant, but no reason for compiler to throw an error
+                    buildToStringFunction<Type.Bool>()
             )
 }
 
@@ -53,6 +58,7 @@ private fun buildOperatorTxtTxtToTxt(functionName: String, operator: String = fu
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
         buildOperator<Type.Bool, Type.Bool, Type.Bool>(functionName, operator)
 
+//"Prefix" means it will be prefixed in C++, but postfixed in HCL
 private inline fun<reified P, reified R> buildPrefixOperator(functionName: String, operator: String = functionName)
         where P : Type, R : Type = buildFunction(
         identifier = functionName,
@@ -84,17 +90,17 @@ private inline fun<reified P: Type> buildToStringFunction() = buildFunction(
                 Parameter("input", P::class.objectInstance!!)
         ),
         returnType = Type.Bool,
-        body = "return input;", //TODO Fix this to it actually returns a string!
+        body = "String(input);", //This only works for Arduino, not standard C++
         inLine = false
 )
 
-private fun buildGetLengthFunction() = buildFunction(
+private fun buildGetListLengthFunction() = buildFunction(
         identifier = "length",
         parameters = listOf(
-                Parameter("list", Type.List(Type.Number)) //TODO Somehow make this generic
+                Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
         returnType = Type.Number,
-        body = "return list.size();", //TODO Make sure the List class has a size() function
+        body = "return list.size();",
         inLine = true
 )
 
