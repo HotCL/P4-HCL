@@ -27,11 +27,11 @@ public:
         delete[] data;
     }
 
-    static inline List create_list(T* elements, unsigned int amount_of_elements) {
+    static inline List create(T *elements, unsigned int amount_of_elements) {
         return std::shared_ptr<ConstList<T>>(new ConstList(elements, amount_of_elements));
     }
 
-    static inline List create_list_from_copy(T* elements, unsigned int amount_of_elements) {
+    static inline List create_from_copy(T *elements, unsigned int amount_of_elements) {
         auto * ret = new ConstList(amount_of_elements);
         for (int i = 0; i < amount_of_elements; i++) {
             ret->data[i] = elements[i];
@@ -39,7 +39,7 @@ public:
         return std::shared_ptr<ConstList<T>>(ret);
     }
 
-    static List concat_list(List & l1, List & l2) {
+    static List concat(List &l1, List &l2) {
         auto * ret = new ConstList(l1.get()->size + l2.get()->size);
         memcpy(ret->data, l1.get()->data, l1.get()->size * sizeof(T));
         memcpy(ret->data + l1.get()->size, l2.get()->data, l2.get()->size * sizeof(T));

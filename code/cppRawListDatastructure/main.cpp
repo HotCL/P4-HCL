@@ -5,20 +5,20 @@
 
 ConstList<int>::List get_list_1() {
     int elements[] = {2, 4, 6, 8, 10, 12, 14, 16};
-    auto list = ConstList<int>::create_list(elements, 8);
+    auto list = ConstList<int>::create(elements, 8);
     return list;
 }
 
 ConstList<int>::List get_list_2() {
     int elements[] = {4, 8, 12, 16, 20};
-    auto list = ConstList<int>::create_list(elements, 5);
+    auto list = ConstList<int>::create(elements, 5);
     return list;
 }
 
 ConstList<int>::List do_list_concat() {
     auto l1 = get_list_1();
     auto l2 = get_list_2();
-    auto l3 = ConstList<int>::concat_list(l1, l2);
+    auto l3 = ConstList<int>::concat(l1, l2);
     return l3;
 }
 
@@ -26,7 +26,7 @@ ConstList<ConstList<int>::List>::List get_list_of_lists() {
     auto l1 = get_list_1();
     auto l2 = get_list_2();
     ConstList<int>::List l3_elements[] = {l1, l2};
-    auto l3 = ConstList<ConstList<int>::List>::create_list_from_copy(l3_elements, 2);
+    auto l3 = ConstList<ConstList<int>::List>::create_from_copy(l3_elements, 2);
     return l3;
 }
 
