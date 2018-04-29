@@ -1,10 +1,10 @@
 package generation.cpp
 
-import generation.ValidNameGenerator
+import generation.IValidNameTranslator
 import parser.AstNode
 
 
-class CppNameGenerator : ValidNameGenerator{
+class CppNameTranslator : IValidNameTranslator{
     override fun getValidIdentifierName(node: AstNode.Command.Expression.Value.Identifier): String {
         return node.getValidName()
 

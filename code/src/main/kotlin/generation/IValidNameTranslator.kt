@@ -5,7 +5,7 @@ import parser.AstNode
 /**
  * Takes a given node and generates the appropriate value in the output language.
  */
-interface ValidNameGenerator{
+interface IValidNameTranslator{
 
     /**
      * Get a valid, in context of output language identifier name from the given identifier.

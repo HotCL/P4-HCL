@@ -14,7 +14,7 @@ import kotlin.coroutines.experimental.buildSequence
 fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<List<Token>> =
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
-                println("Test for cpp:\n " + formatTokens(actual))
+                println("Test for code:\n " + formatTokens(actual))
                 val actualAst = Parser(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
@@ -30,7 +30,7 @@ fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<Lis
 fun matchesAstWithActualLexer(expected: String): Matcher<String> =
         object : Matcher<String> {
             override fun invoke(actual: String): MatchResult {
-                println("Test for cpp: \n$actual")
+                println("Test for code: \n$actual")
                 val actualAst = Parser(Lexer(actual)).generateAbstractSyntaxTree()
                 val actualAstString = SourceCodePrinter().generate(actualAst)
                 return if (actualAstString == expected) MatchResult.Match
