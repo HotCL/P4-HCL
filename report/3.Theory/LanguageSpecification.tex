@@ -1,41 +1,42 @@
 \section{Syntax Specification}
-This section will describe HCL designed for this project.
-It will also explain the functionality and features.
+This section describes HCL's syntax.
+It also explains the functionality and features.
 
-During the problem analysis, it was decided that HCL, would be designed to be used as a preliminary introduction to programming.
-HCL should reflect this decision, by being useful, approachable and easy to understand for users that might not know programming and programming fundamentals.
+HCL is designed to be used as a preliminary introduction to programming.
+HCL reflects this design choice by being approachable and easy to understand by novices.
 
-It was decided that the syntax of HCL should reflect the English language to some extend.
+In order to make HCL accessible, its syntax reflects the English language to some extent.
 The idea of drawing inspiration from the English language is supposed to give the users of HCL an easier time expressing what they want the code to do, giving HCL an almost pseudo-code like syntax.
-In conjunction to designing according to the English language and the interest in utilizing high-order functions, HCL's design also draws inspiration from the functional programming paradigm.
-In an effort to accommodate these ideas, it was decided that almost all operations in HCL would be done using functions. 
+In conjunction with designing according to the English language and utilizing high-order functions, HCL's design also draws inspiration from the functional programming paradigm.
+In an effort to accommodate these ideas, almost all operations in HCL are done using functions. 
 
-Since HCL is supposed to be used in correlation with the Arduino platform, it is necessary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account, which are explained in section \ref{arduinoC}.
-In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter, is established. 
-The code within this body is mapped to the Arduino's \textbf{\textit{loop}} function.
+Since HCL is supposed to be used on the Arduino platform, it is necessary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account. 
+These are explained in section \ref{arduinoC}.
+In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter.
+The \textbf{\textit{loop}} function loops consecutively.
 Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the Arduino's \textbf{\textit{setup}} function.
 
-The following is a rundown of the features and conventions of HCL's syntax, that is planned for implementation:
+The following is a rundown of the features and conventions of HCL's syntax.
 
 \subsection{Types}
 HCL includes only three primitive types, numbers (\textbf{\textit{num}}), strings (\textbf{\textit{txt}}) and the boolean type (\textbf{\textit{bool}}).\\
 Numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
 Booleans are represented using \textbf{True} or \textbf{False}.
 
-The collection types of HCL are \textbf{\textit{tuples}} and \textbf{\textit{lists}} where:\\
+The collection types of HCL are \textbf{\textit{tuples}} and \textbf{\textit{lists}} where, 
 \textbf{\textit{tuples}} are structures composed of multiple types and \textbf{\textit{lists}} are collections of a single type.
-Dictionaries, which are collections of key-value pairs, are deemed NTH and are not planned for implementation. 
+Dictionaries are a staple in modern languages, they are not deemed necessary for the scope of this "first specification" of HCL.
 
 HCL also includes the type \textbf{\textit{func}} which in some languages, particularly C\#, is known as the \textbf{\textit{lambda}} type.
 Also included is the type \textbf{\textit{none}} which in some languages, particularly C\# and Java, is known as the \textbf{\textit{void}} type. 
 
 \textbf{Type Declaration}\\
-Types can be declared in a few different ways, as it was found during the preliminary interviews that users might be interested in declaring types both explicitly and implicitly.
-Therefore, types can be declared using the keyword \textbf{\textit{var}} (short for \textbf{variable\textit{}}) prefixed to an assignment(line 1).
-Declarations can also be explicit by prefixing the type of the variable before an assignment(line 2), or by prefixing the type before the variable without an assignment(line 3).
+Types can be declared in a few different ways, as the preliminary interviews indicate that users might be interested in declaring types both explicitly and implicitly.
+Therefore, types can be declared using the keyword \textbf{\textit{var}} (short for \textbf{variable\textit{}}) prefixed to an assignment, listing \ref{lis:typedcls}, line 1.
+Declarations can also be explicit by prefixing the type of the variable before an assignment, listing \ref{lis:typedcls}, line 2, or by prefixing the type before the variable without an assignment, listing \ref{lis:typedcls}, line 3.
 The three methods of declaration are seen in snippet below.
 A  \textbf{\textit{num}} example is also shown.
-\begin{lstlisting}
+\begin{lstlisting}[label=lis:typedcls]
 var x = 5
 num y = 10
 txt s = "string"
@@ -47,17 +48,17 @@ HCL uses static typing, meaning that type-checking is done at compile time.
 
 \subsection{Operators}
 Most of the operators in HCL are defined as functions.
-This means that all arithmetic operators are infix-functions that take two numbers as parameters. 
-The only operators that remain operators are the assign-operator (\textbf{=}) and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
+This means that all arithmetic operators are infix-functions, which has expressions as parameters. 
+The only operators that remain operators are the assign-operator and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
-Not having operators for arithmetic operations also means that there are no native operator precedence in HCL.
-This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses.
+Not having operators for arithmetic operations also means that there is no native operator precedence in HCL.
+This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses, since parentheses has higher precedence than operators.
 
 \subsection{Functions}
 \textbf{Function Declaration}\\
 The type of a function's parameters, as well as its return type, are explicitly declared when a function is defined. 
 The declaration is structured as an assignment, where the functions name is declared on the left-hand-side, prefixed by either \textbf{\textit{var}} or \textbf{\textit{func}}. 
-The parameters of the function is declared on the right-hand-side inside parentheses, followed by a colon (\textbf{\textit{:}}), which declares the return type. 
+The parameters of the function is declared on the right-hand-side, inside parentheses, followed by a colon, which declares the return type. 
 
 An example function that adds two numbers together and returns the value is shown below:
 \begin{lstlisting}
@@ -74,7 +75,7 @@ func[num,num,none] addNumbers = (num a, num b): num {
 
 The return statement is noticeably missing in the first function.
 \texttt{return} is optional if the function body only contains a single expression. 
-This makes sense when using lambdas, where return statements are often implicit. 
+This makes sense when using lambdas, where return statements are often implicit, in modern programming languages. 
 If the function contains more than one expression \texttt{return} has to be explicit.
 
 \textbf{Grammar for declarations}\\
@@ -88,7 +89,9 @@ The \texttt{<DclValue>} non-terminal refers to both \texttt{<Expr>} (expression)
 
 \textbf{Function Calls}\\
 In order to better reflect the English language, function calls are structured in a way where the first parameter to a function is written before the function call itself.
+This first parameter  will be referred to as the prefix parameter. 
 All subsequent parameters are written after the function call and are delimited by the use of white-spacing and can be optionally grouped inside parentheses.
+These subsequent parameters will be referred to as the postfix parameters.
 Lambdas can be used as parameters by encapsulation with curly-brackets. 
 
 Below is an example of function calls where the program prints a name from a list:
@@ -98,7 +101,7 @@ The \textbf{where} function in this example returns an entry in the list based o
 \end{lstlisting}
 
 \textbf{Grammar for function calls}\\
-Function calls are done with infix notation, meaning that if a given method is defined with parameters, the first argument has to appear before the function identifier, while all remaining arguments must appear after, in sequence.
+Function calls are done with infix notation, meaning that if a given function is defined with parameters, the first argument has to appear before the function identifier, while all remaining arguments must appear after, in sequence.
 
 The following examples showcase this:
 \begin{itemize}
@@ -106,7 +109,7 @@ The following examples showcase this:
 	\item \texttt{"Hello World !!" print}
 	\item \texttt{"Hello" printWords "World" "!!"}
 \end{itemize}
-With this in mind, the grammar for function calls has been specified as follows:
+With this in mind, the grammar for function calls is specified as follows:
 \begin{align*}
 	\texttt{<FunctionCall>}\to & \texttt{ identifier}\\
 	| & \texttt{ <FunCallParam> identifier [<FunCallParams>]}
@@ -114,25 +117,19 @@ With this in mind, the grammar for function calls has been specified as follows:
 As it is not allowed to have parameters on the right-hand side of the identifier without also having one on the left-hand side, this rule cannot accurately be described with only one production.
 
 The first production shows how the function is called if it has no parameters.
-The second production shows that if the function has parameters, there must always be exactly one parameter on the left-hand side of the identifier, and optionally a sequence of parameters on the right-hand side.
+The second production shows that if the function has parameters, there must always be exactly one parameter on the left-hand side of the identifier, and optionally an ordered following of parameters on the right-hand side.
 
 The non-terminal \texttt{<FunCallParam>} refers to any legal parameter for function calls, including identifiers, literals, lambda expressions, and other function calls.
 
-The non-terminal \texttt{<FunCallParams>} refers to a sequence of at least one \texttt{<FunCallParam>}, optionally enclosed in parentheses.
+The non-terminal \texttt{<FunCallParams>} refers to at least one \texttt{<FunCallParam>}, optionally enclosed in parentheses.
 
 \textbf{Loops}\\
 Loops in HCL are structured around iterations on lists.
 Loops are created using either of the predefined functions \textbf{\textit{foreach}} or \textbf{\textit{do}} that takes a \textbf{\textit{list}} as its first parameter and \textbf{\textit{func}} as its second parameter.
 When creating ranges the predefined \textbf{\textit{to}} function, that returns a list, can be used. 
 
-Following is a small example that prints numbers using the \textbf{\textit{do}} function:
-\begin{lstlisting}
-1 to 10 do {value print}
-\end{lstlisting}
-There are no equivalent functions to the \textbf{\textit{while}} loop structure in HCL, as all looping will be done using iterations.
-
 \textbf{High order functions}\\
-As mentioned in section \ref{subsec:hofhcl}, HCL will include high-order functionality. 
+As mentioned in section \ref{subsec:hofhcl}, HCL includes high-order functionality. 
 To declare that a function will accept other functions, the developer should simply declare a parameter of type \textit{func} with the expected input and output types explicitly stated from the function.
 
 Both predeclared functions and anonymous in-line functions can be passed as parameters. 
@@ -155,8 +152,9 @@ var times2 = (num v): num { v * 2 }
 \end{lstlisting}
 
 \textbf{Overloading}\\
-HCL will include function overloading. 
-This means that multiple functions can share the same name and have different implementations based on the different parameters that the function accepts. 
+HCL supports function overloading. 
+This means that multiple functions can share the same name and have different implementations based on the different parameters that the function accepts.
+
 An example could be the plus function. 
 The plus function could accept two numbers or two strings, but the implementation of the plus function would depend on the type.
 If two numbers were passed, the obvious result is the sum of the two numbers.
@@ -164,10 +162,10 @@ If, on the other hand, two strings were passed, the function could be implemente
 
 Function overloading in HCL is limited in that functions can not be overloaded with the same parameters but different return types. 
 Functions can only be overloaded to return different types, if the types of the parameters vary.
-Furthermore overloading with different amounts of parameters is not possible in HCL.
+Furthermore, overloading with different amounts of parameters is not possible in HCL.
 This is because of multiple reasons, one being simplicity for the user, not accidentally adding an unexpected parameter to a function call. 
 Another being simplicity in the parsing of the function parameters. 
-Since the ability to overload with different amount of parameters brings next to nothing to HCL, it was decided that it was not worth the effort to implement.
+Since the ability to overload with different amount of parameters brings next to nothing to HCL, it is deemed not worth the effort to implement.
 Should it be necessary to overload functions with varying lengths of input-parameters, it can be done utilizing tuples or lists.
 
 Function overloading requires nothing special of the user, simply declare two functions with the same amount of parameters, but with different types. 
@@ -190,12 +188,12 @@ For instance, printing;
 The print function should be able to print all basic types, so that the user does not have to worry about the type of what he is about to print.
 
 \subsection{Generics}
-HCL will include simple generics.
+HCL includes simple generics.
 Generics are used to add abstraction to types, and handle the type generically.
 With HCL being a language with a great focus on high order functions, this functionality becomes a must have.
-This is due to some of the fundamental high order functions, like the map function.
-Recall that the map function is a function that takes a list with elements of an arbitrary type along with a modifier function and returns the mapped value of each element in the list.
-In essence this means given an element of type T1 have a function that maps the element to an element of type T2.
+This is due to some of the fundamental higher-order functions, like the map function.
+
+This section will use the map function, as mentioned in section \ref{txt:mapHorder}, to exemplify how generics are used in HCL
 
 In theory this problem could be solved with overloading. 
 However, this would require overloading of a lot of functions with all the possible types within HCL. 
@@ -210,5 +208,5 @@ var map = (list[T1] elementsToMap, func[T1, T2] mapFunction): list[T2] {
 }
 \end{lstlisting}
 
-Generic types in the above example is T1 and T2. 
+Generic types in the above example are T1 and T2. 
 Since nothing type specific ever happens with these types, they can all be handled the same way, whether they are strings, numbers or any other type.
