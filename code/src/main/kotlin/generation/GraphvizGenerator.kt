@@ -10,8 +10,8 @@ import parser.AstNode.Type
  * https://graphviz.gitlab.io/
  */
 
-class GraphvizPrinter : IPrinter {
-    override fun generateOutput(ast: AbstractSyntaxTree): String =
+class GraphvizGenerator : IPrinter {
+    override fun generate(ast: AbstractSyntaxTree): String =
             "graph \"test\" {\n"+toLabel(0,"program")+ast.children.visit(0)+"}"
 
     private var lastId = 1
