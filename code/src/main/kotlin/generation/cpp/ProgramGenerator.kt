@@ -10,8 +10,8 @@ import java.io.File
  */
 class ProgramGenerator : IFilesPrinter {
     override fun generate(ast: AbstractSyntaxTree): List<FilePair> =  listOf(
-                FilePair("types.h",TypeGenerator().generate(ast)),
-                FilePair("behaviour.c",CodeGenerator().generate(ast)),
-                FilePair("builtin.c",TODO("save builtin to resources so it can be loaded here."))
+                FilePair("types.h", TypeGenerator().generate(ast)),
+                FilePair("behaviour.c", CodeGenerator().generate(ast)),
+                FilePair("builtin.c", TODO("save builtin to resources so it can be loaded here."))
                 )
 }
