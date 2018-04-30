@@ -4,7 +4,7 @@ In the following section, the parser implementation details will be touched upon
 
 Due to the nature of HCL, the parser can be implemented as a single pass parser. 
 This is because the user may not access any variables that has not yet been declared. 
-Furthermore, as HCL is a LL(K) language, it was decided that the parser should be a LL(K) recursive descent parser.
+As HCL is a LL(K) language, an LL(k) recursive decent parser is a reasonable choice
 
 Both syntactical and contextual analysis is done within the parser. 
 This means that there is no additional post parser type-checking or contextual analysis step. 

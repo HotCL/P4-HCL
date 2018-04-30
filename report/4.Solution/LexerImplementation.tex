@@ -4,7 +4,7 @@ As described in section \ref{LexerChoice}, it was decided that the lexer would b
 As mentioned in section \ref{langsOfCompiler}, the compiler for HCL will be written in Kotlin.
 Below is an explanation of the implementation of the lexer.
 
-The lexer is comprised of 3 different classes: the \textit{Token} class, the \textit{PositionalToken} class and the \textit{Lexer} class.
+The lexer is composed of 3 different classes: the \textit{Token} class, the \textit{PositionalToken} class and the \textit{Lexer} class.
 
 The \textit{Token} class simply specifies the type of a token. 
 It is implemented as a Sealed class. 
@@ -37,8 +37,9 @@ The \textit{Lexer} class implements the \textit{ILexer} interface.
 class Lexer(private val inputContent: String) : ILexer {
 \end{lstlisting}
 
-The \textit{ILexer} defines a \textit{getTokenSequence} function, which will give the token sequence, and an \textit{inputLine} function.
-The \textit{getTokenSequence} function will split the string input.
+The \textit{ILexer} defines a \textit{getTokenSequence} function, which gives the token sequence, and an \textit{inputLine} function.
+The \textit{getTokenSequence} function splits the string input.
+
 \begin{lstlisting}[language=Kotlin,label=lis:LexerStringSplit,caption=The string is being split and new lines are added to the string .,firstnumber=8]
 override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
 	val currentString = StringBuilder()
@@ -51,7 +52,7 @@ override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
 			}
 	with(currentString.toString()) {
 \end{lstlisting}		
-It will then match the characters to either a type, a boolean value, a special character, an identifier or a number literal.
+It then matches the characters to either a type, a boolean value, a special character, an identifier or a number literal.
 If this is not possible, it can be assumed that the split string, meaning the current line, is done.
 \begin{lstlisting}[language=Kotlin,label=lis:LexerStringMatcher,caption=The split string is being matched to a token,firstnumber=19]
 
