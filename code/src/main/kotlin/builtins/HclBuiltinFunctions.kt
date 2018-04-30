@@ -35,9 +35,9 @@ object HclBuiltinFunctions {
             ) +
             // Standard functions
             listOf(
-                    buildToStringFunction<Type.Number>(),
-                    buildToStringFunction<Type.Text>(), //Redundant, but no reason for compiler to throw an error
-                    buildToStringFunction<Type.Bool>(),
+                    buildArduinoToStringFunction<Type.Number>(),
+                    buildArduinoToStringFunction<Type.Text>(), //Redundant, but no reason for compiler to throw an error
+                    buildArduinoToStringFunction<Type.Bool>(),
                     buildGetListSizeFunction()
             )
 }
@@ -81,7 +81,7 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
 //endregion buildOperator_functions
 
 //region builtInFunctions
-private inline fun<reified P: Type> buildToStringFunction() = buildFunction(
+private inline fun<reified P: Type> buildArduinoToStringFunction() = buildFunction(
         identifier = "toString",
         parameters = listOf(
                 Parameter("input", P::class.objectInstance!!)
