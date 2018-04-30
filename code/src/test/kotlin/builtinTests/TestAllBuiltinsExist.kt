@@ -25,10 +25,10 @@ object TestAllBuiltinsExist : Spek({
                 "&&",
                 "||",
                 "negated",
-                "toString",
+                "toText",
                 "then",
                 "while",
-                "size"
+                "length"
         )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {

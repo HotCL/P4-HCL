@@ -35,10 +35,10 @@ object HclBuiltinFunctions {
             ) +
             // Standard functions
             listOf(
-                    buildArduinoToStringFunction<Type.Number>(),
-                    buildArduinoToStringFunction<Type.Text>(), //Redundant, but no reason for compiler to throw an error
-                    buildArduinoToStringFunction<Type.Bool>(),
-                    buildGetListSizeFunction()
+                    buildNumberToTextFunction(),
+                    buildTextToTextFunction(), //Redundant, but no reason for compiler to throw an error
+                    buildBoolToTextFunction(),
+                    buildGetListLengthFunction()
             )
 }
 
@@ -81,23 +81,46 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
 //endregion buildOperator_functions
 
 //region builtInFunctions
-private inline fun<reified P: Type> buildArduinoToStringFunction() = buildFunction(
-        identifier = "toString",
+private fun buildNumberToTextFunction() = buildFunction(
+        identifier = "toText",
         parameters = listOf(
-                Parameter("input", P::class.objectInstance!!)
+                Parameter("input", Type.Number)
         ),
         returnType = Type.Bool,
-        body = "String(input);", //This only works for Arduino, not standard C++
+        body = "char result[20] = \"\";" +
+               "sprintf(result, \"%.4f\", input);" + //sprintf() apparently isn't very good, but it should work for now
+               "return result;",
         inLine = false
 )
 
-private fun buildGetListSizeFunction() = buildFunction(
-        identifier = "size",
+private fun buildBoolToTextFunction() = buildFunction(
+        identifier = "toText",
+        parameters = listOf(
+                Parameter("input", Type.Bool)
+        ),
+        returnType = Type.Bool,
+        body = "if (input) return \"True\";" +
+               "else return \"False\";",
+        inLine = false
+)
+
+private fun buildTextToTextFunction() = buildFunction(
+        identifier = "toText",
+        parameters = listOf(
+                Parameter("input", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return input;",
+        inLine = false
+)
+
+private fun buildGetListLengthFunction() = buildFunction(
+        identifier = "length",
         parameters = listOf(
                 Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
         returnType = Type.Number,
-        body = "return list.size();",
+        body = "return list.length();",
         inLine = true
 )
 
