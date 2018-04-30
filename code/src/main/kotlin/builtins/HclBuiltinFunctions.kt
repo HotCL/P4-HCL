@@ -26,8 +26,6 @@ object HclBuiltinFunctions {
                     buildOperatorBoolBoolToBool("&&"),
                     buildOperatorBoolBoolToBool("||"),
 
-                    buildOperatorTxtTxtToTxt("+"),
-
                     buildPrefixOperator<Type.Bool, Type.Bool>("negated", "!")
             ) +
             // Control structures
@@ -53,9 +51,6 @@ private fun buildOperatorNumNumToBool(functionName: String, operator: String = f
 
 private fun buildOperatorTxtTxtToBool(functionName: String, operator: String = functionName) =
         buildOperator<Type.Text, Type.Text, Type.Bool>(functionName, operator)
-
-private fun buildOperatorTxtTxtToTxt(functionName: String, operator: String = functionName) =
-        buildOperator<Type.Text, Type.Text, Type.Text>(functionName, operator)
 
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
         buildOperator<Type.Bool, Type.Bool, Type.Bool>(functionName, operator)
