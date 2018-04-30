@@ -12,7 +12,24 @@ import kotlin.test.assertTrue
 object TestAllBuiltinsExist : Spek({
     given("HCL Builtin functions") {
         val ast = Parser(DummyLexer(listOf())).generateAbstractSyntaxTree()
-        val expectedBuiltinFunctions = listOf("+", "plus", "-", "/", "*")
+        val expectedBuiltinFunctions = listOf(
+                "+",
+                "plus",
+                "-",
+                "/",
+                "*",
+                "==",
+                "!=",
+                "<",
+                ">",
+                "&&",
+                "||",
+                "negated",
+                "toText",
+                "then",
+                "while",
+                "length"
+        )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {
                 assertTrue {
