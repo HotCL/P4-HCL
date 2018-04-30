@@ -40,7 +40,7 @@ object HclBuiltinFunctions {
                     buildToStringFunction<Type.Number>(),
                     buildToStringFunction<Type.Text>(), //Redundant, but no reason for compiler to throw an error
                     buildToStringFunction<Type.Bool>(),
-                    buildGetListLengthFunction()
+                    buildGetListSizeFunction()
             )
 }
 
@@ -96,8 +96,8 @@ private inline fun<reified P: Type> buildToStringFunction() = buildFunction(
         inLine = false
 )
 
-private fun buildGetListLengthFunction() = buildFunction(
-        identifier = "length",
+private fun buildGetListSizeFunction() = buildFunction(
+        identifier = "size",
         parameters = listOf(
                 Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
