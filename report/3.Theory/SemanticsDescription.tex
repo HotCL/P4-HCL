@@ -9,19 +9,19 @@ For the sake of easing the reading of this section, semicolons used in semantic 
 For example; $S_1;S_2;S_3$ must be read as $S_1;(S_2;S_3)$.
 The components of this statement are $S_1$ and $S_2;S_3$.
 The notation used to formalize the semantics of HCL in the following section will be operational structural semantics.
-All build-in functionality of HCL will have a defined semantic at the end of this section.
+All build-in functionality of HCL have defined semantics.
 All transitions are written using Big-Step semantics, BSS for short.
-The Environment-store-model will be used to describe how the state of variables and procedures are bound.
-HCL allows for the use of ';' and '{\}n' for line endings.
-for simplicity, will the abstract syntax and rules in this section utilize ';' for line endings. 
+The Environment-store-model is used to describe how the state of variables and procedures are bound.
+HCL allows for the use of ';' and '{\textbackslash}n' for line endings.
+for simplicity, the abstract syntax and rules in this section utilize ';' for line endings. 
 
 \subsection{Scoping of HCL}
 The scope rules of a language determines which variable environment and procedure environment are being accessed, when using the name of a variable or function name.
-Since the semantics of HCL will be stated using operational structural semantics, the scope rule can be shown by simple accessing the environment required by the scope rules.
+Since the semantics of HCL is stated using operational structural semantics, the scope rule can be shown by simply accessing the environment required by the scope rules.
 The scope rules of HCL are fully static.
 This means that the bindings accessed when using variable or functions names, will be the ones that were bound when the variable or function was declared.
 The reader should note that, since HCL is utilizing fully static scope rules, transitions for function calls needs special components to successfully enable recursive calling of function.
-In other words, when make a recursive call in HCL the bindings of the procedure environment will be dynamic.
+In other words, when making a recursive call in HCL, the bindings of the procedure environment will be dynamic.
 
 \subsection{Abstract Syntax}
 The abstract syntax will now be presented.
@@ -35,9 +35,9 @@ In the rest of the section $t1, .
  .
   tn$ with $t^*$ ($t^+$ in the non-empty case).
 
-The syntax categories and meta-variables used in the semantic can be seen in table \ref{tab:metaVarab}. 
+The syntax categories and meta-variables used in the semantic can be seen in table \ref{tab:metaVar}. 
 \begin{center}
-	\begin{table}[ht]
+	\begin{table}[H]
 		\centering
 		\caption{The syntax categories and meta-variables used in the operational semantics of HCL}
 		\label{tab:metaVar}
@@ -61,6 +61,8 @@ The syntax categories and meta-variables used in the semantic can be seen in tab
 			$L \in Lambda$        & Statement Lambdas\\
 			$S \in Stm$           & Statement\\
 			$f \in Fnames$ 		  & Function names\\
+			$pOrf\ \in f \cup p$  & Either p or f\\
+			$eOrL\ \in e \cup L$  & Either e or L\\
 			$D_V \in Dcl_V$		  & Variable declarations\\
 			$D_P \in Dcl_P$       & Function declarations\\
 			$T \in Type$          & Types
@@ -68,7 +70,7 @@ The syntax categories and meta-variables used in the semantic can be seen in tab
 	\end{table}
 \end{center}
 
-For the rest of this section, it will be assumed that functions exists with domains equal to the sets of literals associated with the various expressions' syntax categories, and with co-domains equal to the values extracted from those literals.
+For the rest of this section, it will be assumed that functions exist with domains equal to the sets of literals associated with the various expressions' syntax categories, and with co-domains equal to the values extracted from those literals.
 The abstract syntax of HCL can be seen below.
 
 $a\ ::=\ n\ |\ x\ |\ a_1+a_2\ |\ a_1-a_2\ |\ a_1*a_2\ |\ a_1/a_2\ |\ (a)$\\
@@ -77,8 +79,6 @@ $t\ ::=\ str\ |\ x\ |\ t_1+t_2\ |\ t\ toString\ |\ (t)$\\
 $list\ ::=\ lst\ |\ x\ |\ list\ length\ |\ list\ @\ a\ |\ (list)$\\
 $tuple\ ::=\ tpl\ |\ x\ |\ tuple\ @\ a\ |\ (tuple)$\\
 $e\ ::=\ a\ |\ b\ |\ t\ |\ list\ |\ tuple\ |\ F_{exp}\ | L$\\
-$pOrf\ ::=\ f\ |\ p$\\
-$eOrL\ ::=\ e\ |\ L$\\
 $F_{exp}\ ::=\ f\ |\ eOrL\ f\ eOrL^*$\\
 $L\ ::= \{\ S\ \}\ |\ \{\ S\ return\ e\ \}\ |\ \{\ S;\ e\ \}$\\
 $S\ ::=\ x\ =\ e\ |\ S_1;S_2\ |\ b\ then\ L\ |\ L\ while\ b\ |\ p\ |\ eOrL\ p\ eOrL^*\ |\ D_V\ |\ D_P\ |\ \epsilon$\\
@@ -109,7 +109,7 @@ This means that every transition of expressions must be on the form.
 
 \subsection{Big-Step Semantic for Expressions}
 An expression is any syntactic component that evaluates to a value.
-In HCL most expressions behave the same, but a few transition-systems uses special notation.
+In HCL most semantic rules of expressions are denoted the same, but a few transition-systems uses special notation.
 When this is the case, it will be made apparent before that transition-system.
 
 \textbf{\large{General Rules for Expressions}} \\
@@ -136,7 +136,7 @@ To avoid the possibility of cluttering the section, these rules are described be
 \end{center}
 
 \textbf{\large{Arithmetic Expressions}}\\
-Arithmetic expressions returns a value $v$, where $v \in \mathbb{R}$ or $v \in \mathbb{R}$.
+Arithmetic expressions returns a value $v$, where $v \in \mathbb{R}$.
 The transitions-system for $A_{exp}$ is $(A_{exp} \cup D, \rightarrow_a, D)$, 
 where $D = \mathbb{Z} \cup \mathbb{R}$.
 The transitions can be seen below.
@@ -200,6 +200,8 @@ The transitions can be seen below.
 \textbf{\large{Boolean Expressions}}\\
 Boolean expressions returns a value $v$, where $v \in \{True, False\}$.
 The transition-system for $B_{exp}$ is $(B_{exp} \cup \{True, False,\} \rightarrow_b, \{True, False\})$.
+
+Since HCL do not have any means of referencing an address, all comparisons will be done by comparing the values of the arguments.
 The transition can be seen below.
 
 \textbf{[$EqualTrue_{BSS}$]}\\
@@ -347,6 +349,7 @@ The transition can be seen below.
 
 \textbf{\large{Text Expressions}}\\
 Text Expressions returns a value $v$, where $v$ is a sequence of characters from an arbitrary alphabet enclosed in $"$, abbreviated $str$.
+The default alphabet of HCL is $utf-8-mb4$.
 In other words, $v$ is a string.
 The transition-system for $Txt_{exp}$ is $(Txt_{exp} \cup \{\Sigma^*\},\ \rightarrow_t, \{\Sigma^*\})$.
 Here $\Sigma$ is an arbitrary alphabet legal in the context.
@@ -383,7 +386,7 @@ Here $\Sigma$ is an arbitrary alphabet legal in the context.
 
 \textbf{\Large{List Expressions}}\\
 List expressions returns a value $v$, where $v$ consists of a sequence of expression values separated with commas, encapsulated in $[\ ]$.
-$v$ is denoted $lst$, and is on the form $[(el \cup Lambda)~]$.
+$v$ is denoted $lst$, and is on the form $[(el \cup Lambda)\textasciitilde]$.
 The set of which it is an element of is denoted $Lit$.
 The transition-system for $list_{exp}$ is $(list_{exp} \cup List, \rightarrow_{list}, List \cup e)$.
 The transitions are shown below.
@@ -422,7 +425,7 @@ Even though this is an exception to the general description of a list expression
 
 \textbf{\Large{Tuple Expressions}}\\
 Tuple expressions returns a value $v$, where $v$ consists of a sequence of expression values separated with commas, encapsulated in $()$.
-$v$ is denoted $tpl$, and is on the form $((el \cup Lambda)~)$.
+$v$ is denoted $tpl$, and is on the form $((el \cup Lambda)\textasciitilde)$.
 The set of which it is an element of is denoted $Tuple$.
 The transition-system for $tuple_{exp}$ is $(tuple_{tuple_exp} \cup Tuple, \rightarrow_{tuple}, Tuple)$.
 The transitions are shown below.
@@ -447,8 +450,8 @@ The transitions are shown below.
 \end{center}
 
 \subsection{Big-Step Semantic for Statements}
-Statements $Stm$ can change the change the store, because they can change the value of an existing variable.
-The transition-system for $stm$ is $(Stm\ X\ Sto\ X \cup Sto, \rightarrow_{stm}, Sto)$.
+Statements $Stm$ can change the store, because they can change the value of an existing variable.
+The transition-system for $stm$ is $(Stm\ \Cross\ Sto\ \cup Sto, \rightarrow_{stm}, Sto)$.
 Given the variable bindings $env_V$ and the procedure bindings $env_P$, the execution of the statement $S$ will 
 result in $sto$ changing to $sto'$.
 the formal parameters for the procedure calls in the transitions below, are denoted with $x$.
@@ -461,6 +464,7 @@ This means that the transitions must be on the form.
 	\end{math}
 \end{center}
 
+The reader should note that procedures are functions with no return value and therefore are statements.
 The transitions are shown below.
 
 \texttt{[$Ass_{BSS}$]}\\
@@ -562,7 +566,7 @@ All function expressions are function calls.
 These are similar to procedure calls, except for the fact that function calls evaluates to a value.
 Since the parameters of a function, can be both expression and lambdas, it is necessary to have a transition for each of the two cases.
 since these two pair of rules would be almost identical, the formal parameters in the transitions below are denoted with $x$.
-The transition-system for $F_{exp}$ is ($Fnames\ X\ Dcl_P\ X Sto\ \cup Sto, \rightarrow_{F_{exp}}, Lit$).
+The transition-system for $F_{exp}$ is ($Fnames\ \Cross\ Dcl_P\ \Cross Sto\ \cup Sto, \rightarrow_{F_{exp}}, Lit$).
 
 Which means that the transitions must be on the form.
 \begin{center}
@@ -582,11 +586,12 @@ The transitions are shown below.
 	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
 \end{center}
 
+\texttt{[$FuncCall-Params_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
 	{env_v'[x \mapsto l][nest \mapsto new\ l], env_P'[f \mapsto (L, x\sim, e, env_V', env_P')] \vdash \langle L, sto[l \mapsto v] \rangle \rightarrow_{stm} sto'}
-	{env_v, sto \vdash x f x\sim \rightarrow_{F_{exp}} v}
+	{env_v, sto \vdash x\ f\ x\sim \rightarrow_{F_{exp}} v}
 	\end{math}
 	
 	\texttt{ where } $env_P\ f = (L, e, env_V', env_P')$\\
@@ -598,7 +603,7 @@ The transitions are shown below.
 Variable declarations $Dcl_V$ can change the variable environment $Env_v$ by declaring new variables in $Var$.
 They can also change the store by binding variables to new addresses.
 
-The transition-system for $Dcl_V$ is ($(Dcl_V\ X\ Env_V\ X\ Sto) \cup Env_V\ X\ Sto, \rightarrow_{D_{V}}, Env_V\ X\ Sto$).
+The transition-system for $Dcl_V$ is ($(Dcl_V\ \Cross\ Env_V\ \Cross\ Sto) \cup Env_V\ \Cross\ Sto, \rightarrow_{D_{V}}, Env_V\ \Cross\ Sto$).
 
 This means that the transitions must be on the form.
 
@@ -650,14 +655,13 @@ The transitions are shown below.
 \subsection{Big-Step Semantics for Procedure and Function Declarations}
 Function declarations $Dcl_P$ can change the procedure environment $Env_P$ by declaring new functions in $Fnames$.
 
-The transition-system for $Dcl_P$ is ($Fnames \rightharpoonup Lambda\ X\ Var\ X\ Exp\ X\ Env_V\ X\ Env_P$).
+The transition-system for $Dcl_P$ is ($Fnames \rightharpoonup Lambda\ \Cross\ Var\ \Cross\ Exp\ \Cross\ Env_V\ \Cross\ Env_P$).
 This means that the transitions must be on the form.
 
 \begin{center}
 	$\langle D_P, env_V, env_P \rangle \rightarrow_{D_P} (env_P)$
 \end{center}
 
-Procedures are functions with no return value and therefore are statements.
 Any function returning a value is an expression.
 For simplicity, all functions will be denoted f in the function declaration transitions.
 
@@ -701,8 +705,8 @@ The transitions are shown below.
 
 \subsection{Lambda Expression}
 Lambda expression in HCL can change only the store by binding a value $v$ to the address $adr$ of the lambda itself in the procedure environment.
-With the the given variable environment $env_V$ and procedure environment $env_P$ the execution of the statement $S$ will change the store $sto$ to $sto'$ and the expression $e$ will be evaluated to $v$.
-The transition-system for $L$ is ($Lambda\ X\ Env_V\ X\ Env_P, \rightarrow_L, sto \cup Lit$).
+With the given variable environment $env_V$ and procedure environment $env_P$ the execution of the statement $S$ will change the store $sto$ to $sto'$ and the expression $e$ will be evaluated to $v$.
+The transition-system for $L$ is ($Lambda\ \Cross\ Env_V\ \Cross\ Env_P, \rightarrow_L, sto \cup Lit$).
 The transitions must therefore be on the form.
 \begin{center}
 	$env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto'$
