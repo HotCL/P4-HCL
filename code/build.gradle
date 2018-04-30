@@ -80,7 +80,7 @@ jacoco {
 }
 
 jacocoCoverage {
-    reportThreshold 0.7, COMPLEXITY
+    reportThreshold 0.65, COMPLEXITY
     reportThreshold 0.7, BRANCH
     reportThreshold 0.8
 }
