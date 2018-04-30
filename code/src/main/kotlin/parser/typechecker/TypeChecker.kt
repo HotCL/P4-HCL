@@ -46,7 +46,7 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
                 ExprResult.UndeclaredIdentifier
             else {
                 val returnType =
-                        if(functionDeclaration.returnType !is AstNode.Type.GenericType) functionDeclaration.returnType
+                        if (functionDeclaration.returnType !is AstNode.Type.GenericType) functionDeclaration.returnType
                         else (functionDeclaration.paramTypes.zip(argumentTypes).
                                 getTypeFromGenericType(functionDeclaration.returnType.name)
                                 ?: functionDeclaration.returnType)
@@ -66,13 +66,13 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
     override fun List<AstNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<AstNode.Type>):
             AstNode.Type.Func.ExplicitFunc? {
-        val genericTypes = mutableMapOf<String,AstNode.Type>()
+        val genericTypes = mutableMapOf<String, AstNode.Type>()
 
         return this.firstOrNull{
             it.paramTypes.zip(types).all{
-                if(it.first == it.second)
+                if (it.first == it.second)
                 {
-                    if(it.first is AstNode.Type.GenericType)
+                    if (it.first is AstNode.Type.GenericType)
                         TODO("throw ambigous type error")
                     true
                 }
@@ -85,14 +85,14 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
      * Pair = declaredType and argumentType
      * It is certain that argumentType doesn't contain any generics. This is a rule of the language
      */
-    private fun List<Pair<AstNode.Type,AstNode.Type>>.getTypeFromGenericType(typeName:String) : AstNode.Type? =
+    private fun List<Pair<AstNode.Type, AstNode.Type>>.getTypeFromGenericType(typeName: String) : AstNode.Type? =
             map { it.getTypeFromGenericType(typeName) }.firstOrNull { it != null }
 
-    private fun Pair<AstNode.Type,AstNode.Type>.getTypeFromGenericType(typeName:String) : AstNode.Type? {
+    private fun Pair<AstNode.Type, AstNode.Type>.getTypeFromGenericType(typeName: String) : AstNode.Type? {
 
         val declaredType = first
         val argumentType = second
-        return when(declaredType){
+        return when(declaredType) {
             is AstNode.Type.GenericType ->
                 if(declaredType.name == typeName) argumentType
                 else null
@@ -103,8 +103,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             // expecting count to be the same, as matchGenerics should be run before using getTypeFromGenericType
             is AstNode.Type.Func.ExplicitFunc ->
                     declaredType.paramTypes.zip((argumentType as AstNode.Type.Func.ExplicitFunc).paramTypes).
-                            getTypeFromGenericType(typeName)
-
+                            getTypeFromGenericType(typeName) ?:
+                    Pair(declaredType.returnType, argumentType.returnType).getTypeFromGenericType(typeName)
 
             // expecting count to be the same, as matchGenerics should be run before using getTypeFromGenericType
             is AstNode.Type.Tuple ->
@@ -118,11 +118,11 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     /**
      * Pair = declaredType and argumentType
      */
-    private fun Pair<AstNode.Type,AstNode.Type>.matchGenerics(genericTypes:MutableMap<String,AstNode.Type>): Boolean{
+    private fun Pair<AstNode.Type, AstNode.Type>.matchGenerics(genericTypes: MutableMap<String, AstNode.Type>): Boolean{
         val declaredType = first
         val argumentType = second
 
-        return when(declaredType){
+        return when(declaredType) {
 
             is AstNode.Type.List ->
                 if(argumentType is AstNode.Type.List)
@@ -132,7 +132,7 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             is AstNode.Type.Func.ExplicitFunc ->
                 if(argumentType is AstNode.Type.Func.ExplicitFunc &&
                         declaredType.paramTypes.count() == argumentType.paramTypes.count())
-                    Pair(declaredType.returnType,argumentType.returnType).matchGenerics(genericTypes) &&
+                    Pair(declaredType.returnType, argumentType.returnType).matchGenerics(genericTypes) &&
                             declaredType.paramTypes.zip(argumentType.paramTypes).all{ it.matchGenerics(genericTypes) }
                 else false
 
@@ -152,7 +152,6 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
                 }
                 else declaredType == argumentType
             }
-
         }
     }
 

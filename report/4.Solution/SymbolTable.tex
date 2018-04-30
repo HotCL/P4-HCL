@@ -25,7 +25,7 @@ It is, however, not an major issue as it is not expected that the user of HCL wi
 \textbf{Implementation}\\
 The interface consists of five methods as seen in snippet \ref{lis:STInterface}.
 
-\begin{lstlisting}[language=java,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
+\begin{lstlisting}[language=Kotlin,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
 interface ISymbolTable{
 	fun openScope()
 	fun closeScope()
@@ -38,7 +38,7 @@ The interface, and implementations of it, are defined by opening and closing sco
 
 When opening a scope, a new scope is added to the stack, while the top scope is popped when running the $closeScope()$ method.
 
-\begin{lstlisting}[language=java,label=lis:STEnterSymbol,caption=A simplified version of the enterSymbol implementation.]
+\begin{lstlisting}[language=Kotlin,label=lis:STEnterSymbol,caption=A simplified version of the enterSymbol implementation.]
 override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
 	val entry = symbolTable.last[name]
 	return if (entry != null) {
