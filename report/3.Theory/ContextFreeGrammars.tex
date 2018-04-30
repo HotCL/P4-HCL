@@ -2,9 +2,9 @@
 %The commented-out section is the section deemed as extraneous for the report.
 \section{Context-free Grammar of HCL}
 \label{CFGdescription}
-In the following section, a method to describe the production rules of the CFG for HCL will be chosen.
+The following section contains a method to describe the production rules of the CFG for HCL.
 Two notational methods for describing production rules are typically used, Backus-Naur Form and Extended Backus-Naur form. 
-Both of these will be touched upon in this section.
+Both of these appear in this section.
 
 \textbf{Backus-Naur Form} (BNF) is a method for visualizing the production rules of a Context-free grammar (CFG).
 Below is an example of such a production rule.
@@ -18,7 +18,7 @@ Below is an example of such a production rule.
 All non-terminals are presented using PascalCase in angle brackets.
 Terminals are presented using camelCase.
 Non-terminals can be rewritten to one of the strings on right-hand side of the production rule.
-A "|" symbol indicates that there is more than one production rule on the right-hand side.
+Option between multiple production rules is indicated with a "|" symbol.
 
 \textbf{Extended BNF} (EBNF) is another way to visualize the production rules of a CFG.
 It is designed to be more concise than BNF.
@@ -40,4 +40,4 @@ The grammar for sentences can be written in EBNF as:
 	\texttt{<Sentence>}\to & \texttt{ \{word\} \$}
 \end{align*}
 
-The grammar of HCL has been described using EBNF, and has been included in the appendix (Appendix \ref{AppendixEBNF}).
+The grammar of HCL is described using EBNF, and is included in appendix \ref{AppendixEBNF}.
