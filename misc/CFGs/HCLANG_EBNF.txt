@@ -28,7 +28,7 @@ something:    1 occurrence of something
                 | var
 
 <TypeGenerics> -> <Type>
-                | id
+                | identifier
 
 <TypeNoneAndGenerics> -> <TypeGenerics>
                        | none
@@ -44,7 +44,7 @@ something:    1 occurrence of something
         | <Value>
 
 <Value> -> <Literal>
-         | id
+         | identifier
 
 <Values> -> <Value> [separator <Values>]
 
@@ -63,7 +63,7 @@ something:    1 occurrence of something
 
 <Dcl> -> <TypeImplicit> id [equals <DclVal>]
 
-<Ass> -> id equals <DclVal>
+<Ass> -> identifier equals <DclVal>
 
 <LambdaExpr> -> parenStart [<FunDclParams>] parenEnd colon <TypeNoneAndGenerics> {linebreak} <LambdaBody>
 
@@ -73,7 +73,7 @@ something:    1 occurrence of something
 
 <FunDclParam> -> <TypeListGenerics> id
 
-<FunCall> -> id
+<FunCall> -> identifier
            | <Arg> id {<Arg>}
 
 <Arg> -> <Value>
