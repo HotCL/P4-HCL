@@ -8,7 +8,7 @@ import parser.AstNode.Type
  * Outputs in the syntax of the source language, HCL.
  */
 class SourceCodePrinter : IPrinter {
-    override fun generateOutput(ast: AbstractSyntaxTree) = ast.children.format()
+    override fun generate(ast: AbstractSyntaxTree) = ast.children.format()
 
     private fun List<Command>.format(): String = "${joinToString("\n") { it.format() }}\n"
 

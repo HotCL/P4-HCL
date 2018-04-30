@@ -6,9 +6,9 @@ import parser.AbstractSyntaxTree
 /**
  * The interface for generating text/code from an Abstract Syntax Trees.
  */
-interface IPrinter {
+interface IFilesPrinter {
     /**
-     * Generates the output to a given language
+     * Generates the output to a given
      */
-    fun generate(ast : AbstractSyntaxTree) : String
+    fun generate(ast : AbstractSyntaxTree) : List<FilePair>
 }
