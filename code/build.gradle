@@ -80,6 +80,7 @@ jacoco {
 }
 
 jacocoCoverage {
+    // Set to 0.7 again!
     reportThreshold 0.65, COMPLEXITY
     reportThreshold 0.7, BRANCH
     reportThreshold 0.8
@@ -88,8 +89,8 @@ jacocoCoverage {
 jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
-            // TODO: Remove TreeNode exclusion from below once test has been created for the AST (Primarily used through parser tests)
-            fileTree(dir: it, exclude: ['**/Main*', '**/AstNode*','**/ExprResult*','**/LambdaBodyWithType*','**/exceptions/*'])
+            fileTree(dir: it, exclude: ['**/Main*', '**/AstNode*','**/ExprResult*','**/LambdaBodyWithType*',
+                                        '**/exceptions/*', '**/FilePair*'])
         })
     }
 }
