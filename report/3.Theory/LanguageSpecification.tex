@@ -25,7 +25,7 @@ Booleans are represented using \textbf{True} or \textbf{False}.
 
 The collection types of HCL are \textbf{\textit{tuples}} and \textbf{\textit{lists}} where, 
 \textbf{\textit{tuples}} are structures composed of multiple types and \textbf{\textit{lists}} are collections of a single type.
-Dictionaries are a staple in modern languages, they are not deemed necessary for the scope of this "first specification" of HCL.
+While dictionaries are a staple in modern languages, they are not deemed necessary for the scope of this "first specification" of HCL.
 
 HCL also includes the type \textbf{\textit{func}} which in some languages, particularly C\#, is known as the \textbf{\textit{lambda}} type.
 Also included is the type \textbf{\textit{none}} which in some languages, particularly C\# and Java, is known as the \textbf{\textit{void}} type. 
@@ -53,13 +53,13 @@ This means that all arithmetic operators are infix-functions, which has expressi
 The only operators that remain operators are the assign-operator and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
 Not having operators for arithmetic operations also means that there is no native operator precedence in HCL.
-This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses, since parentheses has higher precedence than operators.
+This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses, since parentheses have higher precedence than operators.
 
 \subsection{Functions}
 \textbf{Function Declaration}\\
 The type of a function's parameters, as well as its return type, are explicitly declared when a function is defined. 
 The declaration is structured as an assignment, where the functions name is declared on the left-hand-side, prefixed by either \textbf{\textit{var}} or \textbf{\textit{func}}. 
-The parameters of the function is declared on the right-hand-side, inside parentheses, followed by a colon, which declares the return type. 
+The parameters of the function are declared on the right-hand-side, inside parentheses, followed by a colon, which declares the return type. 
 
 An example function that adds two numbers together and returns the value is shown below:
 \begin{lstlisting}[language=HCL,label=lis:addNumbers,firstnumber=1]
@@ -90,7 +90,7 @@ The \texttt{<DclValue>} non-terminal refers to both \texttt{<Expr>} (expression)
 
 \textbf{Function Calls}\\
 In order to better reflect the English language, function calls are structured in a way where the first parameter to a function is written before the function call itself.
-This first parameter  will be referred to as the prefix parameter. 
+This first parameter will be referred to as the prefix parameter. 
 All subsequent parameters are written after the function call and are delimited by the use of white-spacing and can be optionally grouped inside parentheses.
 These subsequent parameters will be referred to as the postfix parameters.
 Lambdas can be used as parameters by encapsulation with curly-brackets. 
