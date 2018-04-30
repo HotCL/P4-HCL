@@ -35,7 +35,7 @@ Therefore, types can be declared using the keyword \textbf{\textit{var}} (short 
 Declarations can also be explicit by prefixing the type of the variable before an assignment(line 2), or by prefixing the type before the variable without an assignment(line 3).
 The three methods of declaration are seen in snippet below.
 A  \textbf{\textit{num}} example is also shown.
-\begin{lstlisting}
+\begin{lstlisting}[language=HCL,label=lis:hclTypeDcls,firstnumber=1]
 var x = 5
 num y = 10
 txt s = "string"
@@ -60,13 +60,13 @@ The declaration is structured as an assignment, where the functions name is decl
 The parameters of the function is declared on the right-hand-side inside parentheses, followed by a colon (\textbf{\textit{:}}), which declares the return type. 
 
 An example function that adds two numbers together and returns the value is shown below:
-\begin{lstlisting}
+\begin{lstlisting}[language=HCL,label=lis:addNumbers,firstnumber=1]
 var addNumbers = (num a, num b): num {
     a + b
 }
 \end{lstlisting} 
 A more explicit declaration of the same function can be seen in the snippet below:
-\begin{lstlisting}
+\begin{lstlisting}[language=HCL,label=lis:hclExplicitTypeDcls,firstnumber=1]
 func[num,num,none] addNumbers = (num a, num b): num {
 	return a + b
 }
@@ -93,7 +93,7 @@ Lambdas can be used as parameters by encapsulation with curly-brackets.
 
 Below is an example of function calls where the program prints a name from a list:
 The \textbf{where} function in this example returns an entry in the list based on a lambda expression.
-\begin{lstlisting}
+\begin{lstlisting}[language=HCL,label=lis:hclPrintnFromList,firstnumber=1]
 ["john", "frank"] where {value is "frank"} print
 \end{lstlisting}
 
@@ -126,7 +126,7 @@ Loops are created using either of the predefined functions \textbf{\textit{forea
 When creating ranges the predefined \textbf{\textit{to}} function, that returns a list, can be used. 
 
 Following is a small example that prints numbers using the \textbf{\textit{do}} function:
-\begin{lstlisting}
+\begin{lstlisting}[language=HCL,label=lis:hclTypeDcls,firstnumber=1]
 1 to 10 do {value print}
 \end{lstlisting}
 There are no equivalent functions to the \textbf{\textit{while}} loop structure in HCL, as all looping will be done using iterations.
@@ -140,7 +140,7 @@ However, when using a predeclared function, the identifier should be prefixed wi
 Since lambdas should not be prefixed with a colon, it makes it impossible for a lambda to be invoked in-line. 
 Therefore lambdas may only be passed as parameters, and never invoked by themselves.
 Below is an example of how high-order functionality is used in HCL.
-\begin{lstlisting}
+\begin{lstlisting}[language=HCL,label=lis:hclTypeDcls,firstnumber=1]
 var modifyNumber = (num n, func[num, num] modifyFunction): num { n modifyFunction }
 
 # Used with lamdas
@@ -173,8 +173,8 @@ Should it be necessary to overload functions with varying lengths of input-param
 Function overloading requires nothing special of the user, simply declare two functions with the same amount of parameters, but with different types. 
 See listings below for example
 
-\begin{lstlisting}
-var isAwesome = (string name): bool {
+\begin{lstlisting}[language=HCL,label=lis:hclTypeDcls,firstnumber=1]
+var isAwesome = (txt name): bool {
 	name equals "HCL" thenElse {true} {false}
 }
 var isAwesome = (num number): bool {
@@ -202,7 +202,7 @@ However, this would require overloading of a lot of functions with all the possi
 Since tuples are distinguished by the types within it, there are a theoretical infinite amount of types within HCL, which in turn makes overloading for this case impossible.
 
 To get a better grasp of how generics are used in HCL, consider the following implementation of the map function:
-\begin{lstlisting}
+\begin{lstlisting}[language=HCL,label=lis:hclTypeDcls,firstnumber=1]
 var map = (list[T1] elementsToMap, func[T1, T2] mapFunction): list[T2] {
 	list[T2] mappedValues = []
 	elementsToMap onEach {mappedValues add (value mapFunction)}
