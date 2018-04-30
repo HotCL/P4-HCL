@@ -11,7 +11,7 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintAllLiteralAssignments() {
-        val output = SourceCodePrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Assignment(
                         AstNode.Command.Expression.Value.Identifier("a"),
                         AstNode.Command.Expression.Value.Literal.Number(5.0)
@@ -60,7 +60,7 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintNestedFunctionCall() {
-        val output = SourceCodePrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Expression.FunctionCall(
                         AstNode.Command.Expression.Value.Identifier("print"),
                         listOf(
@@ -86,7 +86,7 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintLambdaExpression() {
-        val output = SourceCodePrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Assignment(
                         AstNode.Command.Expression.Value.Identifier("plus"),
                         AstNode.Command.Expression.LambdaExpression(
@@ -121,7 +121,7 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintDeclarationOfAllTypes() {
-        val output = SourceCodePrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Declaration(
                         AstNode.Type.Tuple(listOf(
                                 AstNode.Type.Func.ExplicitFunc(listOf(
@@ -143,7 +143,7 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintDeclarationWithAssignment() {
-        val output = SourceCodePrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Declaration(
                         AstNode.Type.Number,
                         AstNode.Command.Expression.Value.Identifier("x"),

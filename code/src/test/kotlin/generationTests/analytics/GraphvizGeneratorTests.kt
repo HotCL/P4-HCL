@@ -1,14 +1,13 @@
 package generationTests.analytics
 
-import generation.GraphvizPrinter
-import org.junit.jupiter.api.Disabled
+import generation.GraphvizGenerator
 import org.junit.jupiter.api.Test
 import parser.AbstractSyntaxTree
 import parser.AstNode
 import kotlin.test.assertEquals
 
 
-class GraphvizPrinterTests {
+class GraphvizGeneratorTests {
     /**
      * As we don't really care how newlines or comments are structured - these are a nice to have - not a requirement
      */
@@ -17,7 +16,7 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintAllLiteralAssignments() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Assignment(
                         AstNode.Command.Expression.Value.Identifier("a"),
                         AstNode.Command.Expression.Value.Literal.Number(5.0)
@@ -68,7 +67,7 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintNestedFunctionCall() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Expression.FunctionCall(
                         AstNode.Command.Expression.Value.Identifier("print"),
                         listOf(
@@ -96,7 +95,7 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintLambdaExpression() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Assignment(
                         AstNode.Command.Expression.Value.Identifier("plus"),
                         AstNode.Command.Expression.LambdaExpression(
@@ -136,7 +135,7 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintDeclarationOfAllTypes() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Declaration(
                         AstNode.Type.Tuple(listOf(
                                 AstNode.Type.Func.ExplicitFunc(listOf(
@@ -161,7 +160,7 @@ class GraphvizPrinterTests {
 
     @Test
     fun canPrintDeclarationWithAssignment() {
-        val output = GraphvizPrinter().generateOutput(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 AstNode.Command.Declaration(
                         AstNode.Type.Number,
                         AstNode.Command.Expression.Value.Identifier("x"),
