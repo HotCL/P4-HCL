@@ -17,6 +17,8 @@ object HclBuiltinFunctions {
 
                     buildOperatorNumNumToBool("<"),
                     buildOperatorNumNumToBool(">"),
+                    buildOperatorNumNumToBool("=="),
+                    buildOperatorNumNumToBool("!="),
 
                     buildOperatorTxtTxtToBool("=="),
                     buildOperatorTxtTxtToBool("!="),
@@ -31,14 +33,14 @@ object HclBuiltinFunctions {
             // Control structures
             listOf(
                     buildThenFunction(),
-                    buildWhileFunction(),
-                    buildGetListLengthFunction()
+                    buildWhileFunction()
             ) +
             // Standard functions
             listOf(
                     buildToStringFunction<Type.Number>(),
                     buildToStringFunction<Type.Text>(), //Redundant, but no reason for compiler to throw an error
-                    buildToStringFunction<Type.Bool>()
+                    buildToStringFunction<Type.Bool>(),
+                    buildGetListLengthFunction()
             )
 }
 
