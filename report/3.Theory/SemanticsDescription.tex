@@ -1,0 +1,752 @@
+% How to do quick maths tutorial (HD).
+% The lines in the derivations are just fraction lines (made with \cfrac{}{}).
+% Sideways T (turnstile - bom in Danish) is \vdash.
+% The weird, tall "<" ">" brackets are \langle and \rangle.
+\newpage
+\section{Semantics of HCL}
+This section concerns with the semantics of HCL.
+For the sake of easing the reading of this section, semicolons used in semantic rules are to be left associative.
+For example; $S_1;S_2;S_3$ must be read as $S_1;(S_2;S_3)$.
+The components of this statement are $S_1$ and $S_2;S_3$.
+The notation used to formalize the semantics of HCL in the following section will be operational structural semantics.
+All build-in functionality of HCL have defined semantics.
+All transitions are written using Big-Step semantics, BSS for short.
+The Environment-store-model is used to describe how the state of variables and procedures are bound.
+HCL allows for the use of ';' and '{\textbackslash}n' for line endings.
+for simplicity, the abstract syntax and rules in this section utilize ';' for line endings. 
+
+\subsection{Scoping of HCL}
+The scope rules of a language determines which variable environment and procedure environment are being accessed, when using the name of a variable or function name.
+Since the semantics of HCL is stated using operational structural semantics, the scope rule can be shown by simply accessing the environment required by the scope rules.
+The scope rules of HCL are fully static.
+This means that the bindings accessed when using variable or functions names, will be the ones that were bound when the variable or function was declared.
+The reader should note that, since HCL is utilizing fully static scope rules, transitions for function calls needs special components to successfully enable recursive calling of function.
+In other words, when making a recursive call in HCL, the bindings of the procedure environment will be dynamic.
+
+\subsection{Abstract Syntax}
+The abstract syntax will now be presented.
+For convenience, the following notational conventions will be followed throughout this section.
+
+In the rest of the section $t1, .
+.
+.
+ , tn$ will be abbreviated with $t\textasciitilde$ and $t1 .
+ .
+ .
+  tn$ with $t^*$ ($t^+$ in the non-empty case).
+
+The syntax categories and meta-variables used in the semantic can be seen in table \ref{tab:metaVar}. 
+\begin{center}
+	\begin{table}[H]
+		\centering
+		\caption{The syntax categories and meta-variables used in the operational semantics of HCL}
+		\label{tab:metaVar}
+		\begin{tabular}{ll}
+			\textbf{Metavariable} & \textbf{Name} \\
+			$a \in A_{exp}$ 	  & Arithmetic expression \\
+			$n \in Num$			  & Number Literal \\
+			$x \in Var$           & Variable \\
+			$b \in B_{exp}$		  & Boolean expression\\ 
+			$tf \in {True,False}$ & Boolean literal \\
+			$t \in Txt_{exp}$     & Text expression\\
+			$str \in {\Sigma^*}$  & String Literal \\
+			$list \in list_{exp}$ & List expression \\
+			$lst \in List$		  & List literal\\
+			$tuple \in tpl_{exp}$ & Tuple expression\\
+			$tpl \in Tuple$	      & Tuple Literal\\
+			$L \in Lambda$		  & Lambda expression\\
+			$e \in Exp$			  & Expression\\
+			$el \in Lit$		  & Expression Literal\\
+			$p \in Pnames$        & Procedure names\\
+			$L \in Lambda$        & Statement Lambdas\\
+			$S \in Stm$           & Statement\\
+			$f \in Fnames$ 		  & Function names\\
+			$pOrf\ \in f \cup p$  & Either p or f\\
+			$eOrL\ \in e \cup L$  & Either e or L\\
+			$D_V \in Dcl_V$		  & Variable declarations\\
+			$D_P \in Dcl_P$       & Function declarations\\
+			$T \in Type$          & Types
+		\end{tabular}
+	\end{table}
+\end{center}
+
+For the rest of this section, it will be assumed that functions exist with domains equal to the sets of literals associated with the various expressions' syntax categories, and with co-domains equal to the values extracted from those literals.
+The abstract syntax of HCL can be seen below.
+
+$a\ ::=\ n\ |\ x\ |\ a_1+a_2\ |\ a_1-a_2\ |\ a_1*a_2\ |\ a_1/a_2\ |\ (a)$\\
+$b\ ::=\ tf\ |\ x\ |\ a_1<a_2\ |\ a_1>a_2\ |\ a_1<=a_2\ |\ a_1>=a_2\ |\ a_1==a_2\ |\ b_1\ and\ b_2\ |\ b_1\ or\ b_2\ |\ b\ not\ |\ (b)$\\
+$t\ ::=\ str\ |\ x\ |\ t_1+t_2\ |\ t\ toString\ |\ (t)$\\
+$list\ ::=\ lst\ |\ x\ |\ list\ length\ |\ list\ @\ a\ |\ (list)$\\
+$tuple\ ::=\ tpl\ |\ x\ |\ tuple\ @\ a\ |\ (tuple)$\\
+$e\ ::=\ a\ |\ b\ |\ t\ |\ list\ |\ tuple\ |\ F_{exp}\ | L$\\
+$F_{exp}\ ::=\ f\ |\ eOrL\ f\ eOrL^*$\\
+$L\ ::= \{\ S\ \}\ |\ \{\ S\ return\ e\ \}\ |\ \{\ S;\ e\ \}$\\
+$S\ ::=\ x\ =\ e\ |\ S_1;S_2\ |\ b\ then\ L\ |\ L\ while\ b\ |\ p\ |\ eOrL\ p\ eOrL^*\ |\ D_V\ |\ D_P\ |\ \epsilon$\\
+$D_v\ ::=\ T\ x\ =\ e;\ S\ |\ T\ x\ = call_{exp};\ S\ |\ T\ x;\ D_v\ |\ \epsilon$\\
+$D_p\ ::=\ T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S\ |\ T\ pOrf;\ S\ |\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S\ |\ \epsilon$
+
+\textbf{\large{Conventions}} \\
+For each variable $x$, an arbitrary variable-environment $env_V$ describes which address $adr$, $x$ is bound to.
+For simplicity, the set of all possible addresses, denoted $Adr$, is assumed to be equal to the set of all integers.
+\begin{center}
+	$Adr = \mathbb{Z}$
+\end{center}
+The set of all variable-environments, denoted \textbf{$Env_V$}, is the set of all partial functions from variables to addresses.
+\begin{center}
+	$Env_V = Var \cup \{next\} \rightharpoonup Adr$
+\end{center}
+For every $adr$, the function $new : Adr \rightarrow Adr$ returns the next $adr$, whether it is free or not.
+\begin{center}
+	$new (adr) = adr + 1$
+\end{center}
+A store $sto$ describes what values $v$ are pointed to by the addresses found in $Adr$.
+
+With the variable bindings found in $env_V$ and the address content found in $sto$, the expressions are capable of returning the values of the $sto$.
+This means that every transition of expressions must be on the form.
+\begin{center}
+	$env_V,sto \vdash e \rightarrow v$
+\end{center} 
+
+\subsection{Big-Step Semantic for Expressions}
+An expression is any syntactic component that evaluates to a value.
+In HCL most semantic rules of expressions are denoted the same, but a few transition-systems uses special notation.
+When this is the case, it will be made apparent before that transition-system.
+
+\textbf{\large{General Rules for Expressions}} \\
+All expression in the abstract syntax have two rewriting rules in common.
+The variable rule and the parenthesis rule.
+To avoid the possibility of cluttering the section, these rules are described below, using the metavariable $e \in Exp$, where the syntax category $Exp$ is the set of all expressions.
+
+\textbf{[$Parent_{BSS}$]}
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash e \rightarrow_e v}
+		{env_V,\ sto \vdash (e) \rightarrow_e v}
+	\end{math}
+\end{center}
+
+\textbf{[$Var_{BSS}$]}
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash x \rightarrow_e v
+	\texttt{ if } env_V\ x = l
+	\texttt{ and } sto\ l = v
+	\end{math}
+\end{center}
+
+\textbf{\large{Arithmetic Expressions}}\\
+Arithmetic expressions returns a value $v$, where $v \in \mathbb{R}$.
+The transitions-system for $A_{exp}$ is $(A_{exp} \cup D, \rightarrow_a, D)$, 
+where $D = \mathbb{Z} \cup \mathbb{R}$.
+The transitions can be seen below.
+
+\textbf{[$Add_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+		{env_V,\ sto \vdash a_1 + a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 + v_2$
+\end{center}
+
+\textbf{[$Minus_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+		{env_V,\ sto \vdash a_1 - a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 - v_2$
+\end{center}
+
+\textbf{[$Mult_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 * a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 \cdot v_2$
+\end{center}
+
+\textbf{[$Div_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 / a_2 \rightarrow_a v}
+	\end{math}
+	
+	
+	\texttt{where} $v = v_1 / v_2$
+\end{center}
+
+\textbf{[$Num_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		env_V,\ sto \vdash n \rightarrow_a v
+	\end{math}
+	\texttt{ if } $\mathbb{N}[n] = v$
+\end{center}
+
+\textbf{\large{Boolean Expressions}}\\
+Boolean expressions returns a value $v$, where $v \in \{True, False\}$.
+The transition-system for $B_{exp}$ is $(B_{exp} \cup \{True, False,\} \rightarrow_b, \{True, False\})$.
+
+Since HCL do not have any means of referencing an address, all comparisons will be done by comparing the values of the arguments.
+The transition can be seen below.
+
+\textbf{[$EqualTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+			{env_V,\ sto \vdash a_1 == a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 = v_2$
+\end{center}
+
+\textbf{[$EqualFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 == a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 \neq v_2$
+\end{center}
+
+\textbf{[$LessThanTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 < a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 < v_2$
+\end{center}
+
+\textbf{[$LessThanFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 < a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 >= v_2$
+\end{center}
+
+\textbf{[$GreaterThanTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 > a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 > v_2$
+\end{center}
+
+\textbf{[$GreaterThanFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 > a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 <= v_2$
+\end{center}
+
+\textbf{[$LessThanOrEqualTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 <= a_2 \rightarrow_b True}
+	\end{math}
+	
+	\texttt{ if } $v_1 <= v_2$
+\end{center}
+
+\textbf{[$LessThanOrEqualFalse_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
+	{env_V,\ sto \vdash a_1 <= a_2 \rightarrow_b False}
+	\end{math}
+	
+	\texttt{ if } $v_1 > v_2$
+\end{center}
+
+\textbf{[$AndTrue_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash b_1 \rightarrow_b True \quad env_V, sto \vdash b_2 \rightarrow_b True}
+		{env_V,\ sto \vdash b_1\ and\ b_2 \rightarrow_b True}
+	\end{math}
+\end{center}
+
+\textbf{[$AndFalseBoth_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash b_1 \rightarrow_b False \quad env_V,\ sto \vdash b_2 \rightarrow_b False}
+		{env_V,\ sto \vdash b_1\ and\ b_2 \rightarrow_b False}
+	\end{math}
+\end{center}
+
+\textbf{[$AndFalseFirst_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash b_1 \rightarrow_b False \quad env_V,\ sto \vdash b_2 \rightarrow_b True}
+	{env_V,\ sto \vdash b_1\ and\ b_2 \rightarrow_b False}
+	\end{math}
+\end{center}
+
+\textbf{[$AndFalseSecond_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash b_1 \rightarrow_b True \quad env_V,\ sto \vdash b_2 \rightarrow_b False}
+	{env_V,\ sto \vdash b_1\ and\ b_2 \rightarrow_b False}
+	\end{math}
+\end{center}
+
+\textbf{[$Not_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash b \rightarrow_b v_2}
+	{env_V,\ sto \vdash b\ not \rightarrow_b v_1}
+	\end{math}
+	
+	\texttt{ where } $v_1 \rightarrow_b \neg v_2$
+\end{center}
+
+\textbf{[$TFLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash tf \rightarrow_b v
+	\end{math}
+	\texttt{ if } $\mathbb{B}[tf] = v$
+\end{center}
+
+\textbf{\large{Text Expressions}}\\
+Text Expressions returns a value $v$, where $v$ is a sequence of characters from an arbitrary alphabet enclosed in $"$, abbreviated $str$.
+The default alphabet of HCL is $utf-8-mb4$.
+In other words, $v$ is a string.
+The transition-system for $Txt_{exp}$ is $(Txt_{exp} \cup \{\Sigma^*\},\ \rightarrow_t, \{\Sigma^*\})$.
+Here $\Sigma$ is an arbitrary alphabet legal in the context.
+
+\textbf{[$TextConc_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+		{env_V,\ sto \vdash t_1 \rightarrow_b v_1 \quad env_V,\ sto \vdash t_2 \rightarrow_b v_2}
+		{env_V,\ sto \vdash t_1 + t_2 \rightarrow_t v}
+	\end{math}
+	
+	\texttt{ where } $v = v_1\ \circ\ v_2$
+\end{center}
+
+\texttt{[$TextToString_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, sto \vdash e \rightarrow_{e} v'}
+			{env_V, sto \vdash e\ toString \rightarrow_{t} v}
+	\end{math}
+	
+	\texttt{ where } $v = "v'"$
+\end{center}
+
+\textbf{[$TextLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash t \rightarrow_b v
+	\end{math}
+	\texttt{ if } $\mathbb{T}[t] = "v"$
+\end{center}
+
+\textbf{\Large{List Expressions}}\\
+List expressions returns a value $v$, where $v$ consists of a sequence of expression values separated with commas, encapsulated in $[\ ]$.
+$v$ is denoted $lst$, and is on the form $[(el \cup Lambda)\textasciitilde]$.
+The set of which it is an element of is denoted $Lit$.
+The transition-system for $list_{exp}$ is $(list_{exp} \cup List, \rightarrow_{list}, List \cup e)$.
+The transitions are shown below.
+The length transition returns a value $v$, where $v \in Z$.
+Even though this is an exception to the general description of a list expression, the transition has the same format as the rest of the transitions.
+
+\texttt{[$ListLength_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, sto \vdash num \rightarrow_{a} v}
+			{env_V, sto \vdash list\ length \rightarrow_{list} v}
+	\end{math}
+	
+	\texttt{ where } $num = |list|$
+\end{center}
+
+\texttt{[$ListAt_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash ls_v' \rightarrow_e v}
+			{env_V, sto \vdash list\ @\ a \rightarrow_{list} v}
+	\end{math}
+	
+	\texttt{ where } $ls_v'\ is\ the\ v'th\ element\ of\ list$
+\end{center}
+
+\textbf{[$ListLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash lst \rightarrow_{list} v
+	\end{math}
+	\texttt{ if } $\mathbb{LST}[lst] = v$
+\end{center}
+
+\textbf{\Large{Tuple Expressions}}\\
+Tuple expressions returns a value $v$, where $v$ consists of a sequence of expression values separated with commas, encapsulated in $()$.
+$v$ is denoted $tpl$, and is on the form $((el \cup Lambda)\textasciitilde)$.
+The set of which it is an element of is denoted $Tuple$.
+The transition-system for $tuple_{exp}$ is $(tuple_{tuple_exp} \cup Tuple, \rightarrow_{tuple}, Tuple)$.
+The transitions are shown below.
+
+\texttt{[$TplAt_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash tp_v' \rightarrow_e v}
+	{env_V, sto \vdash tuple\ @\ a \rightarrow_{tuple} v}
+	\end{math}
+	
+	\texttt{ where } $tp_v'\ is\ the\ v'th\ element\ of\ tuple$
+\end{center}
+
+\textbf{[$TupleLit_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	env_V,\ sto \vdash tpl \rightarrow_{tuple} v
+	\end{math}
+	\texttt{ if } $\mathbb{TPL}[tpl] = v$
+\end{center}
+
+\subsection{Big-Step Semantic for Statements}
+Statements $Stm$ can change the store, because they can change the value of an existing variable.
+The transition-system for $stm$ is $(Stm\ \Cross\ Sto\ \cup Sto, \rightarrow_{stm}, Sto)$.
+Given the variable bindings $env_V$ and the procedure bindings $env_P$, the execution of the statement $S$ will 
+result in $sto$ changing to $sto'$.
+the formal parameters for the procedure calls in the transitions below, are denoted with $x$.
+
+This means that the transitions must be on the form.
+
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+\end{center}
+
+The reader should note that procedures are functions with no return value and therefore are statements.
+The transitions are shown below.
+
+\texttt{[$Ass_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle x = e, sto \rangle \rightarrow_{stm} sto[l \mapsto v]}
+	\end{math}
+	
+	\texttt{ where } $env_V, sto \vdash e \rightarrow_e v$
+	\texttt{ and } $env_V\ x = l$
+\end{center}
+
+\texttt{[$Comp_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle S_1, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_P \vdash \langle S_2, sto'' \rangle \rightarrow_{stm} sto'}
+			{env_V, env_P \vdash \langle S_1; S_2, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+\end{center}
+
+\texttt{[$Then-True_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle L,sto \rangle \rightarrow_{stm} sto'}
+			{env_V, env_P \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b True$
+\end{center}
+
+\texttt{[$Then-False_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, env_P \vdash \langle \epsilon,sto \rangle \rightarrow_{stm} sto}
+	{env_V, env_P \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} sto}
+	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b False$
+\end{center}
+
+\texttt{[$While-False_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle L\ while\ b, sto \rangle \rightarrow_{stm} sto}
+	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b False$
+\end{center}
+
+\texttt{[$While-True_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle L, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_P \vdash \langle L\ while\ b, sto'' \rangle \rightarrow_{stm} sto'}
+			{env_V, env_P \vdash \langle L\ while\ b, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+	
+	\texttt{ if } $env_V, sto \vdash b \rightarrow_b True$
+\end{center}
+
+\texttt{[$ProcCall-NoParams_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_v', env_P'[p \mapsto (L, e, env_V', env_P')] \vdash \langle L, sto[l \mapsto v] \rangle \rightarrow_{stm} sto'}
+			{env_v, env_P \vdash \langle p, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+	
+	\texttt{ where } $env_P\ p = (L, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+\end{center}
+
+\texttt{[$ProcCall-Params_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_v'[x \mapsto l][next \mapsto new\ l], env_P'[p \mapsto (L, x\sim, e, env_V', env_P')] \vdash \langle L, sto[l \mapsto v] \rangle \rightarrow_{stm} sto'}
+	{env_v, env_P \vdash \langle x\ p\ x\sim, sto \rangle \rightarrow_{stm} sto'}
+	\end{math}
+	
+	\texttt{ where } $env_P\ p = (L, x\sim, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and } $l = env_V\ next$
+\end{center}
+
+\texttt{[$EmptyStm_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V, env_P \vdash \langle \epsilon, sto \rangle \rightarrow_{stm} sto}
+	\end{math}
+\end{center}
+
+\subsection{Big-Step Semantics for function Expressions}
+Function expressions returns a value $v$, where $v \in Lit$.
+All function expressions are function calls.
+These are similar to procedure calls, except for the fact that function calls evaluates to a value.
+Since the parameters of a function, can be both expression and lambdas, it is necessary to have a transition for each of the two cases.
+since these two pair of rules would be almost identical, the formal parameters in the transitions below are denoted with $x$.
+The transition-system for $F_{exp}$ is ($Fnames\ \Cross\ Dcl_P\ \Cross Sto\ \cup Sto, \rightarrow_{F_{exp}}, Lit$).
+
+Which means that the transitions must be on the form.
+\begin{center}
+	$env_V, env_P, sto \vdash f \rightarrow_{exp} v$
+\end{center}
+The transitions are shown below.
+
+\texttt{[$FuncCall-NoParams_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_v', env_P'[f \mapsto (L, e, env_V', env_P')] \vdash \langle L, sto[l \mapsto v] \rangle \rightarrow_{stm} v}
+	{env_v, sto \vdash f \rightarrow_{F_{exp}} v}
+	\end{math}
+	
+	\texttt{ where } $env_P\ f = (L, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+\end{center}
+
+\texttt{[$FuncCall-Params_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_v'[x \mapsto l][nest \mapsto new\ l], env_P'[f \mapsto (L, x\sim, e, env_V', env_P')] \vdash \langle L, sto[l \mapsto v] \rangle \rightarrow_{stm} sto'}
+	{env_v, sto \vdash x\ f\ x\sim \rightarrow_{F_{exp}} v}
+	\end{math}
+	
+	\texttt{ where } $env_P\ f = (L, e, env_V', env_P')$\\
+	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and } $l = env_V\ next$
+\end{center}
+
+\subsection{Big-Step Semantic for Variable Declarations}
+Variable declarations $Dcl_V$ can change the variable environment $Env_v$ by declaring new variables in $Var$.
+They can also change the store by binding variables to new addresses.
+
+The transition-system for $Dcl_V$ is ($(Dcl_V\ \Cross\ Env_V\ \Cross\ Sto) \cup Env_V\ \Cross\ Sto, \rightarrow_{D_{V}}, Env_V\ \Cross\ Sto$).
+
+This means that the transitions must be on the form.
+
+\begin{center}
+	$\langle D_V,env_V,sto \rangle \rightarrow_{D_V} (env_V^{'} , sto^{'})$
+\end{center}
+
+The transitions are shown below.
+
+\textbf{[$Dcl_VAssExp_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{\langle T\ x = e;\ S,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V'[x \mapsto l][next \mapsto l'],\ sto')}
+	\end{math}
+	
+	\texttt{ where } $env_V,\ sto \vdash e \rightarrow_e v$
+	\texttt{ and } $l = env_V\ next$
+	\texttt{ and } $l' = new\ l$
+\end{center}
+
+\texttt{[$Dcl_VAssFnc_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{\langle T\ x = f,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V'[x \mapsto l][next \mapsto l'],\ sto')}		
+	\end{math}
+	
+	\texttt{ where } $env_V,\ sto \vdash f \rightarrow_{call_{exp}} v$
+	\texttt{ and } $l = env_V\ next$
+	\texttt{ and } $l' = new\ l$
+\end{center}
+
+\textbf{[$Dcl_VNoAss_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{\langle T\ x;\ S,\ env_v,\ sto \rangle \rightarrow_{D_V} (env_v'[x \mapsto l][next \mapsto l'],\ sto)}
+	\end{math}
+	
+	\texttt{ where } $l = env_v\ next$
+	\texttt{ and } $l' = new\ l$
+\end{center}
+
+\textbf{[$Dcl_VEmpty_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\langle \epsilon,\ env_v,\ sto \rangle \rightarrow (env_v,\ sto)
+	\end{math}
+\end{center}
+
+\subsection{Big-Step Semantics for Procedure and Function Declarations}
+Function declarations $Dcl_P$ can change the procedure environment $Env_P$ by declaring new functions in $Fnames$.
+
+The transition-system for $Dcl_P$ is ($Fnames \rightharpoonup Lambda\ \Cross\ Var\ \Cross\ Exp\ \Cross\ Env_V\ \Cross\ Env_P$).
+This means that the transitions must be on the form.
+
+\begin{center}
+	$\langle D_P, env_V, env_P \rangle \rightarrow_{D_P} (env_P)$
+\end{center}
+
+Any function returning a value is an expression.
+For simplicity, all functions will be denoted f in the function declaration transitions.
+
+Declarations of functions must remember the expression directly following the return keyword, this is accomplished by binding the function in the procedure environment with the value of this expression.
+This is not the case for procedures, since they do not return a value.
+The rules for procedures and functions are the same, except for the value $v$ being $none$ in procedure rules.
+
+The transitions are shown below.
+
+\texttt{[$Dcl_PAss_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+			{env_v \vdash \langle T\ f\ =\ ([T\ x]\sim):\ T\ L,env_P \rangle \rightarrow_{D_P} env_P'[f \mapsto (L, x\sim, v, env_V, env_P)]}
+	\end{math}
+	
+	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
+\end{center}
+
+\texttt{[$Dcl_PNoAss_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	{env_v \vdash \langle T\ f,env_P \rangle \rightarrow_{D_P} env_P'[f \mapsto (env_V, env_P)]}
+	\end{math}
+\end{center}
+
+\texttt{[$PreDcl_Ass_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	{env_v \vdash \langle f\ =\ ([T\ x]\sim):\ T\ L,env_P \rangle \rightarrow_{D_P} env_P'[f \mapsto (L, x\sim, v, env_V, env_P)]}
+	\end{math}
+	
+	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
+\end{center}
+
+\texttt{[$Dcl_Pempty_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+		{env_V \vdash \langle \epsilon, env_P \rangle \rightarrow_{D_P}\ env_P'}
+	\end{math}
+\end{center}
+
+\subsection{Lambda Expression}
+Lambda expression in HCL can change only the store by binding a value $v$ to the address $adr$ of the lambda itself in the procedure environment.
+With the given variable environment $env_V$ and procedure environment $env_P$ the execution of the statement $S$ will change the store $sto$ to $sto'$ and the expression $e$ will be evaluated to $v$.
+The transition-system for $L$ is ($Lambda\ \Cross\ Env_V\ \Cross\ Env_P, \rightarrow_L, sto \cup Lit$).
+The transitions must therefore be on the form.
+\begin{center}
+	$env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto'$
+\end{center}
+
+The transitions are shown below.
+
+\texttt{[$Lmb-ExpRetn_{BSS}$]}
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto', v}
+			{env_V, env_P \vdash \langle \{\ S\ return\ e \}, sto \rangle \rightarrow_L sto', v}
+	\end{math}
+	
+	\texttt{ where } $ env_V, sto' \rightarrow_e v$
+\end{center}
+
+\texttt{[$Lmb-ImpRetn_{BSS}$]}
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, env_P \vdash \langle sto \rangle \rightarrow_L sto', v}
+	{env_V, env_P \vdash \langle \{\ e\ \}, sto \rangle \rightarrow_L sto', v}
+	\end{math}
+	
+	\texttt{ where } $ env_V, sto' \rightarrow_e v$
+\end{center}
+
+\texttt{[$Lmb-Noretn_{BSS}$]}
+\begin{center}
+	\begin{math}
+		\cfrac
+			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto'}
+			{env_V, env_P \vdash \langle \{\ S\ \}, sto \rangle \rightarrow_L sto'}
+	\end{math}
+\end{center}
+
+In conclusion, HCL is best described as an imperative language which allows high-order functionality. 
+Because of this it is possible to define the semantics using operational structural semantics.
+HCL follows a structural like pattern in most of it's functionality, excluding the high-order functionality present in the syntax.
+The semantics presented in this section should give any reader familiar with operational semantics the proper knowledge to fully understand the functionality of HCL.
+Now that the semantics of HCL have been defined, it is now relevant to define the type rules of HCL.

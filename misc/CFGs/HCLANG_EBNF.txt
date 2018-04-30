@@ -1,8 +1,9 @@
-HCLANG - EBNF
+
 
 Notation:
-Terminal: lowercase
-Non-terminal: PascalCase
+
+Terminal:     camelCase
+Non-terminal: <PascalCase>
 something:    1 occurrence of something
 [something]:  something 0 or 1 times
 {something}:  something 0 or more times
@@ -10,75 +11,73 @@ something:    1 occurrence of something
 
 ***********************************************************************************
 
-Program --> Commands $
+<Program> -> {<Command>} $
 
 
-Type --> number
-       | text
-       | tuple squareBracketStart [Types] squareBracketStop
-       | list squareBracketStart [Type] squareBracketStop
-       | bool
-       | func squareBracketStart [Types] squareBracketStop
-       | none
-       | var
+<Command> -> (<Dcl> | <Ass> | <Expr> | <RetCmd>) {linebreak}+
 
-TypeImplicit --> Type
-       | func
+<Type> -> num
+        | txt
+        | bool
+        | tuple squareBracketStart [<TypeList>] squareBracketStop
+        | list squareBracketStart [<Type>] squareBracketStop
+        | func squareBracketStart [<TypeListNoneAndGenerics>] squareBracketStop
 
-Types --> Type [, Types]
+<TypeImplicit> -> <Type>
+                | func
+                | var
 
-Expression --> FunctionCall
-             | Value
+<TypeGenerics> -> <Type>
+                | identifier
 
-Value --> Literal
-        | identifier
+<TypeNoneAndGenerics> -> <TypeGenerics>
+                       | none
 
-Literal --> literalNumber
-          | literalText
-          | LiteralTuple
-          | LiteralList
-          | literalBool
+<TypeList> -> <Type> [separator <TypeList>]
 
-Values --> Value [, Values]
+<TypeListGenerics> -> <TypeGenerics> [separator <TypeListGenerics>]
 
-LiteralTuple --> (Values)
-LiteralList --> [Values]
+<TypeListNoneAndGenerics> -> <TypeNoneAndGenerics> [separator <TypeListNoneAndGenerics>]
 
-Commands --> {Command}
+<Expr> -> parenStart <Expr> parenEnd
+        | <FunCall>
+        | <Value>
 
-Command --> VarDcl linebreak
-            | Assignment linebreak
-            | Expression linebreak
-            | ReturnCommand linebreak
+<Value> -> <Literal>
+         | identifier
 
-DeclarationValue --> Expression
-                    | LambdaExpression
+<Values> -> <Value> [separator <Values>]
 
-Declaration --> TypeImplicit identifier [equals DeclarationValue]
+<Literal> -> litNum
+           | litText
+           | litBool
+           | <LitTuple>
+           | <LitList>
 
+<LitTuple> -> parenStart <Values> parenEnd
 
-Assignment --> identifier equals DeclarationValue
+<LitList> ->  sqBracketStart <Values> sqBracketEnd
 
+<DclVal> -> <Expr>
+          | <LambdaExpr>
 
+<Dcl> -> <TypeImplicit> id [equals <DclVal>]
 
-LambdaExpression --> parenL [FunDclParamList] parenR colon Type LambdaBody
+<Ass> -> identifier equals <DclVal>
 
-LambdaBody --> curlyL Commands curlyR
+<LambdaExpr> -> parenStart [<FunDclParams>] parenEnd colon <TypeNoneAndGenerics> {linebreak} <LambdaBody>
 
+<LambdaBody> -> curlyL {<Command>} curlyR
 
+<FunDclParams> -> <FunDclParam> [separator <FunDclParams>]
 
-FunDclParamList --> FunDclParameter [comma FunDclParamList]
+<FunDclParam> -> <TypeListGenerics> id
 
-FunDclParameter --> Type identifier
+<FunCall> -> identifier
+           | <Arg> id {<Arg>}
 
-FunctionCall --> identifier
-               | Arg identifier [Args]
+<Arg> -> <Value>
+       | <LambdaExpr>
+       | <LambdaBody>
 
-Args --> {Arg}
-        | parenL {Arg} parenR
-
-Arg --> Value
-        | LambdaExpression
-        | LambdaBody
-
-ReturnCommand --> return Expression
+RetCmd -> return <Expr>
