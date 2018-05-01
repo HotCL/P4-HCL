@@ -6,13 +6,13 @@ The first part of the compiler is concerned with the syntax analysis phase.
 This portion of the compiler is often called a lexer or a scanner.
 The point of the lexer is to transform a given input character stream, often a source code file, into a stream of tokens.
 
-The scanner does this by breaking the character stream down into individual words, known in language theory as a lexeme.
+The lexer does this by breaking the character stream down into individual words, known in language theory as a lexeme.
 A lexeme is simply the smallest unit in a language, that still has a meaning.
 Some examples of lexemes in programming languages are \textbf{identifiers}, \textbf{keywords} and \textbf{operators}.
 
-The output of the scanner is a stream of tokens.
+The output of the lexer is a stream of tokens.
 A token simply corresponds to individual symbols in a given programming language.
-The scanner attempts to match every lexeme to a token.
+The lexer attempts to match every lexeme to a token.
 Sometimes several lexemes can be matched by the same token.
 In the case of identifiers, two different variables might be named \textit{Employee} and \textit{Customer}, but they would both be matched to the identifier token.
 Some tokens can only match a single, very specific, lexeme.
