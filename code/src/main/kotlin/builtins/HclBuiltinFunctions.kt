@@ -26,15 +26,11 @@ object HclBuiltinFunctions {
                     buildOperatorBoolBoolToBool("&&"),
                     buildOperatorBoolBoolToBool("||"),
 
-                    buildPrefixOperator<Type.Bool, Type.Bool>("negated", "!")
-            ) +
+                    buildPrefixOperator<Type.Bool, Type.Bool>("negated", "!"),
             // Control structures
-            listOf(
                     buildThenFunction(),
-                    buildWhileFunction()
-            ) +
+                    buildWhileFunction(),
             // Standard functions
-            listOf(
                     buildNumberToTextFunction(),
                     buildTextToTextFunction(), //Redundant, but no reason for compiler to throw an error
                     buildBoolToTextFunction(),
@@ -99,8 +95,7 @@ private fun buildBoolToTextFunction() = buildFunction(
                 Parameter("input", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "if (input) return \"True\";" +
-               "else return \"False\";",
+        body = "return input ? \"True\" : \"False\";",
         inLine = false
 )
 
@@ -120,7 +115,7 @@ private fun buildGetListLengthFunction() = buildFunction(
                 Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
         returnType = Type.Number,
-        body = "return list.length();",
+        body = "return list.size;",
         inLine = true
 )
 
