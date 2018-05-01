@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import parser.Parser
 import parser.AstNode
+import parser.ParserWithoutBuiltins
 import kotlin.coroutines.experimental.buildSequence
 import kotlin.test.assertEquals
 
@@ -86,7 +87,7 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine
         ))
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -111,7 +112,7 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.BlockEnd,
                 Token.SpecialChar.EndOfLine
         ))
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -128,7 +129,7 @@ class FunctionDeclarationTests {
                 Token.Literal.Number(5.0),
                 Token.SpecialChar.EndOfLine
         ))
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
 
@@ -144,7 +145,7 @@ class FunctionDeclarationTests {
                 Token.Identifier("toString"),
                 Token.SpecialChar.EndOfLine
         ))
-        Assertions.assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
 
@@ -159,7 +160,7 @@ class FunctionDeclarationTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine)
         })
-        Assertions.assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test
@@ -171,7 +172,7 @@ class FunctionDeclarationTests {
                 Token.Identifier("myFunc")
                 //should fail before this token
         ))
-        Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test
@@ -288,7 +289,7 @@ class FunctionDeclarationTests {
             yield(Token.Identifier("myFunc"))
             yield(Token.SpecialChar.EndOfLine)
         })
-        Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
     //endregion FuncTypeDcl
 
@@ -410,7 +411,7 @@ class FunctionDeclarationTests {
                 Token.SpecialChar.EndOfLine
         ))
         Assertions.assertThrows(InitializedFunctionParameterError::class.java,
-                { Parser(lexer).generateAbstractSyntaxTree() })
+                { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
 
     }
 
@@ -503,7 +504,7 @@ class FunctionDeclarationTests {
         ))
 
         Assertions.assertThrows(OverloadWithDifferentAmountOfArgumentsException::class.java,
-                { Parser(lexer).generateAbstractSyntaxTree() })
+                { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
     }
 
     @Test
@@ -544,7 +545,7 @@ class FunctionDeclarationTests {
         ))
 
         Assertions.assertThrows(AlreadyDeclaredException::class.java,
-                { Parser(lexer).generateAbstractSyntaxTree() })
+                { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
 
     }
 

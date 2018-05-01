@@ -81,7 +81,7 @@ jacoco {
 
 jacocoCoverage {
     // Set to 0.7 again!
-    reportThreshold 0.69, COMPLEXITY
+    reportThreshold 0.65, COMPLEXITY
     reportThreshold 0.7, BRANCH
     reportThreshold 0.8
 }
@@ -125,6 +125,7 @@ mainClassName = 'MainKt'
 
 repositories {
     mavenCentral()
+    maven { url "http://dl.bintray.com/jetbrains/spek" }
 }
 
 sourceSets {
@@ -141,7 +142,10 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+
+    testCompile 'org.jetbrains.spek:spek-api:1.1.5'
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    testRuntime('org.jetbrains.spek:spek-junit-platform-engine:1.1.5')
 
     // To use Log4J's LogManager
     testRuntime("org.apache.logging.log4j:log4j-core:${log4jVersion}")

@@ -20,12 +20,12 @@ However, by simply comparing the amount of code necessary to implement the singl
 The choice of using a hash table data structure for the sub-tables themselves was based upon the time complexity of the essential procedures.
 Insertion or retrieval in a hash table data structure can be performed in constant time, however as the parser will look through multiple scopes, retrieval is only constant time in the context of a singular scope.
 Retrieval is the method used most often, which means that the running time of the retrieval is most important, however that's not possible because of the above reasons. 
-It is, however, not an major issue as it is not expected that the user of HCL will use deep nested scopes, and therefore the running time should not be affected substantially.
+It is, however, not a major issue as it is not expected that the user of HCL will use deep nested scopes, and therefore the running time should not be affected substantially.
 
 \textbf{Implementation}\\
 The interface consists of five methods as seen in snippet \ref{lis:STInterface}.
 
-\begin{lstlisting}[language=java,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
+\begin{lstlisting}[language=Kotlin,label=lis:STInterface,caption=The interface which all symbol table implementations must implement.]
 interface ISymbolTable{
 	fun openScope()
 	fun closeScope()
@@ -38,7 +38,7 @@ The interface, and implementations of it, are defined by opening and closing sco
 
 When opening a scope, a new scope is added to the stack, while the top scope is popped when running the $closeScope()$ method.
 
-\begin{lstlisting}[language=java,label=lis:STEnterSymbol,caption=A simplified version of the enterSymbol implementation.]
+\begin{lstlisting}[language=Kotlin,label=lis:STEnterSymbol,caption=A simplified version of the enterSymbol implementation.]
 override fun enterSymbol(name: String, type: AstNode.Type): EnterSymbolResult {
 	val entry = symbolTable.last[name]
 	return if (entry != null) {

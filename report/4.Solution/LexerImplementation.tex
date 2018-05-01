@@ -4,13 +4,13 @@ As described in section \ref{LexerChoice}, it was decided that the lexer would b
 As mentioned in section \ref{langsOfCompiler}, the compiler for HCL will be written in Kotlin.
 Below is an explanation of the implementation of the lexer.
 
-The lexer is comprised of 3 different classes: the \textit{Token} class, the \textit{PositionalToken} class and the \textit{Lexer} class.
+The lexer is composed of 3 different classes: the \textit{Token} class, the \textit{PositionalToken} class and the \textit{Lexer} class.
 
 The \textit{Token} class simply specifies the type of a token. 
 It is implemented as a Sealed class. 
 A sealed class in Kotlin, simply specifies that a value can have one specific type, from a predefined set\cite{KotlinSealed}.
 It is essentially an extended enum.
-\begin{lstlisting}[language=java,label=lis:tokenClass,caption=A snippet from the token class .,firstnumber=9]
+\begin{lstlisting}[language=Kotlin,label=lis:tokenClass,caption=A snippet from the token class .,firstnumber=9]
 sealed class Literal : Token() {
 	class Text(val value: String) : Literal() {
 	override fun toString() = super.toString() + "[$value]"
@@ -26,20 +26,21 @@ sealed class Literal : Token() {
 
 The \textit{PositionalToken} class is a wrapper class for a token, and simply contains additional information regarding linenumber and line index.
 The positional token is mainly implemented to help with error reporting.
-\begin{lstlisting}[language=java,label=lis:PositionalTokenClass,caption=A snippet from the token class .,firstnumber=10]
+\begin{lstlisting}[language=Kotlin,label=lis:PositionalTokenClass,caption=A snippet from the token class .,firstnumber=10]
 class PositionalToken(val token: Token, val lineNumber: Int, val lineIndex: Int)
 \end{lstlisting}
 
 The bulk of the logic regarding the lexer is done in the \textit{Lexer} class.
 The \textit{Lexer} class implements the \textit{ILexer} interface.
 
-\begin{lstlisting}[language=java,label=lis:Lexer,caption=The Lexer .,firstnumber=8]
+\begin{lstlisting}[language=Kotlin,label=lis:Lexer,caption=The Lexer .,firstnumber=8]
 class Lexer(private val inputContent: String) : ILexer {
 \end{lstlisting}
 
-The \textit{ILexer} defines a \textit{getTokenSequence} function, which will give the token sequence, and an \textit{inputLine} function.
-The \textit{getTokenSequence} function will split the string input.
-\begin{lstlisting}[language=java,label=lis:LexerStringSplit,caption=The string is being split and new lines are added to the string .,firstnumber=8]
+The \textit{ILexer} defines a \textit{getTokenSequence} function, which gives the token sequence, and an \textit{inputLine} function.
+The \textit{getTokenSequence} function splits the string input.
+
+\begin{lstlisting}[language=Kotlin,label=lis:LexerStringSplit,caption=The string is being split and new lines are added to the string .,firstnumber=8]
 override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
 	val currentString = StringBuilder()
 	inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->
@@ -51,9 +52,9 @@ override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
 			}
 	with(currentString.toString()) {
 \end{lstlisting}		
-It will then match the characters to either a type, a boolean value, a special character, an identifier or a number literal.
+It then matches the characters to either a type, a boolean value, a special character, an identifier or a number literal.
 If this is not possible, it can be assumed that the split string, meaning the current line, is done.
-\begin{lstlisting}[language=java,label=lis:LexerStringMatcher,caption=The split string is being matched to a token,firstnumber=19]
+\begin{lstlisting}[language=Kotlin,label=lis:LexerStringMatcher,caption=The split string is being matched to a token,firstnumber=19]
 
 when {
 	// special char

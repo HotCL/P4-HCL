@@ -1,17 +1,18 @@
 %This section describes the Lexer
 %I have used lexer, tho I have described that a scanner is also valid wording
 %I possibly might need some reference to the EBNF section
+\section{Lexical Analysis}
 The first part of the compiler is concerned with the syntax analysis phase.
 This portion of the compiler is often called a lexer or a scanner.
 The point of the lexer is to transform a given input character stream, often a source code file, into a stream of tokens.
 
-The scanner will do this by breaking the character stream down into individual words, known in language theory as a lexeme.
+The lexer does this by breaking the character stream down into individual words, known in language theory as a lexeme.
 A lexeme is simply the smallest unit in a language, that still has a meaning.
 Some examples of lexemes in programming languages are \textbf{identifiers}, \textbf{keywords} and \textbf{operators}.
 
-The output of the scanner will be a stream of tokens.
+The output of the lexer is a stream of tokens.
 A token simply corresponds to individual symbols in a given programming language.
-The scanner will attempt to match every lexeme to a token.
+The lexer attempts to match every lexeme to a token.
 Sometimes several lexemes can be matched by the same token.
 In the case of identifiers, two different variables might be named \textit{Employee} and \textit{Customer}, but they would both be matched to the identifier token.
 Some tokens can only match a single, very specific, lexeme.
@@ -19,11 +20,10 @@ An example of this would be parentheses, where the left parentheses character, \
 
 The point here is to illustrate the importance of knowing when a parentheses starts or ends, compared to just knowing that there is an identifier, but not which identifier.
 
-Creating a lexer can be done in a number of ways.
+Creating a lexer can be done in a number of ways, which will be explored below.
 
-Below the different options will be explored.
 \subsection{Lexer Generators}
-The primary advantage for all Lexer generators, is that they allow for easy modification of the language, without having to  rewrite the lexer manually, as it is usually as simple as adding the rule to the CFG, and running the generator.
+The primary advantage for all Lexer generators, is that they allow for easy modification of the language, without having to rewrite the lexer manually, as it is usually as simple as adding the rule to the CFG, and running the generator.
 Below we will briefly describe ANTLR and Lex, two of the most well-known and used Lexer generators.
 
 \textbf{ANTLR}\\

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import parser.Parser
 import parser.AstNode
+import parser.ParserWithoutBuiltins
 
 class FunctionCallTests {
     @Test
@@ -322,7 +323,7 @@ class FunctionCallTests {
                 Token.Identifier("myFunc"),
                 Token.SpecialChar.EndOfLine
         ))
-        assertThrows(UndeclaredError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -349,7 +350,7 @@ class FunctionCallTests {
                 Token.SpecialChar.EndOfLine
         ))
         //TODO use less generic error
-        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -379,7 +380,7 @@ class FunctionCallTests {
                 Token.SpecialChar.EndOfLine
         ))
 
-        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -502,7 +503,7 @@ class FunctionCallTests {
                 Token.Literal.Number(5.0),
                 Token.SpecialChar.EndOfLine
         ))
-        assertThrows(Exception::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
@@ -637,7 +638,7 @@ class FunctionCallTests {
                 Token.Literal.Text("hej"),
                 Token.SpecialChar.EndOfLine
         ))
-        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).generateAbstractSyntaxTree() }
+        assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
