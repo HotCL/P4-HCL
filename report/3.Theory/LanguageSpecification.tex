@@ -93,6 +93,22 @@ The \texttt{<ImplicitType>} non-terminal, unlike the <Type> non-terminal, refers
 
 The \texttt{<DclValue>} non-terminal refers to both \texttt{<Expr>} (expression) for type declarations and \texttt{<LambdaExpr>} (function parameters and body) for function declarations.
 
+The below listing showcases declarations in HCL using type inference as described above.
+The listing includes both assignment of expressions and assignment of lambda-expressions.
+
+\begin{lstlisting}[language=HCL,caption={Implicit type declarations in HCL, here id is short for identifier.
+},firstnumber=1]
+var id1 = 3141596
+var id2 = 2718281
+var id3 = id1 > id2
+
+var id4 = id1 + id2
+
+var id5 = (num id6, num id7): { id6 * id7}
+
+var id8 = (txt id8)
+\end{lstlisting}
+
 \textbf{Function Calls}\\
 In order to better reflect the English language, function calls are structured in a way where the first parameter to a function is written before the function call itself.
 This first parameter will be referred to as the prefix parameter. 
