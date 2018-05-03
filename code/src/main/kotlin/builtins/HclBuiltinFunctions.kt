@@ -198,7 +198,7 @@ private fun buildWhileFunction() = buildFunction(
                 Parameter("condition", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "while (condition) { body(); }",
+        body = "while (condition) body();",
         inLine = true
 )
 
@@ -209,7 +209,7 @@ private fun buildThenFunction() = buildFunction(
                 Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None))
         ),
         returnType = Type.Bool,
-        body = "if (condition) { body(); } return condition;",
+        body = "if (condition) body();\n return condition;",
         inLine = true
 )
 //endregion builtInFunctions
