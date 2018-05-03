@@ -85,14 +85,17 @@ private inline fun<reified T: Token> accept(): T {
 \end{lstlisting}
 Snippet \ref{lis:acceptMethod} shows how the accept method is defined.
 This method is used to pop a token from the token stream, which is done by the \textit{\textbf{moveNext()}} method, if the token has the expected type.
-This is used for getting the current token if it's of the correct type. This can also be used even if the data of the token is irrelevant.
+This is used for getting the current token if it's of the correct type. 
+This can also be used even if the data of the token is irrelevant.
 For instance shown in snippet \ref{lis:acceptMethodHCLExample}, the accept method would be used to pop the equals-symbol. 
-However it's important that the equals symbol is present, as the code would not make sense without it. The accept method would then trow and error if another token would be present.
+However it's important that the equals symbol is present, as the code would not make sense without it. 
+The accept method would then trow and error if another token would be present.
 
 \begin{lstlisting}[language=HCL,label={lis:acceptMethodHCLExample},caption={An example of a declaration in HCL, where the accept method is used by the parser.}]
 num a = 5
 \end{lstlisting}
 Snippet \ref{lis:acceptMethodHCLExample} is a declaration, and these are handled by the \textit{\textbf{parseDeclaration}}, which is implemented as seen in snippet \ref{lis:parseDeclaration}. This is a great example of how parsing is done on a specific type of statement.
+
 Do note, the final parse declaration method is a little more complex due to type inference and type checking.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parseDeclaration,caption=A simplified version of the parse declaration method from the parser.]
@@ -109,7 +112,8 @@ private fun parseDeclaration(): AstNode.Command.Declaration {
 \end{lstlisting}
 
 The \textbf{\textit{parseDeclaration}} method, as shown in snippet \ref{lis:parseDeclaration}, will first save the type in the \textbf{\textit{type}} val, and then accept an identifier and saving it to an instance of Identifier, a subclass of the AstNode class. 
-the method then checks whether the new current symbol is an equals-symbol - if that's the case the declaration is followed by an expression - which means it's an declaration with an assignment otherwise the expression is set to null. The method then returns a Declaration, which is a subclass of AstNode.  
+the method then checks whether the new current symbol is an equals-symbol - if that's the case the declaration is followed by an expression - which means it's an declaration with an assignment otherwise the expression is set to null. 
+The method then returns a Declaration, which is a subclass of AstNode.  
 
 
 
