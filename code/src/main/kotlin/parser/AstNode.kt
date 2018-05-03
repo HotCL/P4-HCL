@@ -6,7 +6,6 @@ sealed class AstNode {
         data class Declaration(val type: Type, val identifier: Expression.Value.Identifier,
                                val expression: Expression? = null): Command()
 
-
         data class Assignment(val identifier: Expression.Value.Identifier, val expression: Expression): Command()
 
         sealed class Expression: Command() {
@@ -22,7 +21,8 @@ sealed class AstNode {
             }
             data class LambdaExpression(val paramDeclarations: List<ParameterDeclaration>, val returnType: Type,
                                         val body: LambdaBody,
-                                        val inLine: Boolean = false): Expression()
+                                        val attributes: LambdaExpressionAttributes = DefaultLambdaAttributes
+                                        ): Expression()
             data class LambdaBody(val commands: List<Command>): Expression()
             data class FunctionCall(val identifier: Value.Identifier, val arguments: List<Expression>): Expression()
         }

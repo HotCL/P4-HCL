@@ -2,6 +2,8 @@ package builtins
 
 import parser.AstNode
 import parser.AstNode.Type
+import parser.BuiltinLambdaAttributes
+import parser.LambdaExpressionAttributes
 
 private data class Parameter(val identifier: String, val type: Type)
 
@@ -59,8 +61,7 @@ private inline fun<reified P, reified R> buildPrefixOperator(functionName: Strin
                 Parameter("operand", P::class.objectInstance!!)
         ),
         returnType = R::class.objectInstance!!,
-        body = "return $operator operand;",
-        inLine = true
+        body = "return $operator operand;"
 )
 
 private inline fun<reified V, reified H, reified R> buildOperator(functionName: String, operator: String = functionName)
@@ -71,8 +72,7 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
                 Parameter("rightHand", H::class.objectInstance!!)
         ),
         returnType = R::class.objectInstance!!,
-        body = "return leftHand $operator rightHand;",
-        inLine = true
+        body = "return leftHand $operator rightHand;"
 )
 //endregion buildOperator_functions
 
@@ -85,8 +85,7 @@ private fun buildNumberToTextFunction() = buildFunction(
         returnType = Type.Bool,
         body = "char result[20] = \"\";" +
                "sprintf(result, \"%.4f\", input);" + //sprintf() apparently isn't very good, but it should work for now
-               "return result;",
-        inLine = false
+               "return result;"
 )
 
 private fun buildBoolToTextFunction() = buildFunction(
@@ -95,8 +94,7 @@ private fun buildBoolToTextFunction() = buildFunction(
                 Parameter("input", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "return input ? \"True\" : \"False\";",
-        inLine = false
+        body = "return input ? \"True\" : \"False\";"
 )
 
 private fun buildTextToTextFunction() = buildFunction(
@@ -105,8 +103,7 @@ private fun buildTextToTextFunction() = buildFunction(
                 Parameter("input", Type.Text)
         ),
         returnType = Type.Bool,
-        body = "return input;",
-        inLine = false
+        body = "return input;"
 )
 
 private fun buildGetListLengthFunction() = buildFunction(
@@ -115,8 +112,7 @@ private fun buildGetListLengthFunction() = buildFunction(
                 Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
         returnType = Type.Number,
-        body = "return list.size;",
-        inLine = true
+        body = "return list.size;"
 )
 
 private fun buildWhileFunction() = buildFunction(
@@ -126,8 +122,7 @@ private fun buildWhileFunction() = buildFunction(
                 Parameter("condition", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "while (condition) { body(); }",
-        inLine = true
+        body = "while (condition) { body(); }"
 )
 
 private fun buildThenFunction() = buildFunction(
@@ -137,20 +132,19 @@ private fun buildThenFunction() = buildFunction(
                 Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None))
         ),
         returnType = Type.Bool,
-        body = "if (condition) { body(); } return condition;",
-        inLine = true
+        body = "if (condition) { body(); } return condition;"
 )
 //endregion builtInFunctions
 
 private fun buildFunction(identifier: String, parameters: List<Parameter>, returnType: Type,
-                          body: String, inLine: Boolean) =
+                          body: String, attributes: LambdaExpressionAttributes = BuiltinLambdaAttributes) =
         AstNode.Command.Declaration(returnType, identifier.asIdentifier(),
                 AstNode.Command.Expression.LambdaExpression(
                         paramDeclarations = parameters.map {
                             AstNode.ParameterDeclaration(it.type, it.identifier.asIdentifier())
                         },
                         returnType = returnType,
-                        inLine = inLine,
+                        attributes = attributes,
                         body = body.asRawCppLambdaBody()
                 )
         )
