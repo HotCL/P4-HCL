@@ -30,11 +30,14 @@ object HclBuiltinFunctions {
             // Standard functions
                     buildTextEqualsFunction(),
                     buildTextNotEqualsFunction(),
+                    buildTextConcatFunction(),
                     buildNumberToTextFunction(),
                     buildTextToTextFunction(), //Redundant, but no reason for compiler to throw an error
                     buildBoolToTextFunction(),
                     buildGetListLengthFunction(),
-                    buildAtListFunction()
+                    buildAtListFunction(),
+                    buildSubListFunction(),
+                    buildListConcatFunction()
             )
 }
 
@@ -99,6 +102,21 @@ private fun buildTextNotEqualsFunction() = buildFunction(
         inLine = false
 )
 
+private fun buildTextConcatFunction() = buildFunction(
+        identifier = "+",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "char *ret = malloc((strlen(leftHand) + strlen(rightHand) + 1) * sizeof(char));\n" +
+               "ret[0] = 0;\n" +
+               "strcat(ret, leftHand);\n" +
+               "strcat(ret, rightHand);\n" +
+               "return ret;",
+        inLine = false
+)
+
 private fun buildNumberToTextFunction() = buildFunction(
         identifier = "toText",
         parameters = listOf(
@@ -146,7 +164,30 @@ private fun buildAtListFunction() = buildFunction(
                 Parameter("rightHand", Type.Number)
         ),
         returnType = Type.GenericType("T"),
-        body = "return ConstList<T>::at(list, rightHand);",
+        body = "return ConstList<T>::at(list, (unsigned int)rightHand);",
+        inLine = true
+)
+
+private fun buildListConcatFunction() = buildFunction(
+        identifier = "+",
+        parameters = listOf(
+                Parameter("leftHand", Type.List(Type.GenericType("T"))),
+                Parameter("rightHand", Type.List(Type.GenericType("T")))
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "return ConstList<T>::concat(leftHand, rightHand);",
+        inLine = true
+)
+
+private fun buildSubListFunction() = buildFunction(
+        identifier = "subList",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("startIndex", Type.Number),
+                Parameter("length", Type.Number)
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "return ConstList<T>::sublist(list, (unsigned int)startIndex, (unsigned int)length);",
         inLine = true
 )
 
