@@ -10,12 +10,6 @@ The idea of drawing inspiration from the English language is supposed to give th
 In conjunction with designing according to the English language and utilizing high-order functions, HCL's design also draws inspiration from the functional programming paradigm.
 In an effort to accommodate these ideas, almost all operations in HCL are done using functions. 
 
-Since HCL is supposed to be used on the Arduino platform, it is necessary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account. 
-These are explained in section \ref{arduinoC}.
-In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter.
-The \textbf{\textit{loop}} function loops consecutively.
-Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the Arduino's \textbf{\textit{setup}} function.
-
 The following is a rundown of the features and conventions of HCL's syntax.
 
 \subsection{Types}
@@ -34,14 +28,25 @@ Also included is the type \textbf{\textit{none}} which in some languages, partic
 Types can be declared in a few different ways, as the preliminary interviews indicate that users might be interested in declaring types both explicitly and implicitly.
 Therefore, types can be declared using the keyword \textbf{\textit{var}} (short for \textbf{variable\textit{}}) prefixed to an assignment, listing \ref{lis:typedcls}, line 1.
 Declarations can also be explicit by prefixing the type of the variable before an assignment, listing \ref{lis:typedcls}, line 2, or by prefixing the type before the variable without an assignment, listing \ref{lis:typedcls}, line 3.
-The three methods of declaration are seen in snippet below.
-A  \textbf{\textit{num}} example is also shown.
+
+Declaration of the different types are done in the following way:
+\begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
+num x = 10
+txt y = "string"
+bool z = True
+list[num] w = [0,1,1.2]
+tuple[txt,num] v = ("hello",2)
+func[txt] u = ():txt { "hello" }
+\end{lstlisting}
+
+As previously stated, declaration can be done either with an implicit type and an assignment, explicit type and an assignment or explicit type.
+This is shown through the \textbf{\textit{num}} type, in the following example:
 
 \begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
 var x = 5
 num y = 10
-txt s = "string"
-bool b
+num z
+
 \end{lstlisting}
 
 Using the prefix \textbf{\textit{var}} enables the use of type-inference, where the type of the variable is automatically inferred at compile time \cite{typeinf}.
@@ -69,7 +74,7 @@ var addNumbers = (num a, num b): num {
 \end{lstlisting} 
 A more explicit declaration of the same function can be seen in the snippet below:
 \begin{lstlisting}[language=HCL,label=lis:hclExplicitTypeDcls,firstnumber=1]
-func[num,num,none] addNumbers = (num a, num b): num {
+func[num,num,num] addNumbers = (num a, num b): num {
 	return a + b
 }
 \end{lstlisting}
@@ -187,6 +192,47 @@ var isAwesome = (num number): bool {
 The main reasoning for including function overloading is simplicity for the user.
 For instance, printing; 
 The print function should be able to print all basic types, so that the user does not have to worry about the type of what he is about to print.
+
+\subsection{Arduino functions}
+Since HCL is supposed to be used on the Arduino platform, it is necessary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account. 
+These are explained in section \ref{arduinoC}.
+In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter.
+The \textbf{\textit{loop}} function loops consecutively.
+Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the Arduino's \textbf{\textit{setup}} function, unless this is needed on a global scope. 
+
+This can be seen through the following example in HCL:
+\begin{lstlisting}[language=HCL,caption={Example of an arduino program in HCL},label={lis:hclArduinoExample},firstnumber=1]
+var led1 = 15 
+led1 LedSetup OUTPUT 
+
+"Hello" print
+
+{
+	led1 SetLEDPower True;
+	1000 delay
+	led1 SetLEDPower False
+	1000 delay
+} loop
+
+"World" print 
+\end{lstlisting}
+The sourcecode in HCL, in snippet \ref{lis:hclArduinoExample} would translate into the following \texttt{arduino-C++} code:
+\begin{lstlisting}[language=C,label={lis:cppArduinoExample},firstnumber=1]
+int led1 = 13;
+
+void setup() {
+	pinMode(led1, 1);
+	print("Hello");
+	print("World");
+}
+
+void loop() {
+	digitalWrite(led1, 1);
+	delay(1000);
+	digitalWrite(led1, 0);
+	delay(1000);
+} 
+\end{lstlisting}
 
 \subsection{Generics}
 HCL includes simple generics.
