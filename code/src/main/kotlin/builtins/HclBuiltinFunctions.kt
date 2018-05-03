@@ -108,7 +108,7 @@ private fun buildTextConcatFunction() = buildFunction(
                 Parameter("leftHand", Type.Text),
                 Parameter("rightHand", Type.Text)
         ),
-        returnType = Type.Bool,
+        returnType = Type.Text,
         body = "char *ret = malloc((strlen(leftHand) + strlen(rightHand) + 1) * sizeof(char));\n" +
                "ret[0] = 0;\n" +
                "strcat(ret, leftHand);\n" +
