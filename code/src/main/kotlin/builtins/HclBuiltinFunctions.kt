@@ -34,7 +34,8 @@ object HclBuiltinFunctions {
                     buildNumberToTextFunction(),
                     buildTextToTextFunction(), //Redundant, but no reason for compiler to throw an error
                     buildBoolToTextFunction(),
-                    buildGetListLengthFunction()
+                    buildGetListLengthFunction(),
+                    buildAtListFunction()
             )
 }
 
@@ -115,7 +116,18 @@ private fun buildGetListLengthFunction() = buildFunction(
                 Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
         returnType = Type.Number,
-        body = "return list.size;",
+        body = "return list.get()->size;",
+        inLine = true
+)
+
+private fun buildAtListFunction() = buildFunction(
+        identifier = "at",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("rightHand", Type.Number)
+        ),
+        returnType = Type.GenericType("T"),
+        body = "return ConstList<T>::at(list, rightHand);",
         inLine = true
 )
 
