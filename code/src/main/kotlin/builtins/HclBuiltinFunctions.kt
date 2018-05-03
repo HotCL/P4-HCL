@@ -17,11 +17,8 @@ object HclBuiltinFunctions {
 
                     buildOperatorNumNumToBool("<"),
                     buildOperatorNumNumToBool(">"),
-                    buildOperatorNumNumToBool("=="),
-                    buildOperatorNumNumToBool("!="),
-
-                    buildOperatorTxtTxtToBool("=="),
-                    buildOperatorTxtTxtToBool("!="),
+                    buildOperatorNumNumToBool("equals", "=="),
+                    buildOperatorNumNumToBool("notEquals", "!="),
 
                     buildOperatorBoolBoolToBool("&&"),
                     buildOperatorBoolBoolToBool("||"),
@@ -31,6 +28,8 @@ object HclBuiltinFunctions {
                     buildThenFunction(),
                     buildWhileFunction(),
             // Standard functions
+                    buildTextEqualsFunction(),
+                    buildTextNotEqualsFunction(),
                     buildNumberToTextFunction(),
                     buildTextToTextFunction(), //Redundant, but no reason for compiler to throw an error
                     buildBoolToTextFunction(),
@@ -78,6 +77,28 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
 //endregion buildOperator_functions
 
 //region builtInFunctions
+private fun buildTextEqualsFunction() = buildFunction(
+        identifier = "equals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) == 0;",
+        inLine = false
+)
+
+private fun buildTextNotEqualsFunction() = buildFunction(
+        identifier = "notEquals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) != 0;",
+        inLine = false
+)
+
 private fun buildNumberToTextFunction() = buildFunction(
         identifier = "toText",
         parameters = listOf(
