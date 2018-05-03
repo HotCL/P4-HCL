@@ -84,9 +84,7 @@ private fun buildNumberToTextFunction() = buildFunction(
                 Parameter("input", Type.Number)
         ),
         returnType = Type.Bool,
-        body = "char result[20] = \"\";" +
-               "sprintf(result, \"%.4f\", input);" + //sprintf() apparently isn't very good, but it should work for now
-               "return result;",
+        body = "return ftoa(input, 5);",
         inLine = false
 )
 
