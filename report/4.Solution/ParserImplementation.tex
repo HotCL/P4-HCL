@@ -94,8 +94,9 @@ The accept method would then trow and error if another token would be present.
 \begin{lstlisting}[language=HCL,label={lis:acceptMethodHCLExample},caption={An example of a declaration in HCL, where the accept method is used by the parser.}]
 num a = 5
 \end{lstlisting}
-Snippet \ref{lis:acceptMethodHCLExample} is a declaration, and these are handled by the \textit{\textbf{parseDeclaration}}, which is implemented as seen in snippet \ref{lis:parseDeclaration}. This is a great example of how parsing is done on a specific type of statement.
+Snippet \ref{lis:acceptMethodHCLExample} is a declaration, and these are handled by the \textit{\textbf{parseDeclaration}}, which is implemented as seen in snippet \ref{lis:parseDeclaration}.
 
+This is a great example of how parsing is done on a specific type of statement.
 Do note, the final parse declaration method is a little more complex due to type inference and type checking.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parseDeclaration,caption=A simplified version of the parse declaration method from the parser.]
