@@ -4,7 +4,8 @@ import lexer.Lexer
 import parser.Parser
 
 fun main(args: Array<String>) {
-    val code = "" +
+    val code = "tuple[num,txt] t;tuple[list[num],func[none]] y;"
+            "" +
             "var apply = (func[num, num] f, num x): num {\n" +
             "x f\n" +
             "}\n" +
@@ -14,11 +15,11 @@ fun main(args: Array<String>) {
             "} apply 7"
 
     val lexer = Lexer(code)
-    println("Tokens: \n" + lexer.getTokenSequence().joinToString(",\n") { "${it.token::class.qualifiedName}" })
+    //println("Tokens: \n" + lexer.getTokenSequence().joinToString(",\n") { "${it.token::class.qualifiedName}" })
     val parser = Parser(lexer)
     val ast = parser.generateAbstractSyntaxTree()
-    println("Ast: $ast")
-    println(SourceCodePrinter().generate(ast))
+    //println("Ast: $ast")
+    //println(SourceCodePrinter().generate(ast))
     val programFiles = ProgramGenerator().generate(ast)
     programFiles.forEach { print("FILE: ${it.fileName}:\n\n${it.content}\n\n\n") }
 }
