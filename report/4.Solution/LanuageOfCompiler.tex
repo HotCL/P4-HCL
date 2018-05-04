@@ -4,18 +4,26 @@ When creating a compiler there are three languages of relevance, as seen in the 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth/2+\textwidth/4]{4.Solution/images/T-diagram.png}
+	\begin{tikzpicture}
+	\begin{tombstonediagram}
+	\compiler{cmp}{H}{C++}{JVM}{}
+	\program[anchor=prg-2-2.north east]{prg}{Source}{H}{at (cmp-1-1.north west)}
+	\interpreter{int}{JVM}{x86}{at (cmp-2-2.south west)}
+	\program{prgo}{Source}{C++}{at (cmp-1-3.north east)}
+	\machine{mac}{x86}{at (int-2-1.south west)}
+	\end{tombstonediagram}
+	\end{tikzpicture}
 	\caption{
-		Example of Tombstone diagram showcasing an example of three languages for a given compiler\cite{TStoneWiki}.
+		A tombstone diagram, showing the compilation from HCL to C++\cite{TStoneWiki}.
 	}
-	\label{fig:TStoneExample}
+	\label{fig:TStoneOnlyHCL}
 \end{figure}
 In the case of the HCL compiler the three languages are as follows:
 
 \begin{enumerate}
-\item Input: \textbf{HCL} \\
+\item Input: \textbf{HCL, shown as H} \\
 \item Output: \textbf{Ardunio C++} \\
-\item Compiler: \textbf{Kotlin} \\
+\item Compiler: \textbf{Kotlin, executed on a JVM} \\
 \end{enumerate}
 
 \subsection{Language of the compiler}
