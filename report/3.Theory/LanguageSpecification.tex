@@ -53,12 +53,18 @@ Using the prefix \textbf{\textit{var}} enables the use of type-inference, where 
 HCL uses static typing, meaning that type-checking is done at compile time.
 
 \subsection{Operators}
-Most of the operators in HCL are defined as functions.
+Most of the typical operators found in structural and object oriented languages are defined as built-in functions in HCL.
 This means that all arithmetic operators are infix-functions, which has expressions as parameters. 
 The only operators that remain operators are the assign-operator and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
 Not having operators for arithmetic operations also means that there is no native operator precedence in HCL.
-This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses, since parentheses have higher precedence than operators.
+This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses, since parentheses have higher precedence than function calls. This workaround is shown below.
+
+\begin{lstlisting}[language=HCL,firstnumber=1]
+num x = 10 + 5 * 10 //Equals 150 in HCL
+num y = 10 + (5 * 10) //Equals 60 in HCL, which corresponds with algebra.
+}
+\end{lstlisting}
 
 \subsection{Functions}
 \textbf{Function Declaration}\\
@@ -96,17 +102,17 @@ The \texttt{<DclValue>} non-terminal refers to both \texttt{<Expr>} (expression)
 The below listing showcases declarations in HCL using type inference as described above.
 The listing includes both assignment of expressions and assignment of lambda-expressions.
 
-\begin{lstlisting}[language=HCL,caption={Implicit type declarations in HCL, here id is short for identifier.
+\begin{lstlisting}[language=HCL,caption={Implicit type declarations in HCL.
 },firstnumber=1]
-var id1 = 3141596
-var id2 = 2718281
-var id3 = id1 > id2
+var x = 3141596
+var y = 2718281
+var z = x > y
 
-var id4 = id1 + id2
+var w = x + y
 
-var id5 = (num id6, num id7): { id6 * id7}
+var v = (num v, num u): { v * u}
 
-var id8 = (txt id8)
+var h = (txt h)
 \end{lstlisting}
 
 \textbf{Function Calls}\\
@@ -125,12 +131,17 @@ The \textbf{where} function in this example returns an entry in the list based o
 \textbf{Grammar for function calls}\\
 Function calls are done with infix notation, meaning that if a given function is defined with parameters, the first argument has to appear before the function identifier, while all remaining arguments must appear after, in sequence.
 
-The following examples showcase this:
-\begin{itemize}
-	\item \texttt{printHelloWorld}
-	\item \texttt{"Hello World !!" print}
-	\item \texttt{"Hello" printWords "World" "!!"}
-\end{itemize}
+The following listing showcase this.
+\begin{lstlisting}[language=HCL,caption={Function call notation in HCL.
+printHelloWolrd, print and printWords are functions and have been declared before hand.
+},firstnumber=1]
+printHelloWorld
+
+"Hello World !!" print
+
+"Hello" printWords "World" "!!"
+\end{lstlisting}
+
 With this in mind, the grammar for function calls is specified as follows:
 \begin{align*}
 	\texttt{<FunctionCall>}\to & \texttt{ identifier}\\
