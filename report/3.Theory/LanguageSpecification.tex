@@ -58,7 +58,8 @@ This means that all arithmetic operators are infix-functions, which has expressi
 The only operators that remain operators are the assign-operator and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
 Not having operators for arithmetic operations also means that there is no native operator precedence in HCL.
-This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses, since parentheses have higher precedence than function calls. This workaround is shown below.
+This can be amended by structuring calculations in a left-to-right manner, or by encapsulating operations with parentheses, since parentheses have higher precedence than function calls. 
+This workaround is shown below.
 
 \begin{lstlisting}[language=HCL,firstnumber=1]
 num x = 10 + 5 * 10 //Equals 150 in HCL
