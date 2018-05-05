@@ -691,22 +691,18 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto', v}
+			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto', v \quad env_V, sto, e \rightarrow_e v}
 			{env_V, env_P \vdash \langle \{\ S\ return\ e \}, sto \rangle \rightarrow_L sto', v}
 	\end{math}
-	
-	\texttt{ where } $ env_V, sto' \rightarrow_e v$
 \end{center}
 
 \texttt{[$Lmb-ImpRetn_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
-	{env_V, env_P \vdash \langle sto \rangle \rightarrow_L sto', v}
+	{env_V, env_P \vdash \langle e, sto \rangle \rightarrow_L sto', v}
 	{env_V, env_P \vdash \langle \{\ e\ \}, sto \rangle \rightarrow_L sto', v}
 	\end{math}
-	
-	\texttt{ where } $ env_V, sto' \rightarrow_e v$
 \end{center}
 
 \texttt{[$Lmb-Noretn_{BSS}$]}
