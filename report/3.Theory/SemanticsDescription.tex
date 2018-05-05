@@ -78,9 +78,10 @@ $b\ ::=\ tf\ |\ x\ |\ a_1<a_2\ |\ a_1>a_2\ |\ a_1<=a_2\ |\ a_1>=a_2\ |\ a_1==a_2
 $t\ ::=\ str\ |\ x\ |\ t_1+t_2\ |\ t\ toString\ |\ (t)$\\
 $list\ ::=\ lst\ |\ x\ |\ list\ length\ |\ list\ @\ a\ |\ (list)$\\
 $tuple\ ::=\ tpl\ |\ x\ |\ tuple\ @\ a\ |\ (tuple)$\\
-$e\ ::=\ a\ |\ b\ |\ t\ |\ list\ |\ tuple\ |\ F_{exp}\ | L$\\
+$e\ ::=\ a\ |\ b\ |\ t\ |\ list\ |\ tuple\ |\ F_{call}\ | L$\\
+$F_{call}\ ::=\ pOrf\ |\ eOrL\ f\ eOrL^*$\\
 $L\ ::= \{\ S\ \}\ |\ \{\ S\ return\ e\ \}\ |\ \{\ S;\ e\ \}$\\
-$S\ ::=\ x\ =\ e\ |\ S_1;S_2\ |\ b\ then\ L\ |\ L\ while\ b\ |\ pOrf\ |\ eOrL\ f\ eOrL^*\ |\ D_V\ |\ D_P\ |\ \epsilon$\\
+$S\ ::=\ x\ =\ e\ |\ S_1;S_2\ |\ b\ then\ L\ |\ L\ while\ b\ |\ F_{call} |\ D_V\ |\ D_P\ |\ \epsilon$\\
 $D_v\ ::=\ T\ x\ =\ e;\ S\ |\ T\ x\ = call_{exp};\ S\ |\ T\ x;\ D_v\ |\ \epsilon$\\
 $D_p\ ::=\ T\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S\ |\ T\ pOrf;\ S\ |\ pOrf\ =\ ([T\ x]\sim):\ T\ L;\ S\ |\ \epsilon$
 
@@ -545,11 +546,12 @@ The transitions are shown below.
 	\begin{math}
 	\cfrac
 		{env_v', env_P'[f \mapsto (L, e, env_V', env_P')] \vdash \langle L, sto[l \mapsto v] \rangle \rightarrow_{stm} v, sto'}
-		{env_v, sto \vdash f \rightarrow_{F_{stm}} v, sto'}
+		{env_v, sto \vdash f \rightarrow_{stm} v, sto'}
 	\end{math}
 	
 	\texttt{ where } $env_P\ f = (L, e, env_V', env_P')$\\
 	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and } $l = env_V\ next$
 \end{center}
 
 \texttt{[$FuncCall-Params_{BSS}$]}\\
@@ -557,7 +559,7 @@ The transitions are shown below.
 	\begin{math}
 	\cfrac
 	{env_v'[x \mapsto l][nest \mapsto new\ l], env_P'[f \mapsto (L, x\sim, e, env_V', env_P')] \vdash \langle L, sto[l \mapsto v] \rangle \rightarrow_{stm} sto'}
-	{env_v, sto \vdash x\ f\ x\sim \rightarrow_{F_{stm}} v, sto'}
+	{env_v, sto \vdash x\ f\ x\sim \rightarrow_{stm} v, sto'}
 	\end{math}
 	
 	\texttt{ where } $env_P\ f = (L, e, env_V', env_P')$\\
@@ -691,7 +693,7 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto', v \quad env_V, sto, e \rightarrow_e v}
+			{env_V, env_P \vdash \langle S, sto \rangle \rightarrow_L sto' \quad env_V, sto', e \rightarrow_e v}
 			{env_V, env_P \vdash \langle \{\ S\ return\ e \}, sto \rangle \rightarrow_L sto', v}
 	\end{math}
 \end{center}
