@@ -5,14 +5,18 @@
 #include <cstdlib>
 #define MAX_STR_LEN 16
 
+/*
+ * This function returns a char array (string) representation of a floating point value
+ * Parameters: d = double to be converted | precision = number of digits after decimal point
+ */
 char *ftoa(double d, int precision) {
     char *buffer = (char*)malloc(MAX_STR_LEN * sizeof(char));
 
-    // Add numbers before decimal point to string
+    // Add digits before decimal point to string
     long wholePart = (long)d;
-    sprintf(buffer,"%i",wholePart);
+    sprintf(buffer,"%ld",wholePart);
 
-    // Add numbers after decimal point, if needed
+    // Add digits after decimal point, if needed
     if (precision > 0) {
         char *endOfString = buffer;
 
