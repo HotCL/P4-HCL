@@ -12,7 +12,6 @@ object HclBuiltinFunctions {
             // Operators
             listOf(
                     buildOperatorNumNumToNum("+"),
-                    buildOperatorNumNumToNum("plus", "+"),
                     buildOperatorNumNumToNum("-"),
                     buildOperatorNumNumToNum("*"),
                     buildOperatorNumNumToNum("/"),
@@ -83,8 +82,8 @@ private fun buildNumberToTextFunction() = buildFunction(
                 Parameter("input", Type.Number)
         ),
         returnType = Type.Bool,
-        body = "char result[20] = \"\";" +
-               "sprintf(result, \"%.4f\", input);" + //sprintf() apparently isn't very good, but it should work for now
+        body = "char result[20] = \"\";\n" +
+               "sprintf(result, \"%.4f\", input);\n" + //sprintf() apparently isn't very good, but it should work for now
                "return result;"
 )
 
@@ -132,7 +131,7 @@ private fun buildThenFunction() = buildFunction(
                 Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None))
         ),
         returnType = Type.Bool,
-        body = "if (condition) { body(); } return condition;"
+        body = "if (condition) { body(); }\nreturn condition;"
 )
 //endregion builtInFunctions
 
