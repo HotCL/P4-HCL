@@ -53,7 +53,7 @@ Using the prefix \textbf{\textit{var}} enables the use of type-inference, where 
 HCL uses static typing, meaning that type-checking is done at compile time.
 
 \subsection{Operators}
-Most of the typical operators found in structural and object oriented languages are defined as built-in functions in HCL.
+All Arithmetic operators are defined as built-in functions in HCL.
 This means that all arithmetic operators are infix-functions, which has expressions as parameters. 
 The only operators that remain operators are the assign-operator and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
@@ -105,15 +105,13 @@ The listing includes both assignment of expressions and assignment of lambda-exp
 
 \begin{lstlisting}[language=HCL,caption={Implicit type declarations in HCL.
 },firstnumber=1]
-var x = 3141596
-var y = 2718281
+var x = 5
+var y = 3
 var z = x > y
 
 var w = x + y
 
-var v = (num v, num u): { v * u}
-
-var h = (txt h)
+var v = (num v, num u): num { v * u}
 \end{lstlisting}
 
 \textbf{Function Calls}\\
@@ -134,7 +132,7 @@ Function calls are done with infix notation, meaning that if a given function is
 
 The following listing showcase this.
 \begin{lstlisting}[language=HCL,caption={Function call notation in HCL.
-printHelloWolrd, print and printWords are functions and have been declared before hand.
+printHelloWolrd, print and printWords are example functions.
 },firstnumber=1]
 printHelloWorld
 
@@ -224,9 +222,10 @@ The print function should be able to print all basic types, so that the user doe
 \subsection{Arduino functions}
 Since HCL is supposed to be used on the Arduino platform, it is necessary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account. 
 These are explained in section \ref{arduinoC}.
-In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter.
-The \textbf{\textit{loop}} function loops consecutively.
-Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the Arduino's \textbf{\textit{setup}} function, unless this is needed on a global scope. 
+In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter, is therefore defined in HCL.
+The \textbf{\textit{loop}} function iterates consecutively.
+Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the C++ global scope, if it is a declaration.
+Otherwise it is mapped to the Arduino's \textbf{\texttt{Setup}} function.
 
 This can be seen through the following example in HCL:
 \begin{lstlisting}[language=HCL,caption={Example of an arduino program in HCL},label={lis:hclArduinoExample},firstnumber=1]

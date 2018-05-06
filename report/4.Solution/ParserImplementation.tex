@@ -66,11 +66,11 @@ flushNewLine()
 return command
 }
 \end{lstlisting}
-Snippet \ref{lis:parseCommand} uses the functional functionality of Kotlin, to set the val\footnote{val is a read only variable} \textit{\textbf{command}} to a specific val based on the type of the current token (\textit{\textbf{current.token}}). 
+Snippet \ref{lis:parseCommand} uses the functional functionality of Kotlin, to set the val\footnote{val is a read only variable} \textit{\textbf{command}} to a specific value based on the type of the current token (\textit{\textbf{current.token}}). 
 This method calls other methods based on the type and based on specific rules in the HCL language. 
-For instance all statements starting with a "type" is a declaration, as seen in the CFG, therefore the \textit{\textbf{parseDeclaration}} method is called, and the returned val of this method is then going to be assigned to the command val.
+For instance all statements starting with a "type" is a declaration, as seen in the CFG, therefore the \textit{\textbf{parseDeclaration}} method is called, and the returned value of this method is then going to be assigned to the command value.
 	
-To simplify the parser and increase readability, certain helper methods is utilized. 
+To simplify the parser and increase readability, certain helper methods have been defined. 
 For instance the \textit{\textbf{accept<T>}} method. 
 \begin{lstlisting}[language=Kotlin,label={lis:acceptMethod},caption=The definition of the accept method on the parser]
 private inline fun<reified T: Token> accept(): T {
@@ -86,10 +86,9 @@ private inline fun<reified T: Token> accept(): T {
 Snippet \ref{lis:acceptMethod} shows how the accept method is defined.
 This method is used to pop a token from the token stream, which is done by the \textit{\textbf{moveNext()}} method, if the token has the expected type.
 This is used for getting the current token if it's of the correct type. 
-This can also be used even if the data of the token is irrelevant.
-For instance shown in snippet \ref{lis:acceptMethodHCLExample}, the accept method would be used to pop the equals-symbol. 
+This can also be used even if the data of the token is irrelevant, for instance shown in snippet \ref{lis:acceptMethodHCLExample}, the accept method would be used to pop the equals-symbol. 
 However it's important that the equals symbol is present, as the code would not make sense without it. 
-The accept method would then trow and error if another token would be present.
+The accept method would then trow an error if another token would be present.
 
 \begin{lstlisting}[language=HCL,label={lis:acceptMethodHCLExample},caption={An example of a declaration in HCL, where the accept method is used by the parser.}]
 num a = 5
@@ -112,8 +111,8 @@ private fun parseDeclaration(): AstNode.Command.Declaration {
 }
 \end{lstlisting}
 
-The \textbf{\textit{parseDeclaration}} method, as shown in snippet \ref{lis:parseDeclaration}, will first save the type in the \textbf{\textit{type}} val, and then accept an identifier and saving it to an instance of Identifier, a subclass of the AstNode class. 
-the method then checks whether the new current symbol is an equals-symbol - if that's the case the declaration is followed by an expression - which means it's an declaration with an assignment otherwise the expression is set to null. 
+The \textbf{\textit{parseDeclaration}} method, as shown in snippet \ref{lis:parseDeclaration}, will first save the type in the \textbf{\textit{type}} val, and then accept an identifier and save it to an instance of Identifier, a subclass of the AstNode class. 
+The method then checks whether the new current symbol is an equals-symbol - if that's the case the declaration is followed by an expression - which means it's an declaration with an assignment otherwise the expression is set to null. 
 The method then returns a Declaration, which is a subclass of AstNode.  
 
 
