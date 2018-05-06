@@ -1,0 +1,12 @@
+#agenda the 8th of May:
+Vi skal have en arbejsdag hvor vi får skudt lidt produktivtet ud.
+Heriblandt vil vi hygge os og også udforske arduino platformen.
+
+###timeframes
+1000 - 1030	indmøde
+1030 - 1230 produktivitet
+1200 - 1300 eatin and chillin
+1300 - 1600 work
+1600 - 1800 Leg med arduino og LED lys
+1800 - 1830 PIZZA
+1830 - ???? gaming? 
