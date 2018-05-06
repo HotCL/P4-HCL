@@ -3,27 +3,21 @@ package parserTests
 import com.natpryce.hamkrest.assertion.assertThat
 import exceptions.ImplicitTypeNotAllowed
 import exceptions.UnexpectedTypeError
-import lexer.Token
+import hclTestFramework.lexer.buildTokenSequence
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import parser.Parser
 import parser.AstNode
 import parser.ParserWithoutBuiltins
-import kotlin.coroutines.experimental.buildSequence
 
 class MiscellaneousTests {
 
     @Test
     fun canParseNumDeclaration() {
         assertThat(
-                listOf(
-                        Token.Type.Number,
-                        Token.Identifier("myId"),
-                        Token.SpecialChar.Equals,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    number.identifier("myId").`=`.number(5.0).newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Number,
@@ -36,13 +30,9 @@ class MiscellaneousTests {
 
     @Test
     fun failOnWrongType() {
-        val lexer = DummyLexer(listOf(
-                        Token.Type.Bool,
-                        Token.Identifier("myId"),
-                        Token.SpecialChar.Equals,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.EndOfLine
-                ))
+        val lexer = DummyLexer(buildTokenSequence {
+            bool.identifier("myId").`=`.number(5.0).newLine
+        })
 
         Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
@@ -51,13 +41,9 @@ class MiscellaneousTests {
     @Test
     fun canParseBool() {
         assertThat(
-                listOf(
-                        Token.Type.Bool,
-                        Token.Identifier("myBool"),
-                        Token.SpecialChar.Equals,
-                        Token.Literal.Bool(true),
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    bool.identifier("myBool").`=`.bool(true).newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Bool,
@@ -71,15 +57,9 @@ class MiscellaneousTests {
     @Test
     fun canParseNumAssignment() {
         assertThat(
-                listOf(
-                        Token.Type.Number,
-                        Token.Identifier("myId"),
-                        Token.SpecialChar.EndOfLine,
-                        Token.Identifier("myId"),
-                        Token.SpecialChar.Equals,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    number.identifier("myId").newLine.identifier("myId").`=`.number(5.0).newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Number,
@@ -96,13 +76,9 @@ class MiscellaneousTests {
     @Test
     fun canParseVarAssignmentNumber() {
         assertThat(
-                listOf(
-                        Token.Type.Var,
-                        Token.Identifier("myId"),
-                        Token.SpecialChar.Equals,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    `var`.identifier("myId").`=`.number(5.0).newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Number,
@@ -116,17 +92,9 @@ class MiscellaneousTests {
     @Test
     fun canParseVarAssignmentList() {
         assertThat(
-                listOf(
-                        Token.Type.Var,
-                        Token.Identifier("myList"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Literal.Number(7.0),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    `var`.identifier("myList").`=`.squareStart.number(5.0).`,`.number(7.0).squareEnd.newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.List(AstNode.Type.Number),
@@ -145,21 +113,9 @@ class MiscellaneousTests {
     @Test
     fun canParseVarAssignmentFunction() {
         assertThat(
-                listOf(
-                        Token.Type.Var,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Number,
-                        Token.Identifier("x"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Bool,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Bool(true),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    `var`.identifier("myFunc").`=`.`(`.number.identifier("x").`)`.colon.bool.`{`.bool(true).blockEnd.newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(
@@ -192,18 +148,9 @@ class MiscellaneousTests {
     @Test
     fun canParseNumAssignmentWithIdentifier() {
         assertThat(
-                listOf(
-                        Token.Type.Number,
-                        Token.Identifier("myNumber"),
-                        Token.SpecialChar.Equals,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.EndOfLine,
-                        Token.Type.Number,
-                        Token.Identifier("myId"),
-                        Token.SpecialChar.Equals,
-                        Token.Identifier("myNumber"),
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    number.identifier("myNumber").`=`.number(5.0).newLine.number.identifier("myId").`=`.identifier("myNumber").newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Number,
@@ -221,22 +168,16 @@ class MiscellaneousTests {
 
     @org.junit.jupiter.api.Test
     fun failsOnImplicitFuncAsParameter() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.List,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            list.squareStart.func.squareEnd.identifier("myFunc").newLine
+        })
         Assertions.assertThrows(ImplicitTypeNotAllowed::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
     fun failsOnLineStartsWithEquals() {
-        val lexer = DummyLexer(buildSequence {
-            yield(Token.SpecialChar.Equals)
-            yield(Token.SpecialChar.EndOfLine)
+        val lexer = DummyLexer(buildTokenSequence {
+            `=`.newLine
         })
 
         assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }

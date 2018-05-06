@@ -5,6 +5,7 @@ import exceptions.GenericPassedFunctionException
 import exceptions.UndeclaredError
 import exceptions.UnexpectedTokenError
 import exceptions.UnexpectedTypeError
+import hclTestFramework.lexer.buildTokenSequence
 import lexer.Token
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -17,26 +18,10 @@ class GenericsTests{
     @Test
     fun canDeclareWithGenerics() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Identifier("T"),
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("yeah"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine
-                ),
+                buildTokenSequence {
+                    func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.
+                    identifier("T").identifier("myParam1").`)`.colon.text.`{`.text("yeah").`}`.newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(
@@ -68,31 +53,11 @@ class GenericsTests{
     @Test
     fun canCallFunctionGenerics() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Identifier("T"),
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("generics!"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-
-                        Token.Literal.Number(5.0),
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.EndOfLine
-
-                ),
+                buildTokenSequence {
+                    func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.identifier("T").
+                    identifier("myParam1").`)`.colon.text.`{`.text("generics!").`}`.newLine.
+                    number(5.0).identifier("myFunc").newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(
@@ -129,72 +94,16 @@ class GenericsTests{
     @Test
     fun canCallFunctionGenericsNested() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.List,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Tuple,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Identifier("T3"),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.List,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myParam"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Tuple,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Identifier("T3"),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Identifier("T"),
-                        Token.Identifier("myT"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.BlockStart,
-                        Token.Identifier("myT"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-
-                        Token.Type.Number,
-                        Token.Identifier("x"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Literal.Number(1.0),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Literal.Number(2.0),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Literal.Number(1.0),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Literal.Text("test"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.Literal.Number(9.0),
-
-
-                        Token.SpecialChar.EndOfLine
-
-                ),
+                buildTokenSequence {
+                    func.squareStart.list.squareStart.identifier("T").squareEnd.`,`.tuple.squareStart.number.`,`.
+                    identifier("T3").squareEnd.`,`.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").
+                    `=`.`(`.list.squareStart.identifier("T").squareEnd.identifier("myParam").`,`.tuple.squareStart.
+                    number.`,`.identifier("T3").squareEnd.identifier("myParam1").`,`.identifier("T").identifier("myT").
+                    `)`.colon.identifier("T").`{`.identifier("myT").`}`.newLine.
+                            
+                    number.identifier("x").`=`.squareStart.number(1.0).`,`.number(2.0).squareEnd.identifier("myFunc").
+                    `(`.number(1.0).`,`.text("test").`)`.number(9.0).newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(
@@ -264,27 +173,10 @@ class GenericsTests{
     @Test
     fun identifyFunctionTest(){
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Identifier("T"),
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.BlockStart,
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine
-
-                ),
+                buildTokenSequence {
+                    func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").`=`.`(`.
+                    identifier("T").identifier("myParam1").`)`.colon.identifier("T").`{`.identifier("myParam1").`}`.newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(
@@ -315,97 +207,25 @@ class GenericsTests{
 
     @Test
     fun failOnCallExpressionWrongType() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Identifier("T"),
-                Token.SpecialChar.ListSeparator,
-                Token.Identifier("T"),
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Identifier("T"),
-                Token.Identifier("myParam"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Identifier("T"),
-                Token.SpecialChar.BlockStart,
-                Token.Identifier("myParam"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
-
-                Token.Type.Bool,
-                Token.Identifier("x"),
-                Token.SpecialChar.Equals,
-                Token.Literal.Number(1.0),
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.EndOfLine
-
-        ))
-
-
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").`=`.`(`.identifier("T").
+            identifier("myParam").`)`.colon.identifier("T").`{`.identifier("myParam").`}`.newLine.
+            bool.identifier("x").`=`.number(1.0).identifier("myFunc").newLine
+        })
         Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
-
     }
 
 
     @Test
     fun failOnPassedFunctionWithGenerics() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Number,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Number,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Number,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myParam"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Number,
-                Token.SpecialChar.BlockStart,
-                Token.Literal.Number(2.0),
-                Token.Identifier("passFunc"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.func.squareStart.number.squareEnd.`,`.number.squareEnd.identifier("myFunc").`=`.`(`.func.
+            squareStart.number.squareEnd.identifier("myParam").`)`.colon.number.`{`.number(2.0).identifier("passFunc").`}`.newLine.
+            func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("passFunc").`=`.`(`.identifier("T").
+            identifier("value").`)`.colon.identifier("T").`{`.identifier("value").`}`.newLine.
 
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Identifier("T"),
-                Token.SpecialChar.ListSeparator,
-                Token.Identifier("T"),
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("passFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Identifier("T"),
-                Token.Identifier("value"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Identifier("T"),
-                Token.SpecialChar.BlockStart,
-                Token.Identifier("value"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
-
-                Token.Type.Number,
-                Token.Identifier("x"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.Colon,
-                Token.Identifier("passFunc"),
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.EndOfLine
-        ))
+            number.identifier("x").`=`.colon.identifier("passFunc").identifier("myFunc").newLine
+        })
 
         Assertions.assertThrows(GenericPassedFunctionException::class.java) {
             ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree()
@@ -415,66 +235,24 @@ class GenericsTests{
 
     @Test
     fun failOnCallDifferentTypesInArgs() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Identifier("T"),
-                Token.SpecialChar.ListSeparator,
-                Token.Identifier("T"),
-                Token.SpecialChar.ListSeparator,
-                Token.Identifier("T"),
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Identifier("T"),
-                Token.Identifier("myParam"),
-                Token.SpecialChar.ListSeparator,
-                Token.Identifier("T"),
-                Token.Identifier("myParam2"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Identifier("T"),
-                Token.SpecialChar.BlockStart,
-                Token.Identifier("myParam"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.identifier("T").`,`.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").`=`.
+            `(`.identifier("T").identifier("myParam").`,`.identifier("T").identifier("myParam2").`)`.colon.identifier("T").
+            `{`.identifier("myParam").`}`.newLine.
 
-                Token.Type.Number,
-                Token.Identifier("x"),
-                Token.SpecialChar.Equals,
-                Token.Literal.Number(1.0),
-                Token.Identifier("myFunc"),
-                Token.Literal.Bool(true),
-                Token.SpecialChar.EndOfLine
+            number.identifier("x").`=`.number(1.0).identifier("myFunc").bool(true).newLine
 
-        ))
+        })
         Assertions.assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
 
     @Test
     fun failOnTypesNotMatchingWithExpression() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Identifier("T"),
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Number,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Identifier("T2"),
-                Token.Identifier("myParam1"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Text,
-                Token.SpecialChar.BlockStart,
-                Token.Literal.Text("haha"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.identifier("T").`,`.number.squareEnd.identifier("myFunc").`=`.`(`.identifier("T2").
+            identifier("myParam1").`)`.colon.text.`{`.text("haha").`}`.newLine
+        })
 
         Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
@@ -483,42 +261,13 @@ class GenericsTests{
     @Test
     fun canPassFunction() {
         assertThat(
-                listOf(
-                        Token.Type.Var,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Identifier("T"),
-                        Token.SpecialChar.BlockStart,
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
+                buildTokenSequence {
+                    `var`.identifier("myFunc").`=`.`(`.func.squareStart.identifier("T").squareEnd.identifier("myParam1").
+                    `)`.colon.identifier("T").`{`.identifier("myParam1").`}`.newLine.
 
-                        Token.Type.Var,
-                        Token.Identifier("passFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Number,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-
-                        Token.SpecialChar.Colon,
-                        Token.Identifier("passFunc"),
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.EndOfLine
-
-                ),
+                    `var`.identifier("passFunc").`=`.`(`.`)`.colon.number.`{`.number(5.0).`}`.newLine.
+                    colon.identifier("passFunc").identifier("myFunc").newLine
+                },
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Func.ExplicitFunc(
@@ -574,25 +323,18 @@ class GenericsTests{
     }
     @org.junit.jupiter.api.Test
     fun failGenericInList() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.List,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Identifier("T"),
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("x"),
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            list.squareStart.identifier("T").squareEnd.identifier("x").newLine
+        })
 
         Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 
     }
     @org.junit.jupiter.api.Test
     fun failGenericAsPlainType() {
-        val lexer = DummyLexer(listOf(
-                Token.Identifier("T"),
-                Token.Identifier("x"),
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            identifier("T").identifier("x").newLine
+        })
 
         Assertions.assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
 

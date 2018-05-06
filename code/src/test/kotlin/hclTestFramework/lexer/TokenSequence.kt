@@ -9,14 +9,20 @@ class TokenSequence {
     fun number(value: Double) = this.also { tokens.add(Token.Literal.Number(value)) }
     fun bool(value: Boolean) = this.also { tokens.add(Token.Literal.Bool(value)) }
     val `{` get () = this.also { tokens.add(lexer.Token.SpecialChar.BlockStart) }
+    val blockStart get () = this.also { tokens.add(lexer.Token.SpecialChar.BlockStart) }
     val `}` get () = this.also { tokens.add(lexer.Token.SpecialChar.BlockEnd) }
+    val blockEnd get () = this.also { tokens.add(lexer.Token.SpecialChar.BlockEnd) }
     val squareStart get () = this.also { tokens.add(lexer.Token.SpecialChar.SquareBracketStart) }
     val squareEnd get () = this.also { tokens.add(lexer.Token.SpecialChar.SquareBracketEnd) }
     val `(` get () = this.also { tokens.add(lexer.Token.SpecialChar.ParenthesesStart) }
+    val parenthesesStart get () = this.also { tokens.add(lexer.Token.SpecialChar.ParenthesesStart) }
     val `)` get () = this.also { tokens.add(lexer.Token.SpecialChar.ParenthesesEnd) }
+    val parenthesesEnd get () = this.also { tokens.add(lexer.Token.SpecialChar.ParenthesesEnd) }
     val newLine get () = this.also { tokens.add(lexer.Token.SpecialChar.EndOfLine) }
     val `,` get () = this.also { tokens.add(lexer.Token.SpecialChar.ListSeparator) }
+    val comma get () = this.also { tokens.add(lexer.Token.SpecialChar.ListSeparator) }
     val `=` get () = this.also { tokens.add(lexer.Token.SpecialChar.Equals) }
+    val equal get () = this.also { tokens.add(lexer.Token.SpecialChar.Equals) }
     val colon get () = this.also { tokens.add(lexer.Token.SpecialChar.Colon) }
     val `var` get () = this.also { tokens.add(lexer.Token.Type.Var) }
     val  none get () = this.also { tokens.add(lexer.Token.Type.None) }
