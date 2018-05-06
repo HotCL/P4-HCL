@@ -87,8 +87,7 @@ private fun buildTextEqualsFunction() = buildFunction(
                 Parameter("rightHand", Type.Text)
         ),
         returnType = Type.Bool,
-        body = "return strcmp(leftHand, rightHand) == 0;",
-        inLine = false
+        body = "return strcmp(leftHand, rightHand) == 0;"
 )
 
 private fun buildTextNotEqualsFunction() = buildFunction(
@@ -98,8 +97,7 @@ private fun buildTextNotEqualsFunction() = buildFunction(
                 Parameter("rightHand", Type.Text)
         ),
         returnType = Type.Bool,
-        body = "return strcmp(leftHand, rightHand) != 0;",
-        inLine = false
+        body = "return strcmp(leftHand, rightHand) != 0;"
 )
 
 private fun buildTextConcatFunction() = buildFunction(
@@ -113,8 +111,7 @@ private fun buildTextConcatFunction() = buildFunction(
                "ret[0] = 0;\n" +
                "strcat(ret, leftHand);\n" +
                "strcat(ret, rightHand);\n" +
-               "return ret;",
-        inLine = false
+               "return ret;"
 )
 
 private fun buildNumberToTextFunction() = buildFunction(
@@ -123,8 +120,7 @@ private fun buildNumberToTextFunction() = buildFunction(
                 Parameter("input", Type.Number)
         ),
         returnType = Type.Bool,
-        body = "return ftoa(input, 5);",
-        inLine = false
+        body = "return ftoa(input, 5);"
 )
 
 private fun buildBoolToTextFunction() = buildFunction(
@@ -151,8 +147,7 @@ private fun buildGetListLengthFunction() = buildFunction(
                 Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
         returnType = Type.Number,
-        body = "return list.get()->size;",
-        inLine = true
+        body = "return list.get()->size;"
 )
 
 private fun buildAtListFunction() = buildFunction(
@@ -162,8 +157,7 @@ private fun buildAtListFunction() = buildFunction(
                 Parameter("rightHand", Type.Number)
         ),
         returnType = Type.GenericType("T"),
-        body = "return ConstList<T>::at(list, (unsigned int)rightHand);",
-        inLine = true
+        body = "return ConstList<T>::at(list, (unsigned int)rightHand);"
 )
 
 private fun buildListConcatFunction() = buildFunction(
@@ -173,8 +167,7 @@ private fun buildListConcatFunction() = buildFunction(
                 Parameter("rightHand", Type.List(Type.GenericType("T")))
         ),
         returnType = Type.List(Type.GenericType("T")),
-        body = "return ConstList<T>::concat(leftHand, rightHand);",
-        inLine = true
+        body = "return ConstList<T>::concat(leftHand, rightHand);"
 )
 
 private fun buildSubListFunction() = buildFunction(
@@ -185,8 +178,7 @@ private fun buildSubListFunction() = buildFunction(
                 Parameter("length", Type.Number)
         ),
         returnType = Type.List(Type.GenericType("T")),
-        body = "return ConstList<T>::sublist(list, (unsigned int)startIndex, (unsigned int)length);",
-        inLine = true
+        body = "return ConstList<T>::sublist(list, (unsigned int)startIndex, (unsigned int)length);"
 )
 
 private fun buildWhileFunction() = buildFunction(
@@ -196,8 +188,7 @@ private fun buildWhileFunction() = buildFunction(
                 Parameter("condition", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "while (condition) body();",
-        inLine = true
+        body = "while (condition) body();"
 )
 
 private fun buildThenFunction() = buildFunction(
@@ -207,8 +198,7 @@ private fun buildThenFunction() = buildFunction(
                 Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None))
         ),
         returnType = Type.Bool,
-        body = "if (condition) body();\n return condition;",
-        inLine = true
+        body = "if (condition) body();\n return condition;"
 )
 //endregion builtInFunctions
 
