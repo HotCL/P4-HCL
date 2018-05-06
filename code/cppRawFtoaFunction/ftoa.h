@@ -25,11 +25,10 @@ char *ftoa(double d, int precision) {
         }
 
         double fraction = d - wholePart;
-        int endOfBuffer = atoi(buffer) + MAX_STR_LEN;
-        for (; precision > 0 && atoi(endOfString) < endOfBuffer; precision--) {
+        for (; precision > 0 && endOfString < (buffer + MAX_STR_LEN); precision--) {
             fraction *= 10;
             wholePart = (long)fraction;
-            *endOfString++ = '0' + (char)wholePart;
+            *endOfString++ = '0' + (char)wholePart; // Append digit to string
 
             fraction -= wholePart;
         }
