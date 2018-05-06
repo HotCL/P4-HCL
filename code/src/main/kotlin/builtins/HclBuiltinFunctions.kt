@@ -2,6 +2,8 @@ package builtins
 
 import parser.AstNode
 import parser.AstNode.Type
+import parser.BuiltinLambdaAttributes
+import parser.LambdaExpressionAttributes
 
 private data class Parameter(val identifier: String, val type: Type)
 
@@ -17,11 +19,8 @@ object HclBuiltinFunctions {
 
                     buildOperatorNumNumToBool("<"),
                     buildOperatorNumNumToBool(">"),
-                    buildOperatorNumNumToBool("=="),
-                    buildOperatorNumNumToBool("!="),
-
-                    buildOperatorTxtTxtToBool("=="),
-                    buildOperatorTxtTxtToBool("!="),
+                    buildOperatorNumNumToBool("equals", "=="),
+                    buildOperatorNumNumToBool("notEquals", "!="),
 
                     buildOperatorBoolBoolToBool("&&"),
                     buildOperatorBoolBoolToBool("||"),
@@ -31,11 +30,16 @@ object HclBuiltinFunctions {
                     buildThenFunction(),
                     buildWhileFunction(),
             // Standard functions
+                    buildTextEqualsFunction(),
+                    buildTextNotEqualsFunction(),
+                    buildTextConcatFunction(),
                     buildNumberToTextFunction(),
                     buildTextToTextFunction(), //Redundant, but no reason for compiler to throw an error
                     buildBoolToTextFunction(),
                     buildGetListLengthFunction(),
-                    buildAtListFunction()
+                    buildAtListFunction(),
+                    buildSubListFunction(),
+                    buildListConcatFunction()
             )
 }
 
@@ -60,8 +64,7 @@ private inline fun<reified P, reified R> buildPrefixOperator(functionName: Strin
                 Parameter("operand", P::class.objectInstance!!)
         ),
         returnType = R::class.objectInstance!!,
-        body = "return $operator operand;",
-        inLine = true
+        body = "return $operator operand;"
 )
 
 private inline fun<reified V, reified H, reified R> buildOperator(functionName: String, operator: String = functionName)
@@ -72,12 +75,48 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
                 Parameter("rightHand", H::class.objectInstance!!)
         ),
         returnType = R::class.objectInstance!!,
-        body = "return leftHand $operator rightHand;",
-        inLine = true
+        body = "return leftHand $operator rightHand;"
 )
 //endregion buildOperator_functions
 
 //region builtInFunctions
+private fun buildTextEqualsFunction() = buildFunction(
+        identifier = "equals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) == 0;",
+        inLine = false
+)
+
+private fun buildTextNotEqualsFunction() = buildFunction(
+        identifier = "notEquals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) != 0;",
+        inLine = false
+)
+
+private fun buildTextConcatFunction() = buildFunction(
+        identifier = "+",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Text,
+        body = "char *ret = malloc((strlen(leftHand) + strlen(rightHand) + 1) * sizeof(char));\n" +
+               "ret[0] = 0;\n" +
+               "strcat(ret, leftHand);\n" +
+               "strcat(ret, rightHand);\n" +
+               "return ret;",
+        inLine = false
+)
+
 private fun buildNumberToTextFunction() = buildFunction(
         identifier = "toText",
         parameters = listOf(
@@ -94,8 +133,7 @@ private fun buildBoolToTextFunction() = buildFunction(
                 Parameter("input", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "return input ? \"True\" : \"False\";",
-        inLine = false
+        body = "return input ? \"True\" : \"False\";"
 )
 
 private fun buildTextToTextFunction() = buildFunction(
@@ -104,8 +142,7 @@ private fun buildTextToTextFunction() = buildFunction(
                 Parameter("input", Type.Text)
         ),
         returnType = Type.Bool,
-        body = "return input;",
-        inLine = false
+        body = "return input;"
 )
 
 private fun buildGetListLengthFunction() = buildFunction(
@@ -125,7 +162,30 @@ private fun buildAtListFunction() = buildFunction(
                 Parameter("rightHand", Type.Number)
         ),
         returnType = Type.GenericType("T"),
-        body = "return ConstList<T>::at(list, rightHand);",
+        body = "return ConstList<T>::at(list, (unsigned int)rightHand);",
+        inLine = true
+)
+
+private fun buildListConcatFunction() = buildFunction(
+        identifier = "+",
+        parameters = listOf(
+                Parameter("leftHand", Type.List(Type.GenericType("T"))),
+                Parameter("rightHand", Type.List(Type.GenericType("T")))
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "return ConstList<T>::concat(leftHand, rightHand);",
+        inLine = true
+)
+
+private fun buildSubListFunction() = buildFunction(
+        identifier = "subList",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("startIndex", Type.Number),
+                Parameter("length", Type.Number)
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "return ConstList<T>::sublist(list, (unsigned int)startIndex, (unsigned int)length);",
         inLine = true
 )
 
@@ -136,7 +196,7 @@ private fun buildWhileFunction() = buildFunction(
                 Parameter("condition", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "while (condition) { body(); }",
+        body = "while (condition) body();",
         inLine = true
 )
 
@@ -147,20 +207,20 @@ private fun buildThenFunction() = buildFunction(
                 Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None))
         ),
         returnType = Type.Bool,
-        body = "if (condition) { body(); } return condition;",
+        body = "if (condition) body();\n return condition;",
         inLine = true
 )
 //endregion builtInFunctions
 
 private fun buildFunction(identifier: String, parameters: List<Parameter>, returnType: Type,
-                          body: String, inLine: Boolean) =
+                          body: String, attributes: LambdaExpressionAttributes = BuiltinLambdaAttributes) =
         AstNode.Command.Declaration(returnType, identifier.asIdentifier(),
                 AstNode.Command.Expression.LambdaExpression(
                         paramDeclarations = parameters.map {
                             AstNode.ParameterDeclaration(it.type, it.identifier.asIdentifier())
                         },
                         returnType = returnType,
-                        inLine = inLine,
+                        attributes = attributes,
                         body = body.asRawCppLambdaBody()
                 )
         )
