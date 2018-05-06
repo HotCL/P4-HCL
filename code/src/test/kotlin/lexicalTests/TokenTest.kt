@@ -10,18 +10,18 @@ class TokenTest {
 
     @org.junit.jupiter.api.Test
     fun testEqualsTokens() {
-        assertEquals(Token.Identifier("a").hashCode(),Token.Identifier("a").hashCode())
-        assertEquals(Token.Identifier("a").component1(),Token.Identifier("a").component1())
+        assertEquals(Token.Identifier("a").hashCode(), Token.Identifier("a").hashCode())
+        assertEquals(Token.Identifier("a").component1(), Token.Identifier("a").component1())
 
-        assertEquals(Token.Literal.Text("a").hashCode(),Token.Literal.Text("a").hashCode())
-        assertEquals(Token.Literal.Text("a").component1(),Token.Literal.Text("a").component1())
+        assertEquals(Token.Literal.Text("a").hashCode(), Token.Literal.Text("a").hashCode())
+        assertEquals(Token.Literal.Text("a").component1(), Token.Literal.Text("a").component1())
 
-        assertEquals(Token.Literal.Number(1).hashCode(),Token.Literal.Number(1).hashCode())
-        assertEquals(Token.Literal.Number(1).component1(),Token.Literal.Number(1).component1())
+        assertEquals(Token.Literal.Number(1).hashCode(), Token.Literal.Number(1).hashCode())
+        assertEquals(Token.Literal.Number(1).component1(), Token.Literal.Number(1).component1())
 
-        assertEquals(Token.Literal.Bool(true).hashCode(),Token.Literal.Bool(true).hashCode())
-        assertEquals(Token.Literal.Bool(true).toString(),Token.Literal.Bool(true).toString())
-        assertEquals(Token.Literal.Bool(true).component1(),Token.Literal.Bool(true).component1())
+        assertEquals(Token.Literal.Bool(true).hashCode(), Token.Literal.Bool(true).hashCode())
+        assertEquals(Token.Literal.Bool(true).toString(), Token.Literal.Bool(true).toString())
+        assertEquals(Token.Literal.Bool(true).component1(), Token.Literal.Bool(true).component1())
     }
 
 

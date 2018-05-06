@@ -1,144 +1,64 @@
 package lexicalTests
 
 import lexer.Lexer
-import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import lexer.PositionalToken
-import exceptions.StringDoesntEndError
+import hclTestFramework.lexer.buildTokenSequence
+import lexer.Token
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.given
+import org.jetbrains.spek.api.dsl.it
+import org.jetbrains.spek.api.dsl.on
 import org.junit.jupiter.api.Assertions.*
 
-class LexerTest {
-    @org.junit.jupiter.api.Test
-    fun lexerTestTokenGeneration() {
-        val lex = Lexer("var x = 5 + 7\nx = x times 10.0;")
+private fun lexerTestTokenGeneration() = TestData(
+    "var x = 5 + 7\nx = x times 10.0;",
+    buildTokenSequence {
+        `var`.identifier("x").`=`.number(5.0).identifier("+").number(7.0).newLine.
+                identifier("x").`=`.identifier("x").identifier("times").number(10.0).newLine
+    },
+    listOf (
+            listOf(0, 4, 6, 8, 10, 12, 13),
+            listOf(0, 2, 4, 6, 12, 16)
+    )
+)
 
-        val tokensPositional = lex.getTokenSequence().toList()
+private fun lexerTestIgnoreComments() = TestData(
+        "var x = 5# fem er et ret cool tal tbh\nx = 4",
+        buildTokenSequence {
+            `var`.identifier("x").`=`.number(5.0).newLine.identifier("x").`=`.number(4.0)
+        },
+        listOf (
+                listOf(0, 4, 6, 8, 9),
+                listOf(0, 2, 4)
+        )
+)
 
-        assertPositionalToken(tokensPositional[0],
-                { token -> token == lexer.Token.Type.Var },
-                0, 0)
+private fun lexerTestTypeDeclarationTokens() = TestData(
+        "var none num func tuple list bool txt",
+        buildTokenSequence { `var`.none.number.func.tuple.list.bool.text },
+        listOf (listOf(0, 4, 9, 13, 18, 24, 29, 34))
+)
 
-        assertPositionalToken(tokensPositional[1],
-                { token -> token == lexer.Token.Identifier("x") },
-                4, 0)
 
-        assertPositionalToken(tokensPositional[2],
-                { token -> token == lexer.Token.SpecialChar.Equals },
-                6, 0)
 
-        assertPositionalToken(tokensPositional[3],
-                { token -> token == lexer.Token.Literal.Number(5.0) },
-                8, 0)
-
-        assertPositionalToken(tokensPositional[4],
-                {token -> token == lexer.Token.Identifier("+") },
-                10, 0)
-
-        assertPositionalToken(tokensPositional[5],
-                { token -> token == lexer.Token.Literal.Number(7.0) },
-                12, 0)
-
-        assertPositionalToken(tokensPositional[6],
-                { token -> token == lexer.Token.SpecialChar.EndOfLine },
-                13, 0)
-
-        assertPositionalToken(tokensPositional[7],
-                { token -> token == lexer.Token.Identifier("x") },
-                0, 1)
-
-        assertPositionalToken(tokensPositional[8],
-                { token -> token == lexer.Token.SpecialChar.Equals },
-                2, 1)
-
-        assertPositionalToken(tokensPositional[9],
-                { token -> token == lexer.Token.Identifier("x") },
-                4, 1)
-
-        assertPositionalToken(tokensPositional[10],
-                { token -> token == lexer.Token.Identifier("times") },
-                6, 1)
-
-        assertPositionalToken(tokensPositional[11],
-                { token -> token == lexer.Token.Literal.Number(10.0) },
-                12, 1)
-        assertPositionalToken(tokensPositional[12],
-                { token -> token == lexer.Token.SpecialChar.EndOfLine },
-                16, 1)
-
-    }
-
-    @org.junit.jupiter.api.Test
-    fun lexerTestIgnoreComments() {
-        val lex = Lexer("var x = 5# fem er et ret cool tal tbh\nx = 4")
-
-        val tokensPositional = lex.getTokenSequence().toList()
-
-        assertPositionalToken(tokensPositional[0],
-                { token -> token == lexer.Token.Type.Var },
-                0, 0)
-
-        assertPositionalToken(tokensPositional[1],
-                { token -> token == lexer.Token.Identifier("x") },
-                4, 0)
-
-        assertPositionalToken(tokensPositional[2],
-                { token -> token == lexer.Token.SpecialChar.Equals },
-                6, 0)
-
-        assertPositionalToken(tokensPositional[3],
-                { token -> token == lexer.Token.Literal.Number(5.0) },
-                8, 0)
-
-        assertPositionalToken(tokensPositional[4],
-                { token -> token == lexer.Token.SpecialChar.EndOfLine},
-                9, 0)
-
-        assertPositionalToken(tokensPositional[5],
-                { token -> token == lexer.Token.Identifier("x") },
-                0, 1)
-
-        assertPositionalToken(tokensPositional[6],
-                { token -> token == lexer.Token.SpecialChar.Equals },
-                2, 1)
-
-        assertPositionalToken(tokensPositional[7],
-                { token -> token == lexer.Token.Literal.Number(4.0) },
-                4, 1)
-
-        assertEquals(9, tokensPositional.count())
-    }
-
-    @org.junit.jupiter.api.Test
-    fun lexerTestTypeDeclarationTokens() {
-        val lex = Lexer("var none num func tuple list bool txt")
-
-        val tokens = lex.getTokenSequence().toList()
-
-        assertTrue(tokens[0].token == lexer.Token.Type.Var)
-        assertTrue(tokens[1].token == lexer.Token.Type.None)
-        assertTrue(tokens[2].token == lexer.Token.Type.Number)
-        assertTrue(tokens[3].token == lexer.Token.Type.Func)
-        assertTrue(tokens[4].token == lexer.Token.Type.Tuple)
-        assertTrue(tokens[5].token == lexer.Token.Type.List)
-        assertTrue(tokens[6].token == lexer.Token.Type.Bool)
-        assertTrue(tokens[7].token == lexer.Token.Type.Text)
-    }
-
-    @org.junit.jupiter.api.Test
-    fun lexerTestLegalIdentifiers() {
-        val raw_input = "hej var1 +- æøå ↑ ☺☻ ??? _this £50 *bold* 6lol"
-        val raw_tokens = raw_input.split(' ')
-        val lex = Lexer(raw_input)
+private fun lexerTestLegalIdentifiers() = TestData(
+    "hej var1 +- æøå ↑ ☺☻ ??? _this £50 *bold* 6lol",
+    "hej var1 +- æøå ↑ ☺☻ ??? _this £50 *bold* 6lol".split(' ').map { Token.Identifier(it) },
+    listOf ("hej var1 +- æøå ↑ ☺☻ ??? _this £50 *bold* 6lol".ind)
+)
+/*
+        val rawInput = "hej var1 +- æøå ↑ ☺☻ ??? _this £50 *bold* 6lol"
+        val rawTokens = rawInput.split(' ')
+        val lex = Lexer(rawInput)
 
         val tokens = lex.getTokenSequence().toList()
 
         tokens.dropLast(1).forEachIndexed {index, posToken ->  assertTrue(posToken.token.let { it is lexer.Token.Identifier &&
-                it.value == raw_tokens[index]},
-                "${posToken.token} is not ${raw_tokens[index]}") }
+                it.value == rawTokens[index]},
+                "${posToken.token} is not ${rawTokens[index]}") }
         assertTrue(tokens.last().token == lexer.Token.SpecialChar.EndOfLine)
     }
 
-    @org.junit.jupiter.api.Test
     fun lexerTestIllegalIdentifiers() {
         val lex = Lexer("var = \"id\" 'di 'di' [] { () true , }")
         //Tokens: var, =, "id, "id", 'di, 'di', [, ], {, (, ), true, \, ",", ->, }
@@ -148,7 +68,6 @@ class LexerTest {
         assertTrue(tokens.last().token == lexer.Token.SpecialChar.EndOfLine)
     }
 
-    @org.junit.jupiter.api.Test
     fun lexerTestBooleanLiteralTokens() {
         val lex = Lexer("true false")
 
@@ -158,7 +77,6 @@ class LexerTest {
         assertTrue(tokens[1].token == lexer.Token.Literal.Bool(false))
     }
 
-    @org.junit.jupiter.api.Test
     fun lexerTestFunctionDeclaration() {
         val lex = Lexer("func print = (txt message) : none\n{ }")
 
@@ -205,7 +123,6 @@ class LexerTest {
                 3, 1)
     }
 
-    @org.junit.jupiter.api.Test
     fun lexerTestDoesntRequireWhitespaces() {
         val lex = Lexer("x=y[0]txt")
 
@@ -239,26 +156,16 @@ class LexerTest {
                 6, 0)
     }
 
-    @org.junit.jupiter.api.Test
     fun testAllSpecialChars() {
         val lex = Lexer("={}()[]\n;:,")
         val tokens = lex.getTokenSequence().toList()
-        assertTrue(tokens[0].token == lexer.Token.SpecialChar.Equals)
-        assertTrue(tokens[1].token == lexer.Token.SpecialChar.BlockStart)
-        assertTrue(tokens[2].token == lexer.Token.SpecialChar.BlockEnd)
-        assertTrue(tokens[3].token == lexer.Token.SpecialChar.ParenthesesStart)
-        assertTrue(tokens[4].token == lexer.Token.SpecialChar.ParenthesesEnd)
-        assertTrue(tokens[5].token == lexer.Token.SpecialChar.SquareBracketStart)
-        assertTrue(tokens[6].token == lexer.Token.SpecialChar.SquareBracketEnd)
-        assertTrue(tokens[7].token == lexer.Token.SpecialChar.EndOfLine)
-        assertTrue(tokens[8].token == lexer.Token.SpecialChar.EndOfLine)
-        assertTrue(tokens[9].token == lexer.Token.SpecialChar.Colon)
-        assertTrue(tokens[10].token == lexer.Token.SpecialChar.ListSeparator)
-        assertTrue(tokens[11].token == lexer.Token.SpecialChar.EndOfLine)
-        assertEquals(tokens.count(),12)
 
+        val expected = TokenSequence().`=`.`{`.`}`.`(`.`)`.squareStart.squareEnd.newLine.newLine.colon.`,`.newLine
+
+        assertEquals(expected.tokens, tokens.map { it.token })
+        assertEquals(tokens.count(), 12)
     }
-    @org.junit.jupiter.api.Test
+
     fun testIgnoresEndOfLineAfterLineContinue() {
         val lex = Lexer("a\\\n=")
         val tokens = lex.getTokenSequence().toList()
@@ -268,10 +175,6 @@ class LexerTest {
 
     }
 
-
-
-    // TODO figure out if this is irrelevant - this seems a lot like the lexerTestFunctionDeclaration function.
-    @org.junit.jupiter.api.Test
     fun lexerTestInlineLambdaExpression() {
         val lex = Lexer("x = 1 to 10 map {value * 2}")
 
@@ -315,15 +218,7 @@ class LexerTest {
                 27, 0)
     }
 
-    private fun assertPositionalToken(positionalToken: PositionalToken, validationExpression: (lexer.Token) -> Boolean,
-                                      expectedLineIndex:Int, ExpectedLineNumber:Int)
-    {
-        assertTrue(positionalToken.token.let { token -> validationExpression(token) }, "Failed on: ${positionalToken.token}")
-        assertThat(positionalToken.lineIndex, equalTo(expectedLineIndex))
-        assertThat(positionalToken.lineNumber, equalTo(ExpectedLineNumber))
-    }
 
-    @org.junit.jupiter.api.Test
     fun lexerUnfinishedStringFails() {
         assertThrows(StringDoesntEndError::class.java, {Lexer("\"hej").getTokenSequence().toList()})
         assertThrows(StringDoesntEndError::class.java, {Lexer("'hej").getTokenSequence().toList()})
@@ -371,7 +266,7 @@ class LexerTest {
                 0, 0)
 
         assertPositionalToken(tokens[1],
-                { token -> token is lexer.Token.SpecialChar.Equals },
+                { token -> token == lexer.Token.SpecialChar.Equals },
                 1, 0)
 
         assertPositionalToken(tokens[2],
@@ -388,4 +283,36 @@ class LexerTest {
                 { token -> token is lexer.Token.Literal.Number && token.value == -5.0 },
                 0, 0)
     }
-}
+*/
+
+object LexerTestS : Spek({
+    given("the HCL lexer") {
+        listOf(
+            lexerTestTokenGeneration(),
+            lexerTestIgnoreComments(),
+            lexerTestTypeDeclarationTokens()
+        ).forEach { testData ->
+            on(testData.string) {
+                val positions = testData.positions.mapIndexed { lineNum, linePositions ->
+                        linePositions.map { Pair(it, lineNum)
+                    }
+                }.flatten()
+                val positionalTokens = testData.tokenList.zip(positions).map {
+                    PositionalToken(it.first, it.second.second, it.second.first)
+                }
+                val actualResult = Lexer(testData.string).getTokenSequence().toList()
+                val expectedWithResult = positionalTokens.zip(actualResult)
+                expectedWithResult.forEach { res ->
+                    it("should yield the token ${res.first.token} at idx ${res.first.lineIndex} line ${res.first.lineNumber}") {
+                        assertEquals(res.first.token::class.simpleName, res.second.token::class.simpleName)
+                        assertEquals(res.first.lineIndex, res.second.lineIndex)
+                        assertEquals(res.first.lineNumber, res.second.lineNumber)
+                    }
+                }
+            }
+        }
+    }
+})
+
+private infix fun Int.line(other: Int) = Pair(this, other)
+private data class TestData(val string: String, val tokenList: List<Token>, val positions: List<List<Int>>)
