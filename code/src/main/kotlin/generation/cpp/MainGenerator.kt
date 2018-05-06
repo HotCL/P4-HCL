@@ -7,10 +7,21 @@ import parser.AstNode
 class MainGenerator : IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
         return ast.genFromFilter { it.isDecl } +
-                "\n\n/*SECOND PART*/\n\n" +
+                "\n\n/* Setup function */\n\n" +
+                "void setup() {\n" +
                 ast.genFromFilter { !it.isLoop && !it.isDecl} +
-                "\n\n/*LAST PART*/\n\n" +
-                ast.genFromFilter { it.isLoop }
+                "}\n" +
+                "\n\n/* Loop function */\n\n" +
+                "void loop() {\n" +
+                ast.genFromFilter { it.isLoop } +
+                "}\n" +
+                "#ifndef (ARDUINO_AVR_UNO)\n" +
+                "int main() {\n" +
+                "   setup();\n" +
+                "   while(1) { loop(); }\n" +
+                "   return 0;\n" +
+                "}\n" +
+                "#endif\n"
     }
 
     private val AstNode.Command.isLoop get() = this is AstNode.Command.Expression.FunctionCall && identifier.name == "loop"

@@ -35,5 +35,4 @@ val AstNode.Type.getGenerics get():List<AstNode.Type.GenericType> = when(this){
     else -> listOf()
 }
 
-
-operator fun String.times (num: Int) = (0 .. num).joinToString("") { this }
+operator fun String.times (num: Int) = (0 until num).joinToString("") { this }

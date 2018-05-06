@@ -12,7 +12,6 @@ object HclBuiltinFunctions {
             // Operators
             listOf(
                     buildOperatorNumNumToNum("+"),
-                    buildOperatorNumNumToNum("plus", "+"),
                     buildOperatorNumNumToNum("-"),
                     buildOperatorNumNumToNum("*"),
                     buildOperatorNumNumToNum("/"),
@@ -85,7 +84,7 @@ private fun buildNumberToTextFunction() = buildFunction(
         returnType = Type.Bool,
         body = "char result[20] = \"\";\n" +
                "sprintf(result, \"%.4f\", input);\n" + //sprintf() apparently isn't very good, but it should work for now
-               "return result;\n"
+               "return result;"
 )
 
 private fun buildBoolToTextFunction() = buildFunction(
