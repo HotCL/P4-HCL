@@ -32,6 +32,12 @@ An example AST can be seen on figure \ref{fig:ast}.
 	\label{fig:ast}
 \end{figure}
 
+The AST from figure \ref{fig:ast} was generated from the following HCL sourcecode:
+\begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
+a = x * (4 + 5) * (6 + 12)
+\end{lstlisting}
+
+
 \subsection{Contextual analysis}
 Apart from syntactical analysis, the parser is also concerned with contextual analysis. 
 The contextual analysis ensures that types are correct, immutable variables are not reassigned, and other contextual aspects that cannot be inferred from the CFG.
