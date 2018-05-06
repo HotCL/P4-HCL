@@ -38,6 +38,7 @@ infix fun String.calledWith(params: List<AstNode.Command.Expression>) =
         AstNode.Command.Expression.FunctionCall(asIdentifier, params)
 infix fun String.calledWith(param: AstNode.Command.Expression) = this calledWith listOf(param)
 
+fun generic(string: String) = AstNode.Type.GenericType(string)
 
 fun txt(string: String) = AstNode.Command.Expression.Value.Literal.Text(string)
 fun num(num: Double) = AstNode.Command.Expression.Value.Literal.Number(num)

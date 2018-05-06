@@ -6,6 +6,7 @@ import exceptions.UndeclaredError
 import exceptions.UnexpectedTokenError
 import exceptions.UnexpectedTypeError
 import hclTestFramework.lexer.buildTokenSequence
+import hclTestFramework.parser.*
 import lexer.Token
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -18,190 +19,75 @@ class GenericsTests{
     @Test
     fun canDeclareWithGenerics() {
         assertThat(
-                buildTokenSequence {
-                    func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.
-                    identifier("T").identifier("myParam1").`)`.colon.text.`{`.text("yeah").`}`.newLine
-                },
-                matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.GenericType("T")),
-                                        AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression
-                                (
-                                        listOf
-                                        (
-                                                AstNode.ParameterDeclaration
-                                                (
-                                                        AstNode.Type.GenericType("T"),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
-                                                )
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("yeah")
-                                                )
-                                        ))
-                                )
-                        )
+            buildTokenSequence {
+                func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.
+                identifier("T").identifier("myParam1").`)`.colon.text.`{`.text("yeah").`}`.newLine
+            },
+            matchesAstChildren(
+                "myFunc" declaredAs func(txt, generic("T")) withValue (
+                    lambda() returning txt withArgument ("myParam1" asType generic("T")) andBody ret(txt("yeah"))
                 )
+            )
         )
     }
 
     @Test
     fun canCallFunctionGenerics() {
         assertThat(
-                buildTokenSequence {
-                    func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.identifier("T").
-                    identifier("myParam1").`)`.colon.text.`{`.text("generics!").`}`.newLine.
-                    number(5.0).identifier("myFunc").newLine
-                },
-                matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.GenericType("T")),
-                                        AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression
-                                (
-                                        listOf
-                                        (
-                                                AstNode.ParameterDeclaration
-                                                (
-                                                        AstNode.Type.GenericType("T"),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
-                                                )
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("generics!")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                )
-                        )
-                )
+            buildTokenSequence {
+                func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.identifier("T").
+                identifier("myParam1").`)`.colon.text.`{`.text("generics!").`}`.newLine.
+                number(5.0).identifier("myFunc").newLine
+            },
+            matchesAstChildren(
+                "myFunc" declaredAs func(txt, generic("T")) withValue (
+                    lambda() returning txt withArgument ("myParam1" asType generic("T")) andBody ret(txt("generics!"))
+                ),
+                "myFunc" calledWith num(5)
+            )
         )
     }
 
     @Test
     fun canCallFunctionGenericsNested() {
         assertThat(
-                buildTokenSequence {
-                    func.squareStart.list.squareStart.identifier("T").squareEnd.`,`.tuple.squareStart.number.`,`.
-                    identifier("T3").squareEnd.`,`.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").
-                    `=`.`(`.list.squareStart.identifier("T").squareEnd.identifier("myParam").`,`.tuple.squareStart.
-                    number.`,`.identifier("T3").squareEnd.identifier("myParam1").`,`.identifier("T").identifier("myT").
-                    `)`.colon.identifier("T").`{`.identifier("myT").`}`.newLine.
-                            
-                    number.identifier("x").`=`.squareStart.number(1.0).`,`.number(2.0).squareEnd.identifier("myFunc").
-                    `(`.number(1.0).`,`.text("test").`)`.number(9.0).newLine
-                },
-                matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(
-                                                AstNode.Type.List(AstNode.Type.GenericType("T")),
-                                                AstNode.Type.Tuple(listOf(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Type.GenericType("T3"))),
-                                                AstNode.Type.GenericType("T")
-                                        ),
-                                        AstNode.Type.GenericType("T")),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression
-                                (
-                                        listOf
-                                        (
-                                                AstNode.ParameterDeclaration
-                                                (
-                                                        AstNode.Type.List(AstNode.Type.GenericType("T")),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam")
-                                                ),
-                                                AstNode.ParameterDeclaration
-                                                (
-                                                        AstNode.Type.Tuple(listOf(
-                                                                AstNode.Type.Number,
-                                                                AstNode.Type.GenericType("T3"))),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
-                                                ),
-                                                AstNode.ParameterDeclaration
-                                                (
-                                                        AstNode.Type.GenericType("T"),
-                                                        AstNode.Command.Expression.Value.Identifier("myT")
-                                                )
-                                        ),
-                                        AstNode.Type.GenericType("T"),
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                    AstNode.Command.Expression.Value.Identifier("myT")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Number,
-                                AstNode.Command.Expression.Value.Identifier("x"),
-                                AstNode.Command.Expression.FunctionCall(
-                                        AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                        listOf(
-                                                AstNode.Command.Expression.Value.Literal.List(listOf(
-                                                        AstNode.Command.Expression.Value.Literal.Number(1.0),
-                                                        AstNode.Command.Expression.Value.Literal.Number(2.0)
+            buildTokenSequence {
+                func.squareStart.list.squareStart.identifier("T").squareEnd.`,`.tuple.squareStart.number.`,`.
+                identifier("T3").squareEnd.`,`.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").
+                `=`.`(`.list.squareStart.identifier("T").squareEnd.identifier("myParam").`,`.tuple.squareStart.
+                number.`,`.identifier("T3").squareEnd.identifier("myParam1").`,`.identifier("T").identifier("myT").
+                `)`.colon.identifier("T").`{`.identifier("myT").`}`.newLine.
 
-                                                )),
-                                                AstNode.Command.Expression.Value.Literal.Tuple(listOf(
-                                                        AstNode.Command.Expression.Value.Literal.Number(1.0),
-                                                        AstNode.Command.Expression.Value.Literal.Text("test")
-
-                                                )),
-                                                AstNode.Command.Expression.Value.Literal.Number(9.0)
-                                        )
-                                )
-                        )
-                )
+                number.identifier("x").`=`.squareStart.number(1.0).`,`.number(2.0).squareEnd.identifier("myFunc").
+                `(`.number(1.0).`,`.text("test").`)`.number(9.0).newLine
+            },
+            matchesAstChildren(
+                "myFunc" declaredAs func(generic("T"), listOf(list(generic("T")), tpl(num, generic("T3")), generic("T")))
+                withValue (lambda() returning generic("T") withArguments listOf(
+                        "myParam" asType list(generic("T")),
+                        "myParam1" asType tpl(num, generic("T3")),
+                        "myT" asType generic("T")
+                    ) andBody ret("myT".asIdentifier)
+                ),
+                "x" declaredAs num withValue ("myFunc" calledWith listOf(list(num(1), num(2)), tpl(num(1), txt("test")), num(9)))
+            )
         )
     }
 
     @Test
-    fun identifyFunctionTest(){
+    fun testIdentityFunction(){
         assertThat(
-                buildTokenSequence {
-                    func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").`=`.`(`.
-                    identifier("T").identifier("myParam1").`)`.colon.identifier("T").`{`.identifier("myParam1").`}`.newLine
-                },
-                matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.GenericType("T")),
-                                        AstNode.Type.GenericType("T")),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression
-                                (
-                                        listOf
-                                        (
-                                                AstNode.ParameterDeclaration
-                                                (
-                                                        AstNode.Type.GenericType("T"),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
-                                                )
-                                        ),
-                                        AstNode.Type.GenericType("T"),
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
-                                                )
-                                        ))
-                                )
-                        )
+            buildTokenSequence {
+                func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").`=`.`(`.
+                identifier("T").identifier("myParam1").`)`.colon.identifier("T").`{`.identifier("myParam1").`}`.newLine
+            },
+            matchesAstChildren(
+                "myFunc" declaredAs func(generic("T"), generic("T")) withValue (lambda()
+                    returning generic("T")
+                    withArgument ("myParam1" asType generic("T"))
+                    andBody ret("myParam1".asIdentifier)
                 )
+            )
         )
     }
 
@@ -269,55 +155,13 @@ class GenericsTests{
                     colon.identifier("passFunc").identifier("myFunc").newLine
                 },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Func.ExplicitFunc(
-                                                listOf(),
-                                                AstNode.Type.GenericType("T")
-                                        )),
-                                        AstNode.Type.GenericType("T")),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression
-                                (
-                                        listOf
-                                        (
-                                                AstNode.ParameterDeclaration
-                                                (
-                                                        AstNode.Type.Func.ExplicitFunc(
-                                                                listOf(),
-                                                                AstNode.Type.GenericType("T")
-                                                        ),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")
-                                                )
-                                        ),
-                                        AstNode.Type.GenericType("T"),
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(AstNode.Command.Expression.FunctionCall(
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1"),
-                                                        listOf()))
-                                        ))
-                                )
+                        "myFunc" declaredAs func(generic("T"), func(generic("T"))) withValue (lambda()
+                            returning generic("T")
+                            withArgument ("myParam1" asType func(generic("T")))
+                            andBody ret("myParam1".called())
                         ),
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(),
-                                        AstNode.Type.Number),
-                                AstNode.Command.Expression.Value.Identifier("passFunc"),
-                                AstNode.Command.Expression.LambdaExpression
-                                (
-                                        listOf(),
-                                        AstNode.Type.Number,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Identifier("passFunc"))
-                        )
+                        "passFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
+                        "myFunc" calledWith "passFunc".asIdentifier
                 )
         )
     }
