@@ -1,14 +1,12 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import exceptions.UndeclaredError
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
-import lexer.Token
+import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import parser.Parser
 import parser.AstNode
 import parser.ParserWithoutBuiltins
 
@@ -21,26 +19,8 @@ class FunctionCallTests {
                 identifier("myFunc").newLine
             },
             matchesAstChildren(
-                    AstNode.Command.Declaration(
-                            AstNode.Type.Func.ExplicitFunc(
-                                    listOf(),
-                                    AstNode.Type.Text
-                            ),
-                            AstNode.Command.Expression.Value.Identifier("myFunc"),
-                            AstNode.Command.Expression.LambdaExpression(
-                                    listOf(),
-                                    AstNode.Type.Text,
-                                    AstNode.Command.Expression.LambdaBody(listOf(
-                                            AstNode.Command.Return(
-                                            AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                            )
-                                    ))
-                            )
-                    ),
-                    AstNode.Command.Expression.FunctionCall(
-                            AstNode.Command.Expression.Value.Identifier("myFunc"),
-                            listOf()
-                    )
+                    "myFunc" declaredAs func(txt) withValue (lambda() returning txt andBody ret(txt("HEY"))),
+                    "myFunc".called()
             )
         )
     }
@@ -58,46 +38,13 @@ class FunctionCallTests {
                     number(5.0).identifier("toString").newLine
                 },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("toString"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
+                        "toString" declaredAs func(txt, num) withValue (
+                            lambda() returning txt withArgument ("myParam" asType num) andBody ret(txt("HEY"))
                         ),
-
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Text), AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("toString"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Text,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
+                        "toString" declaredAs func(txt, txt) withValue (
+                            lambda() returning txt withArgument ("myParam" asType txt) andBody ret(txt("HEY"))
                         ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("toString"),
-                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                )
-                        )
+                        "toString" calledWith num(5)
                 )
         )
     }
@@ -112,31 +59,10 @@ class FunctionCallTests {
                 number(5.0).identifier("myFunc").newLine
             },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Number),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                )
-                        )
+                    "myFunc" declaredAs func(txt, num) withValue (
+                        lambda() returning txt withArgument ("myParam" asType num) andBody ret(txt("HEY"))
+                    ),
+                    "myFunc" calledWith num(5)
                 )
         )
     }
@@ -152,44 +78,10 @@ class FunctionCallTests {
                 colon.identifier("myTextFunc").identifier("myFunc").newLine
             },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text)),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                    AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("myTextFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                    AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Identifier("myTextFunc"))
-                        )
+                    "myFunc" declaredAs func(txt, func(txt)) withValue
+                        (lambda() returning txt withArgument ("myParam" asType func(txt)) andBody ret(txt("HEY"))),
+                    "myTextFunc" declaredAs func(txt) withValue (lambda() returning txt withBody ret(txt("HEY"))),
+                    "myFunc" calledWith "myTextFunc".asIdentifier
                 )
         )
     }
@@ -241,49 +133,10 @@ class FunctionCallTests {
                 `(`.number(5.0).`,`.text("hej").`)`.identifier("myFunc").newLine
             },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(
-                                                AstNode.Type.Tuple(
-                                                        listOf(
-                                                                AstNode.Type.Number,
-                                                                AstNode.Type.Text
-                                                        )
-                                                )
-                                        ),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Tuple(
-                                                                listOf(
-                                                                        AstNode.Type.Number,
-                                                                        AstNode.Type.Text
-                                                                )
-                                                        ),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(
-                                        AstNode.Command.Expression.Value.Literal.Tuple(
-                                                listOf(
-                                                        AstNode.Command.Expression.Value.Literal.Number(5.0),
-                                                        AstNode.Command.Expression.Value.Literal.Text("hej")
-                                                )
-                                        )
-                                )
-                        )
+                    "myFunc" declaredAs func(txt, tpl(num, txt)) withValue (
+                        lambda() returning txt withArgument ("myParam" asType tpl(num, txt)) andBody ret(txt("HEY"))
+                    ),
+                    "myFunc" calledWith tpl(num(5), txt("hej"))
                 )
         )
     }
