@@ -10,7 +10,7 @@ char *ftoa(double d, int precision) {
 
     // Add numbers before decimal point to string
     long wholePart = (long)d;
-    ltoa(wholePart,buffer,10);
+    sprintf(buffer,"%i",wholePart);
 
     // Add numbers after decimal point, if needed
     if (precision > 0) {
@@ -25,8 +25,8 @@ char *ftoa(double d, int precision) {
         }
 
         double fraction = d - wholePart;
-        int endOfBuffer = (int)buffer + MAX_STR_LEN;
-        for (; precision > 0 && (int)endOfString < endOfBuffer; precision--) {
+        int endOfBuffer = atoi(buffer) + MAX_STR_LEN;
+        for (; precision > 0 && atoi(endOfString) < endOfBuffer; precision--) {
             fraction *= 10;
             wholePart = (long)fraction;
             *endOfString++ = '0' + (char)wholePart;
