@@ -14,21 +14,22 @@ object TestAllBuiltinsExist : Spek({
         val ast = Parser(DummyLexer(listOf())).generateAbstractSyntaxTree()
         val expectedBuiltinFunctions = listOf(
                 "+",
-                "plus",
                 "-",
                 "/",
                 "*",
-                "==",
-                "!=",
+                "equals",
+                "notEquals",
                 "<",
                 ">",
-                "&&",
-                "||",
-                "negated",
+                "and",
+                "or",
+                "not",
                 "toText",
                 "then",
                 "while",
-                "length"
+                "length",
+                "at",
+                "subList"
         )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {

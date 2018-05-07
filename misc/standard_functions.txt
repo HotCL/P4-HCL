@@ -1,0 +1,119 @@
+
+### each function
+### parameters: list l, func f -- f takes a number, which is the current index in the list
+### returns: nothing
+func[list[T], func[num,none], none] each = (list[T] l, func[num,none] f): none {
+    num i = 0
+    { i f; i = i + 1; return; } while i < (l length)
+    return
+}
+
+
+### map function
+### parameters: list l, func f
+### returns: new list from l with f applied to it
+func[list[T], func[T,T], list[T]] map = (list[T] l, func[T,T] f): list[T] {
+    list[T] result
+    #Since lists are immutable, this may be troublesome for the Arduino's memory
+    l each {
+        result = result + [(l at value) f]
+        return
+    }
+    return result
+}
+
+
+### else function
+### parameters: bool b, func f
+### returns: b, whether it was successful or not
+func[bool, func[none], bool] else = (bool b, func[none] f): bool {
+    b negated then f
+    return b
+}
+
+
+### all function
+### parameters: list l, func f
+### returns: boolean value representing whether f applies to all elements of l
+func[list[T], func[T,bool], bool] all = (list[T] l, func[T,bool] f): bool {
+    bool result = True
+    l each {
+        l at value f else {
+            result = False
+        }
+        return
+    }
+    return result
+}
+
+
+### zero function
+### parameters: list l, func f
+### returns: boolean value representing whether f applies to zero elements of l
+func[list[T], func[T,bool], bool] all = (list[T] l, func[T,bool] f): bool {
+    return l all f negated
+}
+
+
+### any function
+### parameters: list l, func f
+### returns: boolean value representing whether f applies to at least one element of l
+func[list[T], func[T,bool], bool] any = (list[T] l, func[T,bool] f): bool {
+    bool result = False
+    l each {
+        l at value f then {
+            result = True
+        }
+        return
+    }
+    return result
+}
+
+
+### average function
+### parameters: list[num] l
+### returns: number value representing the average of all the numbers in the list
+func[list[num], num] average = (list[num] l): num {
+    num result
+    l each {
+        result = result + (l at value)
+        return
+    }
+    return result / (l length)
+}
+
+
+### sum function
+### parameters: list[num] l
+### returns: number value representing the  sum of all the numbers in the list
+func[list[num], num] sum = (list[num] l): num {
+    num result
+    l each {
+        result = result + (l at value)
+        return
+    }
+    return result
+}
+
+
+### filter function
+### paremeters: list l, func f
+### returns: new list from l containing only elements that satisfy predicate f
+func[list[T], func[T,bool], list[T]] filter = (list[T] l, func[T,bool] f): list[T] {
+    list[T] result
+    l each {
+        l at value f then {
+            # We have to test whether this works. "then" doesn't have a parameter named "value", so maybe it will.
+            result = result + (l at value)
+            return
+        }
+    }
+    return result
+}
+
+### loop function
+### parameters: func f
+### returns nothing
+func[func[none], none] loop = (func[none] f): none { f }
+
+
