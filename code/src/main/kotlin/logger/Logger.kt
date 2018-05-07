@@ -10,7 +10,7 @@ open class Logger: ILogger {
      */
     override fun logCompilationError(error: CompilationException) {
         writeLine("- ERROR: ${error.errorType} found at line ${error.lineNumber} index ${error.lineIndex}:")
-        writeLine(" | ${error.lineText}")
+        writeLine(" | ${error.lineText.trimEnd()}")
         writeLine(" |" + " " * error.lineIndex + "^--")
         writeLine(" | ${error.errorMessage}")
         if (error.helpText != "") writeLine(" | -->help: ${error.helpText}")
