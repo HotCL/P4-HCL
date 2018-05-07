@@ -62,8 +62,8 @@ This can be amended by structuring calculations in a left-to-right manner, or by
 This workaround is shown below.
 
 \begin{lstlisting}[language=HCL,firstnumber=1]
-num x = 10 + 5 * 10 //Equals 150 in HCL
-num y = 10 + (5 * 10) //Equals 60 in HCL, which corresponds with algebra.
+num x = 10 + 5 * 10 #Equals 150 in HCL
+num y = 10 + (5 * 10) #Equals 60 in HCL, which corresponds with algebra.
 }
 \end{lstlisting}
 
@@ -130,7 +130,7 @@ The \textbf{where} function in this example returns an entry in the list based o
 \textbf{Grammar for function calls}\\
 Function calls are done with infix notation, meaning that if a given function is defined with parameters, the first argument has to appear before the function identifier, while all remaining arguments must appear after, in sequence.
 
-The following listing showcase this.
+The following listing showcases this.
 \begin{lstlisting}[language=HCL,caption={Function call notation in HCL.
 printHelloWolrd, print and printWords are example functions.
 },firstnumber=1]
