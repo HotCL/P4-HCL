@@ -18,24 +18,27 @@ object HclBuiltinFunctions {
 
                     buildOperatorNumNumToBool("<"),
                     buildOperatorNumNumToBool(">"),
-                    buildOperatorNumNumToBool("=="),
-                    buildOperatorNumNumToBool("!="),
+                    buildOperatorNumNumToBool("equals", "=="),
+                    buildOperatorNumNumToBool("notEquals", "!="),
 
-                    buildOperatorTxtTxtToBool("=="),
-                    buildOperatorTxtTxtToBool("!="),
-
-                    buildOperatorBoolBoolToBool("&&"),
-                    buildOperatorBoolBoolToBool("||"),
+                    buildOperatorBoolBoolToBool("and", "&&"),
+                    buildOperatorBoolBoolToBool("or", "||"),
 
                     buildPrefixOperator<Type.Bool, Type.Bool>("negated", "!"),
             // Control structures
                     buildThenFunction(),
                     buildWhileFunction(),
             // Standard functions
+                    buildTextEqualsFunction(),
+                    buildTextNotEqualsFunction(),
+                    buildTextConcatFunction(),
                     buildNumberToTextFunction(),
                     buildTextToTextFunction(), //Redundant, but no reason for compiler to throw an error
                     buildBoolToTextFunction(),
-                    buildGetListLengthFunction()
+                    buildGetListLengthFunction(),
+                    buildAtListFunction(),
+                    buildSubListFunction(),
+                    buildListConcatFunction()
             )
 }
 
@@ -76,15 +79,47 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
 //endregion buildOperator_functions
 
 //region builtInFunctions
+private fun buildTextEqualsFunction() = buildFunction(
+        identifier = "equals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) == 0;"
+)
+
+private fun buildTextNotEqualsFunction() = buildFunction(
+        identifier = "notEquals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) != 0;"
+)
+
+private fun buildTextConcatFunction() = buildFunction(
+        identifier = "+",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Text,
+        body = "char *ret = malloc((strlen(leftHand) + strlen(rightHand) + 1) * sizeof(char));\n" +
+               "ret[0] = 0;\n" +
+               "strcat(ret, leftHand);\n" +
+               "strcat(ret, rightHand);\n" +
+               "return ret;"
+)
+
 private fun buildNumberToTextFunction() = buildFunction(
         identifier = "toText",
         parameters = listOf(
                 Parameter("input", Type.Number)
         ),
         returnType = Type.Bool,
-        body = "char result[20] = \"\";\n" +
-               "sprintf(result, \"%.4f\", input);\n" + //sprintf() apparently isn't very good, but it should work for now
-               "return result;"
+        body = "return ftoa(input, 5);"
 )
 
 private fun buildBoolToTextFunction() = buildFunction(
@@ -111,7 +146,38 @@ private fun buildGetListLengthFunction() = buildFunction(
                 Parameter("list", Type.List(Type.GenericType("T"))) // Don't know if this will work!!!
         ),
         returnType = Type.Number,
-        body = "return list.size;"
+        body = "return list.get()->size;"
+)
+
+private fun buildAtListFunction() = buildFunction(
+        identifier = "at",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("rightHand", Type.Number)
+        ),
+        returnType = Type.GenericType("T"),
+        body = "return ConstList<T>::at(list, (unsigned int)rightHand);"
+)
+
+private fun buildListConcatFunction() = buildFunction(
+        identifier = "+",
+        parameters = listOf(
+                Parameter("leftHand", Type.List(Type.GenericType("T"))),
+                Parameter("rightHand", Type.List(Type.GenericType("T")))
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "return ConstList<T>::concat(leftHand, rightHand);"
+)
+
+private fun buildSubListFunction() = buildFunction(
+        identifier = "subList",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("startIndex", Type.Number),
+                Parameter("length", Type.Number)
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "return ConstList<T>::sublist(list, (unsigned int)startIndex, (unsigned int)length);"
 )
 
 private fun buildWhileFunction() = buildFunction(
@@ -121,7 +187,7 @@ private fun buildWhileFunction() = buildFunction(
                 Parameter("condition", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "while (condition) { body(); }"
+        body = "while (condition) body();"
 )
 
 private fun buildThenFunction() = buildFunction(
