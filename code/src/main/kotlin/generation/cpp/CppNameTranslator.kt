@@ -18,7 +18,7 @@ object CppNameTranslator : IValidNameTranslator{
         is AstNode.Type.Func.ExplicitFunc ->
             "function<${returnType.getValidName()}(${paramTypes.joinToString { it.getValidName() }})>"
         is AstNode.Type.Tuple -> "TPL_0x" + this.elementTypes.joinToString ("_") { it.getValidName() }.hashed
-        else -> TODO("THIS SHOULDN'T FUCKING HAPPEN")
+        else -> TODO("THIS SHOULDN'T EVER HAPPEN")
     }
 
     private fun AstNode.Command.Expression.Value.Identifier.getValidName() = "IDT_0x" + name.hashed
