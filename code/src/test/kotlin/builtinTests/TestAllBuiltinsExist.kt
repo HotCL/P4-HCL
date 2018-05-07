@@ -23,7 +23,7 @@ object TestAllBuiltinsExist : Spek({
                 ">",
                 "and",
                 "or",
-                "negated",
+                "not",
                 "toText",
                 "then",
                 "while",

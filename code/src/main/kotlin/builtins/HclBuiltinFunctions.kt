@@ -49,7 +49,7 @@ private fun buildOperatorNumNumToNum(functionName: String, operator: String = fu
 private fun buildOperatorNumNumToBool(functionName: String, operator: String = functionName) =
         buildOperator<Type.Number, Type.Number, Type.Bool>(functionName, operator)
 
-private fun buildOperatorTxtTxtToBool(functionName: String, operator: String = functionName) =
+private fun ½(functionName: String, operator: String = functionName) =
         buildOperator<Type.Text, Type.Text, Type.Bool>(functionName, operator)
 
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
