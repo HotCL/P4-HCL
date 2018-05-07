@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
         logger.logCompilationError(exception)
         exitProcess(-1)
     }
-    println("Ast: $ast")
+    //println("Ast: $ast")
     //println(SourceCodePrinter().generate(ast))
     val programFiles = ProgramGenerator().generate(ast)
     programFiles.forEach { print("FILE: ${it.fileName}:\n\n${it.content}\n\n\n") }

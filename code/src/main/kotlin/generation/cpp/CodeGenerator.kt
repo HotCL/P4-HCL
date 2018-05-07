@@ -20,7 +20,7 @@ class CodeGenerator : IPrinter {
             when(this) {
                 is AstNode.Command.Declaration -> format()
                 is AstNode.Command.Assignment -> format()
-                is AstNode.Command.Expression.Value.Identifier -> TODO()
+                is AstNode.Command.Expression.Value.Identifier -> this.cpp
                 is AstNode.Command.Expression.Value.Literal.Number -> "$value"
                 is AstNode.Command.Expression.Value.Literal.Text -> "\"$value\""
                 is AstNode.Command.Expression.Value.Literal.Bool -> "$value"
