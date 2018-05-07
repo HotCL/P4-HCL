@@ -24,7 +24,7 @@ object HclBuiltinFunctions {
                     buildOperatorBoolBoolToBool("and", "&&"),
                     buildOperatorBoolBoolToBool("or", "||"),
 
-                    buildPrefixOperator<Type.Bool, Type.Bool>("negated", "!"),
+                    buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
             // Control structures
                     buildThenFunction(),
                     buildWhileFunction(),
