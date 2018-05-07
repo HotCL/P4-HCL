@@ -13,8 +13,8 @@ char *ftoa(double d, int precision) {
     char *buffer = (char*)malloc(MAX_STR_LEN * sizeof(char));
 
     // Add digits before decimal point to string
-    long wholePart = (long)d;
-    sprintf(buffer,"%ld",wholePart);
+    long characteristic = (long)d;
+    sprintf(buffer, "%ld", characteristic);
 
     // Add digits after decimal point, if needed
     if (precision > 0) {
@@ -25,16 +25,17 @@ char *ftoa(double d, int precision) {
 
         if (d < 0) {
             d *= -1;
-            wholePart *= -1;
+            characteristic *= -1;
         }
 
-        double fraction = d - wholePart;
-        for (; precision > 0 && endOfString < (buffer + MAX_STR_LEN); precision--) {
-            fraction *= 10;
-            wholePart = (long)fraction;
-            *endOfString++ = '0' + (char)wholePart; // Append digit to string
+        double mantissa = d - characteristic;
+        char *endOfBuffer = buffer + MAX_STR_LEN;
+        for (; precision > 0 && endOfString < endOfBuffer; precision--) {
+            mantissa *= 10;
+            characteristic = (long)mantissa;
+            *endOfString++ = '0' + (char)characteristic; // Append digit to string
 
-            fraction -= wholePart;
+            mantissa -= characteristic;
         }
 
         *endOfString = '\0';
