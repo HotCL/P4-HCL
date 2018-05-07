@@ -1,151 +1,49 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import exceptions.UndeclaredError
 import exceptions.WrongTokenTypeError
-import lexer.Token
+import hclTestFramework.lexer.buildTokenSequence
+import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import parser.Parser
-import parser.AstNode
 import parser.ParserWithoutBuiltins
 
 class FunctionCallTests {
     @Test
     fun canParseFunctionCallWithoutParameters() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.EndOfLine
-                ),
-                matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf()
-                        )
-                )
+            buildTokenSequence {
+                func.squareStart.text.squareEnd.identifier("myFunc").`=`.`(`.`)`.colon.text.`{`.text("HEY").`}`.newLine.
+                identifier("myFunc").newLine
+            },
+            matchesAstChildren(
+                    "myFunc" declaredAs func(txt) withValue (lambda() returning txt andBody ret(txt("HEY"))),
+                    "myFunc".called()
+            )
         )
     }
 
     @Test
     fun canParseFunctionCallWithOverloading() {
         assertThat(
-                listOf(
+                buildTokenSequence {
+                    func.squareStart.number.`,`.text.squareEnd.identifier("toString").`=`.`(`.number.
+                    identifier("myParam").`)`.colon.text.`{`.text("HEY").`}`.newLine.
 
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("toString"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Number,
-                        Token.Identifier("myParam"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
+                    func.squareStart.text.`,`.text.squareEnd.identifier("toString").`=`.`(`.text.
+                    identifier("myParam").`)`.colon.text.`{`.text("HEY").`}`.newLine.
 
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Text,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("toString"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Text,
-                        Token.Identifier("myParam"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-
-                        Token.Literal.Number(5.0),
-                        Token.Identifier("toString"),
-                        Token.SpecialChar.EndOfLine
-                ),
+                    number(5.0).identifier("toString").newLine
+                },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("toString"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
+                        "toString" declaredAs func(txt, num) withValue (
+                            lambda() returning txt withArgument ("myParam" asType num) andBody ret(txt("HEY"))
                         ),
-
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Text), AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("toString"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Text,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
+                        "toString" declaredAs func(txt, txt) withValue (
+                            lambda() returning txt withArgument ("myParam" asType txt) andBody ret(txt("HEY"))
                         ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("toString"),
-                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                )
-                        )
+                        "toString" calledWith num(5)
                 )
         )
     }
@@ -153,232 +51,73 @@ class FunctionCallTests {
     @Test
     fun canParseFunctionCallOneParameter() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Number,
-                        Token.Identifier("myParam"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.Literal.Number(5.0),
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.EndOfLine
-                ),
+            buildTokenSequence {
+                func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam").`)`.
+                colon.text.`{`.text("HEY").`}`.newLine.
+
+                number(5.0).identifier("myFunc").newLine
+            },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Number),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                )
-                        )
+                    "myFunc" declaredAs func(txt, num) withValue (
+                        lambda() returning txt withArgument ("myParam" asType num) andBody ret(txt("HEY"))
+                    ),
+                    "myFunc" calledWith num(5)
                 )
         )
     }
     @Test
     fun canParseFunctionCallHighOrder() {
         assertThat(
-                listOf(
-                        Token.Type.Var,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myParam"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
+            buildTokenSequence {
+                `var`.identifier("myFunc").`=`.`(`.func.squareStart.text.squareEnd.identifier("myParam").`)`.colon.text.
+                `{`.text("HEY").`}`.newLine.
 
-                        Token.Type.Var,
-                        Token.Identifier("myTextFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.SpecialChar.Colon,
-                        Token.Identifier("myTextFunc"),
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.EndOfLine
-                ),
+                `var`.identifier("myTextFunc").`=`.`(`.`)`.colon.text.`{`.text("HEY").`}`.newLine.
+
+                colon.identifier("myTextFunc").identifier("myFunc").newLine
+            },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text)),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                    AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(listOf(),AstNode.Type.Text),
-                                AstNode.Command.Expression.Value.Identifier("myTextFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                    AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Identifier("myTextFunc"))
-                        )
+                    "myFunc" declaredAs func(txt, func(txt)) withValue
+                        (lambda() returning txt withArgument ("myParam" asType func(txt)) andBody ret(txt("HEY"))),
+                    "myTextFunc" declaredAs func(txt) withValue (lambda() returning txt withBody ret(txt("HEY"))),
+                    "myFunc" calledWith "myTextFunc".asIdentifier
                 )
         )
     }
     @Test
     fun failParseFunctionCallHighOrderWithWrongSignature() {
 
-        val lexer = DummyLexer(listOf(
-                Token.Type.Var,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Text,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myParam"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Text,
-                Token.SpecialChar.BlockStart,
-                Token.Literal.Text("HEY HEY"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
+        val lexer = DummyLexer(buildTokenSequence {
+            `var`.identifier("myFunc").`=`.`(`.func.squareStart.text.squareEnd.identifier("myParam").`)`.colon.text.`{`.
+            text("HEY HEY").`}`.newLine.
 
-                Token.Type.Var,
-                Token.Identifier("myTextFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Type.Text,
-                Token.Identifier("myParam"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Text,
-                Token.SpecialChar.BlockStart,
-                Token.Literal.Text("BLA BLA"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
-                Token.SpecialChar.Colon,
-                Token.Identifier("myTextFunc"),
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.EndOfLine
-        ))
+            `var`.identifier("myTextFunc").`=`.`(`.text.identifier("myParam").`)`.colon.text.`{`.text("BLA BLA").`}`.newLine.
+
+            colon.identifier("myTextFunc").identifier("myFunc").newLine
+        })
         assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
     fun failsParseFunctionCallNeedsOneArgumentButGetsZero() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Number,
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Text,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Type.Number,
-                Token.Identifier("myParam"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Text,
-                Token.SpecialChar.BlockStart,
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam").`)`.
+            colon.text.`{`.`}`.newLine.
+
+            identifier("myFunc").newLine
+        })
         //TODO use less generic error
         assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
     fun failsParseFunctionCallNeedsOneArgumentButGetsTwo() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Number,
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Text,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Type.Number,
-                Token.Identifier("myParam"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Text,
-                Token.SpecialChar.BlockStart,
-                Token.Literal.Text("HEY"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
-                Token.Literal.Number(5.0),
-                Token.Identifier("myFunc"),
-                Token.Literal.Number(5.0),
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam").`)`.
+            colon.text.`{`.text("HEY").`}`.newLine.
+
+            number(5.0).identifier("myFunc").number(5.0).newLine
+        })
 
         assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
@@ -386,318 +125,82 @@ class FunctionCallTests {
     @Test
     fun canParseFunctionCallWithTupleLiteralAsFirstArgument() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Tuple,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Tuple,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myParam"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Literal.Text("hej"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.EndOfLine
-                ),
+            buildTokenSequence {
+                func.squareStart.tuple.squareStart.number.`,`.text.squareEnd.`,`.text.squareEnd.identifier("myFunc").`=`.
+                `(`.tuple.squareStart.number.`,`.text.squareEnd.identifier("myParam").`)`.colon.text.`{`.text("HEY").`}`.newLine.
+
+                `(`.number(5.0).`,`.text("hej").`)`.identifier("myFunc").newLine
+            },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(
-                                                AstNode.Type.Tuple(
-                                                        listOf(
-                                                                AstNode.Type.Number,
-                                                                AstNode.Type.Text
-                                                        )
-                                                )
-                                        ),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Tuple(
-                                                                listOf(
-                                                                        AstNode.Type.Number,
-                                                                        AstNode.Type.Text
-                                                                )
-                                                        ),
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(
-                                        AstNode.Command.Expression.Value.Literal.Tuple(
-                                                listOf(
-                                                        AstNode.Command.Expression.Value.Literal.Number(5.0),
-                                                        AstNode.Command.Expression.Value.Literal.Text("hej")
-                                                )
-                                        )
-                                )
-                        )
+                    "myFunc" declaredAs func(txt, tpl(num, txt)) withValue (
+                        lambda() returning txt withArgument ("myParam" asType tpl(num, txt)) andBody ret(txt("HEY"))
+                    ),
+                    "myFunc" calledWith tpl(num(5), txt("hej"))
                 )
         )
     }
 
     @Test
     fun failsToParseFunctionCallWith_FunctionCallWithArguments_AsRightHandSideArgumentWithoutParentheses() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Number,
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Number,
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Number,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Type.Number,
-                Token.Identifier("myParam1"),
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Number,
-                Token.Identifier("myParam2"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Number,
-                Token.SpecialChar.BlockStart,
-                Token.Literal.Number(5.0),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
-                Token.Literal.Number(5.0),
-                Token.Identifier("myFunc"),
-                Token.Identifier("myFunc"),
-                Token.Literal.Number(5.0),
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.number.`,`.number.`,`.number.squareEnd.identifier("myFunc").`=`.`(`.number.
+            identifier("myParam1").`,`.number.identifier("myParam2").`)`.colon.number.`{`.number(5.0).`}`.newLine.
+
+            number(5.0).identifier("myFunc").identifier("myFunc").number(5.0).newLine
+        })
         assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
     fun canParseFunctionCallWith_FunctionCallWithoutArguments_AsRightHandSideArgumentWithoutParentheses() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Number,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Number,
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Number,
-                        Token.Identifier("myParam2"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Number,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc2"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Number,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.Literal.Number(5.0),
-                        Token.Identifier("myFunc"),
-                        Token.Identifier("myFunc2"),
-                        Token.SpecialChar.EndOfLine
-                ),
+            buildTokenSequence {
+                func.squareStart.number.`,`.number.`,`.number.squareEnd.identifier("myFunc").`=`.`(`.number.
+                identifier("myParam1").`,`.number.identifier("myParam2").`)`.colon.number.`{`.number(5.0).`}`.newLine.
+
+                func.squareStart.number.squareEnd.identifier("myFunc2").`=`.`(`.`)`.colon.number.`{`.number(5.0).`}`.newLine.
+                number(5.0).identifier("myFunc").identifier("myFunc2").newLine
+            },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Number, AstNode.Type.Number),
-                                        AstNode.Type.Number
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")),
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam2"))
-                                        ),
-                                        AstNode.Type.Number,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                    AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(),
-                                        AstNode.Type.Number
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc2"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(),
-                                        AstNode.Type.Number,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(
-                                        AstNode.Command.Expression.Value.Literal.Number(5.0),
-                                        AstNode.Command.Expression.FunctionCall(
-                                                AstNode.Command.Expression.Value.Identifier("myFunc2"),
-                                                listOf()
-                                        )
-                                )
-                        )
+                    "myFunc" declaredAs func(num, listOf(num, num)) withValue (lambda()
+                        returning num
+                        withArguments listOf("myParam1" asType num, "myParam2" asType num)
+                        withBody ret(num(5))
+                    ),
+                    "myFunc2" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
+                    "myFunc" calledWith listOf(num(5), "myFunc2".called())
                 )
         )
     }
 
     @Test
     fun failsParseFunctionCallNeedsTwoArgumentButGetsThree() {
-        val lexer = DummyLexer(listOf(
-                Token.Type.Func,
-                Token.SpecialChar.SquareBracketStart,
-                Token.Type.Number,
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Number,
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Text,
-                Token.SpecialChar.SquareBracketEnd,
-                Token.Identifier("myFunc"),
-                Token.SpecialChar.Equals,
-                Token.SpecialChar.ParenthesesStart,
-                Token.Type.Number,
-                Token.Identifier("myParam1"),
-                Token.SpecialChar.ListSeparator,
-                Token.Type.Number,
-                Token.Identifier("myParam2"),
-                Token.SpecialChar.ParenthesesEnd,
-                Token.SpecialChar.Colon,
-                Token.Type.Text,
-                Token.SpecialChar.BlockStart,
-                Token.Literal.Text("HEY"),
-                Token.SpecialChar.BlockEnd,
-                Token.SpecialChar.EndOfLine,
-                Token.Literal.Number(5.0),
-                Token.Identifier("myFunc"),
-                Token.Literal.Number(5.0),
-                Token.Literal.Text("hej"),
-                Token.SpecialChar.EndOfLine
-        ))
+        val lexer = DummyLexer(buildTokenSequence {
+            func.squareStart.number.`,`.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam1")
+            .`,`.number.identifier("myParam2").`)`.colon.text.`{`.text("HEY").`}`.newLine.
+
+            number(5.0).identifier("myFunc").number(5.0).text("hej").newLine
+        })
         assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @Test
     fun canParseTwoCallsWithOneParameterEach() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Number,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Number,
-                        Token.Identifier("myParam"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Number,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Number(5.0),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.Literal.Number(5.0),
-                        Token.Identifier("myFunc"),
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.EndOfLine
-                ),
+            buildTokenSequence {
+                func.squareStart.number.`,`.number.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam").
+                `)`.colon.number.`{`.number(5.0).`}`.newLine.
+
+                number(5.0).identifier("myFunc").identifier("myFunc").newLine
+            },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Number),
-                                        AstNode.Type.Number
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam"))
-                                        ),
-                                        AstNode.Type.Number,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Number(5.0)
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(
-                                        AstNode.Command.Expression.FunctionCall(
-                                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0))
-                                        )
-                                )
-                        )
+                    "myFunc" declaredAs func(num, num) withValue (
+                        lambda()
+                            returning num
+                            withArgument ("myParam" asType num)
+                            withBody ret(num(5))
+                    ),
+                    "myFunc" calledWith ("myFunc" calledWith num(5))
                 )
         )
     }
@@ -705,65 +208,20 @@ class FunctionCallTests {
     @Test
     fun canParseFunctionCallTwoParameters() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Number,
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.Identifier("myParam2"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.Literal.Number(5.0),
-                        Token.Identifier("myFunc"),
-                        Token.Literal.Text("hej"),
-                        Token.SpecialChar.EndOfLine
-                ),
+            buildTokenSequence {
+                func.squareStart.number.`,`.text.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.
+                identifier("myParam1").`,`.text.identifier("myParam2").`)`.colon.text.`{`.text("HEY").`}`.newLine.
+
+                number(5.0).identifier("myFunc").text("hej").newLine
+            },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Number, AstNode.Type.Text),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")),
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Text,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam2"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
+                    "myFunc" declaredAs func(txt, listOf(num, txt)) withValue (
+                        lambda()
+                            returning txt
+                            withArguments listOf("myParam1" asType num, "myParam2" asType txt)
+                            andBody ret(txt("HEY"))
                         ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0),
-                                        AstNode.Command.Expression.Value.Literal.Text("hej")
-                                )
-                        )
+                    "myFunc" calledWith listOf(num(5), txt("hej"))
                 )
         )
     }
@@ -771,85 +229,26 @@ class FunctionCallTests {
     @Test
     fun canParseFunctionCallFourParameters() {
         assertThat(
-                listOf(
-                        Token.Type.Func,
-                        Token.SpecialChar.SquareBracketStart,
-                        Token.Type.Number,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.SpecialChar.SquareBracketEnd,
-                        Token.Identifier("myFunc"),
-                        Token.SpecialChar.Equals,
-                        Token.SpecialChar.ParenthesesStart,
-                        Token.Type.Number,
-                        Token.Identifier("myParam1"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.Identifier("myParam2"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.Identifier("myParam3"),
-                        Token.SpecialChar.ListSeparator,
-                        Token.Type.Text,
-                        Token.Identifier("myParam4"),
-                        Token.SpecialChar.ParenthesesEnd,
-                        Token.SpecialChar.Colon,
-                        Token.Type.Text,
-                        Token.SpecialChar.BlockStart,
-                        Token.Literal.Text("HEY"),
-                        Token.SpecialChar.BlockEnd,
-                        Token.SpecialChar.EndOfLine,
-                        Token.Literal.Number(5.0),
-                        Token.Identifier("myFunc"),
-                        Token.Literal.Text("hej"),
-                        Token.Literal.Text("med"),
-                        Token.Literal.Text("dig"),
-                        Token.SpecialChar.EndOfLine
-                ),
+            buildTokenSequence {
+                func.squareStart.number.`,`.text.`,`.text.`,`.text.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.
+                number.identifier("myParam1").`,`.text.identifier("myParam2").`,`.text.identifier("myParam3").`,`.
+                text.identifier("myParam4").`)`.colon.text.`{`.text("HEY").`}`.newLine.
+
+                number(5.0).identifier("myFunc").text("hej").text("med").text("dig").newLine
+            },
                 matchesAstChildren(
-                        AstNode.Command.Declaration(
-                                AstNode.Type.Func.ExplicitFunc(
-                                        listOf(AstNode.Type.Number, AstNode.Type.Text, AstNode.Type.Text, AstNode.Type.Text),
-                                        AstNode.Type.Text
-                                ),
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                AstNode.Command.Expression.LambdaExpression(
-                                        listOf(
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Number,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam1")),
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Text,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam2")),
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Text,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam3")),
-                                                AstNode.ParameterDeclaration(
-                                                        AstNode.Type.Text,
-                                                        AstNode.Command.Expression.Value.Identifier("myParam4"))
-                                        ),
-                                        AstNode.Type.Text,
-                                        AstNode.Command.Expression.LambdaBody(listOf(
-                                                AstNode.Command.Return(
-                                                        AstNode.Command.Expression.Value.Literal.Text("HEY")
-                                                )
-                                        ))
-                                )
-                        ),
-                        AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier("myFunc"),
-                                listOf(AstNode.Command.Expression.Value.Literal.Number(5.0),
-                                        AstNode.Command.Expression.Value.Literal.Text("hej"),
-                                        AstNode.Command.Expression.Value.Literal.Text("med"),
-                                        AstNode.Command.Expression.Value.Literal.Text("dig")
-                                )
-                        )
+                    "myFunc" declaredAs func(txt, listOf(num, txt, txt, txt)) withValue (
+                        lambda()
+                            returning txt
+                            withArguments listOf(
+                                "myParam1" asType num,
+                                "myParam2" asType txt,
+                                "myParam3" asType txt,
+                                "myParam4" asType txt
+                            )
+                            andBody ret(txt("HEY"))
+                    ),
+                    "myFunc" calledWith listOf(num(5), txt("hej"), txt("med"), txt("dig"))
                 )
         )
     }

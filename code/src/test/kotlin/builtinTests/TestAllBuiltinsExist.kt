@@ -17,17 +17,19 @@ object TestAllBuiltinsExist : Spek({
                 "-",
                 "/",
                 "*",
-                "==",
-                "!=",
+                "equals",
+                "notEquals",
                 "<",
                 ">",
-                "&&",
-                "||",
+                "and",
+                "or",
                 "negated",
                 "toText",
                 "then",
                 "while",
-                "length"
+                "length",
+                "at",
+                "subList"
         )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {
