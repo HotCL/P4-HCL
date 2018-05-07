@@ -14,7 +14,6 @@ object TestAllBuiltinsExist : Spek({
         val ast = Parser(DummyLexer(listOf())).generateAbstractSyntaxTree()
         val expectedBuiltinFunctions = listOf(
                 "+",
-                "plus",
                 "-",
                 "/",
                 "*",

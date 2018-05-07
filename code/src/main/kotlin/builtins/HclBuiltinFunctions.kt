@@ -12,7 +12,6 @@ object HclBuiltinFunctions {
             // Operators
             listOf(
                     buildOperatorNumNumToNum("+"),
-                    buildOperatorNumNumToNum("plus", "+"),
                     buildOperatorNumNumToNum("-"),
                     buildOperatorNumNumToNum("*"),
                     buildOperatorNumNumToNum("/"),
@@ -198,7 +197,7 @@ private fun buildThenFunction() = buildFunction(
                 Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None))
         ),
         returnType = Type.Bool,
-        body = "if (condition) body();\n return condition;"
+        body = "if (condition) { body(); }\nreturn condition;"
 )
 //endregion builtInFunctions
 
