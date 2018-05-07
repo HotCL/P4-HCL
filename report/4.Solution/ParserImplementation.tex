@@ -22,17 +22,18 @@ Once it determines which non-terminal to parse it will call a method that attemp
 The method can then accept terminals or parse further non-terminals.
 It should be the responsibility of the accept method to advance the lexical token stream.
 
-Below is a quick and concrete example from HCL. 
+Below is a quick and concrete example, where the parser generates a token stream of the following HCL source code:
+\begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
+num x = 5
+\end{lstlisting}
 
-The line to parse is "num x = 5" The token stream to parse will look as follows:
-
-\begin{itemize}
-	\item Number type
-	\item Identifier = x
-	\item Equals
-	\item Number Literal = 5
-	\item End of line
-\end{itemize}
+\begin{enumerate}
+	\item Type.Number
+	\item Identifier("x")
+	\item SpecialChar.Equals
+	\item Literal.Number(5.0)
+	\item SpecialChar.EndOfLine
+\end{enumerate}
 
 The parser will see that the first token is a number type. 
 Since only declarations have types in its first set, the parser now knows that it should parse a declaration.
@@ -47,12 +48,58 @@ The EBNF reveals that a declaration is:
 		\item Non-terminal Expression
 	\end{itemize}
 \end{itemize}
+\textbf{Deciding what to parse}\\
+The sealed classes, along with the pattern matching of Kotlin, are excellent tools in deciding what should be parsed. 
+In snippet \ref{lis:parseCommand} a subset of the parse command method is shown. 
 
-Based on this, the \textit{parseDeclaration} is implemented as seen in snippet \ref{lis:parseDeclaration}.
+\begin{lstlisting}[language=Kotlin,label=lis:parseCommand,caption=A simplified version of the parse declaration method from the parser.]
+private fun parseCommand(): AstNode.Command {
+val command = when (current.token) {
+is Token.Type -> parseDeclaration()
+is Token.Identifier ->
+if (peek().token == Token.SpecialChar.Equals) parseAssignment() 
+else parseExpression()
+
+...
+
+flushNewLine()
+return command
+}
+\end{lstlisting}
+Snippet \ref{lis:parseCommand} uses the functional functionality of Kotlin, to set the val\footnote{val is a read only variable} \textit{\textbf{command}} to a specific value based on the type of the current token (\textit{\textbf{current.token}}). 
+This method calls other methods based on the type and based on specific rules in the HCL language. 
+For instance all statements starting with a "type" is a declaration, as seen in the CFG, therefore the \textit{\textbf{parseDeclaration}} method is called, and the returned value of this method is then going to be assigned to the command value.
+	
+To simplify the parser and increase readability, certain helper methods have been defined. 
+For instance the \textit{\textbf{accept<T>}} method. 
+\begin{lstlisting}[language=Kotlin,label={lis:acceptMethod},caption=The definition of the accept method on the parser]
+private inline fun<reified T: Token> accept(): T {
+	val token = current.token
+	moveNext()
+	if (token is T) {
+		return token
+	} else {
+		wrongTokenTypeError(T::class.simpleName!!, token)
+	}
+}
+\end{lstlisting}
+Snippet \ref{lis:acceptMethod} shows how the accept method is defined.
+This method is used to pop a token from the token stream, which is done by the \textit{\textbf{moveNext()}} method, if the token has the expected type.
+This is used for getting the current token if it's of the correct type. 
+This can also be used even if the data of the token is irrelevant, for instance shown in snippet \ref{lis:acceptMethodHCLExample}, the accept method would be used to pop the equals-symbol. 
+However it's important that the equals symbol is present, as the code would not make sense without it. 
+The accept method would then trow an error if another token would be present.
+
+\begin{lstlisting}[language=HCL,label={lis:acceptMethodHCLExample},caption={An example of a declaration in HCL, where the accept method is used by the parser.}]
+num a = 5
+\end{lstlisting}
+Snippet \ref{lis:acceptMethodHCLExample} is a declaration, and these are handled by the \textit{\textbf{parseDeclaration}}, which is implemented as seen in snippet \ref{lis:parseDeclaration}.
+
+This is a great example of how parsing is done on a specific type of statement.
 Do note, the final parse declaration method is a little more complex due to type inference and type checking.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parseDeclaration,caption=A simplified version of the parse declaration method from the parser.]
-private fun parseDeclaration(): TreeNode.Command.Declaration {
+private fun parseDeclaration(): AstNode.Command.Declaration {
     val type = parseType()
     val identifierToken = accept<Token.Identifier>()
     val identifier = AstNode.Command.Expression.Value.Identifier(identifierToken.value)
@@ -60,32 +107,15 @@ private fun parseDeclaration(): TreeNode.Command.Declaration {
 	    accept<Token.SpecialChar.Equals>()
 	    parseExpression()
     } else null
-    return TreeNode.Command.Declaration(type, identifier, expression)
+    return AstNode.Command.Declaration(type, identifier, expression)
 }
 \end{lstlisting}
 
-As the snippet shows, the method will parse the type, accept the identifier, accept the equal sign, and finally it will parse the expression.
+The \textbf{\textit{parseDeclaration}} method, as shown in snippet \ref{lis:parseDeclaration}, will first save the type in the \textbf{\textit{type}} val, and then accept an identifier and save it to an instance of Identifier, a subclass of the AstNode class. 
+The method then checks whether the new current symbol is an equals-symbol - if that's the case the declaration is followed by an expression - which means it's an declaration with an assignment otherwise the expression is set to null. 
+The method then returns a Declaration, which is a subclass of AstNode.  
 
-\textbf{Deciding what to parse}\\
-The sealed classes, along with the pattern matching of Kotlin, are excellent tools in deciding what should be parsed. 
-In snippet \ref{lis:parseCommand} a subset of the parse command method is shown. 
-If the current token is a type, a declaration should be passed. 
-If the current token is an identifier, it is the next token that determines whether to parse an assignment or an expression.
 
-\begin{lstlisting}[language=Kotlin,label=lis:parseCommand,caption=A simplified version of the parse declaration method from the parser.]
-private fun parseCommand(): AstNode.Command {
-    val command = when (current.token) {
-	    is Token.Type -> parseDeclaration()
-	    is Token.Identifier ->
-		    if (peek().token == Token.SpecialChar.Equals) parseAssignment() 
-		    else parseExpression()
-    
-    ...
-    
-    flushNewLine()
-    return command
-}
-\end{lstlisting}
 
 % we may also need to document some of the complex parts of the parser, but we will wait with that, until it is actually more or less completed.
 \input{4.Solution/SymbolTable.tex}

@@ -11,7 +11,7 @@ sealed class Token {
     sealed class Literal : Token() {
         data class Text(val value: String) : Literal()
         data class Number(val value: Double) : Literal(){
-            constructor(value:Int) : this(value.toDouble())
+            constructor(value: Int) : this(value.toDouble())
         }
         data class Bool(val value: Boolean) : Literal()
     }

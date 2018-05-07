@@ -5,6 +5,7 @@ import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import generation.SourceCodePrinter
 import lexer.*
+import org.jetbrains.spek.api.Spek
 import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
 import parser.Parser
@@ -42,11 +43,11 @@ fun matchesAstWithActualLexer(expected: String): Matcher<String> =
             override val negatedDescription: String get() = "was not equal to the expected AST"
         }
 
-
-
 class DummyLexer(private val tokens: Sequence<Token>): ILexer {
     override fun getTokenSequence() = buildSequence {
-        tokens.forEach { print(formatToken(it)+" "); yield(PositionalToken(it, -1, -1)) }
+        tokens.forEach {
+            print(formatToken(it) + " ")
+            yield(PositionalToken(it, -1, -1)) }
     }
 
     constructor(tokens: List<Token>) : this(buildSequence { yieldAll(tokens) })

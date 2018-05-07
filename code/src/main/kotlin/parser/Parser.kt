@@ -153,7 +153,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
     }
 
     //region Type declarations
-    private fun  parseType(implicitAllowed: Boolean = false, genericAllowed:Boolean = false): AstNode.Type {
+    private fun  parseType(implicitAllowed: Boolean = false, genericAllowed: Boolean = false): AstNode.Type {
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
@@ -167,7 +167,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             Token.Type.Tuple -> parseTupleType(genericAllowed)
             Token.Type.List -> parseListType(genericAllowed)
             is Token.Identifier ->
-                if(genericAllowed) AstNode.Type.GenericType(currentPosToken.token.value)
+                if (genericAllowed) AstNode.Type.GenericType(currentPosToken.token.value)
                 else unexpectedTokenError(currentPosToken.token)
             else -> unexpectedTokenError(currentPosToken.token)
         }
