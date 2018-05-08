@@ -5,11 +5,13 @@ import generation.cpp.ProgramGenerator
 import hclTestFramework.codegen.compileAndExecuteCpp
 import lexer.Lexer
 import logger.Logger
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import parser.Parser
 import kotlin.system.exitProcess
 
 class CodeGenTests {
+    @Disabled
     @Test
     fun tempCoverageTest() {
         val code = "" +
