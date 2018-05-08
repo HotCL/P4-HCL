@@ -1,7 +1,19 @@
 %Content includes all type rules in HCL
 %Should be a relatively short section, since much of the content is self explanatory.
 \section{Type Rules}
-%introduction
+To ensure that any program written in HCL runs correctly after compilation, the language follows certain type rules.
+These rules specify where expressions have to evaluate to a specific type.
+There are essentially two cases where type rules apply:
+\begin{itemize}
+	\item When assigning an expression to a variable
+	\begin{itemize}
+		\item the expression must evaluate to the same type as the variable.
+	\end{itemize}
+	\item When passing an expression as an argument a function call.
+	\begin{itemize}
+		\item the expression must evaluate to the type specified by the function declaration.
+	\end{itemize}
+\end{itemize}
 
 
 \subsection{Type Rules for Expressions}
@@ -10,9 +22,10 @@
 \begin{center}
 	\begin{math}
 	\cfrac
-	{E \vdash e_1: num \quad E \vdash e_2: num}
-	{E \vdash e_1 + e_2 : num}
-	\end{math}
+	{E \vdash e_1: T \quad E \vdash e_2: T}
+	{E \vdash e_1 + e_2 : T}
+	\end{math}\\[1\baselineskip]
+	\texttt{where} $T \in \{num, txt, list\}$
 \end{center}
 
 \textbf{Subtraction}\\
@@ -51,12 +64,40 @@
 	\end{math}
 \end{center}
 
-\textbf{Bigger than}\\
+\textbf{Greater than}\\
 \begin{center}
 	\begin{math}
 	\cfrac
 	{E \vdash e_1: num \quad E \vdash e_2: num}
 	{E \vdash e_1 > e_2 : bool}
+	\end{math}
+\end{center}
+
+\textbf{Equals}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: T \quad E \vdash e_2: T}
+	{E \vdash e_1\ equals\ e_2 : bool}
+	\end{math}\\[1\baselineskip]
+	\texttt{where} $T \in \{num, bool, txt, list\}$
+\end{center}
+
+\textbf{And}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: bool \quad E \vdash e_2: bool}
+	{E \vdash e_1\ and\ e_2 : bool}
+	\end{math}
+\end{center}
+
+\textbf{Or}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: bool \quad E \vdash e_2: bool}
+	{E \vdash e_1\ or\ e_2 : bool}
 	\end{math}
 \end{center}
 
