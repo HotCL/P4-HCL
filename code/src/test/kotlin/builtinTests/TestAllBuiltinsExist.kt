@@ -27,6 +27,7 @@ object TestAllBuiltinsExist : Spek({
                 "toText",
                 "then",
                 "while",
+                "each",
                 "length",
                 "at",
                 "subList",

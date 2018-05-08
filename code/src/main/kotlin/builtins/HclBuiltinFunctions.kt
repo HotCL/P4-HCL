@@ -28,6 +28,7 @@ object HclBuiltinFunctions {
             // Control structures
                     buildThenFunction(),
                     buildWhileFunction(),
+                    buildEachFunction(),
             // Standard functions
                     buildTextEqualsFunction(),
                     buildTextNotEqualsFunction(),
@@ -214,6 +215,19 @@ private fun buildThenFunction() = buildFunction(
         ),
         returnType = Type.Bool,
         body = "if (condition) { body(); }\nreturn condition;"
+)
+
+private fun buildEachFunction() = buildFunction(
+        identifier = "each",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("body", Type.Func.ExplicitFunc(listOf(Type.GenericType("T")), Type.None))
+        ),
+        returnType = Type.None,
+        body = "for (int i = 0; i < list.get()->size; i++) {\n" +
+                "body(list.get()->data[i]);\n" +
+                "}\n" +
+                "return;"
 )
 
 private fun buildMapFunction() = buildFunction(
