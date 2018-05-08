@@ -1,5 +1,5 @@
-#ifndef TEST_PRINTER_H
-#define TEST_PRINTER_H
+#ifndef PRINTER_H
+#define PRINTER_H
 
 #include "ConstList.h"
 #include <memory>
@@ -85,4 +85,4 @@ void print_line(bool b) {
 }
 #endif //ARDUINO_AVR_UNO
 
-#endif //TEST_PRINTER_H
+#endif //PRINTER_H

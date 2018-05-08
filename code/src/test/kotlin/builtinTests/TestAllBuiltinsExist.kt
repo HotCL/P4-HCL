@@ -32,11 +32,11 @@ object TestAllBuiltinsExist : Spek({
                 "subList",
                 "map",
                 "filter",
-                "writeDigPinHigh",
-                "writeDigPinLow",
-                "readDigPin",
-                "writeAnaPin",
-                "readAnaPin",
+                "HIGH",
+                "LOW",
+                "readDigital",
+                "writeAnalog",
+                "readAnalog",
                 "print",
                 "printLine"
         )

@@ -255,54 +255,44 @@ private fun buildFilterFunction() = buildFunction(
 
 //region PinFunctions
 private fun buildWriteDigPinHighFunction() = buildFunction(
-        identifier = "writeDigPinHigh",
-        parameters = listOf(Parameter("dPin", Type.Number)),
+        identifier = "HIGH",
+        parameters = listOf(Parameter("pin", Type.Number)),
         returnType = Type.None,
-        body = "int pin = (int)round(dPin);\n" +
-                "pinMode(pin, OUTPUT);\n" +
-                "digitalWrite(pin, HIGH);\n" +
+        body = "setDigPinOut(pin, 1);\n" +
                 "return;"
 )
 
 private fun buildWriteDigPinLowFunction() = buildFunction(
-        identifier = "writeDigPinLow",
-        parameters = listOf(Parameter("dPin", Type.Number)),
+        identifier = "LOW",
+        parameters = listOf(Parameter("pin", Type.Number)),
         returnType = Type.None,
-        body = "int pin = (int)round(dPin);\n" +
-                "pinMode(pin, OUTPUT);\n" +
-                "digitalWrite(pin, LOW);\n" +
+        body = "setDigPinOut(pin, 0);\n" +
                 "return;"
 )
 
 private fun buildReadDigPinFunction() = buildFunction(
-        identifier = "readDigPin",
-        parameters = listOf(Parameter("dPin", Type.Number)),
+        identifier = "readDigital",
+        parameters = listOf(Parameter("pin", Type.Number)),
         returnType = Type.Number,
-        body = "int pin = (int)round(dPin);\n" +
-                "pinMode(pin, INPUT);\n" +
-                "return digitalRead(pin);"
+        body = "return setDigPinIn(pin);"
 )
 
 private fun buildWriteAnaPinFunction() = buildFunction(
-        identifier = "writeAnaPin",
+        identifier = "writeAnalog",
         parameters = listOf(
-                Parameter("aPin", Type.Number),
+                Parameter("pin", Type.Number),
                 Parameter("value", Type.Number)
         ),
         returnType = Type.None,
-        body = "int pin = (int)round(aPin);\n" +
-                "pinMode(pin, OUTPUT);\n" +
-                "analogWrite(pin, value);\n" +
+        body = "setAnaPinOut(pin, value);\n" +
                 "return;"
 )
 
 private fun buildReadAnaPinFunction() = buildFunction(
-        identifier = "readAnaPin",
-        parameters = listOf(Parameter("aPin", Type.Number)),
+        identifier = "readAnalog",
+        parameters = listOf(Parameter("pin", Type.Number)),
         returnType = Type.None,
-        body = "int pin = (int)round(aPin);\n" +
-                "pinMode(pin, OUTPUT);\n" +
-                "return analogRead(pin);"
+        body = "return setAnaPinIn(pin);"
 )
 //endregion PinFunctions
 
