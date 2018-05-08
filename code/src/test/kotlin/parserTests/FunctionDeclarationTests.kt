@@ -7,7 +7,6 @@ import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import parser.AstNode
 import parser.ParserWithoutBuiltins
 
 
@@ -92,38 +91,6 @@ class FunctionDeclarationTests {
             )
         )
     }
-/*
-    @Test
-    fun failsOnAssignmentInLambdaParameterDefinition(){
-        val lexer = DummyLexer(buildTokenSequence {
-                Type.List,
-                squareStart,
-                number,
-                squareEnd,
-                identifier("ret+2"),
-                `=`,
-                squareStart,
-                number(),
-                squareEnd,
-                newLine,
-                Type.List,
-                squareStart,
-                Type.List,
-                squareStart,
-                number,
-                squareEnd,
-                squareEnd,
-                Identifier,
-                `=`,
-                squareStart,
-                Identifier,
-                squareEnd,
-                newLine
-        ))
-        Assertions.assertThrows(InitializedFunctionParameterError::class.java,
-                { Parser(lexer).generateAbstractSyntaxTree() })
-
-    }*/
 
     @org.junit.jupiter.api.Test
     fun parsesWithImplicitFuncType() {
@@ -234,6 +201,20 @@ class FunctionDeclarationTests {
                 "myFunc" declaredAs func(none) withValue
                         body("myNum" declaredAs num, "myText" declaredAs txt).asExpression
             )
+        )
+    }
+
+    @Test
+    fun canParseVarAssignmentFunction() {
+        assertThat(
+                buildTokenSequence {
+                    `var`.identifier("myFunc").`=`.`(`.number.identifier("x").`)`.colon.bool.`{`.bool(true).blockEnd.newLine
+                },
+                matchesAstChildren(
+                        "myFunc" declaredAs func(bool, num) withValue (
+                                lambda() returning bool withArgument ("x" asType num) withBody ret(bool(true))
+                                )
+                )
         )
     }
 }
