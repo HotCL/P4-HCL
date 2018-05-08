@@ -117,6 +117,10 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             // Only valid if upcoming expression is a function
             currentFunctionName = identifierName
             val expression = parseExpression()
+            println()
+            println("NAME= >>$identifierName<<")
+            println("expression= >>${expression.type}<<")
+            println("this type= >>$type<<")
             currentFunctionName = null
             if (type != AstNode.Type.Func.ImplicitFunc && type != AstNode.Type.Var && expression.type != type)
                 unexpectedTypeError(type.toString(), expression.type.toString())
@@ -334,7 +338,8 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                         val declaration = funcDecls.getTypeDeclaration(argTypes)
                         if (declaration == null) undeclaredError(token.value)
                         else AstNode.Command.Expression.FunctionCall(
-                                AstNode.Command.Expression.Value.Identifier(token.value,declaration.returnType),
+                                AstNode.Command.Expression.Value.Identifier(token.value,
+                                        getTypeOnFuncCall(declaration,argTypes)),
                                 listOf(expression) + secondaryArguments
                         )
                     } else expression

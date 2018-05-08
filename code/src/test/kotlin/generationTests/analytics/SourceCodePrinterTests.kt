@@ -1,6 +1,5 @@
 package generationTests.analytics
 
-import generation.GraphvizGenerator
 import generation.SourceCodePrinter
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Test
@@ -34,8 +33,8 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintNestedFunctionCall() {
-        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                "print".calledWith(txt,"+".calledWith(num,list("getMyAge".called(num),num(1))))
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+                "print".calledWith(txt,"+".calledWith(num,listOf("getMyAge".called(num),num(1))))
         ).toMutableList()))
 
         assertEquals(
@@ -46,9 +45,9 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintLambdaExpression() {
-        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 "plus" assignedTo(lambda() returning num withArguments listOf("a" asType num, "b" asType num)
-                        withBody ret("+".calledWith(num,list(
+                        withBody ret("+".calledWith(num,listOf(
                         "a" asIdentifier num,
                         "b" asIdentifier num
                 ))))
@@ -62,8 +61,8 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintDeclarationOfAllTypes() {
-        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                "test" declaredAs tpl(func(bool,listOf(num,txt)),bool)
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+                "test" declaredAs tpl(func(none,listOf(num,txt)),list(bool))
         ).toMutableList()))
         assertEquals(
                 "tuple[func[num, text, none], list[bool]] test\n",
@@ -73,7 +72,7 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintDeclarationWithAssignment() {
-        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 "x" declaredAs num withValue num(5)
         ).toMutableList()))
 

@@ -16,8 +16,8 @@ object HclBuiltinFunctions {
                     buildOperatorBoolBoolToBool("and", "&&"),
                     buildOperatorBoolBoolToBool("or", "||"),
 
-                    buildOperatorToBool<Type.Number>("equalGreaterThan",">="),
-                    buildOperatorToBool<Type.Number>("equalLessThan","<="),
+                    buildOperatorToBool<Type.Number>("greaterThanEqual",">="),
+                    buildOperatorToBool<Type.Number>("lessThanEqual","<="),
                     buildOperatorToBool<Type.Number>("greaterThan",">"),
                     buildOperatorToBool<Type.Number>("lessThan","<"),
                     buildOperatorToBool<Type.Number>("equals", "=="),

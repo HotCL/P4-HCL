@@ -57,13 +57,13 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
         is Expression.LambdaExpression -> ExprResult.Success(AstNode.Type.Func.ExplicitFunc(
                 expr.paramDeclarations.map { it.type }, expr.returnType)
         )
-    }*/
+    }
 
     private fun getTypeOfListExpression(list: Expression.Value.Literal.List) = list.elements[0]
 
     private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =
             tuple.elements.map { it.type }
-
+    */
     override fun List<AstNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<AstNode.Type>):
             AstNode.Type.Func.ExplicitFunc? {
         val genericTypes = mutableMapOf<String, AstNode.Type>()
@@ -80,6 +80,13 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             }
         }
     }
+
+
+    override fun getTypeOnFuncCall(func: AstNode.Type.Func.ExplicitFunc, arguments: List<AstNode.Type>) =
+            if(func.returnType is AstNode.Type.GenericType)
+            func.paramTypes.zip(arguments).getTypeFromGenericType(func.returnType.name) ?: TODO()
+    else func.returnType
+
 
     /**
      * Pair = declaredType and argumentType

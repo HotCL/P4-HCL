@@ -27,7 +27,7 @@ sealed class AstNode {
                         if (returnStatements.all { returnStatements.first().expression.type == it.expression.type } ) {
                             returnStatements.first().expression.type
                         } else {
-                            TODO()
+                            throw Exception("Lambda body with multiple return types")
                         }
                     }
                 }

@@ -38,6 +38,8 @@ class GraphvizGenerator : IPrinter {
             is Command.Expression.LambdaExpression -> toLabel(id,"Lambda")+this.returnType.visit(id)+
                 this.paramDeclarations.visit(id)+this.body.visit(id)
 
+            is Command.Expression.Value.Identifier -> toLabel(id,"Identifier(name=$name)")
+
             is Command.Expression.Value.Literal.List -> toLabel(id,"Literal: List")+
                     this.elements.joinToString("\n") { it.visit(id) }
 

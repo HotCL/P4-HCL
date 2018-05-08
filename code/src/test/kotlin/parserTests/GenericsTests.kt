@@ -9,6 +9,7 @@ import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import parser.AstNode
 import parser.ParserWithoutBuiltins
 
 class GenericsTests{
@@ -40,7 +41,7 @@ class GenericsTests{
                 "myFunc" declaredAs func(txt, generic("T")) withValue (
                     lambda() returning txt withArgument ("myParam1" asType generic("T")) andBody ret(txt("generics!"))
                 ),
-                "myFunc" calledWith num(5)
+                "myFunc".calledWith(txt, num(5))
             )
         )
     }
@@ -59,14 +60,19 @@ class GenericsTests{
                 `(`.number(1.0).`,`.text("test").`)`.number(9.0).newLine
             },
             matchesAstChildren(
-                "myFunc" declaredAs func(generic("T"), listOf(list(generic("T")), tpl(num, generic("T3")), generic("T")))
+                "myFunc" declaredAs func(generic("T"), listOf(
+                        list(generic("T")),
+                        tpl(num, generic("T3")),
+                        generic("T"))
+                )
                 withValue (lambda() returning generic("T") withArguments listOf(
                         "myParam" asType list(generic("T")),
                         "myParam1" asType tpl(num, generic("T3")),
                         "myT" asType generic("T")
-                    ) andBody ret("myT".asIdentifier)
+                    ) andBody ret("myT".asIdentifier(generic("T")))
                 ),
-                "x" declaredAs num withValue ("myFunc" calledWith listOf(list(num(1), num(2)), tpl(num(1), txt("test")), num(9)))
+                "x" declaredAs num withValue ("myFunc".calledWith(num,
+                        listOf(list(num(1), num(2)), tpl(num(1), txt("test")), num(9))))
             )
         )
     }
@@ -82,7 +88,7 @@ class GenericsTests{
                 "myFunc" declaredAs func(generic("T"), generic("T")) withValue (lambda()
                     returning generic("T")
                     withArgument ("myParam1" asType generic("T"))
-                    andBody ret("myParam1".asIdentifier)
+                    andBody ret("myParam1".asIdentifier(generic("T")))
                 )
             )
         )
@@ -155,10 +161,10 @@ class GenericsTests{
                         "myFunc" declaredAs func(generic("T"), func(generic("T"))) withValue (lambda()
                             returning generic("T")
                             withArgument ("myParam1" asType func(generic("T")))
-                            andBody ret("myParam1".called())
+                            andBody ret("myParam1".called(generic("T")))
                         ),
                         "passFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
-                        "myFunc" calledWith "passFunc".asIdentifier
+                        "myFunc".calledWith(num, "passFunc".asIdentifier(func(num)))
                 )
         )
     }

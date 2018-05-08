@@ -42,7 +42,7 @@ class GraphvizGeneratorTests {
     @Test
     fun canPrintNestedFunctionCall() {
         val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                "print".calledWith(txt,"+".calledWith(num,list("getMyAge".called(num),num(1))))
+                "print".calledWith(txt,"+".calledWith(num,listOf("getMyAge".called(num),num(1))))
         ).toMutableList()))
 
         assertEquals(
@@ -57,11 +57,12 @@ class GraphvizGeneratorTests {
     fun canPrintLambdaExpression() {
         val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 "plus" assignedTo(lambda() returning num withArguments listOf("a" asType num, "b" asType num)
-                        withBody ret("+".calledWith(num,list(
+                        withBody ret("+".calledWith(num,listOf(
                         "a" asIdentifier num,
                         "b" asIdentifier num
                 ))))
         ).toMutableList()))
+
         assertEquals(
                 "graph \"test\" {0;0 [label=\"program\"];1;1 [label=\"plus=\"];2;2 [label=\"Lambda\"];3;3" +
                         " [label=\"TYPE:num\"];3;3 [label=\"TYPE:num\"];2 -- 3;4;4 [label=\"parameter\"];5;5 " +
@@ -77,7 +78,7 @@ class GraphvizGeneratorTests {
     @Test
     fun canPrintDeclarationOfAllTypes() {
         val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                "test" declaredAs tpl(func(bool,listOf(num,txt)),bool)
+                "test" declaredAs tpl(func(num,listOf(num,txt)),list(bool))
         ).toMutableList()))
 
         assertEquals(
