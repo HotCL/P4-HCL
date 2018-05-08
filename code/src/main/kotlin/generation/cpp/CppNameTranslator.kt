@@ -1,6 +1,7 @@
 package generation.cpp
 
 import generation.IValidNameTranslator
+import generation.cpp.CppNameTranslator.getValidName
 import parser.AstNode
 
 
@@ -10,11 +11,11 @@ object CppNameTranslator : IValidNameTranslator{
 
     private fun AstNode.Type.getValidName():String = when(this){
         AstNode.Type.Number -> "double"
-        AstNode.Type.Text -> "char *"
+        AstNode.Type.Text ->  "List<char>"
         AstNode.Type.Bool -> "bool"
         AstNode.Type.None -> "void"
         is AstNode.Type.GenericType -> this.name
-        is AstNode.Type.List -> "ConstList<${elementType.getValidName()}>::List"
+        is AstNode.Type.List -> "List<${elementType.getValidName()}>"
         is AstNode.Type.Func.ExplicitFunc ->
             "function<${returnType.getValidName()}(${paramTypes.joinToString { it.getValidName() }})>"
         is AstNode.Type.Tuple -> "TPL_0x" + this.elementTypes.joinToString ("_") { it.getValidName() }.hashed

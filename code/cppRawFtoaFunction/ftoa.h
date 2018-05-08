@@ -9,8 +9,9 @@
  * This function returns a char array (string) representation of a floating point value
  * Parameters: d = double to be converted | precision = number of digits after decimal point
  */
-char *ftoa(double d, int precision) {
-    char *buffer = (char*)malloc(MAX_STR_LEN * sizeof(char));
+ConstList<char>::List ftoa(double d, int precision) {
+    char buffer[MAX_STR_LEN];
+    memset(buffer, 0, MAX_STR_LEN);
 
     // Add digits before decimal point to string
     long characteristic = (long)d;
@@ -41,7 +42,7 @@ char *ftoa(double d, int precision) {
         *endOfString = '\0';
     }
 
-    return buffer;
+    return ConstList<char>::create(buffer, strlen(buffer));
 }
 
 #endif //FTOA_H

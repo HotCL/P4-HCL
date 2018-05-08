@@ -17,11 +17,11 @@ class ProgramGenerator : IFilesPrinter {
 """
 #include <functional>
 
-#if !ARDUINO_AVR_UNO
-using namespace std;
-#endif
-
 #include "ConstList.h"
+#include "ftoa.h"
+
+using namespace std;
+
 #include "builtin.h"
 #include "types.h"
 """
