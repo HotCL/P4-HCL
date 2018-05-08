@@ -41,6 +41,7 @@ object HclBuiltinFunctions {
                     buildListConcatFunction(),
                     buildMapFunction(),
                     buildFilterFunction(),
+                    buildDelayMillisFunction(),
             // Read/Write functions for arduino
                     buildWriteDigPinHighFunction(),
                     buildWriteDigPinLowFunction(),
@@ -251,6 +252,14 @@ private fun buildFilterFunction() = buildFunction(
                 "result[index++] = list.get()->data[i];\n" +
                 "}\n" +
                 "return ConstList<T>::create(result, index);"
+)
+
+private fun buildDelayMillisFunction() = buildFunction(
+        identifier = "delayMillis",
+        parameters = listOf(Parameter("millis", Type.Number)),
+        returnType = Type.None,
+        body = "delayMillis(millis);\n" +
+                "return;"
 )
 
 //region PinFunctions

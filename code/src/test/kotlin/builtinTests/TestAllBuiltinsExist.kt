@@ -32,6 +32,7 @@ object TestAllBuiltinsExist : Spek({
                 "subList",
                 "map",
                 "filter",
+                "delayMillis",
                 "HIGH",
                 "LOW",
                 "readDigital",
