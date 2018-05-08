@@ -66,9 +66,10 @@ Functions used as control structures in HCL, seen in table \ref{tbl:control}
 	\label{tbl:control}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                 & Symbol & Input Parameters     & Return Type \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, func{[}none{]} & bool        \\ \hline
-		While Loop                                                & while  & func{[}none{]}, bool & bool        \\ \hline
+		Operation                                                 & Symbol & Input Parameters            & Return Type \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, func{[}none{]}        & bool        \\ \hline
+		While Loop                                                & while  & func{[}none{]}, bool        & bool        \\ \hline
+		Foreach Loop                                              & each   & List{[}T{]}, func{[}none{]} & none        \\ \hline
 	\end{tabular}
 \end{table}
 
