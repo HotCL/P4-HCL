@@ -15,6 +15,7 @@ object HclBuiltinFunctions {
                     buildOperatorNumNumToNum("-"),
                     buildOperatorNumNumToNum("*"),
                     buildOperatorNumNumToNum("/"),
+                    buildOperatorNumNumToNum("mod", "%"),
 
                     buildOperatorNumNumToBool("<"),
                     buildOperatorNumNumToBool(">"),
@@ -23,12 +24,11 @@ object HclBuiltinFunctions {
 
                     buildOperatorBoolBoolToBool("and", "&&"),
                     buildOperatorBoolBoolToBool("or", "||"),
-
-                    buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
             // Control structures
                     buildThenFunction(),
                     buildWhileFunction(),
             // Standard functions
+                    buildNotFunction(),
                     buildTextEqualsFunction(),
                     buildTextNotEqualsFunction(),
                     buildTextConcatFunction(),
@@ -55,17 +55,6 @@ private fun buildOperatorTxtTxtToBool(functionName: String, operator: String = f
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
         buildOperator<Type.Bool, Type.Bool, Type.Bool>(functionName, operator)
 
-//"Prefix" means it will be prefixed in C++, but postfixed in HCL
-private inline fun<reified P, reified R> buildPrefixOperator(functionName: String, operator: String = functionName)
-        where P : Type, R : Type = buildFunction(
-        identifier = functionName,
-        parameters = listOf(
-                Parameter("operand", P::class.objectInstance!!)
-        ),
-        returnType = R::class.objectInstance!!,
-        body = "return $operator operand;"
-)
-
 private inline fun<reified V, reified H, reified R> buildOperator(functionName: String, operator: String = functionName)
         where V : Type, H : Type, R : Type = buildFunction(
         identifier = functionName,
@@ -79,6 +68,15 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
 //endregion buildOperator_functions
 
 //region builtInFunctions
+private fun buildNotFunction() = buildFunction(
+        identifier = "not",
+        parameters = listOf(
+                Parameter("boolean", Type.Bool)
+        ),
+        returnType = Type.Bool,
+        body = "return !boolean"
+)
+
 private fun buildTextEqualsFunction() = buildFunction(
         identifier = "equals",
         parameters = listOf(
