@@ -1,6 +1,7 @@
 package generation.cpp
 
 import generation.IPrinter
+import generation.makePretty
 import parser.AbstractSyntaxTree
 import parser.AstNode
 
@@ -28,7 +29,7 @@ class CodeGenerator : IPrinter {
                 is AstNode.Command.Expression.Value.Literal.List -> "[${elements.joinToString { format() }}]"
                 is AstNode.Command.Expression.LambdaExpression -> TODO()
                 is AstNode.Command.Expression.LambdaBody -> TODO()
-                is AstNode.Command.Expression.FunctionCall -> format()
+                is AstNode.Command.Expression.FunctionCall -> "${this.identifier.cpp}(${this.arguments})"
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
                 is AstNode.Command.RawCpp -> content.split("\n").joinToString("") { (it + "\n").indented }
             }
@@ -58,7 +59,7 @@ class CodeGenerator : IPrinter {
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclInline(decl: AstNode.Command.Declaration) =
         buildString {
-            appendln("// Built in function for ${decl.identifier.name}".indented)
+            appendln("// Built in function for ${toComment(decl)}".indented)
             appendln(("inline ${returnType.cpp} FUN_${decl.identifier.cpp} " +
             "(${paramDeclarations.format(attributes.modifyParameterName)}) {").indentedPostInc)
             append(body.commands.format())
@@ -67,7 +68,7 @@ class CodeGenerator : IPrinter {
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclDefault(decl: AstNode.Command.Declaration) =
         buildString {
-            appendln("// Lambda function for name ${decl.identifier.name}".indented)
+            appendln(("// Lambda function for name ${toComment(decl)}").indented)
             val type = AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
             appendln("${type.cpp} FUN_${decl.identifier.cpp} = ".indented + format())
         }
@@ -95,7 +96,12 @@ class CodeGenerator : IPrinter {
 
     private fun templateLine(generics: List<AstNode.Type.GenericType>) =
         if (generics.isEmpty()) ""
-        else "template <" + generics.joinToString { "typename ${it.name}" } + ">\n"
+        else "template <" + generics.toSet().joinToString { "typename ${it.name}" } + ">\n"
+
+    private fun AstNode.Command.Expression.LambdaExpression.toComment(decl: AstNode.Command.Declaration) =
+            "${decl.identifier.name}(${paramDeclarations.joinToString {
+                "${it.type.makePretty()} ${it.identifier.name}" }
+            }) ->${decl.type.makePretty()}"
 
     private val String.indented get () = "    " * indents + this
     private val String.indentedPostInc get () = indented.also { indents ++ }

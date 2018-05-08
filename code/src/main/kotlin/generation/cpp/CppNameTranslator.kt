@@ -1,6 +1,7 @@
 package generation.cpp
 
 import generation.IValidNameTranslator
+import generation.cpp.CppNameTranslator.getValidName
 import parser.AstNode
 
 
@@ -10,7 +11,7 @@ object CppNameTranslator : IValidNameTranslator{
 
     private fun AstNode.Type.getValidName():String = when(this){
         AstNode.Type.Number -> "double"
-        AstNode.Type.Text -> "char[]"
+        AstNode.Type.Text ->  "ConstList<char>"
         AstNode.Type.Bool -> "bool"
         AstNode.Type.None -> "void"
         is AstNode.Type.GenericType -> this.name

@@ -47,4 +47,11 @@ int main() {
     auto l5 = get_list_of_lists();
     auto list_at_idx_0 = ConstList<ConstList<int>::List>::at(l5, 0);
     std::cout << ConstList<int>::at(list_at_idx_0, 3) << std::endl;
+
+    // text test
+    auto txt = ConstList<char>::string((char*)"hello world!");
+    std::cout << "This should be a 'h'= "<< ConstList<char >::at(txt, 0) << std::endl;
+    std::cout << "This should be '12'= "<< txt.get()->size << std::endl;
+    std::cout << "This should be 'hello world!'= "<< txt.get()->data << std::endl;
+
 }

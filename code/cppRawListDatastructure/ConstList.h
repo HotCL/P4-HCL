@@ -5,6 +5,7 @@
 #include <memory>
 #include <iostream>
 
+
 template <typename T>
 class ConstList {
 public:
@@ -54,6 +55,11 @@ public:
 
     static T at(List & l, unsigned int idx) {
         return l.get()->data[idx];
+    }
+
+
+    static List string(char* txt){
+        return ConstList<char>::create(txt, strlen(txt));
     }
 };
 
