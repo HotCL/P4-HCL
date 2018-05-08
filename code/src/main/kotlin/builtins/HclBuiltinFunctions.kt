@@ -108,7 +108,6 @@ private fun buildListToTextFunction() = buildFunction(
                 "return output;"
 )
 
-
 private fun buildGetListLengthFunction() = buildFunction(
         identifier = "length",
         parameters = listOf(
