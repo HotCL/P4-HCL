@@ -1,6 +1,7 @@
 package builtins
 
 import generation.cpp.cpp
+import generation.cpp.cppFun
 import parser.*
 import parser.AstNode.Type
 
@@ -25,7 +26,6 @@ object HclBuiltinFunctions {
                     buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
             // Control structures
                     buildThenFunction(),
-                    buildThenTernaryFunction(),
                     //buildElseTernaryFunction(),
                     buildWhileFunction(),
             // Standard functions
@@ -103,7 +103,7 @@ private fun buildListToTextFunction() = buildFunction(
         returnType = Type.Text,
         body = "auto output = ConstList<char>::string((char*)\"[\")\n" +
                 "for(int i = 0; i < input.get()->size; i++) {\n" +
-                "output = ConstList<T>::concat(output,toText(at(input,i));\n" +
+                "   output = ConstList<T>::concat(output,toText(at(input,i));\n" +
                 "}\n" +
                 "return output;"
 )
@@ -191,15 +191,7 @@ private fun buildThenFunction() = buildFunction(
         body = "if (condition) { body(); }\nreturn condition;"
 )
 
-private fun buildThenTernaryFunction() = buildFunction(
-        identifier = "then",
-        parameters = listOf(
-                Parameter("condition", Type.Bool),
-                Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.GenericType("T")))
-        ),
-        returnType = Type.Tuple(listOf(Type.Bool,Type.GenericType("T"))),
-        body = "return ${"create_struct".cpp}(condition,body());"
-)
+
 
 /*private fun buildElseTernaryFunction() = buildFunction(
         identifier = "else",
