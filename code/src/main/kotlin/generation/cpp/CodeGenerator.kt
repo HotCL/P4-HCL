@@ -17,6 +17,8 @@ class CodeGenerator : IPrinter {
 
     private fun List<AstNode.Command>.format() = joinToString("\n") { it.format() }
 
+    private fun Iterable<AstNode.Command.Expression>.format() = joinToString(",") { it.format() }
+
     private fun AstNode.Command.format() =
             when(this) {
                 is AstNode.Command.Declaration -> format()
@@ -25,11 +27,11 @@ class CodeGenerator : IPrinter {
                 is AstNode.Command.Expression.Value.Literal.Number -> "$value"
                 is AstNode.Command.Expression.Value.Literal.Text -> "\"$value\""
                 is AstNode.Command.Expression.Value.Literal.Bool -> "$value"
-                is AstNode.Command.Expression.Value.Literal.Tuple -> TODO()
-                is AstNode.Command.Expression.Value.Literal.List -> "[${elements.joinToString { format() }}]"
+                is AstNode.Command.Expression.Value.Literal.Tuple -> "{}"
+                is AstNode.Command.Expression.Value.Literal.List -> "(const ${this}[]){${elements.joinToString { format() }}}"
                 is AstNode.Command.Expression.LambdaExpression -> TODO()
                 is AstNode.Command.Expression.LambdaBody -> TODO()
-                is AstNode.Command.Expression.FunctionCall -> "${this.identifier.cpp}(${this.arguments})"
+                is AstNode.Command.Expression.FunctionCall -> "${this.identifier.cpp}(${this.arguments.format()})"
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
                 is AstNode.Command.RawCpp -> content.split("\n").joinToString("") { (it + "\n").indented }
             }
