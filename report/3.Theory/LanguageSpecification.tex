@@ -24,6 +24,23 @@ While dictionaries are a staple in modern languages, they are not deemed necessa
 HCL also includes the type \textbf{\textit{func}} which in some languages, particularly C\#, is known as the \textbf{\textit{lambda}} type.
 Also included is the type \textbf{\textit{none}} which in some languages, particularly C\# and Java, is known as the \textbf{\textit{void}} type. 
 
+Table \ref{tbl:types} lists all types in HCL and their c++ equivalent.
+\begin{table}[H]
+	\centering
+	\caption{Types in HCL}
+	\label{tbl:types}
+	\begin{tabular}{|c|c|}
+		\hline
+		HCL Type & C++ Equivalent \\ \hline
+		num      & double         \\ \hline
+		txt      & string         \\ \hline
+		bool     & bool           \\ \hline
+		tuple    & struct         \\ \hline
+		list     & list           \\ \hline
+		func     & lambda         \\ \hline
+		none     & void           \\ \hline
+	\end{tabular}
+\end{table}
 \textbf{Type Declaration}\\
 Types can be declared in a few different ways, as the preliminary interviews indicate that users might be interested in declaring types both explicitly and implicitly.
 Therefore, types can be declared using the keyword \textbf{\textit{var}} (short for \textbf{variable\textit{}}) prefixed to an assignment, listing \ref{lis:typedcls}, line 1.
