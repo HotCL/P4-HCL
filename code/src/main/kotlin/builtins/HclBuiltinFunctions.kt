@@ -53,9 +53,11 @@ object HclBuiltinFunctions {
                     buildPrintFunction<Type.Number>(),
                     buildPrintFunction<Type.Bool>(),
                     buildPrintFunction<Type.Text>(),
+                    buildPrintListFunction(),
                     buildPrintLineFunction<Type.Number>(),
                     buildPrintLineFunction<Type.Bool>(),
-                    buildPrintLineFunction<Type.Text>()
+                    buildPrintLineFunction<Type.Text>(),
+                    buildPrintLineListFunction()
             )
 }
 
@@ -324,7 +326,7 @@ private inline fun<reified T: Type> buildPrintFunction() = buildFunction(
         identifier = "print",
         parameters = listOf(Parameter("input", T::class.objectInstance!!)),
         returnType = Type.None,
-        body = "print(input);\n" +
+        body = "print(toText(input));\n" +
                 "return;"
 )
 
@@ -332,7 +334,24 @@ private inline fun<reified T: Type> buildPrintLineFunction() = buildFunction(
         identifier = "printLine",
         parameters = listOf(Parameter("input", T::class.objectInstance!!)),
         returnType = Type.None,
-        body = "print_line(input);\n" +
+        body = "print_line(toText(input));\n" +
+                "return;"
+)
+
+// The other functions don't work for lists
+private fun buildPrintListFunction() = buildFunction(
+        identifier = "print",
+        parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
+        returnType = Type.None,
+        body = "print(toText(input));\n" +
+                "return;"
+)
+
+private fun buildPrintLineListFunction() = buildFunction(
+        identifier = "printLine",
+        parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
+        returnType = Type.None,
+        body = "print_line(toText(input));\n" +
                 "return;"
 )
 
