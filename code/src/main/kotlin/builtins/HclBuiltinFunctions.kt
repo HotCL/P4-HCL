@@ -101,9 +101,9 @@ private fun buildListToTextFunction() = buildFunction(
                 Parameter("input", Type.List(Type.GenericType("T")))
         ),
         returnType = Type.Text,
-        body = "auto output = ConstList<char>::string((char*)\"[\")\n" +
+        body = "auto output = ConstList<char>::string((char*)\"[\");\n" +
                 "for(int i = 0; i < input.get()->size; i++) {\n" +
-                "   output = ConstList<T>::concat(output,toText(at(input,i));\n" +
+                "   output = ConstList<T>::concat(output, ${"toText".cppFun}(ConstList<T>::at(input,i)));\n" +
                 "}\n" +
                 "return output;"
 )
