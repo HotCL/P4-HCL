@@ -15,7 +15,7 @@ object HclBuiltinFunctions {
                     buildOperatorNumNumToNum("-"),
                     buildOperatorNumNumToNum("*"),
                     buildOperatorNumNumToNum("/"),
-                    buildOperatorNumNumToNum("mod", "%"),
+                    buildModuloOperator(),
 
                     buildOperatorNumNumToBool("<"),
                     buildOperatorNumNumToBool(">"),
@@ -65,16 +65,25 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
         returnType = R::class.objectInstance!!,
         body = "return leftHand $operator rightHand;"
 )
+private fun buildModuloOperator() = buildFunction(
+        identifier = "mod",
+        parameters = listOf(
+                Parameter("leftHand", Type.Number),
+                Parameter("rightHand", Type.Number)
+        ),
+        returnType = Type.Number,
+        body = "return (long)leftHand % (long)rightHand;"
+)
 //endregion buildOperator_functions
 
 //region builtInFunctions
 private fun buildNotFunction() = buildFunction(
         identifier = "not",
         parameters = listOf(
-                Parameter("boolean", Type.Bool)
+                Parameter("b", Type.Bool)
         ),
         returnType = Type.Bool,
-        body = "return !boolean"
+        body = "return !b;"
 )
 
 private fun buildTextEqualsFunction() = buildFunction(
