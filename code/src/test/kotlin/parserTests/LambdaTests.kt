@@ -6,7 +6,6 @@ import exceptions.UndeclaredError
 import exceptions.UnexpectedReturnTypeError
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 class LambdaTests {
     @Test

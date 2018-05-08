@@ -1,16 +1,14 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.ImplicitTypeNotAllowed
 import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
-import lexer.Token
 import org.junit.jupiter.api.Assertions
-import parser.Parser
-import parser.AstNode
+import org.junit.jupiter.api.Test
 import parser.ParserWithoutBuiltins
-import kotlin.coroutines.experimental.buildSequence
 
 class ListTests {
 
@@ -79,5 +77,23 @@ class ListTests {
             list.squareStart.number.squareEnd.identifier("MyList").`=`.squareStart.number(5.0).`,`.`,`.number(10.0).squareEnd.newLine
         })
         Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+    }
+
+    @Test
+    fun canParseVarAssignmentList() {
+        assertThat(
+                buildTokenSequence {
+                    `var`.identifier("myList").`=`.squareStart.number(5.0).`,`.number(7.0).squareEnd.newLine
+                },
+                matchesAstChildren("myList" declaredAs list(num) withValue list(num(5), num(7)))
+        )
+    }
+
+    @org.junit.jupiter.api.Test
+    fun failsOnImplicitFuncAsParameter() {
+        val lexer = DummyLexer(buildTokenSequence {
+            list.squareStart.func.squareEnd.identifier("myFunc").newLine
+        })
+        Assertions.assertThrows(ImplicitTypeNotAllowed::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 }
