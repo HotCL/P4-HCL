@@ -13,10 +13,7 @@ fun main(args: Array<String>) {
             "var myVar = 5\n" +
             "var plus5 = (num x): num { x + myVar }\n" +
             "var shouldBe10 = myVar plus5\n" +
-            "var foo = (T val): tuple[T,num] {\n" +
-            "tuple[T,num] t = (val,5)\n" +
-            "  return t\n" +
-            "}\n"
+            "var foo = (num val): num { val}\n"
 
     val lexer = Lexer(code)
     val parser = Parser(lexer)

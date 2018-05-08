@@ -1,7 +1,5 @@
 package builtins
 
-import generation.cpp.cpp
-import generation.cpp.cppFun
 import parser.*
 import parser.AstNode.Type
 

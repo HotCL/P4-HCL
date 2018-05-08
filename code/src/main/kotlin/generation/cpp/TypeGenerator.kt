@@ -49,7 +49,7 @@ class TypeGenerator: IPrinter {
         else -> emptySet()
     }
     private fun AstNode.Command.Expression.Value.Literal.List.format():String = ""+
-            "const auto $cpp = {${elements.joinToString { CodeGenerator().generate(AbstractSyntaxTree(listOf(it)))}}};"
+            "const auto ${cpp} = {${elements.joinToString { CodeGenerator().generate(AbstractSyntaxTree(listOf(it)))}}};"
 
 
     private fun AstNode.Type.Tuple.generateFunctions() = CodeGenerator().generate(
@@ -61,7 +61,7 @@ class TypeGenerator: IPrinter {
                     returnType = AstNode.Type.Text,
                     body = "ConstList<char>::List output = ConstList<char>::string((char*)\"\");\n" +
                             elementTypes.mapIndexed {index, _ ->
-                                "output = ConstList<char>::concat(output, ${"toText".cppFun}<char>(self.element$index));\n"+
+                                "output = ConstList<char>::concat(output, ${"toText".cpp}<char>(self.element$index));\n"+
                                         if (index != this.elementTypes.count() - 1) {
                                             "output = ConstList<char>::concat(output, ConstList<char>::string((char*)\",\"));\n"
                                         } else ""
