@@ -1,6 +1,8 @@
 package generationTests.analytics
 
+import generation.GraphvizGenerator
 import generation.SourceCodePrinter
+import hclTestFramework.parser.*
 import org.junit.jupiter.api.Test
 import parser.AbstractSyntaxTree
 import parser.AstNode
@@ -12,39 +14,11 @@ class SourceCodePrinterTests {
     @Test
     fun canPrintAllLiteralAssignments() {
         val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                AstNode.Command.Assignment(
-                        AstNode.Command.Expression.Value.Identifier("a"),
-                        AstNode.Command.Expression.Value.Literal.Number(5.0)
-                ),
-
-                AstNode.Command.Assignment(
-                        AstNode.Command.Expression.Value.Identifier("b"),
-                        AstNode.Command.Expression.Value.Literal.Text("hej med dig")
-                ),
-
-                AstNode.Command.Assignment(
-                        AstNode.Command.Expression.Value.Identifier("c"),
-                        AstNode.Command.Expression.Value.Literal.Bool(true)
-                ),
-
-                AstNode.Command.Assignment(
-                        AstNode.Command.Expression.Value.Identifier("d"),
-                        AstNode.Command.Expression.Value.Literal.List(listOf<AstNode.Command.Expression>
-                        (
-                                AstNode.Command.Expression.Value.Literal.Number(1.0),
-                                AstNode.Command.Expression.Value.Literal.Number(2.0)
-                        ))
-                ),
-
-                AstNode.Command.Assignment(
-                        AstNode.Command.Expression.Value.Identifier("e"),
-                        AstNode.Command.Expression.Value.Literal.Tuple(listOf<AstNode.Command.Expression>
-                        (
-                                AstNode.Command.Expression.Value.Literal.Number(1.0),
-                                AstNode.Command.Expression.Value.Literal.Number(2.0)
-                        ))
-                )
-
+                "a" assignedTo num(5.0),
+                "b" assignedTo txt("hej med dig"),
+                "c" assignedTo bool(true),
+                "d" assignedTo list(num(1), num(2)),
+                "e" assignedTo tpl(num(1), num(2))
         ).toMutableList()
         )
         )
@@ -60,22 +34,8 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintNestedFunctionCall() {
-        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                AstNode.Command.Expression.FunctionCall(
-                        AstNode.Command.Expression.Value.Identifier("print"),
-                        listOf(
-                                AstNode.Command.Expression.FunctionCall(
-                                        AstNode.Command.Expression.Value.Identifier("+"),
-                                        listOf(
-                                                AstNode.Command.Expression.FunctionCall(
-                                                        AstNode.Command.Expression.Value.Identifier("getMyAge"),
-                                                        listOf()
-                                                ),
-                                                AstNode.Command.Expression.Value.Literal.Number(1.0)
-                                        )
-                                )
-                        )
-                )
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+                "print".calledWith(txt,"+".calledWith(num,list("getMyAge".called(num),num(1))))
         ).toMutableList()))
 
         assertEquals(
@@ -86,31 +46,12 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintLambdaExpression() {
-        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                AstNode.Command.Assignment(
-                        AstNode.Command.Expression.Value.Identifier("plus"),
-                        AstNode.Command.Expression.LambdaExpression(
-                                listOf(
-                                        AstNode.ParameterDeclaration(AstNode.Type.Number,
-                                                AstNode.Command.Expression.Value.Identifier("a")
-                                        ),
-
-                                        AstNode.ParameterDeclaration(AstNode.Type.Number,
-                                                AstNode.Command.Expression.Value.Identifier("b")
-                                        )
-                                ),
-                                AstNode.Type.Number,
-                                AstNode.Command.Expression.LambdaBody(
-                                listOf(AstNode.Command.Return(AstNode.Command.Expression.FunctionCall(
-                                        AstNode.Command.Expression.Value.Identifier("+"),
-                                        listOf(
-                                                AstNode.Command.Expression.Value.Identifier("a"),
-                                                AstNode.Command.Expression.Value.Identifier("b")
-                                        )
-                                ))))
-                        )
-
-                )
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+                "plus" assignedTo(lambda() returning num withArguments listOf("a" asType num, "b" asType num)
+                        withBody ret("+".calledWith(num,list(
+                        "a" asIdentifier num,
+                        "b" asIdentifier num
+                ))))
         ).toMutableList()))
 
         assertEquals(
@@ -121,20 +62,9 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintDeclarationOfAllTypes() {
-        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                AstNode.Command.Declaration(
-                        AstNode.Type.Tuple(listOf(
-                                AstNode.Type.Func.ExplicitFunc(listOf(
-                                        AstNode.Type.Number,
-                                        AstNode.Type.Text
-                                ),AstNode.Type.None),
-                                AstNode.Type.List(AstNode.Type.Bool)
-                        )),
-                        AstNode.Command.Expression.Value.Identifier("test"),null
-
-                )
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+                "test" declaredAs tpl(func(bool,listOf(num,txt)),bool)
         ).toMutableList()))
-
         assertEquals(
                 "tuple[func[num, text, none], list[bool]] test\n",
                 output
@@ -143,13 +73,8 @@ class SourceCodePrinterTests {
 
     @Test
     fun canPrintDeclarationWithAssignment() {
-        val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                AstNode.Command.Declaration(
-                        AstNode.Type.Number,
-                        AstNode.Command.Expression.Value.Identifier("x"),
-                        AstNode.Command.Expression.Value.Literal.Number(5.0)
-
-                )
+        val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
+                "x" declaredAs num withValue num(5)
         ).toMutableList()))
 
         assertEquals(

@@ -6,11 +6,11 @@ import java.io.File
 
 fun compileAndExecuteCpp(files: List<FilePair>) {
     val headerFiles = files.filter { it.fileName.endsWith(".h") }
-    val cppFiles = files.filter { it.fileName.endsWith(".cpp") }
+    val cppFiles = files.filter { it.fileName.endsWith(".cppName") }
     headerFiles.forEach { it.print() }
     cppFiles.forEach {
         it.print()
-        "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++1z".apply {
+        "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cppName")} -std=c++1z".apply {
             println(this)
             runCommand()
         }

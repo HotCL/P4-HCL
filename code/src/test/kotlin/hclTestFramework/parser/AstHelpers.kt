@@ -7,10 +7,13 @@ typealias txt = AstNode.Type.Text
 typealias bool = AstNode.Type.Bool
 typealias none = AstNode.Type.None
 
-val String.asIdentifier get () = AstNode.Command.Expression.Value.Identifier(this)
+infix fun String.asIdentifier(type: AstNode.Type) =
+        AstNode.Command.Expression.Value.Identifier(this,type)
 
-infix fun String.declaredAs(type: AstNode.Type) = AstNode.Command.Declaration(type, asIdentifier)
-infix fun String.assignedTo(expression: AstNode.Command.Expression) = AstNode.Command.Assignment(asIdentifier, expression)
+infix fun String.declaredAs(type: AstNode.Type) =
+        AstNode.Command.Declaration(type, asIdentifier(type))
+infix fun String.assignedTo(expression: AstNode.Command.Expression) =
+        AstNode.Command.Assignment(asIdentifier(expression.type), expression)
 infix fun AstNode.Command.Declaration.withValue(value: AstNode.Command.Expression) = copy(expression = value)
 
 fun func(returnType: AstNode.Type, argTypes: List<AstNode.Type> = listOf()) = AstNode.Type.Func.ExplicitFunc(argTypes, returnType)
@@ -35,12 +38,14 @@ infix fun AstNode.Command.Expression.LambdaExpression.withBody(body: AstNode.Com
 
 val AstNode.Command.Expression.LambdaBody.asExpression get () = lambda(body = this)
 
-infix fun String.asType(type: AstNode.Type) = AstNode.ParameterDeclaration(type, asIdentifier)
+infix fun String.asType(type: AstNode.Type) =
+        AstNode.ParameterDeclaration(type, asIdentifier(type))
 
-infix fun String.calledWith(params: List<AstNode.Command.Expression>) =
-        AstNode.Command.Expression.FunctionCall(asIdentifier, params)
+fun String.calledWith(type: AstNode.Type, params: List<AstNode.Command.Expression>) =
+        AstNode.Command.Expression.FunctionCall(asIdentifier(type), params)
 
-infix fun String.calledWith(param: AstNode.Command.Expression) = this calledWith listOf(param)
+fun String.calledWith(type: AstNode.Type, param: AstNode.Command.Expression) =
+        this.calledWith(type, listOf(param))
 
 fun generic(string: String) = AstNode.Type.GenericType(string)
 fun txt(string: String) = AstNode.Command.Expression.Value.Literal.Text(string)
@@ -53,10 +58,11 @@ fun tpl(vararg expressions: AstNode.Command.Expression) =
 
 fun tpl(vararg expressions: AstNode.Type) =  AstNode.Type.Tuple(expressions.toList())
 fun list(type: AstNode.Type) = AstNode.Type.List(type)
-fun list(vararg expressions: AstNode.Command.Expression) = AstNode.Command.Expression.Value.Literal.List(expressions.toList())
+fun list(vararg expressions: AstNode.Command.Expression) =
+        AstNode.Command.Expression.Value.Literal.List(expressions.toList(),expressions.first().type)
 
 fun ret(value: AstNode.Command.Expression) = AstNode.Command.Return(value)
 fun AstNode.Command.Expression.returned() = AstNode.Command.Return(this)
 
-fun String.called() = this calledWith listOf()
+infix fun String.called(type: AstNode.Type) = this.calledWith(type,listOf())
 
