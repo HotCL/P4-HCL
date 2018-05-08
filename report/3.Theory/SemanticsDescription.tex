@@ -580,11 +580,11 @@ The transitions are shown below.
 Function calls returns a value $v$, where $v \in Lit \cup {none}$.
 Since the parameters of a function, can be both expression and lambdas, it is necessary to have a transition for each of the two cases.
 since these two pair of rules would be almost identical, the formal parameters in the transitions below are denoted with $x$.
-The transition-system for $F_{Call}$ is ($Fnames\ \Cross\ Dcl_F\ \Cross Sto\ \cup Sto, \rightarrow_{F_{stm}}, Lit \cup Sto$).
+The transition-system for $F_{Call}$ is ($Fnames\ \Cross\ Dcl_F\ \Cross Sto\ \cup Sto, \rightarrow_{stm}, Lit \cup Sto$).
 
 Which means that the transitions must be on the form.
 \begin{center}
-	$env_V, env_F, sto \vdash f \rightarrow_{exp} v, sto'$
+	$env_V, env_F, sto \vdash f \rightarrow_{stm} v, sto'$
 \end{center}
 The transitions are shown below.
 
@@ -592,24 +592,28 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 	\cfrac
-		{env_v', env_F'[f \mapsto (L, e, env_V', env_F')] \vdash \langle L, sto \rangle \rightarrow_{stm} v, sto'}
-		{env_v, sto \vdash f \rightarrow_{stm} v, sto'}
+		{env_V', env_F'[f \mapsto (L, e, env_V', env_F')] \vdash \langle L, sto \rangle \rightarrow_{stm} v, sto'}
+		{env_V, sto \vdash f \rightarrow_{stm} v, sto'}
 	\end{math}
 	
 	\texttt{ where } $env_F\ f = (L, e, env_V', env_F')$\\
 	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
 \end{center}
 
+The next transition rule, explains the semantics of a function call with one or more arguments.
+This means that for every argument, it is necessary to bind their values in the store.
+
 \texttt{[$FuncCall-Params_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
-	{env_v'[x \mapsto l]^*[next \mapsto new\ l_x]^*, env_F'[f \mapsto (L, x\sim, e, env_V', env_F')] \vdash \langle L, sto[l_x \mapsto v_x]^* \rangle \rightarrow_{stm} v, sto'}
-	{env_v, sto \vdash x\ f\ x^* \rightarrow_{stm} v, sto'}
+	{env_V'[x \mapsto l]^*[next \mapsto new\ l_x]^*, env_F'[f \mapsto (L, x\sim, e, env_V', env_F')] \vdash \langle L, sto[l_x \mapsto v_x]^* \rangle \rightarrow_{stm} v, sto'}
+	{env_V, sto \vdash e_x\ f\ e_x^* \rightarrow_{stm} v, sto'}
 	\end{math}
 	
 	\texttt{ where } $env_F\ f = (L, e, env_V', env_F')$\\
 	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{ and for each $e_x$ } $env_V', sto \vdash e_x \rightarrow_{e} v_x$ \\
 	\texttt{ and for each x } $l_x = env_V\ next$ 
 \end{center}
 
@@ -637,7 +641,7 @@ The transitions are shown below.
 \textbf{[$Dcl_VAssExp_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-		{\langle T\ x = e,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V'[x \mapsto l][next \mapsto l'],\ sto')}
+		{env_F \vdash \langle T\ x = e,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V'[x \mapsto l][next \mapsto l'],\ sto[l \mapsto v])}
 	\end{math}
 	
 	\texttt{ where } $env_V,\ sto \vdash e \rightarrow_e v$
@@ -648,10 +652,10 @@ The transitions are shown below.
 \textbf{[$Dcl_VNoAss_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-		{\langle T\ x,\ env_v,\ sto \rangle \rightarrow_{D_V} (env_v'[x \mapsto l][next \mapsto l'],\ sto)}
+		{\langle T\ x,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V'[x \mapsto l][next \mapsto l'],\ sto)}
 	\end{math}
 	
-	\texttt{ where } $l = env_v\ next$
+	\texttt{ where } $l = env_V\ next$
 	\texttt{ and } $l' = new\ l$
 \end{center}
 
@@ -680,7 +684,7 @@ The transitions are shown below.
 \texttt{[$Dcl_FAss_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-			{env_v \vdash \langle T\ f\ =\ ([T\ x]\sim):\ T\ L,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (L, x\sim, v, env_V, env_F)]}
+			{env_V \vdash \langle T\ f\ =\ ([T\ x]\sim):\ T\ L,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (L, x\sim, v, env_V, env_F)]}
 	\end{math}
 	
 	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
@@ -689,14 +693,14 @@ The transitions are shown below.
 \texttt{[$Dcl_FNoAss_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-	{env_v \vdash \langle T\ f,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (env_V, env_F)]}
+	{env_V \vdash \langle T\ f,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (env_V, env_F)]}
 	\end{math}
 \end{center}
 
 \texttt{[$PreDcl_Ass_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-	{env_v \vdash \langle f\ =\ ([T\ x]\sim):\ T\ L,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (L, x\sim, v, env_V, env_F)]}
+	{env_V \vdash \langle f\ =\ ([T\ x]\sim):\ T\ L,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (L, x\sim, v, env_V, env_F)]}
 	\end{math}
 	
 	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
@@ -717,8 +721,8 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, env_F \vdash \langle S, sto \rangle \rightarrow_L sto' \quad env_V, sto', e \rightarrow_e v}
-			{env_V, env_F \vdash \langle \{\ S\ return\ e \}, sto \rangle \rightarrow_L sto', v}
+			{env_V, env_F \vdash \langle S, sto \rangle \rightarrow_L sto' \quad env_V, sto' \vdash e \rightarrow_e v}
+			{env_V, env_F \vdash \langle \{\ S;return\ e \}, sto \rangle \rightarrow_L sto', v}
 	\end{math}
 \end{center}
 
