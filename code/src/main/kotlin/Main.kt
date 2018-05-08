@@ -12,7 +12,8 @@ fun main(args: Array<String>) {
             "list[num] myList=[1,2,3,4.0]\n" +
             "var myVar = 5\n" +
             "var plus5 = (num x): num { x + myVar }\n" +
-            "var shouldBe10 = myVar plus5"
+            "var shouldBe10 = myVar plus5\n" +
+            "var foo = (num val): num { val}\n"
 
     val lexer = Lexer(code)
     val parser = Parser(lexer)

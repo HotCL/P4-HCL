@@ -53,7 +53,7 @@ class CodeGenerator : IPrinter {
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclInline(decl: AstNode.Command.Declaration) =
         buildString {
             appendln("// Built in function for ${toComment(decl)}".indented)
-            appendln(("inline ${returnType.cpp} FUN_${decl.identifier.cpp} " +
+            appendln(("inline ${returnType.cpp} ${decl.identifier.cpp} " +
             "(${paramDeclarations.format(attributes.modifyParameterName)}) {").indentedPostInc)
             append(body.commands.format())
             appendln("}".indentedPreDec)
@@ -64,7 +64,7 @@ class CodeGenerator : IPrinter {
             appendln(("// Lambda function for name ${toComment(decl)}").indented)
             val type =
                     AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
-            appendln("${type.cpp} FUN_${decl.identifier.cpp} = ".indented + format() + ";")
+            appendln("${type.cpp} ${decl.identifier.cpp} = ".indented + format() + ";")
         }
 
     private fun List<AstNode.ParameterDeclaration>.format(modifyParametersNames: Boolean) = joinToString {
@@ -85,7 +85,7 @@ class CodeGenerator : IPrinter {
                 ("}".indentedPreDec)
             is AstNode.Command.Expression.LambdaBody -> TODO()
             is AstNode.Command.Expression.FunctionCall ->
-                "FUN_${this.identifier.cpp}(${this.arguments.joinToString { it.format() }})"
+                "${this.identifier.cpp}(${this.arguments.joinToString { it.format() }})"
         }
 
 
