@@ -1,5 +1,6 @@
 package builtins
 
+import generation.cpp.cpp
 import parser.*
 import parser.AstNode.Type
 
@@ -25,7 +26,7 @@ object HclBuiltinFunctions {
             // Control structures
                     buildThenFunction(),
                     buildThenTernaryFunction(),
-                    buildElseTernaryFunction(),
+                    //buildElseTernaryFunction(),
                     buildWhileFunction(),
             // Standard functions
                     buildNumberToTextFunction(),
@@ -197,10 +198,10 @@ private fun buildThenTernaryFunction() = buildFunction(
                 Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.GenericType("T")))
         ),
         returnType = Type.Tuple(listOf(Type.Bool,Type.GenericType("T"))),
-        body = "if (condition) { body(); }\nreturn condition;"
+        body = "return ${"create_struct".cpp}(condition,body());"
 )
 
-private fun buildElseTernaryFunction() = buildFunction(
+/*private fun buildElseTernaryFunction() = buildFunction(
         identifier = "else",
         parameters = listOf(
                 Parameter("then_value", Type.Tuple(listOf(Type.Bool,Type.GenericType("T")))),
@@ -208,5 +209,5 @@ private fun buildElseTernaryFunction() = buildFunction(
         ),
         returnType = Type.GenericType("T"),
         body = "if (then_value.element0) { return then_value.element1 } else { return body() };"
-)
+)*/
 //endregion builtInFunctions

@@ -81,7 +81,7 @@ class TypeGenerator: IPrinter{
 
                             }.joinToString("\n")+"\n}"
             ),buildFunction(
-                    identifier = "create",
+                    identifier = "create_struct",
                     parameters = this.elementTypes.mapIndexed{ index, it -> Parameter("element$index",it)},
                     returnType = this,
                     body = "${this.cpp} output = ${this.elementTypes.mapIndexed{
