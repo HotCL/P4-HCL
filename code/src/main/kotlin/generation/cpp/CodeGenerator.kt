@@ -25,7 +25,8 @@ class CodeGenerator : IPrinter {
                 is AstNode.Command.Assignment -> format()
                 is AstNode.Command.Expression -> format()
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
-                is AstNode.Command.RawCpp -> content.split("\n").joinToString("") { (it + "\n").indented }
+                is AstNode.Command.RawCpp ->
+                    content.split("\n").joinToString("") { (it + "\n").indented }
             }
 
     private fun AstNode.Command.Assignment.format() = "${identifier.cpp} = ${expression.format()};".indented
@@ -61,7 +62,8 @@ class CodeGenerator : IPrinter {
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclDefault(decl: AstNode.Command.Declaration) =
         buildString {
             appendln(("// Lambda function for name ${toComment(decl)}").indented)
-            val type = AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
+            val type =
+                    AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
             appendln("${type.cpp} FUN_${decl.identifier.cpp} = ".indented + format())
         }
 
