@@ -1,0 +1,7 @@
+Week -8 + -7: recursive decent parser basically done with symbol table and expression type check.
+Week -6: parser done + type verification (basically decorated syntax tree, but not really?)
+Week -5: initial cpp libs for hcl + initial code generation.
+Week -4: finish cpp libs be 2/3 done with code gen
+Week -3: finish codegen + start stdlib functions.
+Week -2: finish stdlib.
+Week -1: polish + QA test
