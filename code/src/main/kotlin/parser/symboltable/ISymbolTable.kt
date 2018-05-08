@@ -35,4 +35,12 @@ interface ISymbolTable{
      */
     fun retrieveSymbol(name: String): Symbol
 
+
+
+    fun enterType(type: AstNode.Type.GenericType)
+
+    fun genericTypeInScope(type: AstNode.Type.GenericType): Boolean
+
+    fun genericTypeInScope(typeName: String): Boolean
+
 }

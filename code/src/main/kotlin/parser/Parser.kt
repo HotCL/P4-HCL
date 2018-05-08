@@ -35,9 +35,11 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val command = when (current.token) {
             is Token.Type -> parseDeclaration()
             is Token.Identifier -> {
-                if (peek().token == Token.SpecialChar.Equals) {
-                    parseAssignment()
-                } else parseExpression()
+                when {
+                    genericTypeInScope((current.token as Token.Identifier).value) -> parseDeclaration()
+                    peek().token == Token.SpecialChar.Equals -> parseAssignment()
+                    else -> parseExpression()
+                }
             }
             is Token.Literal, //Fallthrough
             Token.SpecialChar.BlockStart,
@@ -166,8 +168,10 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             Token.Type.Func -> parseFuncType(implicitAllowed)
             Token.Type.Tuple -> parseTupleType(genericAllowed)
             Token.Type.List -> parseListType(genericAllowed)
+            // generic
             is Token.Identifier ->
-                if (genericAllowed) AstNode.Type.GenericType(currentPosToken.token.value)
+                if (genericAllowed || genericTypeInScope(currentPosToken.token.value))
+                    AstNode.Type.GenericType(currentPosToken.token.value)
                 else unexpectedTokenError(currentPosToken.token)
             else -> unexpectedTokenError(currentPosToken.token)
         }
@@ -222,11 +226,21 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         return AstNode.Command.Expression.LambdaExpression(parameters, returnType, lambda.lambdaBody)
     }
 
+    private val AstNode.Type.getGenerics get():Set<AstNode.Type.GenericType> = when(this){
+        is AstNode.Type.GenericType -> setOf(this)
+        is AstNode.Type.List -> this.elementType.getGenerics
+        is AstNode.Type.Tuple -> this.elementTypes.flatMap { it.getGenerics }.toSet()
+        is AstNode.Type.Func.ExplicitFunc ->
+            (this.paramTypes.flatMap { it.getGenerics } + returnType.getGenerics).toSet()
+        else -> setOf()
+    }
+
     private fun parseLambdaBody(inputParams: List<AstNode.ParameterDeclaration>): LambdaBodyWithType {
         val commands = mutableListOf<AstNode.Command>()
         flushNewLine(false)
         accept<Token.SpecialChar.BlockStart>()
         openScope()
+        inputParams.forEach { it.type.getGenerics.forEach { enterType(it) } }
         inputParams.forEach { enterSymbol(it.identifier.name, it.type) }
         while (current.token != Token.SpecialChar.BlockEnd) {
             commands.add(parseCommand())

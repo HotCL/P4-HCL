@@ -43,6 +43,7 @@ class CodeGenerator : IPrinter {
         is AstNode.Type.List -> "ConstList<${elementType.cpp}>::create(nullptr, 0)"
         is AstNode.Type.Func.ExplicitFunc -> "nullptr"
         is AstNode.Type.Tuple -> "{${ this.elementTypes.joinToString { it.defaultValue } }}"
+        is AstNode.Type.GenericType -> "nullptr"
         else -> throw Exception("Unable to determine default value of type: $this")
     }
 
