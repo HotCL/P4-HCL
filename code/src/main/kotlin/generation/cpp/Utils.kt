@@ -20,9 +20,14 @@ fun AbstractSyntaxTree.notBuiltins() = filter { it !in builtins().children }
 
 val AstNode.Type.cpp get() = CppNameTranslator.getValidTypeName(this)
 
+val AstNode.Command.Expression.Value.Literal.List.cpp get() = CppNameTranslator.getValidtListLiteralName(this)
 
 val AstNode.Command.Expression.Value.Identifier.cpp get() = CppNameTranslator.getValidIdentifierName(this)
 
+val String.cppId get() =
+    CppNameTranslator.getValidIdentifierName(parser.AstNode.Command.Expression.Value.Identifier(this))
+
+val String.cppFun get() = "FUN_$cppId"
 
 val AstNode.Type.Func.ExplicitFunc.getGeneric get() = paramTypes;
 

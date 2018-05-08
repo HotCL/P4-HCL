@@ -9,7 +9,7 @@
  * This function returns a char array (string) representation of a floating point value
  * Parameters: d = double to be converted | precision = number of digits after decimal point
  */
-ConstList<char>::List ftoa(double d, int precision) {
+List<char> ftoa(double d, int precision) {
     char buffer[MAX_STR_LEN];
     memset(buffer, 0, MAX_STR_LEN);
 
@@ -42,7 +42,7 @@ ConstList<char>::List ftoa(double d, int precision) {
         *endOfString = '\0';
     }
 
-    return ConstList<char>::create(buffer, strlen(buffer));
+    return ConstList<char>::string(buffer);
 }
 
 #endif //FTOA_H

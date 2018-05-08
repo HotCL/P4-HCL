@@ -38,20 +38,20 @@ public:
         return std::shared_ptr<ConstList<T>>(ret);
     }
 
-    static List concat(List &l1, List &l2) {
+    static List concat(List l1, List l2) {
         auto * ret = new ConstList(l1.get()->size + l2.get()->size);
         memcpy(ret->data, l1.get()->data, l1.get()->size * sizeof(T));
         memcpy(ret->data + l1.get()->size, l2.get()->data, l2.get()->size * sizeof(T));
         return std::shared_ptr<ConstList<T>>(ret);
     }
 
-    static List sublist(List & l, unsigned int start_idx, unsigned int length) {
+    static List sublist(List l, unsigned int start_idx, unsigned int length) {
         auto * ret = new ConstList(length);
         memcpy(ret->data, l.get()->data + start_idx, length * sizeof(T));
         return std::shared_ptr<ConstList<T>>(ret);
     }
 
-    static T at(List & l, unsigned int idx) {
+    static T at(List l, unsigned int idx) {
         return l.get()->data[idx];
     }
 

@@ -23,25 +23,16 @@ class CodeGenerator : IPrinter {
             when(this) {
                 is AstNode.Command.Declaration -> format()
                 is AstNode.Command.Assignment -> format()
-                is AstNode.Command.Expression.Value.Identifier -> this.cpp
-                is AstNode.Command.Expression.Value.Literal.Number -> "$value"
-                is AstNode.Command.Expression.Value.Literal.Text -> "\"$value\""
-                is AstNode.Command.Expression.Value.Literal.Bool -> "$value"
-                is AstNode.Command.Expression.Value.Literal.Tuple -> "{}"
-                is AstNode.Command.Expression.Value.Literal.List -> "(const ${this}[]){${elements.joinToString { format() }}}"
-                is AstNode.Command.Expression.LambdaExpression -> TODO()
-                is AstNode.Command.Expression.LambdaBody -> TODO()
-                is AstNode.Command.Expression.FunctionCall -> "${this.identifier.cpp}(${this.arguments.format()})"
+                is AstNode.Command.Expression -> format()
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
-                is AstNode.Command.RawCpp -> content.split("\n").joinToString("") { (it + "\n").indented }
+                is AstNode.Command.RawCpp ->
+                    content.split("\n").joinToString("") { (it + "\n").indented }
             }
 
     private fun AstNode.Command.Assignment.format() = "${identifier.cpp} = ${expression.format()};".indented
 
     private fun AstNode.Command.Declaration.format(): String = when (expression) {
             is AstNode.Command.Expression.LambdaExpression -> expression.formatAsDecl(this)
-            is AstNode.Command.Expression.Value.Literal.List -> TODO()
-            is AstNode.Command.Expression.Value.Literal.Tuple -> TODO()
             else -> "${type.cpp} ${identifier.cpp} = " + (expression?.format() ?: type.defaultValue) + ";"
         }
 
@@ -71,7 +62,8 @@ class CodeGenerator : IPrinter {
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclDefault(decl: AstNode.Command.Declaration) =
         buildString {
             appendln(("// Lambda function for name ${toComment(decl)}").indented)
-            val type = AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
+            val type =
+                    AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
             appendln("${type.cpp} FUN_${decl.identifier.cpp} = ".indented + format() + ";")
         }
 
@@ -85,8 +77,8 @@ class CodeGenerator : IPrinter {
             is AstNode.Command.Expression.Value.Literal.Number -> "$value"
             is AstNode.Command.Expression.Value.Literal.Text -> "\"$value\""
             is AstNode.Command.Expression.Value.Literal.Bool -> "$value"
-            is AstNode.Command.Expression.Value.Literal.Tuple -> TODO()
-            is AstNode.Command.Expression.Value.Literal.List -> TODO()
+            is AstNode.Command.Expression.Value.Literal.Tuple -> "{}"
+            is AstNode.Command.Expression.Value.Literal.List -> this.cpp
             is AstNode.Command.Expression.LambdaExpression ->
                 "[&](${paramDeclarations.format(attributes.modifyParameterName)}) {\n".also { indents++ } +
                 body.commands.format() +
@@ -95,6 +87,7 @@ class CodeGenerator : IPrinter {
             is AstNode.Command.Expression.FunctionCall ->
                 "FUN_${this.identifier.cpp}(${this.arguments.joinToString { it.format() }})"
         }
+
 
     private fun templateLine(generics: List<AstNode.Type.GenericType>) =
         if (generics.isEmpty()) ""
