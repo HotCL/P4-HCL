@@ -440,7 +440,6 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         ExprResult.BodyWithMultiReturnTypes -> error("Lambda body with multiple return types")
     }
 
-
     private fun AstNode.Type.containsGeneric() : Boolean = when(this) {
         is AstNode.Type.List -> this.elementType.containsGeneric()
         is AstNode.Type.Tuple -> this.elementTypes.any {it.containsGeneric()}

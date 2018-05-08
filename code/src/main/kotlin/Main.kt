@@ -9,6 +9,7 @@ fun main(args: Array<String>) {
     val code = "" +
             "tuple[num, txt] t\n" +
             "tuple[list[num], func[none]] y\n" +
+            "list[num] myList=[1,2,3,4.0]\n" +
             "var myVar = 5\n" +
             "var plus5 = (num x): num { x + myVar }\n" +
             "var shouldBe10 = myVar plus5"
