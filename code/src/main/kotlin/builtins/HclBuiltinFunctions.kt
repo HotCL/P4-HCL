@@ -1,5 +1,6 @@
 package builtins
 
+import generation.cpp.cpp
 import parser.*
 import parser.AstNode.Type
 
@@ -24,10 +25,13 @@ object HclBuiltinFunctions {
                     buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
             // Control structures
                     buildThenFunction(),
+                    buildThenTernaryFunction(),
+                    //buildElseTernaryFunction(),
                     buildWhileFunction(),
             // Standard functions
                     buildNumberToTextFunction(),
                     buildBoolToTextFunction(),
+                    buildListToTextFunction(),
                     buildGetListLengthFunction(),
                     buildListEqualsFunction(),
                     buildListNotEqualsFunction(),
@@ -90,6 +94,20 @@ private fun buildBoolToTextFunction() = buildFunction(
         returnType = Type.Text,
         body = "return input ? ConstList<char>::string((char *)\"True\") : ConstList<char>::string((char *)\"False\");"
 )
+
+private fun buildListToTextFunction() = buildFunction(
+        identifier = "toText",
+        parameters = listOf(
+                Parameter("input", Type.List(Type.GenericType("T")))
+        ),
+        returnType = Type.Text,
+        body = "auto output = ConstList<char>::string((char*)\"[\")\n" +
+                "for(int i = 0; i < input.get()->size; i++) {\n" +
+                "output = ConstList<T>::concat(output,toText(at(input,i));\n" +
+                "}\n" +
+                "return output;"
+)
+
 
 private fun buildGetListLengthFunction() = buildFunction(
         identifier = "length",
@@ -172,4 +190,24 @@ private fun buildThenFunction() = buildFunction(
         returnType = Type.Bool,
         body = "if (condition) { body(); }\nreturn condition;"
 )
+
+private fun buildThenTernaryFunction() = buildFunction(
+        identifier = "then",
+        parameters = listOf(
+                Parameter("condition", Type.Bool),
+                Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.GenericType("T")))
+        ),
+        returnType = Type.Tuple(listOf(Type.Bool,Type.GenericType("T"))),
+        body = "return ${"create_struct".cpp}(condition,body());"
+)
+
+/*private fun buildElseTernaryFunction() = buildFunction(
+        identifier = "else",
+        parameters = listOf(
+                Parameter("then_value", Type.Tuple(listOf(Type.Bool,Type.GenericType("T")))),
+                Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.GenericType("T")))
+        ),
+        returnType = Type.GenericType("T"),
+        body = "if (then_value.element0) { return then_value.element1 } else { return body() };"
+)*/
 //endregion builtInFunctions
