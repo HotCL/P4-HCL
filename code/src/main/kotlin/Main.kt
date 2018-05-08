@@ -15,7 +15,8 @@ fun main(args: Array<String>) {
             "}\n" +
             "var x = 21\n"+
             "var y = 20\n"+
-            "num bigNum = x > y thenElse { x } { y }\n"+
+            "num bigNum\n" +
+            "bigNum = x > y thenElse { x } { y }\n"+
             "return bigNum"
 
     val lexer = Lexer(code)
