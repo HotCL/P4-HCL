@@ -67,8 +67,8 @@ Functions used as control structures in HCL, seen in table \ref{tbl:control}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
 		Operation                                                 & Symbol & Input Parameters     & Return Type \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, Func{[}none{]} & bool        \\ \hline
-		While Loop                                                & while  & Func{[}none{]}, bool & bool        \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, func{[}none{]} & bool        \\ \hline
+		While Loop                                                & while  & func{[}none{]}, bool & bool        \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -81,12 +81,12 @@ Functions used to manipulate or monitor lists, seen in table \ref{tbl:list}.
 	\begin{tabular}{|c|c|c|c|}
 		\hline
 		Operation     & Symbol  & Input Parameters            & Return Type \\ \hline
-		Get Lenght    & lenght  & List{[}T{]}                 & num         \\ \hline
-		At Index      & at      & List{[}T{]}, num            & T           \\ \hline
-		Concatenation & +       & List{[}T{]}, List{[}T{]}    & List{[}T{]} \\ \hline
-		Get Sublist   & subList & List{[}T{]}, num, num       & List{[}T{]} \\ \hline
-		Map           & map     & List{[}T{]}, Func[T, T]     & List{[}T{]} \\ \hline
-		Filter List   & filter  & List{[}T{]}, Func[T, bool]  & List{[}T{]} \\ \hline
+		Get Lenght    & lenght  & list{[}T{]}                 & num         \\ \hline
+		At Index      & at      & list{[}T{]}, num            & T           \\ \hline
+		Concatenation & +       & list{[}T{]}, List{[}T{]}    & list{[}T{]} \\ \hline
+		Get Sublist   & subList & list{[}T{]}, num, num       & list{[}T{]} \\ \hline
+		Map           & map     & list{[}T{]}, func[T, T]     & list{[}T{]} \\ \hline
+		Filter List   & filter  & list{[}T{]}, func[T, bool]  & list{[}T{]} \\ \hline
 	\end{tabular}
 \end{table}
 
