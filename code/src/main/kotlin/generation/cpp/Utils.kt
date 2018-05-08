@@ -24,6 +24,9 @@ val AstNode.Command.Expression.Value.Literal.List.cpp get() = CppNameTranslator.
 
 val AstNode.Command.Expression.Value.Identifier.cpp get() = CppNameTranslator.getValidIdentifierName(this)
 
+val String.cpp get() =
+    CppNameTranslator.getValidIdentifierName(parser.AstNode.Command.Expression.Value.Identifier(this))
+
 
 val AstNode.Type.Func.ExplicitFunc.getGeneric get() = paramTypes;
 

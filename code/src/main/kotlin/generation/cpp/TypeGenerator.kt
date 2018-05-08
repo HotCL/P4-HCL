@@ -61,7 +61,7 @@ class TypeGenerator: IPrinter{
                     returnType = AstNode.Type.Text,
                     body = "auto output = ConstList<char>::string((char*)\"\")\n" +
                             this.elementTypes.mapIndexed {index, it ->
-                                "output = ConstList<T>::concat(output, toText(this.element$index));\n"+
+                                "output = ConstList<T>::concat(output, ${"toText".cpp}(this.element$index));\n"+
                                         if(index != this.elementTypes.count()-1){
                                             "output = ConstList<T>::concat(output, ConstList<char>::string((char*)\",\");\n"
                                         } else ""
