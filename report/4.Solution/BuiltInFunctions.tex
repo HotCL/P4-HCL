@@ -1,10 +1,10 @@
 \subsection{Built-in Functions}
-HCL features several built-in functions that map the languages functionality directly over to its c++ equivalent. 
-These functions are considered to be the most basic functionality of the language, and their use are often required in order to specify more complex functions. 
+HCL includes several built-in functions that map the languages functionality directly to its c++ equivalent. 
+These functions are considered to be the most basic functionality of the language, and their use is often required in order to specify more complex functions. 
 This section describes the built-in functions of HCL, their implementation and their functionality
 
 \textbf{Build Functions}\\
-The implementation of all built-in functions are handled by the \texttt{buildFunction} function seen in snippet \ref{lis:buildFunction}.
+The implementation of all built-in functions is handled by the \texttt{buildFunction} function seen in snippet \ref{lis:buildFunction}.
 
 \begin{lstlisting}[language=Kotlin,label=lis:buildFunction,caption=The implementation of buildFunction.]
 private fun buildFunction(identifier: String, parameters: List<Parameter>, returnType: Type, body: String, attributes: LambdaExpressionAttributes = BuiltinLambdaAttributes) =
@@ -19,8 +19,7 @@ private fun buildFunction(identifier: String, parameters: List<Parameter>, retur
         )
     )
 \end{lstlisting}
-The function returns a function-declaration with specified identifier, return-type and lambda-body.
-Where the lambda-body is composed of raw c++ code. 
+The function returns a function-declaration with specified identifier, return-type and lambda-body, where the lambda-body is composed of raw c++ code. 
 Using the implementation to build functions is then simply a manner of passing in the required arguments, as seen in snippet \ref{lis:thenFunction}.
 
 \begin{lstlisting}[language=Kotlin,label=lis:thenFunction,caption=built-in 'then' function implemented using \texttt{buildFunction}.]
@@ -39,7 +38,7 @@ The arguments provided specifies the identifier for the function (2), the parame
 It also specifies that the return-type of the function itself is a \texttt{bool}(7) and then presents the body of the function in raw c++ code (8). 
 
 In order to follow the DRY\footnote{Don't repeat yourself (DRY) is a principle aimed at reducing code repetition in software development.
-} principles of coding, a help-function for implementing simple arithmetic functions is provided in snippet \ref{lis:buildOperator}.
+} principles of coding, a helper-function for implementing simple arithmetic functions is provided in snippet \ref{lis:buildOperator}.
 \begin{lstlisting}[language=Kotlin,label=lis:buildOperator,caption=The implementation of buildOperator.]
 private inline fun<reified V, reified H, reified R>buildOperator(functionName: String, operator: String = functionName)
         where V : Type, H : Type, R : Type = buildFunction(
@@ -52,7 +51,7 @@ private inline fun<reified V, reified H, reified R>buildOperator(functionName: S
         body = "return leftHand $operator rightHand;"
 )
 \end{lstlisting}
-The \texttt{buildOperator} function is a generic function that called with specified types for input-parameters and return-type. 
-The function then uses those types to specify the arguments for the \texttt{buildFunction} function.
+The \texttt{buildOperator} function is a generic function that is called with specified types for input-parameters and return-type. 
+The function uses those types to specify the arguments for the \texttt{buildFunction} function.
 
 All built-in functions are listed in appendix at \ref{builtinAppend}.
