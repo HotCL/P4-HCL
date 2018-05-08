@@ -80,6 +80,12 @@ class TypeGenerator: IPrinter{
                                 "case $index: return this.element$index;"
 
                             }.joinToString("\n")+"\n}"
+            ),buildFunction(
+                    identifier = "create",
+                    parameters = this.elementTypes.mapIndexed{ index, it -> Parameter("element$index",it)},
+                    returnType = this,
+                    body = "${this.cpp} output = ${this.elementTypes.mapIndexed{
+                        index, _ -> "element$index" }.joinToString()};\nreturn output;"
             )
             )))
 
