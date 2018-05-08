@@ -5,12 +5,8 @@ import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
-import lexer.Token
 import org.junit.jupiter.api.Assertions
-import parser.Parser
-import parser.AstNode
 import parser.ParserWithoutBuiltins
-import kotlin.coroutines.experimental.buildSequence
 
 class ListTests {
 

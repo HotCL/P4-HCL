@@ -69,7 +69,7 @@ class CodeGenerator : IPrinter {
         buildString {
             appendln("// Lambda function for name ${decl.identifier.name}".indented)
             val type = AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
-            appendln("${type.cpp} FUN_${decl.identifier.cpp} = ".indented + format())
+            appendln("${type.cpp} FUN_${decl.identifier.cpp} = ".indented + format() + ";")
         }
 
     private fun List<AstNode.ParameterDeclaration>.format(modifyParametersNames: Boolean) = joinToString {

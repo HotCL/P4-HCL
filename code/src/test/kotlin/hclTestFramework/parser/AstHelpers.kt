@@ -59,3 +59,4 @@ fun ret(value: AstNode.Command.Expression) = AstNode.Command.Return(value)
 fun AstNode.Command.Expression.returned() = AstNode.Command.Return(this)
 
 fun String.called() = this calledWith listOf()
+

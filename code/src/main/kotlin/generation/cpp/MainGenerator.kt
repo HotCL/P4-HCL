@@ -6,7 +6,7 @@ import parser.AstNode
 
 class MainGenerator : IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
-        return ast.genFromFilter { it.isDecl } +
+        return  ast.genFromFilter { it.isDecl } +
                 "\n\n/* Setup function */\n\n" +
                 "void setup() {\n" +
                 ast.genFromFilter { !it.isLoop && !it.isDecl} +
@@ -15,7 +15,7 @@ class MainGenerator : IPrinter {
                 "void loop() {\n" +
                 ast.genFromFilter { it.isLoop } +
                 "}\n" +
-                "#ifndef (ARDUINO_AVR_UNO)\n" +
+                "#if !ARDUINO_AVR_UNO\n" +
                 "int main() {\n" +
                 "   setup();\n" +
                 "   while(1) { loop(); }\n" +

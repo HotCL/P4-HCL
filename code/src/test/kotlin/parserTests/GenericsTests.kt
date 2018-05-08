@@ -7,11 +7,8 @@ import exceptions.UnexpectedTokenError
 import exceptions.UnexpectedTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
-import lexer.Token
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import parser.AstNode
-import parser.Parser
 import parser.ParserWithoutBuiltins
 
 class GenericsTests{

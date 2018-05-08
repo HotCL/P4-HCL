@@ -2,9 +2,9 @@ package generationTests.cpp
 
 import exceptions.CompilationException
 import generation.cpp.ProgramGenerator
+import hclTestFramework.codegen.compileAndExecuteCpp
 import lexer.Lexer
 import logger.Logger
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import parser.Parser
 import kotlin.system.exitProcess
@@ -28,9 +28,8 @@ class CodeGenTests {
             logger.logCompilationError(exception)
             exitProcess(-1)
         }
-        println("Ast: $ast")
-        //println(SourceCodePrinter().generate(ast))
+
         val programFiles = ProgramGenerator().generate(ast)
-        programFiles.forEach { print("FILE: ${it.fileName}:\n\n${it.content}\n\n\n") }
+        compileAndExecuteCpp(programFiles)
     }
 }

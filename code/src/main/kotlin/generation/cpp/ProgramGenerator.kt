@@ -11,6 +11,18 @@ class ProgramGenerator : IFilesPrinter {
     override fun generate(ast: AbstractSyntaxTree): List<FilePair> = listOf(
         FilePair("builtin.h", CodeGenerator().generate(ast.builtins())),
         FilePair("types.h", TypeGenerator().generate(ast)),
-        FilePair("main.c", MainGenerator().generate(ast.notBuiltins()))
+        FilePair("main.cpp", mainHeader + MainGenerator().generate(ast.notBuiltins()))
     )
+    private val mainHeader =
+"""
+#include <functional>
+
+#if !ARDUINO_AVR_UNO
+using namespace std;
+#endif
+
+#include "ConstList.h"
+#include "builtin.h"
+#include "types.h"
+"""
 }

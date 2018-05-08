@@ -7,7 +7,7 @@ import parser.AstNode
 /**
  * Should generate a file with all header information. for instance every tuple used should be type-defined
  */
-class TypeGenerator: IPrinter{
+class TypeGenerator: IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
         val tuples = ast.children.fetch()
         return tuples.joinToString("\n\n") { it.format() }
