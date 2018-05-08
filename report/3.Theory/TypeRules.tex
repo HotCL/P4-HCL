@@ -3,8 +3,63 @@
 \section{Type Rules}
 %introduction
 
+
 \subsection{Type Rules for Expressions}
 %quick introduction.
+\textbf{Addition}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: num \quad E \vdash e_2: num}
+	{E \vdash e_1 + e_2 : num}
+	\end{math}
+\end{center}
+
+\textbf{Subtraction}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: num \quad E \vdash e_2: num}
+	{E \vdash e_1 - e_2 : num}
+	\end{math}
+\end{center}
+
+\textbf{Multiplication}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: num \quad E \vdash e_2: num}
+	{E \vdash e_1 * e_2 : num}
+	\end{math}
+\end{center}
+
+\textbf{Division}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: num \quad E \vdash e_2: num}
+	{E \vdash e_1 / e_2 : num}
+	\end{math}
+\end{center}
+
+\textbf{Less than}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: num \quad E \vdash e_2: num}
+	{E \vdash e_1 < e_2 : bool}
+	\end{math}
+\end{center}
+
+\textbf{Bigger than}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1: num \quad E \vdash e_2: num}
+	{E \vdash e_1 > e_2 : bool}
+	\end{math}
+\end{center}
+
 
 \subsection{Type Rules for Statements}
 %quick introduction.
