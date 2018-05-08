@@ -29,7 +29,16 @@ object TestAllBuiltinsExist : Spek({
                 "while",
                 "length",
                 "at",
-                "subList"
+                "subList",
+                "map",
+                "filter",
+                "writeDigPinHigh",
+                "writeDigPinLow",
+                "readDigPin",
+                "writeAnaPin",
+                "readAnaPin",
+                "print",
+                "printLine"
         )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {

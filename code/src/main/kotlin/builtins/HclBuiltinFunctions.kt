@@ -38,7 +38,22 @@ object HclBuiltinFunctions {
                     buildGetListLengthFunction(),
                     buildAtListFunction(),
                     buildSubListFunction(),
-                    buildListConcatFunction()
+                    buildListConcatFunction(),
+                    buildMapFunction(),
+                    buildFilterFunction(),
+            // Read/Write functions for arduino
+                    buildWriteDigPinHighFunction(),
+                    buildWriteDigPinLowFunction(),
+                    buildReadDigPinFunction(),
+                    buildWriteAnaPinFunction(),
+                    buildReadAnaPinFunction(),
+            // Print functions
+                    buildPrintFunction<Type.Number>(),
+                    buildPrintFunction<Type.Bool>(),
+                    buildPrintFunction<Type.Text>(),
+                    buildPrintLineFunction<Type.Number>(),
+                    buildPrintLineFunction<Type.Bool>(),
+                    buildPrintLineFunction<Type.Text>()
             )
 }
 
@@ -199,6 +214,116 @@ private fun buildThenFunction() = buildFunction(
         returnType = Type.Bool,
         body = "if (condition) { body(); }\nreturn condition;"
 )
+
+private fun buildMapFunction() = buildFunction(
+        identifier = "map",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("fun", Type.Func.ExplicitFunc(
+                        listOf(Type.GenericType("T")),
+                        Type.GenericType("T"))
+                )
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "T result[list.get()->size];\n" +
+                "for (int i = 0; i < list.get()->size; i++) {\n" +
+                "result[i] = fun(list.get()->data[i]);\n" +
+                "}\n" +
+                "return ConstList<T>::create(result, list.get()->size);"
+)
+
+private fun buildFilterFunction() = buildFunction(
+        identifier = "filter",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("fun",
+                        Type.Func.ExplicitFunc(
+                                listOf(Type.GenericType("T")),
+                                Type.Bool
+                        )
+                )
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "T result[list.get()->size];\n" +
+                "int index = 0;\n" +
+                "for (int i = 0; i < list.get()->size; i++) {\n" +
+                "if (fun(list.get()->data[i]))\n" +
+                "result[index++] = list.get()->data[i];\n" +
+                "}\n" +
+                "return ConstList<T>::create(result, index);"
+)
+
+//region PinFunctions
+private fun buildWriteDigPinHighFunction() = buildFunction(
+        identifier = "writeDigPinHigh",
+        parameters = listOf(Parameter("dPin", Type.Number)),
+        returnType = Type.None,
+        body = "int pin = (int)round(dPin);\n" +
+                "pinMode(pin, OUTPUT);\n" +
+                "digitalWrite(pin, HIGH);\n" +
+                "return;"
+)
+
+private fun buildWriteDigPinLowFunction() = buildFunction(
+        identifier = "writeDigPinLow",
+        parameters = listOf(Parameter("dPin", Type.Number)),
+        returnType = Type.None,
+        body = "int pin = (int)round(dPin);\n" +
+                "pinMode(pin, OUTPUT);\n" +
+                "digitalWrite(pin, LOW);\n" +
+                "return;"
+)
+
+private fun buildReadDigPinFunction() = buildFunction(
+        identifier = "readDigPin",
+        parameters = listOf(Parameter("dPin", Type.Number)),
+        returnType = Type.Number,
+        body = "int pin = (int)round(dPin);\n" +
+                "pinMode(pin, INPUT);\n" +
+                "return digitalRead(pin);"
+)
+
+private fun buildWriteAnaPinFunction() = buildFunction(
+        identifier = "writeAnaPin",
+        parameters = listOf(
+                Parameter("aPin", Type.Number),
+                Parameter("value", Type.Number)
+        ),
+        returnType = Type.None,
+        body = "int pin = (int)round(aPin);\n" +
+                "pinMode(pin, OUTPUT);\n" +
+                "analogWrite(pin, value);\n" +
+                "return;"
+)
+
+private fun buildReadAnaPinFunction() = buildFunction(
+        identifier = "readAnaPin",
+        parameters = listOf(Parameter("aPin", Type.Number)),
+        returnType = Type.None,
+        body = "int pin = (int)round(aPin);\n" +
+                "pinMode(pin, OUTPUT);\n" +
+                "return analogRead(pin);"
+)
+//endregion PinFunctions
+
+//region PrintFunctions
+private inline fun<reified T: Type> buildPrintFunction() = buildFunction(
+        identifier = "print",
+        parameters = listOf(Parameter("input", T::class.objectInstance!!)),
+        returnType = Type.None,
+        body = "print(input);\n" +
+                "return;"
+)
+
+private inline fun<reified T: Type> buildPrintLineFunction() = buildFunction(
+        identifier = "printLine",
+        parameters = listOf(Parameter("input", T::class.objectInstance!!)),
+        returnType = Type.None,
+        body = "print_line(input);\n" +
+                "return;"
+)
+
+//endregion PrintFunctions
 //endregion builtInFunctions
 
 private fun buildFunction(identifier: String, parameters: List<Parameter>, returnType: Type,
