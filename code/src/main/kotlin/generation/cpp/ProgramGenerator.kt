@@ -9,10 +9,13 @@ import parser.AbstractSyntaxTree
  */
 class ProgramGenerator : IFilesPrinter {
     override fun generate(ast: AbstractSyntaxTree): List<FilePair> = listOf(
+        HelperHeaders.constList,
+        HelperHeaders.ftoa,
         FilePair("builtin.h", CodeGenerator().generate(ast.builtins())),
         FilePair("types.h", TypeGenerator().generate(ast)),
         FilePair("main.cpp", mainHeader + MainGenerator().generate(ast.notBuiltins()))
     )
+
     private val mainHeader =
 """
 #include <functional>

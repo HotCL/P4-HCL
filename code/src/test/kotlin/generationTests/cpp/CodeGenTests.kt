@@ -45,27 +45,29 @@ class CodeGenTests {
     }
 }
 
+fun testReturnNoExplicitReturn() = listOf<AstNode.Command>()
+fun testExplicitReturn5() = ret(num(5))
+fun testReturnVarX5PlusVarY10() = listOf(
+        "x" declaredAs num withValue num(5),
+        "y" declaredAs num withValue num(10),
+        ret("+".calledWith(num, listOf("x".asIdentifier(num), "y".asIdentifier(num))))
+)
+fun testSimpleLambda() =
+listOf("x" declaredAs num withValue num(5),
+        "myFun" declaredAs func(num, num) withValue (
+                lambda() returning num withArgument ("param" asType num)
+                        andBody ret("+".calledWith(num, listOf("param".asIdentifier(num), "x".asIdentifier(num))))
+                ),
+        ret("myFun".calledWith(num, listOf("myFun".calledWith(num, num(10)))))
+)
 
 object CodeGenerationTest : Spek({
     given("HCL CPP code generator") {
         listOf (
-                // Return 0 by default
-            listOf<AstNode.Command>() shouldReturn 0,
-                // Hardcode return 5
-            ret(num(5)) shouldReturn 5,
-                // Return var x (5) + var y (10)
-            listOf(
-                    "x" declaredAs num withValue num(5),
-                    "y" declaredAs num withValue num(10),
-                    ret("+".calledWith(num, listOf("x".asIdentifier(num), "y".asIdentifier(num))))
-            ) shouldReturn 15,
-            listOf("x" declaredAs num withValue num(5),
-                "myFun" declaredAs func(num, num) withValue (
-                    lambda() returning num withArgument ("param" asType num)
-                    andBody ret("+".calledWith(num, listOf("param".asIdentifier(num), "x".asIdentifier(num))))
-                    ),
-                ret("myFun".calledWith(num, listOf("myFun".calledWith(num, num(10)))))
-            ) shouldReturn 20
+            testReturnNoExplicitReturn() shouldReturn 0,
+            testExplicitReturn5() shouldReturn 5,
+            testReturnVarX5PlusVarY10() shouldReturn 15,
+            testSimpleLambda()  shouldReturn 20
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {

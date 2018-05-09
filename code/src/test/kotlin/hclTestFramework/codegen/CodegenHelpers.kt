@@ -8,35 +8,41 @@ import utils.CommandResult
 import utils.runCommand
 import java.io.File
 
-fun compileAndExecuteCpp(files: List<FilePair>) = try {
+fun compileAndExecuteCpp(files: List<FilePair>): CommandResult? {
+    val testDir = "testDir"
+    File(testDir).mkdir()
+    return try {
         val headerFiles = files.filter { it.fileName.endsWith(".h") }
         val cppFiles = files.filter { it.fileName.endsWith(".cpp") }
-        headerFiles.forEach { it.print() }
+        headerFiles.forEach { it.writeFile(testDir) }
         cppFiles.forEach {
-            it.print()
+            it.writeFile(testDir)
             "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++1z".apply {
                 println(this)
-                println(runCommand())
+                println(runCommand(File("./testDir")))
             }
         }
         println("Linking:")
         "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o program".apply {
             println(this)
-            println(runCommand())
+            println(runCommand(File("./testDir")))
         }
         println("Running command:")
         "./program".run {
             println(this)
-            runCommand()
+            runCommand(File("./testDir"))
         }
     } catch (e: Exception) {
         null
+    } finally {
+        File(testDir).deleteRecursively()
     }
+}
 
 fun compileAndExecuteForAst(astNodes: List<AstNode.Command>) =
         compileAndExecuteCpp(ProgramGenerator().generate(AbstractSyntaxTree(astNodes)))
 
-private fun FilePair.print() = File(fileName).writeText(content)
+private fun FilePair.writeFile(dir: String) = File("$dir/$fileName").writeText(content)
 
 
 sealed class ExpectedResult
