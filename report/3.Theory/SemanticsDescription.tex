@@ -505,7 +505,7 @@ The transitions are shown below.
 
 \subsection{Big-Step Semantic for Statements}
 Statements $Stm$ can change the store, because they can change the value of an existing variable.
-Because the category has rewriting rules for declarations, statements can change both the variable environment $Env_V$ and the function environment $Env_F$.
+Because the category has rewriting rules for declarations, statements can change the variable environment $Env_V$ and the function environment $Env_F$.
 The transition-system for $stm$ is:
 \begin{center}
 	$((Stm\ \Cross\ Env_V\ \Cross\ Env_F\ \Cross Sto)\ \cup Env_V\ \Cross\ Env_F\ \Cross\ Sto, \rightarrow_{stm}, Env_V\ \Cross\ Env_F\ \Cross\ Sto)$
