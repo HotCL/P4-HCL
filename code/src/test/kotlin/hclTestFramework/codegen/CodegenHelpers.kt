@@ -8,8 +8,6 @@ import utils.CommandResult
 import utils.runCommand
 import java.io.File
 
-
-
 fun compileAndExecuteCpp(files: List<FilePair>) = try {
         val headerFiles = files.filter { it.fileName.endsWith(".h") }
         val cppFiles = files.filter { it.fileName.endsWith(".cpp") }

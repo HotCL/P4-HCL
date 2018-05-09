@@ -11,6 +11,7 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import parser.AstNode
 import parser.Parser
@@ -19,6 +20,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class CodeGenTests {
+    @Disabled
     @Test
     fun tempCoverageTest() {
         val code = "tuple[num, txt] t\n" +
@@ -55,15 +57,15 @@ object CodeGenerationTest : Spek({
             listOf(
                     "x" declaredAs num withValue num(5),
                     "y" declaredAs num withValue num(10),
-                    ret("+" calledWith listOf("x".asIdentifier, "y".asIdentifier))
+                    ret("+".calledWith(num, listOf("x".asIdentifier(num), "y".asIdentifier(num))))
             ) shouldReturn 15,
-            listOf(
-                    "myFun" declaredAs func(num, func(num)) withValue (
-                            lambda() returning num withArgument ("myNestedFunc" asType func(num))
-                                    andBody ("myNestedFunc".called())
-                            ),
-                    ret("myFun" calledWith (lambda() returning num andBody ret(num(5))))
-            ) shouldReturn 5
+            listOf("x" declaredAs num withValue num(5),
+                "myFun" declaredAs func(num, num) withValue (
+                    lambda() returning num withArgument ("param" asType num)
+                    andBody ret("+".calledWith(num, listOf("param".asIdentifier(num), "x".asIdentifier(num))))
+                    ),
+                ret("myFun".calledWith(num, listOf("myFun".calledWith(num, num(10)))))
+            ) shouldReturn 20
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {

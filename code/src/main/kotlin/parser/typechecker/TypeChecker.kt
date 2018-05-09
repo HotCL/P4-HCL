@@ -8,7 +8,7 @@ import parser.symboltable.SymbolTable
 
 class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
 
-    override fun getTypeOfExpression(expr: Expression): ExprResult = when (expr) {
+    /*override fun getTypeOfExpression(expr: Expression): ExprResult = when (expr) {
         is Expression.Value.Literal.Number -> ExprResult.Success(AstNode.Type.Number)
         is Expression.Value.Literal.Bool -> ExprResult.Success(AstNode.Type.Bool)
         is Expression.Value.Literal.List ->
@@ -62,8 +62,8 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     private fun getTypeOfListExpression(list: Expression.Value.Literal.List) = list.elements[0]
 
     private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =
-            tuple.elements.map { it.type.forceType }
-
+            tuple.elements.map { it.type }
+    */
     override fun List<AstNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<AstNode.Type>):
             AstNode.Type.Func.ExplicitFunc? {
         val genericTypes = mutableMapOf<String, AstNode.Type>()
@@ -80,6 +80,13 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
             }
         }
     }
+
+
+    override fun getTypeOnFuncCall(func: AstNode.Type.Func.ExplicitFunc, arguments: List<AstNode.Type>) =
+            if(func.returnType is AstNode.Type.GenericType)
+            func.paramTypes.zip(arguments).getTypeFromGenericType(func.returnType.name) ?: TODO()
+    else func.returnType
+
 
     /**
      * Pair = declaredType and argumentType
@@ -156,5 +163,5 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     }
 
 
-    override val AstNode.Command.Expression.type get() = getTypeOfExpression(this)
+    //override val AstNode.Command.Expression.type get() = getTypeOfExpression(this)
 }
