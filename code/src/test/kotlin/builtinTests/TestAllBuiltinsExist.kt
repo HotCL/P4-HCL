@@ -34,11 +34,10 @@ object TestAllBuiltinsExist : Spek({
                 "map",
                 "filter",
                 "delayMillis",
-                "HIGH",
-                "LOW",
-                "readDigital",
-                "writeAnalog",
-                "readAnalog",
+                "setDigitalPin",
+                "readDigitalPin",
+                "setAnalogPin",
+                "readAnalogPin",
                 "print",
                 "printLine"
         )

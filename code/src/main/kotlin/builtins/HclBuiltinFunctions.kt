@@ -44,8 +44,7 @@ object HclBuiltinFunctions {
                     buildFilterFunction(),
                     buildDelayMillisFunction(),
             // Read/Write functions for arduino
-                    buildWriteDigPinHighFunction(),
-                    buildWriteDigPinLowFunction(),
+                    buildWriteDigPinFunction(),
                     buildReadDigPinFunction(),
                     buildWriteAnaPinFunction(),
                     buildReadAnaPinFunction(),
@@ -53,11 +52,11 @@ object HclBuiltinFunctions {
                     buildPrintFunction<Type.Number>(),
                     buildPrintFunction<Type.Bool>(),
                     buildPrintFunction<Type.Text>(),
-                    buildPrintListFunction(),
+                    buildPrintFunction<Type.List>(),
                     buildPrintLineFunction<Type.Number>(),
                     buildPrintLineFunction<Type.Bool>(),
                     buildPrintLineFunction<Type.Text>(),
-                    buildPrintLineListFunction()
+                    buildPrintLineFunction<Type.List>()
             )
 }
 
@@ -279,45 +278,37 @@ private fun buildDelayMillisFunction() = buildFunction(
 )
 
 //region PinFunctions
-private fun buildWriteDigPinHighFunction() = buildFunction(
-        identifier = "HIGH",
-        parameters = listOf(Parameter("pin", Type.Number)),
+private fun buildWriteDigPinFunction() = buildFunction(
+        identifier = "setDigitalPin",
+        parameters = listOf(Parameter("pin", Type.Number), Parameter("val", Type.Bool)),
         returnType = Type.None,
-        body = "setDigPinOut(pin, 1);\n" +
-                "return;"
-)
-
-private fun buildWriteDigPinLowFunction() = buildFunction(
-        identifier = "LOW",
-        parameters = listOf(Parameter("pin", Type.Number)),
-        returnType = Type.None,
-        body = "setDigPinOut(pin, 0);\n" +
+        body = "writeDigPin(pin, val ? 1 : 0);\n" +
                 "return;"
 )
 
 private fun buildReadDigPinFunction() = buildFunction(
-        identifier = "readDigital",
+        identifier = "readDigitalPin",
         parameters = listOf(Parameter("pin", Type.Number)),
         returnType = Type.Number,
-        body = "return setDigPinIn(pin);"
+        body = "return readDigPin(pin);"
 )
 
 private fun buildWriteAnaPinFunction() = buildFunction(
-        identifier = "writeAnalog",
+        identifier = "writeAnalogPin",
         parameters = listOf(
                 Parameter("pin", Type.Number),
-                Parameter("value", Type.Number)
+                Parameter("val", Type.Number)
         ),
         returnType = Type.None,
-        body = "setAnaPinOut(pin, value);\n" +
+        body = "writeAnaPin(pin, val);\n" +
                 "return;"
 )
 
 private fun buildReadAnaPinFunction() = buildFunction(
-        identifier = "readAnalog",
+        identifier = "readAnalogPin",
         parameters = listOf(Parameter("pin", Type.Number)),
-        returnType = Type.None,
-        body = "return setAnaPinIn(pin);"
+        returnType = Type.Number,
+        body = "return readAnaPin(pin);"
 )
 //endregion PinFunctions
 
@@ -333,23 +324,6 @@ private inline fun<reified T: Type> buildPrintFunction() = buildFunction(
 private inline fun<reified T: Type> buildPrintLineFunction() = buildFunction(
         identifier = "printLine",
         parameters = listOf(Parameter("input", T::class.objectInstance!!)),
-        returnType = Type.None,
-        body = "print_line(toText(input));\n" +
-                "return;"
-)
-
-// The other functions don't work for lists
-private fun buildPrintListFunction() = buildFunction(
-        identifier = "print",
-        parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
-        returnType = Type.None,
-        body = "print(toText(input));\n" +
-                "return;"
-)
-
-private fun buildPrintLineListFunction() = buildFunction(
-        identifier = "printLine",
-        parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
         returnType = Type.None,
         body = "print_line(toText(input));\n" +
                 "return;"
