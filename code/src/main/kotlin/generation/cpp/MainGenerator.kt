@@ -32,7 +32,8 @@ class MainGenerator : IPrinter {
             "#endif"
 
     private val String.splitIndented get() = this.split("\n").joinToString("\n") { "    $it" }
-    private val AstNode.Command.isLoop get() = this is AstNode.Command.Expression.FunctionCall && identifier.name == "loop"
+    private val AstNode.Command.isLoop get() =
+        this is AstNode.Command.Expression.FunctionCall && identifier.name == "loop"
     private val AstNode.Command.isDecl get() = this is AstNode.Command.Declaration
 
 }

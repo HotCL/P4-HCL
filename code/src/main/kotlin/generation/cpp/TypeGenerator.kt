@@ -37,7 +37,8 @@ class TypeGenerator: IPrinter {
             "\n} ${this.cppName};\n\n"+generateFunctions()
 
 
-    private fun List<AstNode>.fetchLists():Set<AstNode.Command.Expression.Value.Literal.List> = flatMap { it.fetchList() }.toSet()
+    private fun List<AstNode>.fetchLists():Set<AstNode.Command.Expression.Value.Literal.List> =
+            flatMap { it.fetchList() }.toSet()
 
     private fun AstNode.fetchList():Set<AstNode.Command.Expression.Value.Literal.List> = when(this){
         is AstNode.Command.Expression.LambdaExpression -> body.fetchList()
@@ -62,9 +63,11 @@ class TypeGenerator: IPrinter {
                     body = "ConstList<char>::List" +
                             " output = ConstList<char>::string((char*)\"\");\n" +
                             elementTypes.mapIndexed {index, _ ->
-                                "output = ConstList<char>::concat(output, ${"toText".cppName}<char>(self.element$index));\n"+
+                                "output = ConstList<char>::concat(output, ${"toText".cppName}" +
+                                        "<char>(self.element$index));\n"+
                                         if (index != this.elementTypes.count() - 1) {
-                                            "output = ConstList<char>::concat(output, ConstList<char>::string((char*)\",\"));\n"
+                                            "output = ConstList<char>::concat(output, " +
+                                                    "ConstList<char>::string((char*)\",\"));\n"
                                         } else ""
 
                             }.joinToString("")+

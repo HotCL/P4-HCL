@@ -129,7 +129,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                     overloadWithDifferentAmountOfArgumentsException()
                 EnterSymbolResult.IdentifierAlreadyDeclared -> alreadyDeclaredException()
                 else -> AstNode.Command.Declaration(expression.type,
-                            AstNode.Command.Expression.Value.Identifier(identifierName,expression.type), expression)
+                        AstNode.Command.Expression.Value.Identifier(identifierName,expression.type), expression)
             }
         } else {
             if (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)
@@ -153,7 +153,9 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         val expression = parseExpression()
         return if (!retrieveSymbol(identifierName).handle({ true }, { it == expression.type }, { false }))
             unexpectedTypeError(retrieveSymbol(identifierName).identifier.toString(), expression.type.toString())
-        else AstNode.Command.Assignment(AstNode.Command.Expression.Value.Identifier(identifierName,expression.type), expression)
+        else AstNode.Command.Assignment(AstNode.Command.Expression.Value.Identifier(
+                identifierName,expression.type
+        ), expression)
     }
 
     //region Type declarations
@@ -170,7 +172,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
             Token.Type.Func -> parseFuncType(implicitAllowed)
             Token.Type.Tuple -> parseTupleType(genericAllowed)
             Token.Type.List -> parseListType(genericAllowed)
-            // generic
+        // generic
             is Token.Identifier ->
                 if (genericAllowed || genericTypeInScope(currentPosToken.token.value))
                     AstNode.Type.GenericType(currentPosToken.token.value)
@@ -277,8 +279,10 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
 
     //region ExpressionParsing
 
-    private fun parseExpression() = parsePotentialFunctionCall(if (current.token == Token.SpecialChar.BlockStart) null
-    else parseExpressionAtomic())
+    private fun parseExpression() = parsePotentialFunctionCall(
+            if (current.token == Token.SpecialChar.BlockStart) null
+            else parseExpressionAtomic()
+    )
 
     private fun getUpcomingIdentifierNameForLambda(): String? {
         var scopeDepth = 1
