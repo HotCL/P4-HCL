@@ -29,7 +29,7 @@ class MainGenerator : IPrinter {
     private fun String.wrapSetup() = "void setup() { \n${this.splitIndented}\n}"
     private fun String.wrapMain() = "" +
             "#if !ARDUINO_AVR_UNO\n" +
-            "int main() {\n${this.splitIndented}\n}\n" +
+            "int main() {\n${this.splitIndented}\n    return return_code;}\n" +
             "#endif"
 
     private val String.splitIndented get() = this.split("\n").joinToString("\n") { "    $it" }

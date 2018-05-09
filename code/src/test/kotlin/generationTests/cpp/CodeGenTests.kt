@@ -46,11 +46,11 @@ class CodeGenTests {
 }
 
 fun testReturnNoExplicitReturn() = listOf<AstNode.Command>()
-fun testExplicitReturn5() = ret(num(5))
+fun testExplicitReturn5() = setRet(num(5))
 fun testReturnVarX5PlusVarY10() = listOf(
         "x" declaredAs num withValue num(5),
         "y" declaredAs num withValue num(10),
-        ret("+".calledWith(num, listOf("x".asIdentifier(num), "y".asIdentifier(num))))
+        setRet("+".calledWith(num, listOf("x".asIdentifier(num), "y".asIdentifier(num))))
 )
 fun testSimpleLambda() =
 listOf("x" declaredAs num withValue num(5),
@@ -58,7 +58,7 @@ listOf("x" declaredAs num withValue num(5),
                 lambda() returning num withArgument ("param" asType num)
                         andBody ret("+".calledWith(num, listOf("param".asIdentifier(num), "x".asIdentifier(num))))
                 ),
-        ret("myFun".calledWith(num, listOf("myFun".calledWith(num, num(10)))))
+        setRet("myFun".calledWith(num, listOf("myFun".calledWith(num, num(10)))))
 )
 
 object CodeGenerationTest : Spek({

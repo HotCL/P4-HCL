@@ -2,6 +2,7 @@ package hclTestFramework.codegen
 
 import generation.FilePair
 import generation.cpp.ProgramGenerator
+import hclTestFramework.parser.assignedTo
 import parser.AbstractSyntaxTree
 import parser.AstNode
 import utils.CommandResult
@@ -62,4 +63,6 @@ infix fun AstNode.Command.shouldReturn(expectedResult: String) = TestCase(listOf
 
 infix fun Int.and(string: String) = TextAndReturn(string, this)
 infix fun String.and(int: Int) = TextAndReturn(this, int)
+
+fun setRet(code: AstNode.Command.Expression) = "return_code" assignedTo code
 
