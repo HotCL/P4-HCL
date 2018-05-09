@@ -34,12 +34,10 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         flushNewLine(false)
         val command = when (current.token) {
             is Token.Type -> parseDeclaration()
-            is Token.Identifier -> {
-                when {
-                    genericTypeInScope((current.token as Token.Identifier).value) -> parseDeclaration()
-                    peek().token == Token.SpecialChar.Equals -> parseAssignment()
-                    else -> parseExpression()
-                }
+            is Token.Identifier -> when {
+                genericTypeInScope((current.token as Token.Identifier).value) -> parseDeclaration()
+                peek().token == Token.SpecialChar.Equals -> parseAssignment()
+                else -> parseExpression()
             }
             is Token.Literal, //Fallthrough
             Token.SpecialChar.BlockStart,
@@ -118,11 +116,8 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
         return if (tryAccept<Token.SpecialChar.Equals>()) {
             // Only valid if upcoming expression is a function
             currentFunctionName = identifierName
+
             val expression = parseExpression()
-            println()
-            println("NAME= >>$identifierName<<")
-            println("expression= >>${expression.type}<<")
-            println("this type= >>$type<<")
             currentFunctionName = null
             if (type != AstNode.Type.Func.ImplicitFunc && type != AstNode.Type.Var && expression.type != type)
                 unexpectedTypeError(type.toString(), expression.type.toString())
@@ -133,9 +128,9 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 EnterSymbolResult.OverloadDifferentParamNums ->
                     overloadWithDifferentAmountOfArgumentsException()
                 EnterSymbolResult.IdentifierAlreadyDeclared -> alreadyDeclaredException()
+                else -> AstNode.Command.Declaration(expression.type,
+                            AstNode.Command.Expression.Value.Identifier(identifierName,expression.type), expression)
             }
-            AstNode.Command.Declaration(expression.type,
-                    AstNode.Command.Expression.Value.Identifier(identifierName,expression.type), expression)
         } else {
             if (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)
                 error("Cannot declare implicit type without expression")
@@ -292,6 +287,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 Token.SpecialChar.BlockStart -> scopeDepth += 1
                 Token.SpecialChar.BlockEnd -> scopeDepth -= 1
                 is Token.Identifier -> if (scopeDepth == 0) return@findElement it.token.value
+                else -> {}
             }
             null
         }, { scopeDepth == 0 && it.token !is Token.Identifier }, 1)
@@ -356,7 +352,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                                         getTypeOnFuncCall(declaration,argTypes)),
                                 listOf(expression) + secondaryArguments
                         )
-                    } else expression
+                    } else undeclaredError(token.value)
                 }
                 else -> expression
             }.let { if (expression != it) parsePotentialFunctionCall(it) else expression!! }
@@ -425,6 +421,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                 Token.SpecialChar.SquareBracketStart -> depth++
                 Token.SpecialChar.SquareBracketEnd -> depth--
                 Token.SpecialChar.ListSeparator -> if (depth == 0) return@findElement true
+                else -> { }
             }
             null
         }, { false }, 1)?.let { it } ?: error("Unclosed parentheses")

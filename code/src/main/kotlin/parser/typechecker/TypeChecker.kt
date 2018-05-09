@@ -1,7 +1,6 @@
 package parser.typechecker
 
 
-import parser.AstNode.Command.Expression
 import parser.AstNode
 import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
@@ -82,10 +81,10 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
     }
 
 
-    override fun getTypeOnFuncCall(func: AstNode.Type.Func.ExplicitFunc, arguments: List<AstNode.Type>) =
-            if(func.returnType is AstNode.Type.GenericType)
-            func.paramTypes.zip(arguments).getTypeFromGenericType(func.returnType.name) ?: TODO()
-    else func.returnType
+    override fun getTypeOnFuncCall(decl: AstNode.Type.Func.ExplicitFunc, arguments: List<AstNode.Type>) =
+            if(decl.returnType is AstNode.Type.GenericType)
+            decl.paramTypes.zip(arguments).getTypeFromGenericType(decl.returnType.name) ?: TODO()
+    else decl.returnType
 
 
     /**

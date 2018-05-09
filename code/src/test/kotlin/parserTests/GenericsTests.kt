@@ -133,7 +133,7 @@ class GenericsTests{
     fun failOnPassedFunctionWithGenerics() {
         val lexer = DummyLexer(buildTokenSequence {
             func.squareStart.func.squareStart.number.squareEnd.`,`.number.squareEnd.identifier("myFunc").`=`.`(`.func.
-                    squareStart.number.squareEnd.identifier("myParam").`)`.colon.number.`{`.number(2.0).identifier("passFunc").`}`.newLine.
+                    squareStart.number.squareEnd.identifier("passFunc").`)`.colon.number.`{`.number(2.0).identifier("passFunc").`}`.newLine.
                     func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("passFunc").`=`.`(`.identifier("T").
                     identifier("value").`)`.colon.identifier("T").`{`.identifier("value").`}`.newLine.
 
