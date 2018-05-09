@@ -294,7 +294,7 @@ private fun buildReadDigPinFunction() = buildFunction(
 )
 
 private fun buildWriteAnaPinFunction() = buildFunction(
-        identifier = "writeAnalogPin",
+        identifier = "setAnalogPin",
         parameters = listOf(
                 Parameter("pin", Type.Number),
                 Parameter("val", Type.Number)
