@@ -15,8 +15,7 @@ class MainGenerator : IPrinter {
         stringBuilder.appendln(loop.wrapLoop())
 
         stringBuilder.appendln(("setup();\n" +
-                (if (loop.isNotBlank()) "while(1) { loop(); }\n"  else "")+
-                "return 0;\n").wrapMain()
+                (if (loop.isNotBlank()) "while(1) { loop(); }\n"  else "")).wrapMain()
         )
         return stringBuilder.toString()
     }
@@ -29,7 +28,7 @@ class MainGenerator : IPrinter {
     private fun String.wrapSetup() = "void setup() { \n${this.splitIndented}\n}"
     private fun String.wrapMain() = "" +
             "#if !ARDUINO_AVR_UNO\n" +
-            "int main() {\n${this.splitIndented}\n    return return_code;}\n" +
+            "int main() {\n${this.splitIndented}\n    return ${"return_code".cppName};}\n" +
             "#endif"
 
     private val String.splitIndented get() = this.split("\n").joinToString("\n") { "    $it" }
