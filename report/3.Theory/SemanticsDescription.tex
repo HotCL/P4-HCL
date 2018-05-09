@@ -444,7 +444,7 @@ Even though this is an exception to the general description of a list expression
 			{env_V, sto \vdash list\ length \rightarrow_{list} v}
 	\end{math}
 	
-	\texttt{ where } $V = |list|$
+	\texttt{ where } $v = |list|$
 \end{center}
 
 \texttt{[$ListAt_{BSS}$]}\\
@@ -505,7 +505,7 @@ The transitions are shown below.
 
 \subsection{Big-Step Semantic for Statements}
 Statements $Stm$ can change the store, because they can change the value of an existing variable.
-Because of the fact that the category have rewriting rules for declarations, this means that statements can also both change the variable environment $Env_V$ and the function environment $Env_F$.
+Because the category has rewriting rules for declarations, statements can also change the variable environment $Env_V$ and the function environment $Env_F$.
 The transition-system for $stm$ is:
 \begin{center}
 	$((Stm\ \Cross\ Env_V\ \Cross\ Env_F\ \Cross Sto)\ \cup Env_V\ \Cross\ Env_F\ \Cross\ Sto, \rightarrow_{stm}, Env_V\ \Cross\ Env_F\ \Cross\ Sto)$
@@ -527,7 +527,7 @@ The transitions are shown below.
 \texttt{[$Ass_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-		{env_V, env_F \vdash \langle x = e, sto \rangle \rightarrow_{stm} sto[l \mapsto v]}
+		{env_V, env_F \vdash \langle x = e, sto \rangle \rightarrow_{stm} (sto[l \mapsto v], env_V, env_F)}
 	\end{math}
 	
 	\texttt{ where } $env_V, sto \vdash e \rightarrow_e v$
@@ -547,8 +547,8 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, env_F \vdash \langle L,sto \rangle \rightarrow_{stm} sto'}
-			{env_V, env_F \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} sto'}
+			{env_V, env_F \vdash \langle L,sto \rangle \rightarrow_{stm} (sto', env_V, env_F)}
+			{env_V, env_F \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} (sto', env_V, env_F)}
 	\end{math}
 	
 	\texttt{ if } $env_V, sto \vdash b \rightarrow_b True$
@@ -558,8 +558,8 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 	\cfrac
-	{env_V, env_F \vdash \langle \epsilon,sto \rangle \rightarrow_{stm} sto}
-	{env_V, env_F \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} sto}
+	{env_V, env_F \vdash \langle \epsilon,sto \rangle \rightarrow_{stm} (sto, env_V, env_F)}
+	{env_V, env_F \vdash \langle b\ then\ L, sto \rangle \rightarrow_{stm} (sto, env_V, env_F)}
 	\end{math}
 	
 	\texttt{ if } $env_V, sto \vdash b \rightarrow_b False$
@@ -569,8 +569,8 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, env_F \vdash \langle L, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_F \vdash \langle L\ while\ e, sto'' \rangle \rightarrow_{stm} sto'}
-			{env_V, env_F \vdash \langle L\ while\ e, sto \rangle \rightarrow_{stm} sto'}
+			{env_V, env_F \vdash \langle L, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_F \vdash \langle L\ while\ e, sto'' \rangle \rightarrow_{stm} (sto', env_V, env_F)}
+			{env_V, env_F \vdash \langle L\ while\ e, sto \rangle \rightarrow_{stm} (sto', env_V, env_F)}
 	\end{math}
 	
 	\texttt{ if } $env_V, sto \vdash e \rightarrow_e v$
@@ -581,7 +581,7 @@ The transitions are shown below.
 \texttt{[$While-False_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-	{env_V, env_F \vdash \langle L\ while\ e, sto \rangle \rightarrow_{stm} sto}
+	{env_V, env_F \vdash \langle L\ while\ e, sto \rangle \rightarrow_{stm} (sto, env_V, env_F)}
 	\end{math}
 	
 	\texttt{ if } $env_V, sto \vdash e \rightarrow_e v$
@@ -591,12 +591,12 @@ The transitions are shown below.
 
 \texttt{[$StmDlcV_{BSS}$]}\\
 \begin{center}
-	$\langle D_V, env_V, sto \rangle \rightarrow_{D_V} (env_V', sto')$
+	$\langle D_V, env_V, sto \rangle \rightarrow_{D_V} (env_V', env_F, sto')$
 \end{center}
 
 \texttt{[$StmDlcF_{BSS}$]}\\
 \begin{center}
-	$\langle D_V, env_F, sto \rangle \rightarrow_{D_V} (env_F', sto')$
+	$\langle D_V, env_F, sto \rangle \rightarrow_{D_V} (env_V, env_F', sto')$
 \end{center}
 
 \texttt{[$EmptyStm_{BSS}$]}\\
@@ -609,12 +609,12 @@ The transitions are shown below.
 \subsection{Big-Step Semantics for function Calls}
 Function calls returns a value $v$, where $v \in Lit \cup {none}$.
 Since the parameters of a function, can be both expression and lambdas, it is necessary to have a transition for each of the two cases.
-since these two pair of rules would be almost identical, the formal parameters in the transitions below are denoted with $x$.
+Since these two pair of rules would be almost identical, the formal parameters in the transitions below are denoted with $x$.
 The transition-system for $F_{Call}$ is ($Fnames\ \Cross\ Dcl_F\ \Cross Sto\ \cup Sto, \rightarrow_{stm}, Lit \cup Sto$).
 
 Which means that the transitions must be on the form.
 \begin{center}
-	$env_V, env_F, sto \vdash f \rightarrow_{stm} v, sto'$
+	$env_V, env_F, sto \vdash f \rightarrow_{stm} (v, sto')$
 \end{center}
 The transitions are shown below.
 
@@ -622,8 +622,8 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 	\cfrac
-		{env_V', env_F'[f \mapsto (L, e, env_V', env_F')] \vdash \langle L, sto \rangle \rightarrow_{stm} v, sto'}
-		{env_V, sto \vdash f \rightarrow_{stm} v, sto'}
+		{env_V', env_F'[f \mapsto (L, e, env_V', env_F')] \vdash \langle L, sto \rangle \rightarrow_{stm} (v, sto')}
+		{env_V, sto \vdash f \rightarrow_{stm} (v, sto')}
 	\end{math}
 	
 	\texttt{ where } $env_F\ f = (L, e, env_V', env_F')$\\
@@ -637,8 +637,8 @@ This means that for every argument, it is necessary to bind their values in the 
 \begin{center}
 	\begin{math}
 	\cfrac
-	{env_V'[x \mapsto l]^*[next \mapsto new\ l_x]^*, env_F'[f \mapsto (L, x\sim, e, env_V', env_F')] \vdash \langle L, sto[l_x \mapsto v_x]^* \rangle \rightarrow_{stm} v, sto'}
-	{env_V, sto \vdash e_x\ f\ e_x^* \rightarrow_{stm} v, sto'}
+	{env_V'[x \mapsto l]^*[next \mapsto new\ l_x]^*, env_F'[f \mapsto (L, x\sim, e, env_V', env_F')] \vdash \langle L, sto[l_x \mapsto v_x]^* \rangle \rightarrow_{stm} (v, sto')}
+	{env_V, sto \vdash e_x\ f\ e_x^* \rightarrow_{stm} (v, sto')}
 	\end{math}
 	
 	\texttt{ where } $env_F\ f = (L, e, env_V', env_F')$\\
