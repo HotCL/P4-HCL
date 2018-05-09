@@ -7,13 +7,17 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     val code = "" +
-            "tuple[num, txt] t\n" +
-            "tuple[list[num], func[none]] y\n" +
-            "list[num] myList=[1,2,3,4.0]\n" +
-            "var myVar = 5\n" +
-            "var plus5 = (num x): num { x + myVar }\n" +
-            "var shouldBe10 = myVar plus5\n" +
-            "var foo = (num val): num { val}\n"
+            "var thenElse = (bool condition, func[T] trueBody, func[T] falseBody): T {\n" +
+            "T output\n"+
+            "condition then {output = trueBody}\n" +
+            "condition not then { output = falseBody}\n"+
+            "return output\n"+
+            "}\n" +
+            "var x = 21\n"+
+            "var y = 20\n"+
+            "num bigNum\n" +
+            "bigNum = x > y thenElse { x } { y }\n"+
+            "return bigNum"
 
     val lexer = Lexer(code)
     val parser = Parser(lexer)
