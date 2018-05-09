@@ -7,8 +7,9 @@ import parser.AstNode.Type
 
 object HclBuiltinFunctions {
     val functions =
-            // Operators
+    // Operators
             listOf(
+
                     buildOperatorNumNumToNum("+"),
                     buildOperatorNumNumToNum("-"),
                     buildOperatorNumNumToNum("*"),
@@ -27,11 +28,11 @@ object HclBuiltinFunctions {
                     buildOperatorToBool<Type.Bool>("notEquals", "!="),
 
                     buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
-            // Control structures
+                    // Control structures
                     buildThenFunction(),
                     //buildElseTernaryFunction(),
                     buildWhileFunction(),
-            // Standard functions
+                    // Standard functions
                     buildNumberToTextFunction(),
                     buildBoolToTextFunction(),
                     buildListToTextFunction(),
@@ -196,14 +197,4 @@ private fun buildThenFunction() = buildFunction(
 )
 
 
-
-/*private fun buildElseTernaryFunction() = buildFunction(
-        identifier = "else",
-        parameters = listOf(
-                Parameter("then_value", Type.Tuple(listOf(Type.Bool,Type.GenericType("T")))),
-                Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.GenericType("T")))
-        ),
-        returnType = Type.GenericType("T"),
-        body = "if (then_value.element0) { return then_value.element1 } else { return body() };"
-)*/
 //endregion builtInFunctions

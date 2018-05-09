@@ -20,7 +20,7 @@ class ProgramGenerator : IFilesPrinter {
     private fun AbstractSyntaxTree.addReturnCode() = apply { children.add(0, returnCode) }
     private val returnCode = AstNode.Command.Declaration(
             AstNode.Type.Number,
-            AstNode.Command.Expression.Value.Identifier("return_code", AstNode.Type.Number),
+            AstNode.Command.Expression.Value.Identifier("RETURN_CODE", AstNode.Type.Number),
             AstNode.Command.Expression.Value.Literal.Number(0.0)
     )
     private val mainHeader =

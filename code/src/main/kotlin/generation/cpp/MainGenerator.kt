@@ -20,15 +20,15 @@ class MainGenerator : IPrinter {
         return stringBuilder.toString()
     }
 
-    private fun String.addSerialBegin() = "\n#if ARDUINO_AVR_UNO\n" +
+    private fun String.prefixSerialBegin() = "\n#if ARDUINO_AVR_UNO\n" +
             "Serial.begin(9600);\n" +
-            "#endif\n"
+            "#endif\n"+this
 
     private fun String.wrapLoop() = "void loop() {\n${this.splitIndented}\n}"
-    private fun String.wrapSetup() = "void setup() { \n${this.splitIndented}\n}"
+    private fun String.wrapSetup() = "void setup() { \n${this.prefixSerialBegin().splitIndented}\n}"
     private fun String.wrapMain() = "" +
             "#if !ARDUINO_AVR_UNO\n" +
-            "int main() {\n${this.splitIndented}\n    return ${"return_code".cppName};}\n" +
+            "int main() {\n${this.splitIndented}\n    return ${"RETURN_CODE".cppName};}\n" +
             "#endif"
 
     private val String.splitIndented get() = this.split("\n").joinToString("\n") { "    $it" }

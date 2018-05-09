@@ -64,5 +64,5 @@ infix fun AstNode.Command.shouldReturn(expectedResult: String) = TestCase(listOf
 infix fun Int.and(string: String) = TextAndReturn(string, this)
 infix fun String.and(int: Int) = TextAndReturn(this, int)
 
-fun setRet(code: AstNode.Command.Expression) = "return_code" assignedTo code
+fun setRet(code: AstNode.Command.Expression) = "RETURN_CODE" assignedTo code
 
