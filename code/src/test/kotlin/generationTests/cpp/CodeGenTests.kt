@@ -52,6 +52,7 @@ fun testReturnVarX5PlusVarY10() = listOf(
     "y" declaredAs num withValue num(10),
     setRet("+".calledWith(num, listOf("x".asIdentifier(num), "y".asIdentifier(num))))
 )
+
 fun testSimpleLambda() =
     listOf("x" declaredAs num withValue num(5),
         "myFun" declaredAs func(num, num) withValue (
@@ -60,17 +61,21 @@ fun testSimpleLambda() =
             ),
         setRet("myFun".calledWith(num, listOf("myFun".calledWith(num, num(10)))))
     )
-fun testCreateList() =
-    listOf("myList" declaredAs list(num) withValue list(num(1),num(5)),
 
-        setRet("at".calledWith(num, listOf("myList".asIdentifier(list(num)),num(1))))
+fun testCreateList() =
+    listOf("myList" declaredAs list(num) withValue list(num(1), num(5)),
+
+        setRet("at".calledWith(num, listOf("myList".asIdentifier(list(num)), num(1))))
     )
 
-//TODO make better
 fun testCreateTuple() =
-    listOf("myTuple" declaredAs tpl(num,txt) withValue tpl(num(1),txt("hello")),
+    listOf("myTuple" declaredAs tpl(num,txt) withValue tpl(num(1), txt("hello")),
 
-        setRet(num(1))
+        setRet("element0".calledWith(num,listOf("myTuple".asIdentifier(tpl(num,txt)))))
+    )
+
+fun testPrint() =
+    listOf("print".calledWith(none,listOf(txt("hello world")))
     )
 
 
@@ -82,7 +87,8 @@ object CodeGenerationTest : Spek({
             testReturnVarX5PlusVarY10() shouldReturn 15,
             testSimpleLambda()  shouldReturn 20,
             testCreateList() shouldReturn 5,
-            testCreateTuple() shouldReturn 1
+            testCreateTuple() shouldReturn 1,
+            testPrint() shouldReturn "hello world"
             ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {
