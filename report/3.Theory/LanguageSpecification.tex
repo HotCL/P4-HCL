@@ -42,7 +42,7 @@ func[txt] u = ():txt { "hello" }
 As previously stated, declaration can be done either with an implicit type and an assignment, explicit type and an assignment or explicit type.
 This is shown through the \textbf{\textit{num}} type, in the following example:
 
-\begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
+\begin{lstlisting}[language=HCL,firstnumber=1]
 var x = 5
 num y = 10
 num z
@@ -203,7 +203,7 @@ Should it be necessary to overload functions with varying lengths of input-param
 Function overloading requires nothing special of the user, simply declare two functions with the same amount of parameters, but with different types. 
 See listings below for example
 
-\begin{lstlisting}[language=HCL,label=lis:hclTypeDcls,firstnumber=1]
+\begin{lstlisting}[language=HCL,label=lis:hclEqualsThenElse,firstnumber=1]
 var isAwesome = (txt name): bool {
 	name equals "HCL" thenElse {true} {false}
 }
@@ -274,7 +274,7 @@ However, this would require overloading of a lot of functions with all the possi
 Since tuples are distinguished by the types within it, there are a theoretical infinite amount of types within HCL, which in turn makes overloading for this case impossible.
 
 To get a better grasp of how generics are used in HCL, consider the following implementation of the map function:
-\begin{lstlisting}[language=HCL,label=lis:hclTypeDcls,firstnumber=1]
+\begin{lstlisting}[language=HCL,label=lis:hclMapping,firstnumber=1]
 var map = (list[T1] elementsToMap, func[T1, T2] mapFunction): list[T2] {
 	list[T2] mappedValues = []
 	elementsToMap onEach {mappedValues add (value mapFunction)}
