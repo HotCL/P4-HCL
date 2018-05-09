@@ -505,7 +505,11 @@ The transitions are shown below.
 
 \subsection{Big-Step Semantic for Statements}
 Statements $Stm$ can change the store, because they can change the value of an existing variable.
-The transition-system for $stm$ is $(Stm\ \Cross\ Sto\ \cup Sto, \rightarrow_{stm}, Sto)$.
+Because of the fact that the category have rewriting rules for declarations, this means that statements can also both change the variable environment $Env_V$ and the function environment $Env_F$.
+The transition-system for $stm$ is:
+\begin{center}
+	$((Stm\ \Cross\ Env_V\ \Cross\ Env_F\ \Cross Sto)\ \cup Env_V\ \Cross\ Env_F\ \Cross\ Sto, \rightarrow_{stm}, Env_V\ \Cross\ Env_F\ \Cross\ Sto)$
+\end{center}
 Given the variable bindings $env_V$ and the function bindings $env_F$, the execution of the statement $S$ will 
 result in $sto$ changing to $sto'$.
 the formal parameters for the function calls in the transitions below, are denoted with $x$.
@@ -514,7 +518,7 @@ This means that the transitions must be on the form.
 
 \begin{center}
 	\begin{math}
-		{env_V, env_F \vdash \langle S, sto \rangle \rightarrow_{stm} sto'}
+		{\langle S, env_V, env_F, sto \rangle \rightarrow_{stm} (sto', env_V', env_F')}
 	\end{math}
 \end{center}
 
@@ -534,8 +538,8 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, env_F \vdash \langle S_1, sto \rangle \rightarrow_{stm} sto'' \quad env_V, env_F \vdash \langle S_2, sto'' \rangle \rightarrow_{stm} sto'}
-			{env_V, env_F \vdash \langle S_1; S_2, sto \rangle \rightarrow_{stm} sto'}
+			{\langle S_1, sto, env_V, env_F \rangle \rightarrow_{stm} (sto'', env_V'', env_F'') \quad \langle S_2, sto'', env_V'', env_F'' \rangle \rightarrow_{stm} (sto', env_V', env_F')}
+			{\langle S_1; S_2, sto, env_V, env_F \rangle \rightarrow_{stm} (sto', env_V', env_F')}
 	\end{math}
 \end{center}
 
@@ -583,6 +587,23 @@ The transitions are shown below.
 	\texttt{ if } $env_V, sto \vdash e \rightarrow_e v$
 	\texttt{ and } $v = False$\\
 	\texttt{ where } $e \in F_{call} \cup L$
+\end{center}
+
+\texttt{[$StmDlcV_{BSS}$]}\\
+\begin{center}
+	$\langle D_V, env_V, sto \rangle \rightarrow_{D_V} (env_V', sto')$
+\end{center}
+
+\texttt{[$StmDlcF_{BSS}$]}\\
+\begin{center}
+	$\langle D_V, env_F, sto \rangle \rightarrow_{D_V} (env_F', sto')$
+\end{center}
+
+\texttt{[$EmptyStm_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	{\langle \epsilon, env_V, env_F, sto \rangle \rightarrow_{stm} (sto, env_V, env_F)}
+	\end{math}
 \end{center}
 
 \subsection{Big-Step Semantics for function Calls}
