@@ -33,8 +33,8 @@ class TypeGenerator: IPrinter {
     private fun AstNode.Type.Tuple.format():String = ""+
             "typedef struct {\n  "+
             elementTypes.mapIndexed {i, it ->
-                "${it.cpp} element$i;" }.joinToString("\n  ") +
-            "\n} ${this.cpp};\n\n"+generateFunctions()
+                "${it.cppName} element$i;" }.joinToString("\n  ") +
+            "\n} ${this.cppName};\n\n"+generateFunctions()
 
 
     private fun List<AstNode>.fetchLists():Set<AstNode.Command.Expression.Value.Literal.List> = flatMap { it.fetchList() }.toSet()
@@ -49,7 +49,7 @@ class TypeGenerator: IPrinter {
         else -> emptySet()
     }
     private fun AstNode.Command.Expression.Value.Literal.List.format():String = ""+
-            "const auto ${cpp} = {${elements.joinToString { CodeGenerator().generate(AbstractSyntaxTree(listOf(it)))}}};"
+            "const auto ${cppName} = {${elements.joinToString { CodeGenerator().generate(AbstractSyntaxTree(listOf(it)))}}};"
 
 
     private fun AstNode.Type.Tuple.generateFunctions() = CodeGenerator().generate(
@@ -61,7 +61,7 @@ class TypeGenerator: IPrinter {
                     returnType = AstNode.Type.Text,
                     body = "ConstList<char>::List output = ConstList<char>::string((char*)\"\");\n" +
                             elementTypes.mapIndexed {index, _ ->
-                                "output = ConstList<char>::concat(output, ${"toText".cpp}<char>(self.element$index));\n"+
+                                "output = ConstList<char>::concat(output, ${"toText".cppName}<char>(self.element$index));\n"+
                                         if (index != this.elementTypes.count() - 1) {
                                             "output = ConstList<char>::concat(output, ConstList<char>::string((char*)\",\"));\n"
                                         } else ""
@@ -75,8 +75,8 @@ class TypeGenerator: IPrinter {
                             Parameter("index", AstNode.Type.Number)
                     ),
                     returnType = AstNode.Type.Text,
-                    body = "switch(index) { \n"+
-                            this.elementTypes.mapIndexed {index, it ->
+                    body = "switch((int)index) { \n"+
+                            this.elementTypes.mapIndexed { index, _ ->
                                 "case $index: return self.element$index;"
 
                             }.joinToString("\n")+"\n}"
@@ -84,7 +84,7 @@ class TypeGenerator: IPrinter {
                     identifier = "create_struct",
                     parameters = this.elementTypes.mapIndexed{ index, it -> Parameter("element$index",it)},
                     returnType = this,
-                    body = "${this.cpp} output = ${this.elementTypes.mapIndexed{
+                    body = "${this.cppName} output = ${this.elementTypes.mapIndexed{
                         index, _ -> "element$index" }.joinToString()};\nreturn output;"
             )
             )))

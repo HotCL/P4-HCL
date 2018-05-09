@@ -41,7 +41,7 @@ class ListTests {
             },
             matchesAstChildren(
                 "myNumberList" declaredAs list(num) withValue list(num(10)),
-                "myList" declaredAs list(list(num)) withValue list("myNumberList".asIdentifier)
+                "myList" declaredAs list(list(num)) withValue list("myNumberList".asIdentifier(list(num)))
             )
         )
     }
@@ -55,7 +55,7 @@ class ListTests {
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
-                "myList" declaredAs list(num) withValue list("myFunc".called())
+                "myList" declaredAs list(num) withValue list("myFunc".called(num))
             )
         )
     }

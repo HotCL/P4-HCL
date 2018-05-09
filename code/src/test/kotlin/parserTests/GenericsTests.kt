@@ -9,6 +9,7 @@ import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import parser.AstNode
 import parser.ParserWithoutBuiltins
 
 class GenericsTests{
@@ -57,59 +58,63 @@ class GenericsTests{
     @Test
     fun canCallFunctionGenerics() {
         assertThat(
-                buildTokenSequence {
-                    func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.identifier("T").
-                            identifier("myParam1").`)`.colon.text.`{`.text("generics!").`}`.newLine.
-                            number(5.0).identifier("myFunc").newLine
-                },
-                matchesAstChildren(
-                        "myFunc" declaredAs func(txt, generic("T")) withValue (
-                                lambda() returning txt withArgument ("myParam1" asType generic("T")) andBody ret(txt("generics!"))
-                                ),
-                        "myFunc" calledWith num(5)
-                )
+            buildTokenSequence {
+                func.squareStart.identifier("T").`,`.text.squareEnd.identifier("myFunc").`=`.`(`.identifier("T").
+                identifier("myParam1").`)`.colon.text.`{`.text("generics!").`}`.newLine.
+                number(5.0).identifier("myFunc").newLine
+            },
+            matchesAstChildren(
+                "myFunc" declaredAs func(txt, generic("T")) withValue (
+                    lambda() returning txt withArgument ("myParam1" asType generic("T")) andBody ret(txt("generics!"))
+                ),
+                "myFunc".calledWith(txt, num(5))
+            )
         )
     }
 
     @Test
     fun canCallFunctionGenericsNested() {
         assertThat(
-                buildTokenSequence {
-                    func.squareStart.list.squareStart.identifier("T").squareEnd.`,`.tuple.squareStart.number.`,`.
-                            identifier("T3").squareEnd.`,`.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").
-                            `=`.`(`.list.squareStart.identifier("T").squareEnd.identifier("myParam").`,`.tuple.squareStart.
-                            number.`,`.identifier("T3").squareEnd.identifier("myParam1").`,`.identifier("T").identifier("myT").
-                            `)`.colon.identifier("T").`{`.identifier("myT").`}`.newLine.
+            buildTokenSequence {
+                func.squareStart.list.squareStart.identifier("T").squareEnd.`,`.tuple.squareStart.number.`,`.
+                identifier("T3").squareEnd.`,`.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").
+                `=`.`(`.list.squareStart.identifier("T").squareEnd.identifier("myParam").`,`.tuple.squareStart.
+                number.`,`.identifier("T3").squareEnd.identifier("myParam1").`,`.identifier("T").identifier("myT").
+                `)`.colon.identifier("T").`{`.identifier("myT").`}`.newLine.
 
-                            number.identifier("x").`=`.squareStart.number(1.0).`,`.number(2.0).squareEnd.identifier("myFunc").
-                            `(`.number(1.0).`,`.text("test").`)`.number(9.0).newLine
-                },
-                matchesAstChildren(
-                        "myFunc" declaredAs func(generic("T"), listOf(list(generic("T")), tpl(num, generic("T3")), generic("T")))
-                                withValue (lambda() returning generic("T") withArguments listOf(
-                                "myParam" asType list(generic("T")),
-                                "myParam1" asType tpl(num, generic("T3")),
-                                "myT" asType generic("T")
-                        ) andBody ret("myT".asIdentifier)
-                                ),
-                        "x" declaredAs num withValue ("myFunc" calledWith listOf(list(num(1), num(2)), tpl(num(1), txt("test")), num(9)))
+                number.identifier("x").`=`.squareStart.number(1.0).`,`.number(2.0).squareEnd.identifier("myFunc").
+                `(`.number(1.0).`,`.text("test").`)`.number(9.0).newLine
+            },
+            matchesAstChildren(
+                "myFunc" declaredAs func(generic("T"), listOf(
+                        list(generic("T")),
+                        tpl(num, generic("T3")),
+                        generic("T"))
                 )
+                withValue (lambda() returning generic("T") withArguments listOf(
+                        "myParam" asType list(generic("T")),
+                        "myParam1" asType tpl(num, generic("T3")),
+                        "myT" asType generic("T")
+                    ) andBody ret("myT".asIdentifier(generic("T")))
+                ),
+                "x" declaredAs num withValue ("myFunc".calledWith(num,
+                        listOf(list(num(1), num(2)), tpl(num(1), txt("test")), num(9))))
+            )
         )
     }
 
     @Test
     fun testIdentityFunction(){
         assertThat(
-                buildTokenSequence {
-                    func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").`=`.`(`.
-                            identifier("T").identifier("myParam1").`)`.colon.identifier("T").`{`.identifier("myParam1").`}`.newLine
-                },
-                matchesAstChildren(
-                        "myFunc" declaredAs func(generic("T"), generic("T")) withValue (lambda()
-                                returning generic("T")
-                                withArgument ("myParam1" asType generic("T"))
-                                andBody ret("myParam1".asIdentifier)
-                                )
+            buildTokenSequence {
+                func.squareStart.identifier("T").`,`.identifier("T").squareEnd.identifier("myFunc").`=`.`(`.
+                identifier("T").identifier("myParam1").`)`.colon.identifier("T").`{`.identifier("myParam1").`}`.newLine
+            },
+            matchesAstChildren(
+                "myFunc" declaredAs func(generic("T"), generic("T")) withValue (lambda()
+                    returning generic("T")
+                    withArgument ("myParam1" asType generic("T"))
+                    andBody ret("myParam1".asIdentifier(generic("T")))
                 )
         )
     }
@@ -179,12 +184,12 @@ class GenericsTests{
                 },
                 matchesAstChildren(
                         "myFunc" declaredAs func(generic("T"), func(generic("T"))) withValue (lambda()
-                                returning generic("T")
-                                withArgument ("myParam1" asType func(generic("T")))
-                                andBody ret("myParam1".called())
-                                ),
+                            returning generic("T")
+                            withArgument ("myParam1" asType func(generic("T")))
+                            andBody ret("myParam1".called(generic("T")))
+                        ),
                         "passFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
-                        "myFunc" calledWith "passFunc".asIdentifier
+                        "myFunc".calledWith(num, "passFunc".asIdentifier(func(num)))
                 )
         )
     }

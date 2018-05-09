@@ -96,7 +96,7 @@ class MiscellaneousTests {
             },
             matchesAstChildren(
                 "myNumber" declaredAs num withValue num(5),
-                "myId" declaredAs num withValue "myNumber".asIdentifier
+                "myId" declaredAs num withValue "myNumber".asIdentifier(num)
             )
         )
     }

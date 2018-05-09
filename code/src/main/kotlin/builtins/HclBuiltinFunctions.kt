@@ -13,13 +13,17 @@ object HclBuiltinFunctions {
                     buildOperatorNumNumToNum("*"),
                     buildOperatorNumNumToNum("/"),
 
-                    buildOperatorNumNumToBool("<"),
-                    buildOperatorNumNumToBool(">"),
-                    buildOperatorNumNumToBool("equals", "=="),
-                    buildOperatorNumNumToBool("notEquals", "!="),
-
                     buildOperatorBoolBoolToBool("and", "&&"),
                     buildOperatorBoolBoolToBool("or", "||"),
+
+                    buildOperatorToBool<Type.Number>("greaterThanEqual",">="),
+                    buildOperatorToBool<Type.Number>("lessThanEqual","<="),
+                    buildOperatorToBool<Type.Number>("greaterThan",">"),
+                    buildOperatorToBool<Type.Number>("lessThan","<"),
+                    buildOperatorToBool<Type.Number>("equals", "=="),
+                    buildOperatorToBool<Type.Number>("notEquals", "!="),
+                    buildOperatorToBool<Type.Bool>("equals", "=="),
+                    buildOperatorToBool<Type.Bool>("notEquals", "!="),
 
                     buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
             // Control structures
@@ -40,11 +44,12 @@ object HclBuiltinFunctions {
 }
 
 //region buildOperator_functions
+private inline fun<reified T: Type> buildOperatorToBool(functionName: String, operator: String = functionName)=
+        buildOperator<T, T, Type.Bool>(functionName, operator)
+
+
 private fun buildOperatorNumNumToNum(functionName: String, operator: String = functionName) =
         buildOperator<Type.Number, Type.Number, Type.Number>(functionName, operator)
-
-private fun buildOperatorNumNumToBool(functionName: String, operator: String = functionName) =
-        buildOperator<Type.Number, Type.Number, Type.Bool>(functionName, operator)
 
 
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
