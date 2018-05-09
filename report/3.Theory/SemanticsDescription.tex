@@ -74,14 +74,14 @@ The abstract syntax of HCL can be seen below.
 $a\ ::=\ n\ |\ x\ |\ a_1+a_2\ |\ a_1-a_2\ |\ a_1*a_2\ |\ a_1/a_2\ |\ (a)$\\
 $b\ ::=\ tf\ |\ x\ |\ a_1<a_2\ |\ a_1>a_2\ |\ a_1\ lessThanOrEqual\ a_2\ |\ a_1\ greaterThanOrEqual\ a_2\ |$\\ 
 \phantom{xyzq.} $ e_1\ equals\ e_2\ | e_1\ notEquals\ e_2|\ b_1\ and\ b_2\ |\ b_1\ or\ b_2\ |\ b\ not\ | \ (b)$\\
-$t\ ::=\ txt\ |\ x\ |\ t_1+t_2\ |\ e\ toText\ |\ (t)$\\
-$list\  ::=\ lst\ |\ x\ |\ list\ length\ |\ list\ at\ a\ |\ (list)$\\
+$t\ ::=\ e\ toText\ |\ t_1+t_2\ |\ (t)$\\
+$list\  ::=\ lst\ |\ x\ |\ list\ length\ |\ list\ at\ e\ |\ t\ |\ list_1 + list_2\ |\ (list)$\\
 $tuple\ ::=\ tpl\ |\ x\ |\ tuple\ at\ a\ |\ (tuple)$\\
 $e\     ::=\ a\ |\ b\ |\ t\ |\ list\ |\ tuple\ |\ F_{call}\ | L$\\
 $F_{call}\ ::=\ f\ |\ e\ f\ e^*$\\
 $L\     ::= \{\ S\ \}\ |\ \{\ S\ return\ e\ \}\ |\ \{\ e\ \}$\\
 $S\     ::=\ x\ =\ e\ |\ S_1;S_2\ |\ b\ then\ L\ |\ L\ while\ e\ |\ F_{call} |\ D_V\ |\ D_F\ |\ \epsilon$\\
-$D_v\   ::=\ T\ x\ =\ e\ |\ T\ x\ = F_{call}\ |\ T\ x\ $\\
+$D_v\   ::=\ T\ x\ =\ e\ |\ T\ x\ $\\
 $D_f\   ::=\ T\ f\ =\ ([T\ x]\sim):\ T\ L\ |\ T\ f\ |\ f\ =\ ([T\ x]\sim):\ T\ L$
 
 \textbf{\large{Conventions}} \\
@@ -134,17 +134,6 @@ To avoid the possibility of cluttering the section, these rules are described be
 	\texttt{ if } env_V\ x = l
 	\texttt{ and } sto\ l = v
 	\end{math}
-\end{center}
-
-\texttt{[$ExpToText_{BSS}$]}\\
-\begin{center}
-	\begin{math}
-	\cfrac
-	{env_V, sto \vdash e \rightarrow_{e} v'}
-	{env_V, sto \vdash e\ toText \rightarrow_{t} v}
-	\end{math}
-	
-	\texttt{ where } $v = "v'"$
 \end{center}
 
 \textbf{\large{Arithmetic Expressions}}\\
@@ -304,45 +293,45 @@ The transition can be seen below.
 	\texttt{ if } $v_1 <= v_2$
 \end{center}
 
-\textbf{[$LessThanOrEqualTrue_{BSS}$]}\\
+\textbf{[$LessThanEqualTrue_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1\ lessThanOrEqual\ a_2 \rightarrow_b True}
+	{env_V,\ sto \vdash a_1\ lessThanEqual\ a_2 \rightarrow_b True}
 	\end{math}
 	
 	\texttt{ if } $v_1 <= v_2$
 \end{center}
 
-\textbf{[$LessThanOrEqualFalse_{BSS}$]}\\
+\textbf{[$LessThanEqualFalse_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1\ lessThanOrEqual\ a_2 \rightarrow_b False}
+	{env_V,\ sto \vdash a_1\ lessThanEqual\ a_2 \rightarrow_b False}
 	\end{math}
 	
 	\texttt{ if } $v_1 > v_2$
 \end{center}
 
-\textbf{[$GreaterThanOrEqualTrue_{BSS}$]}\\
+\textbf{[$GreaterThanEqualTrue_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1\ greaterThanOrEqual\ a_2 \rightarrow_b True}
+	{env_V,\ sto \vdash a_1\ greaterThanEqual\ a_2 \rightarrow_b True}
 	\end{math}
 	
 	\texttt{ if } $v_1 >= v_2$
 \end{center}
 
-\textbf{[$GreaterThanOrEqualFalse_{BSS}$]}\\
+\textbf{[$GreaterThanEqualFalse_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1\ greaterThanOrEqual\ a_2 \rightarrow_b False}
+	{env_V,\ sto \vdash a_1\ greaterThanEqual\ a_2 \rightarrow_b False}
 	\end{math}
 	
 	\texttt{ if } $v_1 < v_2$
@@ -410,11 +399,22 @@ In other words, $v$ is a string.
 The transition-system for $Txt_{exp}$ is $(Txt_{exp} \cup \{\Sigma^*\},\ \rightarrow_t, \{\Sigma^*\})$.
 Here $\Sigma$ is an arbitrary alphabet legal in the context.
 
+\texttt{[$ExpToText_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, sto \vdash e \rightarrow_{e} v'}
+	{env_V, sto \vdash e\ toText \rightarrow_{t} v}
+	\end{math}
+	
+	\texttt{ where } $v = "v'"$
+\end{center}
+
 \textbf{[$TextConc_{BSS}$]}\\
 \begin{center}
 	\begin{math}
 	\cfrac
-		{env_V,\ sto \vdash t_1 \rightarrow_b v_1 \quad env_V,\ sto \vdash t_2 \rightarrow_b v_2}
+		{env_V,\ sto \vdash t_1 \rightarrow_t v_1 \quad env_V,\ sto \vdash t_2 \rightarrow_t v_2}
 		{env_V,\ sto \vdash t_1 + t_2 \rightarrow_t v}
 	\end{math}
 	
@@ -441,12 +441,10 @@ Even though this is an exception to the general description of a list expression
 \texttt{[$ListLength_{BSS}$]}\\
 \begin{center}
 	\begin{math}
-		\cfrac
-			{env_V, sto \vdash num \rightarrow_{a} v}
 			{env_V, sto \vdash list\ length \rightarrow_{list} v}
 	\end{math}
 	
-	\texttt{ where } $num = |list|$
+	\texttt{ where } $V = |list|$
 \end{center}
 
 \texttt{[$ListAt_{BSS}$]}\\
@@ -454,10 +452,21 @@ Even though this is an exception to the general description of a list expression
 	\begin{math}
 		\cfrac
 			{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash ls_v' \rightarrow_e v}
-			{env_V, sto \vdash list\ at\ a \rightarrow_{list} v}
+			{env_V, sto \vdash list\ at\ e \rightarrow_{list} v}
 	\end{math}
 	
 	\texttt{ where } $ls_v'\ is\ the\ v'th\ element\ of\ list$
+\end{center}
+
+\textbf{[$ListConc_{BSS}$]}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V,\ sto \vdash list_1 \rightarrow_t v_1 \quad env_V,\ sto \vdash list_2 \rightarrow_t v_2}
+	{env_V,\ sto \vdash list_1 + list_2 \rightarrow_t v}
+	\end{math}
+	
+	\texttt{ where } $v = v_1\ \circ\ v_2$
 \end{center}
 
 \textbf{[$ListLit_{BSS}$]}\\
