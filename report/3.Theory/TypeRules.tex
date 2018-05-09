@@ -1,19 +1,8 @@
+% !TeX root = ../main.tex
 %Content includes all type rules in HCL
 %Should be a relatively short section, since much of the content is self explanatory.
 \section{Type Rules}
 To ensure that any program written in HCL runs correctly after compilation, the language follows certain type rules.
-These rules specify where expressions have to evaluate to a specific type.
-There are essentially two cases where type rules apply:
-\begin{itemize}
-	\item When assigning an expression to a variable
-	\begin{itemize}
-		\item the expression must evaluate to the same type as the variable.
-	\end{itemize}
-	\item When passing an expression as an argument a function call.
-	\begin{itemize}
-		\item the expression must evaluate to the type specified by the function declaration.
-	\end{itemize}
-\end{itemize}
 
 
 \subsection{Type Rules for Expressions}
@@ -101,9 +90,68 @@ There are essentially two cases where type rules apply:
 	\end{math}
 \end{center}
 
+\textbf{Function call}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1 : T_1 \ .
+	.
+	.
+	\ E \vdash e_k : T_k}
+	{E \vdash e_1\ f\ e_2 \ .
+	.
+	.
+	\ e_k : T_f}
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $e_1\ .
+	.
+	.
+	\ e_k$ are the expressions passed to function $f$.
+	\\
+	\texttt{and} $T_1\ .
+	.
+	.
+	\ T_k$ are the types of the formal parameters $f$.
+	\\
+	\texttt{and} $T_f$ is the return type of $f$.
+	\\
+	\texttt{and} $k >= 0$
+\end{center}
+
+\textbf{Variable declaration}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+		{E \vdash e : T}
+		{E \vdash T x = e \rightarrow ok}
+	\end{math}
+\end{center}
+
+\textbf{Explicit function declaration}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+		{E \vdash U_1 : T_1\ 
+		.
+		.
+		.
+		\ E \vdash U_k : T_k}
+		{E \vdash func[T_1\
+			.
+			.
+			.
+			\ T_k]\ f = (U_1\ p_1\
+			.
+			.
+			.
+			\ U_{k-1}\ p_{k-1}): U_k\ \{ S \} \rightarrow ok}
+	\end{math}
+\end{center}
+
 
 \subsection{Type Rules for Statements}
 %quick introduction.
-
+hej
 %Conclusion.
 
