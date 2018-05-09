@@ -81,6 +81,7 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
 
 //region builtInFunctions
 
+
 private fun buildNumberToTextFunction() = buildFunction(
         identifier = "toText",
         parameters = listOf(
