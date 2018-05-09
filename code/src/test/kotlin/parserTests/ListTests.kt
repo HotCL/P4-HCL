@@ -5,12 +5,8 @@ import exceptions.UnexpectedTokenError
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
-import lexer.Token
 import org.junit.jupiter.api.Assertions
-import parser.Parser
-import parser.AstNode
 import parser.ParserWithoutBuiltins
-import kotlin.coroutines.experimental.buildSequence
 
 class ListTests {
 
@@ -45,7 +41,7 @@ class ListTests {
             },
             matchesAstChildren(
                 "myNumberList" declaredAs list(num) withValue list(num(10)),
-                "myList" declaredAs list(list(num)) withValue list("myNumberList".asIdentifier)
+                "myList" declaredAs list(list(num)) withValue list("myNumberList".asIdentifier(list(num)))
             )
         )
     }
@@ -59,7 +55,7 @@ class ListTests {
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
-                "myList" declaredAs list(num) withValue list("myFunc".called())
+                "myList" declaredAs list(num) withValue list("myFunc".called(num))
             )
         )
     }

@@ -1,11 +1,10 @@
 package symbolTableTests
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import parser.AstNode
 import parser.symboltable.EnterSymbolResult
 import parser.symboltable.SymbolTable
-import parser.typechecker.ExprResult
 
 class SymbolTableTest {
     @Test

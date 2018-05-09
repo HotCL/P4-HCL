@@ -5,10 +5,8 @@ import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import generation.SourceCodePrinter
 import lexer.*
-import org.jetbrains.spek.api.Spek
 import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
-import parser.Parser
 import parser.AstNode
 import parser.ParserWithoutBuiltins
 import kotlin.coroutines.experimental.buildSequence

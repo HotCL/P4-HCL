@@ -19,4 +19,6 @@ interface IValidNameTranslator{
      * numbers are oftentimes the same as doubles, while a tuple might be typed to a struct or something else.
      */
     fun getValidTypeName(node: AstNode.Type): String
+
+    fun getValidtListLiteralName(node: AstNode.Command.Expression.Value.Literal.List): String?
 }

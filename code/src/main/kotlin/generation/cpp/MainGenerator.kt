@@ -6,25 +6,34 @@ import parser.AstNode
 
 class MainGenerator : IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
-        return ast.genFromFilter { it.isDecl } +
-                "\n\n/* Setup function */\n\n" +
-                "void setup() {\n" +
-                ast.genFromFilter { !it.isLoop && !it.isDecl} +
-                "}\n" +
-                "\n\n/* Loop function */\n\n" +
-                "void loop() {\n" +
-                ast.genFromFilter { it.isLoop } +
-                "}\n" +
-                "#ifndef (ARDUINO_AVR_UNO)\n" +
-                "int main() {\n" +
-                "   setup();\n" +
-                "   while(1) { loop(); }\n" +
-                "   return 0;\n" +
-                "}\n" +
-                "#endif\n"
+        val stringBuilder = StringBuilder()
+        val declarations = ast.genFromFilter { it.isDecl }
+        val setup = ast.genFromFilter { !it.isLoop && !it.isDecl }
+        val loop = ast.genFromFilter { it.isLoop }
+        stringBuilder.appendln(declarations)
+        stringBuilder.appendln(setup.wrapSetup())
+        stringBuilder.appendln(loop.wrapLoop())
+
+        stringBuilder.appendln(("setup();\n" +
+                (if (loop.isNotBlank()) "while(1) { loop(); }\n"  else "")).wrapMain()
+        )
+        return stringBuilder.toString()
     }
 
-    private val AstNode.Command.isLoop get() = this is AstNode.Command.Expression.FunctionCall && identifier.name == "loop"
-    private val AstNode.Command.isDecl get() = this is AstNode.Command.Declaration
-}
+    private fun String.prefixSerialBegin() = "\n#if ARDUINO_AVR_UNO\n" +
+            "Serial.begin(9600);\n" +
+            "#endif\n"+this
 
+    private fun String.wrapLoop() = "void loop() {\n${this.splitIndented}\n}"
+    private fun String.wrapSetup() = "void setup() { \n${this.prefixSerialBegin().splitIndented}\n}"
+    private fun String.wrapMain() = "" +
+            "#if !ARDUINO_AVR_UNO\n" +
+            "int main() {\n${this.splitIndented}\n    return ${"RETURN_CODE".cppName};}\n" +
+            "#endif"
+
+    private val String.splitIndented get() = this.split("\n").joinToString("\n") { "    $it" }
+    private val AstNode.Command.isLoop get() =
+        this is AstNode.Command.Expression.FunctionCall && identifier.name == "loop"
+    private val AstNode.Command.isDecl get() = this is AstNode.Command.Declaration
+
+}
