@@ -11,6 +11,7 @@ object HclBuiltinFunctions {
     val functions =
             // Operators
             listOf(
+                    //
                     buildOperatorNumNumToNum("+"),
                     buildOperatorNumNumToNum("-"),
                     buildOperatorNumNumToNum("*"),
@@ -49,6 +50,7 @@ object HclBuiltinFunctions {
                     buildWriteAnaPinFunction(),
                     buildReadAnaPinFunction(),
             // Print functions
+                    /* Kept incase we can't use generics
                     buildPrintFunction<Type.Number>(),
                     buildPrintFunction<Type.Bool>(),
                     buildPrintFunction<Type.Text>(),
@@ -57,6 +59,8 @@ object HclBuiltinFunctions {
                     buildPrintLineFunction<Type.Bool>(),
                     buildPrintLineFunction<Type.Text>(),
                     buildPrintLineFunction<Type.List>()
+                    */
+                    buildPrintFunction()
             )
 }
 
@@ -313,6 +317,14 @@ private fun buildReadAnaPinFunction() = buildFunction(
 //endregion PinFunctions
 
 //region PrintFunctions
+private fun buildPrintFunction() = buildFunction(
+        identifier = "print",
+        parameters = listOf(Parameter("input", Type.GenericType("T"))),
+        returnType = Type.None,
+        body = "print(toText(input));\n" +
+                "return;"
+)
+/* THESE SHOULDN*T BE NEEDED. generics should work
 private inline fun<reified T: Type> buildPrintFunction() = buildFunction(
         identifier = "print",
         parameters = listOf(Parameter("input", T::class.objectInstance!!)),
@@ -328,6 +340,7 @@ private inline fun<reified T: Type> buildPrintLineFunction() = buildFunction(
         body = "print_line(toText(input));\n" +
                 "return;"
 )
+*/
 
 //endregion PrintFunctions
 //endregion builtInFunctions
