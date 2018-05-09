@@ -85,7 +85,7 @@ class CodeGenerator : IPrinter {
                 ("}".indentedPreDec)
             is AstNode.Command.Expression.LambdaBody -> TODO()
             is AstNode.Command.Expression.FunctionCall ->
-                "${this.identifier.cpp}(${this.arguments.joinToString { it.format() }})"
+                "${this.identifier.cpp}(${this.arguments.joinToString { it.format() }});"
         }
 
 

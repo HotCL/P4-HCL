@@ -1,5 +1,6 @@
 package builtins
 
+import generation.cpp.cpp
 import parser.*
 import parser.AstNode.Type
 
@@ -101,7 +102,7 @@ private fun buildListToTextFunction() = buildFunction(
         returnType = Type.Text,
         body = "auto output = ConstList<char>::string((char*)\"[\");\n" +
                 "for(int i = 0; i < input.get()->size; i++) {\n" +
-                "   output = ConstList<T>::concat(output, ${"toText".cppFun}(ConstList<T>::at(input,i)));\n" +
+                "   output = ConstList<T>::concat(output, ${"toText".cpp}(ConstList<T>::at(input,i)));\n" +
                 "}\n" +
                 "return output;"
 )
