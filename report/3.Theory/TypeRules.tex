@@ -7,136 +7,117 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 
 \subsection{Type Rules for Expressions}
 %quick introduction.
-\textbf{Addition}\\
+\textbf{Num type}\\
 \begin{center}
 	\begin{math}
-	\cfrac
-	{E \vdash e_1: T \quad E \vdash e_2: T}
-	{E \vdash e_1 + e_2 : T}
-	\end{math}\\[1\baselineskip]
-	\texttt{where} $T \in \{num, txt, list\}$
-\end{center}
-
-\textbf{Subtraction}\\
-\begin{center}
-	\begin{math}
-	\cfrac
-	{E \vdash e_1: num \quad E \vdash e_2: num}
-	{E \vdash e_1 - e_2 : num}
+		E \vdash n : num
 	\end{math}
 \end{center}
 
-\textbf{Multiplication}\\
+\textbf{Bool type}\\
 \begin{center}
 	\begin{math}
-	\cfrac
-	{E \vdash e_1: num \quad E \vdash e_2: num}
-	{E \vdash e_1 * e_2 : num}
+	E \vdash b : bool
 	\end{math}
 \end{center}
 
-\textbf{Division}\\
+\textbf{Txt type}\\
 \begin{center}
 	\begin{math}
-	\cfrac
-	{E \vdash e_1: num \quad E \vdash e_2: num}
-	{E \vdash e_1 / e_2 : num}
+	E \vdash t : txt
 	\end{math}
 \end{center}
 
-\textbf{Less than}\\
+\textbf{List type}\\
 \begin{center}
 	\begin{math}
-	\cfrac
-	{E \vdash e_1: num \quad E \vdash e_2: num}
-	{E \vdash e_1 < e_2 : bool}
+	E \vdash lst : list[T]
 	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $T \notin \{none, var, generic\}$
 \end{center}
 
-\textbf{Greater than}\\
+\textbf{Tuple type}\\
 \begin{center}
 	\begin{math}
-	\cfrac
-	{E \vdash e_1: num \quad E \vdash e_2: num}
-	{E \vdash e_1 > e_2 : bool}
+	E \vdash tpl : tuple[T_1, \ .
+	.
+	.
+	\ ,\ T_k]
 	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $T_i \notin \{none, var, generic\}$\\
+	\texttt{and} $k > 0$
 \end{center}
 
-\textbf{Equals}\\
+\textbf{Function type}\\
 \begin{center}
 	\begin{math}
-	\cfrac
-	{E \vdash e_1: T \quad E \vdash e_2: T}
-	{E \vdash e_1\ equals\ e_2 : bool}
-	\end{math}\\[1\baselineskip]
-	\texttt{where} $T \in \{num, bool, txt, list\}$
-\end{center}
-
-\textbf{And}\\
-\begin{center}
-	\begin{math}
-	\cfrac
-	{E \vdash e_1: bool \quad E \vdash e_2: bool}
-	{E \vdash e_1\ and\ e_2 : bool}
+	E \vdash f : func[T_1,\ .
+	.
+	.
+	\ ,\ T_k]
 	\end{math}
-\end{center}
-
-\textbf{Or}\\
-\begin{center}
-	\begin{math}
-	\cfrac
-	{E \vdash e_1: bool \quad E \vdash e_2: bool}
-	{E \vdash e_1\ or\ e_2 : bool}
-	\end{math}
+	\\[1\baselineskip]
+	\texttt{where for each} $T \in \{T_1,\ .
+	.
+	.
+	\ ,\ T_{k-1}\}\ T \notin \{none, var\}$\\
+	\texttt{and} $T_k \notin \{var\}$\\
+	\texttt{and} $k > 0$
 \end{center}
 
 \textbf{Function call}\\
 \begin{center}
 	\begin{math}
-	\cfrac
-	{E \vdash e_1 : T_1 \ .
-	.
-	.
-	\ E \vdash e_k : T_k}
-	{E \vdash e_1\ f\ e_2 \ .
-	.
-	.
-	\ e_k : T_f}
+		\cfrac
+		{E \vdash e_1 : T_1 \ .
+		.
+		.
+		\ E \vdash e_k : T_k}
+		{E \vdash e_1\ f\ e_2 \ .
+		.
+		.
+		\ e_k : T_f}
 	\end{math}
 	\\[1\baselineskip]
-	\texttt{where} $e_1\ .
+	\texttt{where} $f$ is a function identifier\\
+	$e_1\ .
 	.
 	.
-	\ e_k$ are the expressions passed to function $f$.
-	\\
+	\ e_k$ are the expressions passed to function $f$\\
 	\texttt{and} $T_1\ .
 	.
 	.
-	\ T_k$ are the types of the formal parameters $f$.
-	\\
-	\texttt{and} $T_f$ is the return type of $f$.
-	\\
+	\ T_k$ are the types of the formal parameters of $f$\\
+	\texttt{and} $T_f$ is the return type of $f$\\
 	\texttt{and} $k >= 0$
 \end{center}
 
-\textbf{Variable declaration}\\
+
+
+\subsection{Type Rules for Statements}
+%quick introduction.
+\textbf{Explicit variable declaration}\\
 \begin{center}
 	\begin{math}
 		\cfrac
 		{E \vdash e : T}
-		{E \vdash T x = e \rightarrow ok}
+		{E \vdash T\ x = e : \texttt{ok}}
 	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $T \in \{num, bool, txt, list, tuple\}$
 \end{center}
 
 \textbf{Explicit function declaration}\\
 \begin{center}
 	\begin{math}
 		\cfrac
-		{E \vdash U_1 : T_1\ 
-		.
-		.
-		.
-		\ E \vdash U_k : T_k}
+		{E\vdash S : \texttt{ok}\quad E \vdash U_1 : T_1\
+			.
+			.
+			.
+			\ E \vdash U_k : T_k}
 		{E \vdash func[T_1\
 			.
 			.
@@ -145,13 +126,34 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 			.
 			.
 			.
-			\ U_{k-1}\ p_{k-1}): U_k\ \{ S \} \rightarrow ok}
+			\ U_{k-1}\ p_{k-1}): U_k\ \{ S \} : \texttt{ok}}
 	\end{math}
+	\\[1\baselineskip]
+	\texttt{where for each} $T \in \{T_1,\ .
+	.
+	.
+	\ ,\ T_{k-1}\}\ T \notin \{none, var\}$\\
+	\texttt{and} $T_k \notin \{var\}$
 \end{center}
 
+\textbf{Implicit function declaration}\\
+\begin{center}
+	\begin{math}
+		\cfrac
+		{E\vdash S : \texttt{ok}\quad}
+		{E \vdash func\ f = (T_1\ p_1\
+		.
+		.
+		.
+		\ T_{k-1}\ p_{k-1}): T_k\ \{ S \} : \texttt{ok}}
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where for each} $T \in \{T_1,\ .
+	.
+	.
+	\ ,\ T_{k-1}\}\ T \notin \{none, var\}$\\
+	\texttt{and} $T_k \notin \{var\}$
+\end{center}
 
-\subsection{Type Rules for Statements}
-%quick introduction.
-hej
 %Conclusion.
 
