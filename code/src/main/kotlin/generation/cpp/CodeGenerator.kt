@@ -79,7 +79,8 @@ class CodeGenerator : IPrinter {
             is AstNode.Command.Expression.Value.Literal.Text -> "\"$value\""
             is AstNode.Command.Expression.Value.Literal.Bool -> "$value"
             is AstNode.Command.Expression.Value.Literal.Tuple -> "{}"
-            is AstNode.Command.Expression.Value.Literal.List -> "ConstList<num>::create(${this.cppName})"
+            is AstNode.Command.Expression.Value.Literal.List ->
+                "ConstList<${(this.type as AstNode.Type.List).elementType.cppName}>::create(${this.cppName})"
             is AstNode.Command.Expression.LambdaExpression ->
                 "[&](${paramDeclarations.format(attributes.modifyParameterName)}) {\n".also { indents++ } +
                 body.commands.format() +
