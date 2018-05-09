@@ -27,6 +27,7 @@ object HclBuiltinFunctions {
             // Control structures
                     buildThenFunction(),
                     buildWhileFunction(),
+                    buildEachFunction(),
             // Standard functions
                     buildNotFunction(),
                     buildTextEqualsFunction(),
@@ -38,7 +39,24 @@ object HclBuiltinFunctions {
                     buildGetListLengthFunction(),
                     buildAtListFunction(),
                     buildSubListFunction(),
-                    buildListConcatFunction()
+                    buildListConcatFunction(),
+                    buildMapFunction(),
+                    buildFilterFunction(),
+                    buildDelayMillisFunction(),
+            // Read/Write functions for arduino
+                    buildWriteDigPinFunction(),
+                    buildReadDigPinFunction(),
+                    buildWriteAnaPinFunction(),
+                    buildReadAnaPinFunction(),
+            // Print functions
+                    buildPrintFunction<Type.Number>(),
+                    buildPrintFunction<Type.Bool>(),
+                    buildPrintFunction<Type.Text>(),
+                    buildPrintFunction<Type.List>(),
+                    buildPrintLineFunction<Type.Number>(),
+                    buildPrintLineFunction<Type.Bool>(),
+                    buildPrintLineFunction<Type.Text>(),
+                    buildPrintLineFunction<Type.List>()
             )
 }
 
@@ -206,6 +224,119 @@ private fun buildThenFunction() = buildFunction(
         returnType = Type.Bool,
         body = "if (condition) { body(); }\nreturn condition;"
 )
+
+private fun buildEachFunction() = buildFunction(
+        identifier = "each",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("body", Type.Func.ExplicitFunc(listOf(Type.GenericType("T")), Type.None))
+        ),
+        returnType = Type.None,
+        body = "for (int i = 0; i < list.get()->size; i++) {\n" +
+                "body(list.get()->data[i]);\n" +
+                "}\n" +
+                "return;"
+)
+
+private fun buildMapFunction() = buildFunction(
+        identifier = "map",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("fun", Type.Func.ExplicitFunc(
+                        listOf(Type.GenericType("T")),
+                        Type.GenericType("T"))
+                )
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "T result[list.get()->size];\n" +
+                "for (int i = 0; i < list.get()->size; i++) {\n" +
+                "result[i] = fun(list.get()->data[i]);\n" +
+                "}\n" +
+                "return ConstList<T>::create(result, list.get()->size);"
+)
+
+private fun buildFilterFunction() = buildFunction(
+        identifier = "filter",
+        parameters = listOf(
+                Parameter("list", Type.List(Type.GenericType("T"))),
+                Parameter("fun",
+                        Type.Func.ExplicitFunc(
+                                listOf(Type.GenericType("T")),
+                                Type.Bool
+                        )
+                )
+        ),
+        returnType = Type.List(Type.GenericType("T")),
+        body = "T result[list.get()->size];\n" +
+                "int index = 0;\n" +
+                "for (int i = 0; i < list.get()->size; i++) {\n" +
+                "if (fun(list.get()->data[i]))\n" +
+                "result[index++] = list.get()->data[i];\n" +
+                "}\n" +
+                "return ConstList<T>::create(result, index);"
+)
+
+private fun buildDelayMillisFunction() = buildFunction(
+        identifier = "delayMillis",
+        parameters = listOf(Parameter("millis", Type.Number)),
+        returnType = Type.None,
+        body = "delayMillis(millis);\n" +
+                "return;"
+)
+
+//region PinFunctions
+private fun buildWriteDigPinFunction() = buildFunction(
+        identifier = "setDigitalPin",
+        parameters = listOf(Parameter("pin", Type.Number), Parameter("val", Type.Bool)),
+        returnType = Type.None,
+        body = "writeDigPin(pin, val ? 1 : 0);\n" +
+                "return;"
+)
+
+private fun buildReadDigPinFunction() = buildFunction(
+        identifier = "readDigitalPin",
+        parameters = listOf(Parameter("pin", Type.Number)),
+        returnType = Type.Number,
+        body = "return readDigPin(pin);"
+)
+
+private fun buildWriteAnaPinFunction() = buildFunction(
+        identifier = "setAnalogPin",
+        parameters = listOf(
+                Parameter("pin", Type.Number),
+                Parameter("val", Type.Number)
+        ),
+        returnType = Type.None,
+        body = "writeAnaPin(pin, val);\n" +
+                "return;"
+)
+
+private fun buildReadAnaPinFunction() = buildFunction(
+        identifier = "readAnalogPin",
+        parameters = listOf(Parameter("pin", Type.Number)),
+        returnType = Type.Number,
+        body = "return readAnaPin(pin);"
+)
+//endregion PinFunctions
+
+//region PrintFunctions
+private inline fun<reified T: Type> buildPrintFunction() = buildFunction(
+        identifier = "print",
+        parameters = listOf(Parameter("input", T::class.objectInstance!!)),
+        returnType = Type.None,
+        body = "print(toText(input));\n" +
+                "return;"
+)
+
+private inline fun<reified T: Type> buildPrintLineFunction() = buildFunction(
+        identifier = "printLine",
+        parameters = listOf(Parameter("input", T::class.objectInstance!!)),
+        returnType = Type.None,
+        body = "print_line(toText(input));\n" +
+                "return;"
+)
+
+//endregion PrintFunctions
 //endregion builtInFunctions
 
 private fun buildFunction(identifier: String, parameters: List<Parameter>, returnType: Type,

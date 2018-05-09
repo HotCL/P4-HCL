@@ -27,9 +27,19 @@ object TestAllBuiltinsExist : Spek({
                 "toText",
                 "then",
                 "while",
+                "each",
                 "length",
                 "at",
-                "subList"
+                "subList",
+                "map",
+                "filter",
+                "delayMillis",
+                "setDigitalPin",
+                "readDigitalPin",
+                "setAnalogPin",
+                "readAnalogPin",
+                "print",
+                "printLine"
         )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {

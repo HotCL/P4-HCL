@@ -30,8 +30,8 @@ val AstNode.Type.Func.ExplicitFunc.getGeneric get() = paramTypes;
 val AstNode.Type.getGenerics get():List<AstNode.Type.GenericType> = when(this){
     is AstNode.Type.GenericType -> listOf(this)
     is AstNode.Type.List -> this.elementType.getGenerics
-    is AstNode.Type.Tuple -> this.elementTypes.flatMap { getGenerics }
-    is AstNode.Type.Func.ExplicitFunc -> this.paramTypes.flatMap { getGenerics } + returnType.getGenerics
+    is AstNode.Type.Tuple -> this.elementTypes.flatMap { it.getGenerics }
+    is AstNode.Type.Func.ExplicitFunc -> this.paramTypes.flatMap { it.getGenerics } + returnType.getGenerics
     else -> listOf()
 }
 
