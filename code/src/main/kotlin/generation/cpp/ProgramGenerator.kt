@@ -30,6 +30,19 @@ class ProgramGenerator : IFilesPrinter {
 #include "ConstList.h"
 #include "ftoa.h"
 
+#ifndef ARDUINO_AVR_UNO
+
+#include <iostream>
+
+#endif
+
+#ifdef _WIN32 //If windows based PC
+    #include <windows.h>
+#else //If unix based PC
+    #include <unistd.h>
+#endif //_WIN32
+
+
 using namespace std;
 
 #include "builtin.h"

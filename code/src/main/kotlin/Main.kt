@@ -6,19 +6,9 @@ import parser.Parser
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    val code = "" +
-            "var thenElse = (bool condition, func[T] trueBody, func[T] falseBody): T {\n" +
-            "T output\n"+
-            "condition then {output = trueBody}\n" +
-            "condition not then { output = falseBody}\n"+
-            "return output\n"+
-            "}\n" +
-            "var x = 21\n"+
-            "var y = 20\n"+
-            "num bigNum\n" +
-            "bigNum = x greaterThan y thenElse { x } { y }\n"+
-            //"{ x = x + 5 } loop\n"+
-            "return bigNum"
+    val code = "var isBøs = true\n" +
+        "isBøs then { \"du bøs\" print }\n" +
+        "isBøs not then { \"du ik bøs\" print }"
 
     val lexer = Lexer(code)
     val parser = Parser(lexer)

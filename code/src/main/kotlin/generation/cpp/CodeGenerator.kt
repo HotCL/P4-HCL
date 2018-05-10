@@ -23,7 +23,7 @@ class CodeGenerator : IPrinter {
             when(this) {
                 is AstNode.Command.Declaration -> format()
                 is AstNode.Command.Assignment -> format()
-                is AstNode.Command.Expression -> format()
+                is AstNode.Command.Expression -> format()+";"
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
                 is AstNode.Command.RawCpp ->
                     content.split("\n").joinToString("") { (it + "\n").indented }
@@ -72,11 +72,14 @@ class CodeGenerator : IPrinter {
         "${it.type.cppName} ${if (modifyParametersNames) it.identifier.cppName else it.identifier.name}"
     }
 
+    private fun List<AstNode.Command.Expression>.formatToList() = this.joinToString { it.format() }
+
+
     private fun AstNode.Command.Expression.format(): String =
         when (this) {
             is AstNode.Command.Expression.Value.Identifier -> cppName
             is AstNode.Command.Expression.Value.Literal.Number -> "$value"
-            is AstNode.Command.Expression.Value.Literal.Text -> "\"$value\""
+            is AstNode.Command.Expression.Value.Literal.Text -> "ConstList<char>::string((char *)\"$value\")"
             is AstNode.Command.Expression.Value.Literal.Bool -> "$value"
             is AstNode.Command.Expression.Value.Literal.Tuple -> "{}"
             is AstNode.Command.Expression.Value.Literal.List ->
@@ -87,8 +90,12 @@ class CodeGenerator : IPrinter {
                 ("}".indentedPreDec)
             is AstNode.Command.Expression.LambdaBody -> TODO()
             is AstNode.Command.Expression.FunctionCall ->
-                "${this.identifier.cppName}(${this.arguments.joinToString { it.format() }})"
+                "${this.identifier.cppName}(${this.arguments.formatToList()})".also {
+                    this.arguments.forEach { print(it) }; print(this.identifier)
+                }
         }
+
+    //private fun genericSpecifier()
 
 
     private fun templateLine(generics: List<AstNode.Type.GenericType>) =
