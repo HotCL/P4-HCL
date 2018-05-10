@@ -12,9 +12,8 @@ import parser.buildFunction
 class TypeGenerator: IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
         val tuples = ast.children.fetchTuples()
-        val lists = ast.children.fetchLists()
-        return tuples.joinToString("\n\n") { it.format() } +
-                lists.joinToString("\n\n") { it.format() }
+        //val lists = ast.children.fetchLists()
+        return tuples.joinToString("\n\n") { it.format() }
     }
 
     private fun List<AstNode>.fetchTuples():Set<AstNode.Type.Tuple> = flatMap { it.fetchTuple() }.toSet()
@@ -36,21 +35,6 @@ class TypeGenerator: IPrinter {
                 "${it.cppName} element$i;" }.joinToString("\n  ") +
             "\n} ${this.cppName};\n\n"+generateFunctions()
 
-
-    private fun List<AstNode>.fetchLists():Set<AstNode.Command.Expression.Value.Literal.List> =
-            flatMap { it.fetchList() }.toSet()
-
-    private fun AstNode.fetchList():Set<AstNode.Command.Expression.Value.Literal.List> = when(this){
-        is AstNode.Command.Expression.LambdaExpression -> body.fetchList()
-        is AstNode.Command.Expression.FunctionCall -> arguments.fetchLists()
-        is AstNode.Command.Assignment -> expression.fetchList()
-        is AstNode.Command.Declaration -> type.fetchList() + (this.expression?.fetchList() ?: emptySet())
-
-        is AstNode.Command.Expression.Value.Literal.List -> setOf(this)
-        else -> emptySet()
-    }
-    private fun AstNode.Command.Expression.Value.Literal.List.format():String =
-        "const auto $cppName = {${elements.joinToString { CodeGenerator().generate(AbstractSyntaxTree(listOf(it)))}}};"
 
 
     private fun AstNode.Type.Tuple.generateFunctions() = CodeGenerator().generate(
