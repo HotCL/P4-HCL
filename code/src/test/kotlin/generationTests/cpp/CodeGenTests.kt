@@ -80,13 +80,26 @@ fun testPrint() =
 
 fun testGenericHighOrderFunction () = listOf(
         "retInputFunc" declaredAs func(generic("T"), listOf(func(generic("T")))) withValue (lambda()
-                returning generic("T") withArgument ("inputFunc" asType generic("T")) andBody
-                ret(("inputFunc" returning generic("T")).called())
-                ),
+                returning generic("T") withArgument ("inputFunc" asType func(generic("T"))) andBody
+                ret(("inputFunc" returning generic("T")).called())),
         setRet("retInputFunc" returning generic("T") calledWith
-                (lambda() returning num withArgument ("myNum" asType num) andBody ret(num(5)))
+                (lambda() returning num andBody ret(num(5))) expectedArgumentType
+                func(generic("T"))
         )
 )
+
+fun testGenericHighOrderFunctionAdvanced () = listOf(
+        "retInputFunc" declaredAs func(generic("T"), listOf(func(generic("T")))) withValue (lambda()
+                returning generic("T") withArgument ("inputFunc" asType func(generic("T"), num)) andBody
+                ret(("inputFunc" returning generic("T")) calledWith (num(8)))),
+        setRet("retInputFunc" returning generic("T") calledWith
+                (lambda() returning num withArgument ("myNum" asType num) andBody ret(
+                        "+" returning num calledWith listOf("myNum".asIdentifier(num), num(5))
+                )) expectedArgumentType
+                func(generic("T"))
+        )
+)
+
 
 fun testPrintList() =
     listOf("print" returning none calledWith listOf(list(num(1),num(2)))
@@ -116,7 +129,7 @@ fun testDeclarationAssignmentDeclarationToAssignedVariable() = listOf(
 object CodeGenerationTest : Spek({
     given("HCL CPP code generator") {
         listOf (
-            /*testReturnNoExplicitReturn() shouldReturn 0,
+            testReturnNoExplicitReturn() shouldReturn 0,
             testExplicitReturn5() shouldReturn 5,
             testReturnVarX5PlusVarY10() shouldReturn 15,
             testSimpleLambda()  shouldReturn 20,
@@ -125,8 +138,9 @@ object CodeGenerationTest : Spek({
             testPrint() shouldReturn "hello world",
             testPrintList() shouldReturn "[1, 2]",
             testHighOrderFunction() shouldReturn 12,
-            testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7,*/
-            testGenericHighOrderFunction() shouldReturn 5
+            testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7,
+            testGenericHighOrderFunction() shouldReturn 5,
+            testGenericHighOrderFunctionAdvanced() shouldReturn 13
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {
