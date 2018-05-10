@@ -3,12 +3,16 @@
 #define FTOA_H
 
 #include <cstdlib>
+#include <memory>
+#include "ConstList.h"
+
 #define MAX_STR_LEN 16
 
 /*
  * This function returns a char array (string) representation of a floating point value
  * Parameters: d = double to be converted | precision = number of digits after decimal point
  */
+
 List<char> ftoa(double d, int precision) {
     char buffer[MAX_STR_LEN];
     memset(buffer, 0, MAX_STR_LEN);
