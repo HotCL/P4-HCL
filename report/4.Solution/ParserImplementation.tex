@@ -128,15 +128,73 @@ private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstEx
         is Token.SpecialChar.BlockStart -> {
             val upcomingId = getUpcomingIdentifierNameForLambda()
             if (upcomingId != null) {
+                val symbol = retrieveSymbol(upcomingId)
                 val lambdaParameter = getLambdaParameter(symbol.functions, 0)
                 parsePotentialFunctionCall(lambdaParameter)
             } else {
                 val lambda = parseLambdaBody(emptyList())
                 AstNode.Command.Expression.LambdaExpression(listOf(), lambda.type, lambda.lambdaBody)
             }
+        is Token.Identifier -> {
+            val token = accept<Token.Identifier>()
+            val symbol = retrieveSymbol(token.value)
+            if (symbol.isFunctions) {
+        	    ...parse needed arguments...
+        	    AstNode.Command.Expression.FunctionCall(
+        	    AstNode.Command.Expression.Value.Identifier(token.value),
+        	    listOf(expression) + secondaryArguments
+            } else expression
+        } else -> expression
 \end{lstlisting}
 
-As seen in snippet \ref{lis:parsePotCall}, the parser will determine whether or not the expression is a functioncall by trying to determine if the current token is an argument for a function, or if it is a value by itself.
+As seen in snippet \ref{lis:parsePotCall}, the method will first determine if the current token is a lambda expression, signified by a \textit{blockStart-token} (3).
+Should it be a lambda expression, the parser will determine if there should be a functionscall within the lambda that needs to be parsed as well (7).
+If there is not a functioncall within the lambda, the lambda expression itself will be returned from the method (10). 
+Should the token be an identifier, the parser will determine if the identifier signifies a function, in which case it is determined that a functioncall is being made (16).
+The method will look for the needed arguments for the function, and parse them as expressions.
+The method then returns the functionscall with its corresponding arguments (18).
+If the identifier does not signify a function, it is parsed as an expression.
+
+All expressions that are determined not to be a functioncall is parsed by the method \textbf{\textit{parseExpressionAtomic}} seen in snippet \ref{lis:parseExpr}.
+
+\begin{lstlisting}[language=Kotlin,label=lis:parseExpr,caption=A simplified version of the parseExpressionAtomic method from the parser.]
+private fun parseExpressionAtomic(): AstExpression =
+    when (current.token) {
+        Token.SpecialChar.SquareBracketStart -> parseListDeclaration()
+        Token.SpecialChar.ParenthesesStart -> {
+            if (isLambdaParameters()) {
+                parseLambdaDeclaration()
+            } else {
+                if(upcomingTuple()){
+                    parseTupleExpression()
+                } else {
+                    parseExpression()
+                }
+            }
+        }
+        Token.Literal -> acceptLiteral()
+        Token.SpecialChar.Colon -> {
+        	accept<Token.SpecialChar.Colon>()
+        	val token = accept<Token.Identifier>()
+        	retrieveSymbol(token.value).handle(..handle token as function..)
+        }
+        Token.Identifier -> {
+            val token = accept<Token.Identifier>()
+            retrieveSymbol(token.value).handle(..Handle identifier..)
+        }
+        else -> unexpectedTokenError(current.token)
+    }
+            
+\end{lstlisting}
+
+The method itself deals with determining the type of the expression that is to be parsed, and then parsing it atomically.
+All expressions that begin with the '\texttt{[}' character are determined to be list declarations and are parsed as such (3).\\
+Expressions beginning with a parentheses can either be a lambda declaration (6), a tuple (9) or simply an expression encapsulated in parenthesis (11).\\
+Literals are simply accepted (15).\\
+Expressions beginning with a colon is can only be functions passed as arguments, and are handled accordingly (16).\\
+Identifiers can either signify values or functioncalls.
+However, as potential functioncalls have already been handled at this point, the identifier is determined to signify a value and can be parsed accordingly (21).
+If no eligible tokens has been found at this point in parsing, it is determined that a syntax error has occurred and the parser throws an exception (25).
 
 % we may also need to document some of the complex parts of the parser, but we will wait with that, until it is actually more or less completed.
 \input{4.Solution/SymbolTable.tex}
