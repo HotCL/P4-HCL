@@ -63,7 +63,7 @@ fun testSimpleLambda() =
     )
 
 fun testCreateList() =
-    listOf("myList" declaredAs list(num) withValue list(num(1), num(5)),
+    listOf("myList" declaredAs list(num) withValue list(num(1), num(3)),
 
         setRet("at" returning num calledWith listOf("myList".asIdentifier(list(num)), num(1)))
     )
@@ -76,6 +76,10 @@ fun testCreateTuple() =
 
 fun testPrint() =
     listOf("print" returning none calledWith listOf(txt("hello world"))
+    )
+
+fun testPrintList() =
+    listOf("print" returning none calledWith listOf(list(num(1),num(2)))
     )
 
 fun testHighOrderFunction () = listOf(
@@ -99,9 +103,10 @@ object CodeGenerationTest : Spek({
             testExplicitReturn5() shouldReturn 5,
             testReturnVarX5PlusVarY10() shouldReturn 15,
             testSimpleLambda()  shouldReturn 20,
-            testCreateList() shouldReturn 5,
+            testCreateList() shouldReturn 3,
             testCreateTuple() shouldReturn 1,
             testPrint() shouldReturn "hello world",
+            testPrintList() shouldReturn "[1, 2]",
             testHighOrderFunction() shouldReturn 12
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
