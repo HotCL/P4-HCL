@@ -116,7 +116,7 @@ fun testDeclarationAssignmentDeclarationToAssignedVariable() = listOf(
 object CodeGenerationTest : Spek({
     given("HCL CPP code generator") {
         listOf (
-            testReturnNoExplicitReturn() shouldReturn 0,
+            /*testReturnNoExplicitReturn() shouldReturn 0,
             testExplicitReturn5() shouldReturn 5,
             testReturnVarX5PlusVarY10() shouldReturn 15,
             testSimpleLambda()  shouldReturn 20,
@@ -125,8 +125,8 @@ object CodeGenerationTest : Spek({
             testPrint() shouldReturn "hello world",
             testPrintList() shouldReturn "[1, 2]",
             testHighOrderFunction() shouldReturn 12,
-            testGenericHighOrderFunction() shouldReturn 5,
-            testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7
+            testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7,*/
+            testGenericHighOrderFunction() shouldReturn 5
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {

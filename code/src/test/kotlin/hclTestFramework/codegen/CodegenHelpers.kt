@@ -36,7 +36,7 @@ fun compileAndExecuteCpp(files: List<FilePair>): CommandResult? {
     } catch (e: Exception) {
         null
     } finally {
-        File(testDir).deleteRecursively()
+        //File(testDir).deleteRecursively()
     }
 }
 

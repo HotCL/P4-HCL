@@ -7,11 +7,13 @@ import lexer.ILexer
 import lexer.PositionalToken
 import lexer.Token
 import parser.symboltable.EnterSymbolResult
+import parser.symboltable.ISymbolTable
+import parser.symboltable.SymbolTable
 import parser.typechecker.ExprResult
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
-open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
+open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), ISymbolTable by SymbolTable(),
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     // Used for recursive calls
     private var currentFunctionName: String? = null
@@ -354,7 +356,8 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                         else AstNode.Command.Expression.FunctionCall(
                                 AstNode.Command.Expression.Value.Identifier(token.value,
                                         getTypeOnFuncCall(declaration,argTypes)),
-                                listOf(expression) + secondaryArguments
+                                listOf(expression) + secondaryArguments,
+                                declaration.paramTypes
                         )
                     } else undeclaredError(token.value)
                 }
@@ -404,7 +407,8 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(),
                             {
                                 if (it.first().paramTypes.isEmpty()) {
                                     AstNode.Command.Expression.FunctionCall(
-                                            AstIdentifier(token.value,it.first().returnType),
+                                            AstIdentifier(token.value, it.first().returnType),
+                                            listOf(),
                                             listOf()
                                     )
                                 } else error("Function ${token.value} can not be invoked with 0 arguments")

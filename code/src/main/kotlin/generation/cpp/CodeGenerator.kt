@@ -4,6 +4,7 @@ import generation.IPrinter
 import generation.makePretty
 import parser.AbstractSyntaxTree
 import parser.AstNode
+import parser.typechecker.TypeChecker
 
 /**
  * Generates the "body" of the program with a setup and a loop method and all the logic of the program
@@ -19,7 +20,7 @@ class CodeGenerator : IPrinter {
         //generate lists if needed
         val literalLists = it.fetchList()
 
-        (if(literalLists.count() > 0) //TODO MAYBE SHOULD BE CONSTANT?
+        (if (literalLists.count() > 0) //TODO MAYBE SHOULD BE CONSTANT?
             literalLists.joinToString { "${(it.type as AstNode.Type.List).elementType.cppName} ${it.cppName}[] = {${
             it.elements.formatToList()}};\n"
             } else "") + it.format()
@@ -56,7 +57,7 @@ class CodeGenerator : IPrinter {
     }
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDecl(decl: AstNode.Command.Declaration) =
-        templateLine(returnType.getGenerics + paramDeclarations.flatMap { it.type.getGenerics }) +
+        templateLine(paramDeclarations.flatMap { it.type.getGenerics } + returnType.getGenerics) +
         if (attributes.inLine) formatAsDeclInline(decl) else formatAsDeclDefault(decl)
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclInline(decl: AstNode.Command.Declaration) =
@@ -103,7 +104,13 @@ class CodeGenerator : IPrinter {
         }
 
     private val AstNode.Command.Expression.FunctionCall.genericTemplateArguments get (): String {
-        return ""
+        val generics = arguments.flatMap { it.type.getGenerics }.toSet()
+        return if (generics.isEmpty()) "" else {
+            val pairedGenerics = expectedArgumentTypes.zip(arguments.map { it.type })
+            "<" + generics.joinToString {
+                TypeChecker().getTypeFromTypePairs(pairedGenerics, it.name)!!.cppName
+            } + ">"
+        }
     }
 
     //private fun genericSpecifier()

@@ -38,11 +38,15 @@ infix fun AstNode.Command.Expression.LambdaExpression.withBody(body: AstNode.Com
 
 val AstNode.Command.Expression.LambdaBody.asExpression get () = lambda(body = this)
 
-infix fun String.asType(type: AstNode.Type) =
-        AstNode.ParameterDeclaration(type, asIdentifier(type))
+infix fun String.asType(type: AstNode.Type) = AstNode.ParameterDeclaration(type, asIdentifier(type))
 
 infix fun AstNode.Command.Expression.Value.Identifier.calledWith(params: List<AstNode.Command.Expression>) =
-        AstNode.Command.Expression.FunctionCall(this, params)
+        AstNode.Command.Expression.FunctionCall(this, params, params.map { it.type })
+
+infix fun AstNode.Command.Expression.FunctionCall.expectedArgumentTypes(types: List<AstNode.Type>) =
+        copy(expectedArgumentTypes = types)
+infix fun AstNode.Command.Expression.FunctionCall.expectedArgumentType(type: AstNode.Type) =
+        expectedArgumentTypes(listOf(type))
 
 infix fun AstNode.Command.Expression.Value.Identifier.calledWith(param: AstNode.Command.Expression) =
         this.calledWith(listOf(param))

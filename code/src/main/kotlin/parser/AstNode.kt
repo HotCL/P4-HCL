@@ -1,6 +1,5 @@
 package parser
 
-import parser.typechecker.ExprResult
 
 sealed class AstNode {
     sealed class Command: AstNode() {
@@ -49,7 +48,8 @@ sealed class AstNode {
                                         ): Expression()
             data class LambdaBody(val commands: List<Command>): Expression()
             data class FunctionCall(val identifier: Value.Identifier,
-                                    val arguments: List<Expression>): Expression()
+                                    val arguments: List<Expression>,
+                                    val expectedArgumentTypes: List<AstNode.Type>): Expression()
         }
         data class Return(val expression: Expression): Command()
         data class RawCpp(val content: String): Command()

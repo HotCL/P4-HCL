@@ -5,64 +5,7 @@ import parser.AstNode
 import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
 
-class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
-
-    /*override fun getTypeOfExpression(expr: Expression): ExprResult = when (expr) {
-        is Expression.Value.Literal.Number -> ExprResult.Success(AstNode.Type.Number)
-        is Expression.Value.Literal.Bool -> ExprResult.Success(AstNode.Type.Bool)
-        is Expression.Value.Literal.List ->
-            getTypeOfListExpression(expr).type.let {
-                if (it is ExprResult.Success) ExprResult.Success(AstNode.Type.List(it.type)) else it
-            }
-        is Expression.Value.Literal.Text -> ExprResult.Success(AstNode.Type.Text)
-        is Expression.Value.Literal.Tuple ->
-            ExprResult.Success(AstNode.Type.Tuple(getTypeOfTupleExpression(expr)))
-        is Expression.Value.Identifier -> retrieveSymbol(expr.name).handle(
-                /*{ it.getTypeDeclaration(listOf())?.returnType?.let { ExprResult.Success(it) }?:
-                    ExprResult.NoEmptyOverloading },*/
-                // TODO fix so works with overloading
-                { ExprResult.Success(it.first())},
-                { ExprResult.Success(it) },
-                { ExprResult.UndeclaredIdentifier }
-        )
-        is Expression.LambdaBody -> {
-            val returnStatements = expr.commands.filterIsInstance<AstNode.Command.Return>()
-            if (returnStatements.isEmpty()) ExprResult.Success(AstNode.Type.None) else {
-                if (returnStatements.all { returnStatements.first().expression.type == it.expression.type } ) {
-                    returnStatements.first().expression.type
-                } else {
-                    ExprResult.BodyWithMultiReturnTypes
-                }
-            }
-        }
-        is Expression.FunctionCall -> {
-            val functionDeclarationsSymbol = retrieveSymbol(expr.identifier.name)
-            if (!functionDeclarationsSymbol.isFunctions) ExprResult.NoFuncDeclarationForArgs
-            val functionDeclarations = functionDeclarationsSymbol.functions
-            val argumentTypes = expr.arguments.map { it.type.forceType }
-            val functionDeclaration = functionDeclarations.getTypeDeclaration(argumentTypes)
-            if(functionDeclaration == null)
-                ExprResult.UndeclaredIdentifier
-            else {
-                val returnType =
-                        if (functionDeclaration.returnType !is AstNode.Type.GenericType) functionDeclaration.returnType
-                        else (functionDeclaration.paramTypes.zip(argumentTypes).
-                                getTypeFromGenericType(functionDeclaration.returnType.name)
-                                ?: functionDeclaration.returnType)
-
-                ExprResult.Success(returnType)
-            }
-        }
-        is Expression.LambdaExpression -> ExprResult.Success(AstNode.Type.Func.ExplicitFunc(
-                expr.paramDeclarations.map { it.type }, expr.returnType)
-        )
-    }
-
-    private fun getTypeOfListExpression(list: Expression.Value.Literal.List) = list.elements[0]
-
-    private fun getTypeOfTupleExpression(tuple: Expression.Value.Literal.Tuple) =
-            tuple.elements.map { it.type }
-    */
+class TypeChecker: ITypeChecker {
     override fun List<AstNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<AstNode.Type>):
             AstNode.Type.Func.ExplicitFunc? {
         val genericTypes = mutableMapOf<String, AstNode.Type>()
@@ -91,8 +34,12 @@ class TypeChecker: ITypeChecker, ISymbolTable by SymbolTable() {
      * Pair = declaredType and argumentType
      * It is certain that argumentType doesn't contain any generics. This is a rule of the language
      */
+
     private fun List<Pair<AstNode.Type, AstNode.Type>>.getTypeFromGenericType(typeName: String) : AstNode.Type? =
             map { it.getTypeFromGenericType(typeName) }.firstOrNull { it != null }
+
+    override fun getTypeFromTypePairs(pairedTypes: List<Pair<AstNode.Type, AstNode.Type>>, typeName: String) =
+            pairedTypes.getTypeFromGenericType(typeName)
 
     private fun Pair<AstNode.Type, AstNode.Type>.getTypeFromGenericType(typeName: String) : AstNode.Type? {
 
