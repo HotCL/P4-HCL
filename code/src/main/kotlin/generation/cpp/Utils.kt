@@ -7,6 +7,10 @@ import parser.BuiltinLambdaAttributes
 fun AbstractSyntaxTree.genFromFilter(predicate: (AstNode.Command) -> Boolean) =
         CodeGenerator().generate(filter(predicate))
 
+fun AbstractSyntaxTree.genFromFilterWithMap(predicate: (AstNode.Command) -> Boolean,
+                                            mapFunc: (AstNode.Command) -> AstNode.Command) =
+        AbstractSyntaxTree(children.map(mapFunc)).genFromFilter(predicate)
+
 fun AbstractSyntaxTree.builtins() = filter {
     val decl = it as? AstNode.Command.Declaration ?: return@filter false
 

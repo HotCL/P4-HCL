@@ -14,7 +14,7 @@ class ProgramGenerator : IFilesPrinter {
         HelperHeaders.ftoa,
         FilePair("builtin.h", CodeGenerator().generate(ast.builtins())),
         FilePair("types.h", TypeGenerator().generate(ast)),
-        FilePair("main.cpp", mainHeader + MainGenerator().generate(ast.addReturnCode().notBuiltins()))
+        FilePair("main.cpp", MainGenerator().generate(ast.addReturnCode().notBuiltins()))
     )
 
     private fun AbstractSyntaxTree.addReturnCode() = apply { children.add(0, returnCode) }
@@ -23,29 +23,4 @@ class ProgramGenerator : IFilesPrinter {
             AstNode.Command.Expression.Value.Identifier("RETURN_CODE", AstNode.Type.Number),
             AstNode.Command.Expression.Value.Literal.Number(0.0)
     )
-    private val mainHeader =
-"""
-#include <functional>
-
-#include "ConstList.h"
-#include "ftoa.h"
-
-#ifndef ARDUINO_AVR_UNO
-
-#include <iostream>
-
-#endif
-
-#ifdef _WIN32 //If windows based PC
-    #include <windows.h>
-#else //If unix based PC
-    #include <unistd.h>
-#endif //_WIN32
-
-
-using namespace std;
-
-#include "builtin.h"
-#include "types.h"
-"""
 }
