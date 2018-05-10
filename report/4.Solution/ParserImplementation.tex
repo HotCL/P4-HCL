@@ -54,16 +54,19 @@ In snippet \ref{lis:parseCommand} a subset of the parse command method is shown.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parseCommand,caption=A simplified version of the parse declaration method from the parser.]
 private fun parseCommand(): AstNode.Command {
-val command = when (current.token) {
-is Token.Type -> parseDeclaration()
-is Token.Identifier ->
-if (peek().token == Token.SpecialChar.Equals) parseAssignment() 
-else parseExpression()
+    val command = when (current.token) {
+        is Token.Type -> parseDeclaration()
+        is Token.Identifier ->
+            if (peek().token == Token.SpecialChar.Equals) {
+                parseAssignment()
+            } else parseExpression()
+        Token.Return -> parseReturnStatement()
+        else parseExpression()
 
 ...
 
-flushNewLine()
-return command
+    flushNewLine()
+    return command
 }
 \end{lstlisting}
 Snippet \ref{lis:parseCommand} uses the functional functionality of Kotlin, to set the val\footnote{val is a read only variable} \textit{\textbf{command}} to a specific value based on the type of the current token (\textit{\textbf{current.token}}). 
@@ -115,7 +118,25 @@ The \textbf{\textit{parseDeclaration}} method, as shown in snippet \ref{lis:pars
 The method then checks whether the new current symbol is an equals-symbol - if that's the case the declaration is followed by an expression - which means it's an declaration with an assignment otherwise the expression is set to null. 
 The method then returns a Declaration, which is a subclass of AstNode.  
 
+A more complex parsing routine is when an expression is to be parsed. 
+Since an expression in HCL may be either a functioncall or any kind of value, a lot of possibilities arise. 
+The parser will first try to parse a potential functioncall using the \textbf{\textit{parsePotentialFunctionCall}} method.
 
+\begin{lstlisting}[language=Kotlin,label=lis:parsePotCall,caption=A simplified version of the parsePotentialFunctionCall method from the parser.]
+private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstExpression =
+    when (current.token) {
+        is Token.SpecialChar.BlockStart -> {
+            val upcomingId = getUpcomingIdentifierNameForLambda()
+            if (upcomingId != null) {
+                val lambdaParameter = getLambdaParameter(symbol.functions, 0)
+                parsePotentialFunctionCall(lambdaParameter)
+            } else {
+                val lambda = parseLambdaBody(emptyList())
+                AstNode.Command.Expression.LambdaExpression(listOf(), lambda.type, lambda.lambdaBody)
+            }
+\end{lstlisting}
+
+As seen in snippet \ref{lis:parsePotCall}, the parser will determine whether or not the expression is a functioncall by trying to determine if the current token is an argument for a function, or if it is a value by itself.
 
 % we may also need to document some of the complex parts of the parser, but we will wait with that, until it is actually more or less completed.
 \input{4.Solution/SymbolTable.tex}
