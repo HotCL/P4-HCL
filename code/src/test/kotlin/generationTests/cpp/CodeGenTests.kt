@@ -139,6 +139,19 @@ fun testMapFunction() = listOf(
         ))
 )
 
+fun testFilterFunction() = listOf(
+        "newList" declaredAs list(num) withValue ("filter" returning list(num) calledWith listOf(
+                list(num(1), num(2), num(3)), lambda() returning num withArgument ("num" asType num) andBody
+                ret("greaterThan" returning num calledWith listOf("num".asIdentifier(num), num(1)))
+        ) expectedArgumentTypes listOf(list(generic("T")), func(bool, generic("T")))),
+        setRet("+" returning num calledWith listOf(
+                "at" returning num calledWith listOf("newList".asIdentifier(list(num)), num(0))
+                        expectedArgumentType list(generic("T")),
+                "at" returning num calledWith listOf("newList".asIdentifier(list(num)), num(1))
+                        expectedArgumentType list(generic("T"))
+        ))
+)
+
 
 object CodeGenerationTest : Spek({
     given("HCL CPP code generator") {
@@ -155,7 +168,8 @@ object CodeGenerationTest : Spek({
             testGenericHighOrderFunction() shouldReturn 5,
             testGenericHighOrderFunctionAdvanced() shouldReturn 13,
             testPrintList() shouldReturn "[1, 2]",
-            testMapFunction() shouldReturn 7
+            testMapFunction() shouldReturn 7,
+            testFilterFunction() shouldReturn 5
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {
