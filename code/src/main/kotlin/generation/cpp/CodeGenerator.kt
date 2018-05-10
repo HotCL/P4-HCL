@@ -103,11 +103,6 @@ class CodeGenerator : IPrinter {
                 }
         }
 
-    private fun AstNode.Command.Expression.FunctionCall.getTypeSpecifierIfGeneric():String =
-        with(this.identifier.type as AstNode.Type.Func.ExplicitFunc) {
-            return "<${this.returnType}>"
-        }
-
 
     private fun List<AstNode>.fetchLists():Set<AstNode.Command.Expression.Value.Literal.List> =
         flatMap { it.fetchList() }.toSet()
@@ -121,8 +116,6 @@ class CodeGenerator : IPrinter {
         else -> emptySet()
     }
 
-
-    //private fun genericSpecifier()
 
 
     private fun templateLine(generics: List<AstNode.Type.GenericType>) =
