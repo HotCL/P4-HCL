@@ -40,8 +40,8 @@ object TestAllBuiltinsExist : Spek({
                 "readDigitalPin",
                 "setAnalogPin",
                 "readAnalogPin",
-                "print",
-                "printLine"
+                "print"
+                //"printLine"
         )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {

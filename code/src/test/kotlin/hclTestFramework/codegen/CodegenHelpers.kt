@@ -18,7 +18,7 @@ fun compileAndExecuteCpp(files: List<FilePair>): CommandResult? {
         headerFiles.forEach { it.writeFile(testDir) }
         cppFiles.forEach {
             it.writeFile(testDir)
-            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++1z".apply {
+            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
                 println(this)
                 println(runCommand(File("./testDir")))
             }

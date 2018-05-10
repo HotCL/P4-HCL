@@ -89,9 +89,11 @@ class CodeGenerator : IPrinter {
             is AstNode.Command.Expression.Value.Literal.Number -> "$value"
             is AstNode.Command.Expression.Value.Literal.Text -> "ConstList<char>::string((char *)\"$value\")"
             is AstNode.Command.Expression.Value.Literal.Bool -> "$value"
-            is AstNode.Command.Expression.Value.Literal.Tuple -> "${"create_struct".cppName}(${this.elements.formatToList()})"
+            is AstNode.Command.Expression.Value.Literal.Tuple ->
+                "${"create_struct".cppName}(${this.elements.formatToList()})"
             is AstNode.Command.Expression.Value.Literal.List ->
-                "ConstList<${(this.type as AstNode.Type.List).elementType.cppName}>::create(${this.cppName},${this.elements.count()})"
+                "ConstList<${(this.type as AstNode.Type.List).elementType.cppName}>::create(${this.cppName}, " +
+                        "${this.elements.count()})"
             is AstNode.Command.Expression.LambdaExpression ->
                 "[&](${paramDeclarations.format(attributes.modifyParameterName)}) {\n".also { indents++ } +
                     body.commands.format() +
@@ -113,12 +115,10 @@ class CodeGenerator : IPrinter {
         }
     }
 
-    //private fun genericSpecifier()
-
-    private fun List<AstNode>.fetchLists():Set<AstNode.Command.Expression.Value.Literal.List> =
+    private fun List<AstNode>.fetchLists(): Set<AstNode.Command.Expression.Value.Literal.List> =
         flatMap { it.fetchList() }.toSet()
 
-    private fun AstNode.fetchList():Set<AstNode.Command.Expression.Value.Literal.List> = when(this){
+    private fun AstNode.fetchList(): Set<AstNode.Command.Expression.Value.Literal.List> = when(this){
         is AstNode.Command.Expression.FunctionCall -> arguments.fetchLists()
         is AstNode.Command.Assignment -> expression.fetchList()
         is AstNode.Command.Declaration -> type.fetchList() + (this.expression?.fetchList() ?: emptySet())
@@ -134,7 +134,7 @@ class CodeGenerator : IPrinter {
     private fun AstNode.Command.Expression.LambdaExpression.toComment(decl: AstNode.Command.Declaration) =
         "${decl.identifier.name}(${paramDeclarations.joinToString {
             "${it.type.makePretty()} ${it.identifier.name}" }
-        }) ->${decl.type.makePretty()}"
+        }) -> ${decl.type.makePretty()}"
 
     private val String.indented get () = "    " * indents + this
     private val String.indentedPostInc get () = indented.also { indents ++ }

@@ -235,15 +235,15 @@ private fun buildMapFunction() = buildFunction(
         Parameter("list", Type.List(Type.GenericType("T"))),
         Parameter("fun", Type.Func.ExplicitFunc(
             listOf(Type.GenericType("T")),
-            Type.GenericType("T"))
+            Type.GenericType("T2"))
         )
     ),
-    returnType = Type.List(Type.GenericType("T")),
-    body = "T result[list.get()->size];\n" +
+    returnType = Type.List(Type.GenericType("T2")),
+    body = "T2 result[list.get()->size];\n" +
         "for (int i = 0; i < list.get()->size; i++) {\n" +
         "result[i] = fun(list.get()->data[i]);\n" +
         "}\n" +
-        "return ConstList<T>::create(result, list.get()->size);"
+        "return ConstList<T2>::create(result, list.get()->size);"
 )
 
 private fun buildFilterFunction() = buildFunction(
