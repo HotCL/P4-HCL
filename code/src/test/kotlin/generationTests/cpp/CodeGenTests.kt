@@ -50,33 +50,46 @@ fun testExplicitReturn5() = setRet(num(5))
 fun testReturnVarX5PlusVarY10() = listOf(
     "x" declaredAs num withValue num(5),
     "y" declaredAs num withValue num(10),
-    setRet("+".calledWith(num, listOf("x".asIdentifier(num), "y".asIdentifier(num))))
+    setRet("+" returning num calledWith  listOf("x".asIdentifier(num), "y".asIdentifier(num)))
 )
 
 fun testSimpleLambda() =
     listOf("x" declaredAs num withValue num(5),
         "myFun" declaredAs func(num, num) withValue (
             lambda() returning num withArgument ("param" asType num)
-                andBody ret("+".calledWith(num, listOf("param".asIdentifier(num), "x".asIdentifier(num))))
+                andBody ret("+" returning num calledWith listOf("param".asIdentifier(num), "x".asIdentifier(num)))
             ),
-        setRet("myFun".calledWith(num, listOf("myFun".calledWith(num, num(10)))))
+        setRet("myFun" returning num calledWith listOf("myFun" returning num calledWith num(10)))
     )
 
 fun testCreateList() =
     listOf("myList" declaredAs list(num) withValue list(num(1), num(5)),
 
-        setRet("at".calledWith(num, listOf("myList".asIdentifier(list(num)), num(1))))
+        setRet("at" returning num calledWith listOf("myList".asIdentifier(list(num)), num(1)))
     )
 
 fun testCreateTuple() =
     listOf("myTuple" declaredAs tpl(num,txt) withValue tpl(num(1), txt("hello")),
 
-        setRet("element0".calledWith(num,listOf("myTuple".asIdentifier(tpl(num,txt)))))
+        setRet("element0" returning num calledWith listOf("myTuple".asIdentifier(tpl(num,txt))))
     )
 
 fun testPrint() =
-    listOf("print".calledWith(none,listOf(txt("hello world")))
+    listOf("print" returning none calledWith listOf(txt("hello world"))
     )
+
+fun testHighOrderFunction () = listOf(
+        "modifyNumber" declaredAs func(num, listOf(num, func(num, num))) withValue (lambda()
+                returning num withArguments listOf("myNum" asType num, "modFunction" asType func(num, num)) andBody
+                    ret("modFunction" returning num calledWith "myNum".asIdentifier(num))
+                ),
+        setRet("modifyNumber" returning num calledWith listOf(
+                num(5),
+                lambda() returning num withArgument ("myNum" asType num) andBody
+                        ret("+" returning num calledWith listOf("myNum".asIdentifier(num), num(7)))
+                )
+        )
+)
 
 
 object CodeGenerationTest : Spek({
@@ -88,8 +101,9 @@ object CodeGenerationTest : Spek({
             testSimpleLambda()  shouldReturn 20,
             testCreateList() shouldReturn 5,
             testCreateTuple() shouldReturn 1,
-            testPrint() shouldReturn "hello world"
-            ).forEach { testCase ->
+            testPrint() shouldReturn "hello world",
+            testHighOrderFunction() shouldReturn 12
+        ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {
                     is TextOutput -> "print: ${testCase.expectedResult.string}"

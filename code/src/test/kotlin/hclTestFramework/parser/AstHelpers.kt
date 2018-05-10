@@ -41,11 +41,13 @@ val AstNode.Command.Expression.LambdaBody.asExpression get () = lambda(body = th
 infix fun String.asType(type: AstNode.Type) =
         AstNode.ParameterDeclaration(type, asIdentifier(type))
 
-fun String.calledWith(type: AstNode.Type, params: List<AstNode.Command.Expression>) =
-        AstNode.Command.Expression.FunctionCall(asIdentifier(type), params)
+infix fun AstNode.Command.Expression.Value.Identifier.calledWith(params: List<AstNode.Command.Expression>) =
+        AstNode.Command.Expression.FunctionCall(this, params)
 
-fun String.calledWith(type: AstNode.Type, param: AstNode.Command.Expression) =
-        this.calledWith(type, listOf(param))
+infix fun AstNode.Command.Expression.Value.Identifier.calledWith(param: AstNode.Command.Expression) =
+        this.calledWith(listOf(param))
+
+fun AstNode.Command.Expression.Value.Identifier.called() = this.calledWith(listOf())
 
 fun generic(string: String) = AstNode.Type.GenericType(string)
 fun txt(string: String) = AstNode.Command.Expression.Value.Literal.Text(string)
@@ -64,5 +66,4 @@ fun list(vararg expressions: AstNode.Command.Expression) =
 fun ret(value: AstNode.Command.Expression) = AstNode.Command.Return(value)
 fun AstNode.Command.Expression.returned() = AstNode.Command.Return(this)
 
-infix fun String.called(type: AstNode.Type) = this.calledWith(type,listOf())
-
+infix fun String.returning(type: AstNode.Type) = this.asIdentifier(type)

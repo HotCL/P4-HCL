@@ -55,7 +55,7 @@ class ListTests {
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
-                "myList" declaredAs list(num) withValue list("myFunc".called(num))
+                "myList" declaredAs list(num) withValue list(("myFunc" returning num).called())
             )
         )
     }

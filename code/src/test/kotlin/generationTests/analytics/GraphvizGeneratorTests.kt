@@ -42,7 +42,10 @@ class GraphvizGeneratorTests {
     @Test
     fun canPrintNestedFunctionCall() {
         val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                "print".calledWith(txt,"+".calledWith(num,listOf("getMyAge".called(num),num(1))))
+            "print" returning txt calledWith (
+                "+" returning num calledWith
+                listOf(("getMyAge" returning num).called(), num(1))
+            )
         ).toMutableList()))
 
         assertEquals(
@@ -57,10 +60,10 @@ class GraphvizGeneratorTests {
     fun canPrintLambdaExpression() {
         val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
                 "plus" assignedTo(lambda() returning num withArguments listOf("a" asType num, "b" asType num)
-                        withBody ret("+".calledWith(num,listOf(
+                        withBody ret("+" returning num calledWith listOf(
                         "a" asIdentifier num,
                         "b" asIdentifier num
-                ))))
+                )))
         ).toMutableList()))
 
         assertEquals(

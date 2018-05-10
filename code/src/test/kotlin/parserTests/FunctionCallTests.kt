@@ -20,7 +20,7 @@ class FunctionCallTests {
             },
             matchesAstChildren(
                     "myFunc" declaredAs func(txt) withValue (lambda() returning txt andBody ret(txt("HEY"))),
-                    "myFunc".called(txt)
+                    ("myFunc" returning (txt)).called()
             )
         )
     }
@@ -44,7 +44,7 @@ class FunctionCallTests {
                         "toString" declaredAs func(txt, txt) withValue (
                             lambda() returning txt withArgument ("myParam" asType txt) andBody ret(txt("HEY"))
                         ),
-                        "toString".calledWith(txt, num(5))
+                        "toString" returning txt calledWith num(5)
                 )
         )
     }
@@ -62,7 +62,7 @@ class FunctionCallTests {
                     "myFunc" declaredAs func(txt, num) withValue (
                         lambda() returning txt withArgument ("myParam" asType num) andBody ret(txt("HEY"))
                     ),
-                    "myFunc".calledWith(txt, num(5))
+                    "myFunc" returning txt calledWith  num(5)
                 )
         )
     }
@@ -81,7 +81,7 @@ class FunctionCallTests {
                     "myFunc" declaredAs func(txt, func(txt)) withValue
                         (lambda() returning txt withArgument ("myParam" asType func(txt)) andBody ret(txt("HEY"))),
                     "myTextFunc" declaredAs func(txt) withValue (lambda() returning txt withBody ret(txt("HEY"))),
-                    "myFunc".calledWith(txt,"myTextFunc".asIdentifier(func(txt)))
+                    "myFunc" returning txt calledWith "myTextFunc".asIdentifier(func(txt))
                 )
         )
     }
@@ -136,7 +136,7 @@ class FunctionCallTests {
                     "myFunc" declaredAs func(txt, tpl(num, txt)) withValue (
                         lambda() returning txt withArgument ("myParam" asType tpl(num, txt)) andBody ret(txt("HEY"))
                     ),
-                    "myFunc".calledWith(txt, tpl(num(5), txt("hej")))
+                    "myFunc" returning txt calledWith tpl(num(5), txt("hej"))
                 )
         )
     }
@@ -169,7 +169,7 @@ class FunctionCallTests {
                         withBody ret(num(5))
                     ),
                     "myFunc2" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
-                    "myFunc".calledWith(num, listOf(num(5), "myFunc2".called(num)))
+                    "myFunc" returning num calledWith listOf(num(5), ("myFunc2" returning num).called())
                 )
         )
     }
@@ -201,7 +201,7 @@ class FunctionCallTests {
                             withArgument ("myParam" asType num)
                             withBody ret(num(5))
                     ),
-                    "myFunc".calledWith(num, "myFunc".calledWith(num, num(5)))
+                    "myFunc" returning num calledWith ("myFunc" returning num calledWith num(5))
                 )
         )
     }
@@ -222,7 +222,7 @@ class FunctionCallTests {
                             withArguments listOf("myParam1" asType num, "myParam2" asType txt)
                             andBody ret(txt("HEY"))
                         ),
-                    "myFunc".calledWith(txt, listOf(num(5), txt("hej")))
+                    "myFunc" returning txt calledWith listOf(num(5), txt("hej"))
                 )
         )
     }
@@ -249,8 +249,7 @@ class FunctionCallTests {
                             )
                             andBody ret(txt("HEY"))
                     ),
-                    "myFunc".calledWith(txt,
-                            listOf(num(5), txt("hej"), txt("med"), txt("dig")))
+                    "myFunc" returning txt calledWith listOf(num(5), txt("hej"), txt("med"), txt("dig"))
                 )
         )
     }
