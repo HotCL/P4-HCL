@@ -89,7 +89,7 @@ fun testGenericHighOrderFunction () = listOf(
 )
 
 fun testGenericHighOrderFunctionAdvanced () = listOf(
-        "retInputFunc" declaredAs func(generic("T"), listOf(func(generic("T")))) withValue (lambda()
+        "retInputFunc" declaredAs func(generic("T"), listOf(func(generic("T"), num))) withValue (lambda()
                 returning generic("T") withArgument ("inputFunc" asType func(generic("T"), num)) andBody
                 ret(("inputFunc" returning generic("T")) calledWith (num(8)))),
         setRet("retInputFunc" returning generic("T") calledWith
