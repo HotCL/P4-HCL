@@ -9,7 +9,7 @@ fun AbstractSyntaxTree.genFromFilter(predicate: (AstNode.Command) -> Boolean) =
 
 fun AbstractSyntaxTree.genFromFilterWithMap(predicate: (AstNode.Command) -> Boolean,
                                             mapFunc: (AstNode.Command) -> AstNode.Command) =
-        CodeGenerator().generate(AbstractSyntaxTree(children.map(mapFunc)).filter(predicate))
+        AbstractSyntaxTree(children.map(mapFunc)).genFromFilter(predicate)
 
 fun AbstractSyntaxTree.builtins() = filter {
     val decl = it as? AstNode.Command.Declaration ?: return@filter false
