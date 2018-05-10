@@ -91,6 +91,13 @@ fun testHighOrderFunction () = listOf(
         )
 )
 
+fun testDeclarationAssignmentDeclarationToAssignedVariable() = listOf(
+        "x" declaredAs num withValue num(5),
+        "x" assignedTo num(7),
+        "y" declaredAs num withValue "x".asIdentifier(num),
+        setRet("y".asIdentifier(num))
+)
+
 
 object CodeGenerationTest : Spek({
     given("HCL CPP code generator") {
@@ -102,7 +109,8 @@ object CodeGenerationTest : Spek({
             testCreateList() shouldReturn 5,
             testCreateTuple() shouldReturn 1,
             testPrint() shouldReturn "hello world",
-            testHighOrderFunction() shouldReturn 12
+            testHighOrderFunction() shouldReturn 12,
+            testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
                 val expectedResult: String = when (testCase.expectedResult) {

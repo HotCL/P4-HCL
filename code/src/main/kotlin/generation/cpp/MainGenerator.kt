@@ -6,9 +6,17 @@ import parser.AstNode
 
 class MainGenerator : IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
-        val stringBuilder = StringBuilder()
-        val declarations = ast.genFromFilter { it.isDecl }
-        val setup = ast.genFromFilter { !it.isLoop && !it.isDecl }
+        val stringBuilder = StringBuilder(mainHeader)
+        val declarations = ast.genFromFilterWithMap ({ it.isDecl }, {
+            if (it is AstNode.Command.Declaration && it.expression != null)
+                AstNode.Command.Declaration(it.type, it.identifier)
+            else it
+        })
+        val setup = ast.genFromFilterWithMap ({ !it.isLoop && !it.isDecl }, {
+            if (it is AstNode.Command.Declaration && it.expression != null)
+                AstNode.Command.Assignment(it.identifier, it.expression)
+            else it
+        })
         val loop = ast.genFromFilter { it.isLoop }
         stringBuilder.appendln(declarations)
         stringBuilder.appendln(setup.wrapSetup())
@@ -27,7 +35,7 @@ class MainGenerator : IPrinter {
     private fun String.wrapLoop() = "void loop() {\n${this.splitIndented}\n}"
     private fun String.wrapSetup() = "void setup() { \n${this.prefixSerialBegin().splitIndented}\n}"
     private fun String.wrapMain() = "" +
-            "#if !ARDUINO_AVR_UNO\n" +
+            "#ifndef ARDUINO_AVR_UNO\n" +
             "int main() {\n${this.splitIndented}\n    return ${"RETURN_CODE".cppName};\n}\n" +
             "#endif"
 
@@ -36,4 +44,29 @@ class MainGenerator : IPrinter {
         this is AstNode.Command.Expression.FunctionCall && identifier.name == "loop"
     private val AstNode.Command.isDecl get() = this is AstNode.Command.Declaration
 
+    private val mainHeader =
+            """
+#include <functional>
+
+#include "ConstList.h"
+#include "ftoa.h"
+
+#ifndef ARDUINO_AVR_UNO
+
+#include <iostream>
+
+#endif
+
+#ifdef _WIN32 //If windows based PC
+    #include <windows.h>
+#else //If unix based PC
+    #include <unistd.h>
+#endif //_WIN32
+
+
+using namespace std;
+
+#include "builtin.h"
+#include "types.h"
+"""
 }
