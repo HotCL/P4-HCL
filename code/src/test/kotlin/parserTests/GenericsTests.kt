@@ -67,7 +67,7 @@ class GenericsTests{
                 "myFunc" declaredAs func(txt, generic("T")) withValue (
                     lambda() returning txt withArgument ("myParam1" asType generic("T")) andBody ret(txt("generics!"))
                 ),
-                "myFunc".calledWith(txt, num(5))
+                "myFunc" returning txt calledWith num(5)
             )
         )
     }
@@ -97,8 +97,8 @@ class GenericsTests{
                         "myT" asType generic("T")
                     ) andBody ret("myT".asIdentifier(generic("T")))
                 ),
-                "x" declaredAs num withValue ("myFunc".calledWith(num,
-                        listOf(list(num(1), num(2)), tpl(num(1), txt("test")), num(9))))
+                "x" declaredAs num withValue ("myFunc" returning num calledWith
+                        listOf(list(num(1), num(2)), tpl(num(1), txt("test")), num(9)))
             )
         )
     }
@@ -185,10 +185,10 @@ class GenericsTests{
                         "myFunc" declaredAs func(generic("T"), func(generic("T"))) withValue (lambda()
                             returning generic("T")
                             withArgument ("myParam1" asType func(generic("T")))
-                            andBody ret("myParam1".called(generic("T")))
+                            andBody ret(("myParam1" returning (generic("T"))).called())
                         ),
                         "passFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
-                        "myFunc".calledWith(num, "passFunc".asIdentifier(func(num)))
+                        "myFunc" returning num calledWith "passFunc".asIdentifier(func(num))
                 )
         )
     }
