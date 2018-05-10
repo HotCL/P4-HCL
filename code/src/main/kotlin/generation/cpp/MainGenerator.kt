@@ -8,12 +8,12 @@ class MainGenerator : IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
         val stringBuilder = StringBuilder(mainHeader)
         val declarations = ast.genFromFilterWithMap ({ it.isDecl }, {
-            if (it is AstNode.Command.Declaration && it.expression != null)
+            if (it is AstNode.Command.Declaration && it.expression != null && it.type !is AstNode.Type.Func)
                 AstNode.Command.Declaration(it.type, it.identifier)
             else it
         })
         val setup = ast.genFromFilterWithMap ({ !it.isLoop && !it.isDecl }, {
-            if (it is AstNode.Command.Declaration && it.expression != null)
+            if (it is AstNode.Command.Declaration && it.expression != null && it.type !is AstNode.Type.Func)
                 AstNode.Command.Assignment(it.identifier, it.expression)
             else it
         })

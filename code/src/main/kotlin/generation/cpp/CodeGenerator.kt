@@ -23,7 +23,7 @@ class CodeGenerator : IPrinter {
             when(this) {
                 is AstNode.Command.Declaration -> format()
                 is AstNode.Command.Assignment -> format()
-                is AstNode.Command.Expression -> format()+";"
+                is AstNode.Command.Expression -> format() + ";"
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
                 is AstNode.Command.RawCpp ->
                     content.split("\n").joinToString("") { (it + "\n").indented }
@@ -48,7 +48,7 @@ class CodeGenerator : IPrinter {
     }
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDecl(decl: AstNode.Command.Declaration) =
-        templateLine(returnType.getGenerics + this.paramDeclarations.flatMap { it.type.getGenerics }) +
+        templateLine(returnType.getGenerics + paramDeclarations.flatMap { it.type.getGenerics }) +
         if (attributes.inLine) formatAsDeclInline(decl) else formatAsDeclDefault(decl)
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclInline(decl: AstNode.Command.Declaration) =
@@ -63,8 +63,7 @@ class CodeGenerator : IPrinter {
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclDefault(decl: AstNode.Command.Declaration) =
         buildString {
             appendln(("// Lambda function for name ${toComment(decl)}").indented)
-            val type =
-                    AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
+            val type = AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
             appendln("${type.cppName} ${decl.identifier.cppName} = ".indented + format() + ";")
         }
 
@@ -90,10 +89,14 @@ class CodeGenerator : IPrinter {
                 ("}".indentedPreDec)
             is AstNode.Command.Expression.LambdaBody -> TODO()
             is AstNode.Command.Expression.FunctionCall ->
-                "${this.identifier.cppName}(${this.arguments.formatToList()})".also {
-                    this.arguments.forEach { print(it) }; print(this.identifier)
+                "${identifier.cppName}$genericTemplateArguments(${arguments.formatToList()})".also {
+                    arguments.forEach { print(it) }; print(identifier)
                 }
         }
+
+    private val AstNode.Command.Expression.FunctionCall.genericTemplateArguments get (): String {
+        return ""
+    }
 
     //private fun genericSpecifier()
 

@@ -78,6 +78,16 @@ fun testPrint() =
     listOf("print" returning none calledWith listOf(txt("hello world"))
     )
 
+fun testGenericHighOrderFunction () = listOf(
+        "retInputFunc" declaredAs func(generic("T"), listOf(func(generic("T")))) withValue (lambda()
+                returning generic("T") withArgument ("inputFunc" asType generic("T")) andBody
+                ret(("inputFunc" returning generic("T")).called())
+                ),
+        setRet("retInputFunc" returning generic("T") calledWith
+                (lambda() returning num withArgument ("myNum" asType num) andBody ret(num(5)))
+        )
+)
+
 fun testHighOrderFunction () = listOf(
         "modifyNumber" declaredAs func(num, listOf(num, func(num, num))) withValue (lambda()
                 returning num withArguments listOf("myNum" asType num, "modFunction" asType func(num, num)) andBody
@@ -110,6 +120,7 @@ object CodeGenerationTest : Spek({
             testCreateTuple() shouldReturn 1,
             testPrint() shouldReturn "hello world",
             testHighOrderFunction() shouldReturn 12,
+            testGenericHighOrderFunction() shouldReturn 5,
             testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7
         ).forEach { testCase ->
             on("the AST nodes: ${testCase.astNodes}") {
