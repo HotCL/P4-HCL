@@ -119,8 +119,9 @@ The method then checks whether the new current symbol is an equals-symbol - if t
 The method then returns a Declaration, which is a subclass of AstNode.  
 
 A more complex parsing routine is when an expression is to be parsed. 
-Since an expression in HCL may be either a functioncall or any kind of value, a lot of possibilities arise. 
-The parser will first try to parse a potential functioncall using the \textbf{\textit{parsePotentialFunctionCall}} method.
+Since an expression in HCL may be either a function-call or any kind of value.
+This means that there are a lot of options for the parser when parsing expressions.
+The parser firstly tries to parse a potential function-call using the \textbf{\textit{parsePotentialFunctionCall}} method.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parsePotCall,caption=A simplified version of the parsePotentialFunctionCall method from the parser.]
 private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstExpression =
@@ -147,15 +148,15 @@ private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstEx
         } else -> expression
 \end{lstlisting}
 
-As seen in snippet \ref{lis:parsePotCall}, the method will first determine if the current token is a lambda expression, signified by a \textit{blockStart-token} (3).
-Should it be a lambda expression, the parser will determine if there should be a functionscall within the lambda that needs to be parsed as well (7).
-If there is not a functioncall within the lambda, the lambda expression itself will be returned from the method (10). 
-Should the token be an identifier, the parser will determine if the identifier signifies a function, in which case it is determined that a functioncall is being made (16).
-The method will look for the needed arguments for the function, and parse them as expressions.
-The method then returns the functionscall with its corresponding arguments (18).
-If the identifier does not signify a function, it is parsed as an expression.
+As seen in snippet \ref{lis:parsePotCall}, the method first determines if the current token is a lambda expression, signified by a \textit{blockStart-token} (3).
+Should it be a lambda expression, the parser determines whether or not there is a functions call within the lambda that needs to be parsed as well (7).
+If there is not a function-call within the lambda, the lambda expression itself is returned from the method (10). 
+Should the token be an identifier, the parser determines if the identifier signifies a function, in which case it is determined that a function-call is being made (16).
+The method looks for the needed arguments for the function, and parse them as expressions.
+The method then returns the function-call with its corresponding arguments (18).
+If the identifier does not signify a function, it is then parsed as a regular expression.
 
-All expressions that are determined not to be a functioncall is parsed by the method \textbf{\textit{parseExpressionAtomic}} seen in snippet \ref{lis:parseExpr}.
+All expressions that are determined not to be function-calls are parsed by the method \textbf{\textit{parseExpressionAtomic}} seen in snippet \ref{lis:parseExpr}.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parseExpr,caption=A simplified version of the parseExpressionAtomic method from the parser.]
 private fun parseExpressionAtomic(): AstExpression =
@@ -192,8 +193,8 @@ All expressions that begin with the '\texttt{[}' character are determined to be 
 Expressions beginning with a parentheses can either be a lambda declaration (6), a tuple (9) or simply an expression encapsulated in parenthesis (11).\\
 Literals are simply accepted (15).\\
 Expressions beginning with a colon is can only be functions passed as arguments, and are handled accordingly (16).\\
-Identifiers can either signify values or functioncalls.
-However, as potential functioncalls have already been handled at this point, the identifier is determined to signify a value and can be parsed accordingly (21).
+Identifiers can either signify values or function-calls.
+However, as potential function-calls have already been handled at this point, the identifier is determined to signify a value and can be parsed accordingly (21).
 If no eligible tokens has been found at this point in parsing, it is determined that a syntax error has occurred and the parser throws an exception (25).
 
 % we may also need to document some of the complex parts of the parser, but we will wait with that, until it is actually more or less completed.
