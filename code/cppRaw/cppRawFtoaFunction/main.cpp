@@ -2,9 +2,10 @@
 #include "ftoa.h"
 #include <string>
 #include <iostream>
+#include <memory>
 
 void test_ftoa(double d, int precision, std::string expected) {
-    std::string str = ftoa(d, precision);
+    std::string str = ftoa(d, precision).get()->data;
 
     if (str.compare(expected))
         std::cout << "FAILED!\nExpected: " << expected << "\nResult:\t  " << str << "\n\n";

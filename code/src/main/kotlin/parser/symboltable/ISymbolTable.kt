@@ -5,7 +5,7 @@ import parser.AstNode
 /**
  * The interface which all Symbol Table implementations must implement.
  */
-interface ISymbolTable{
+interface ISymbolTable {
     /**
      * Opens a new scope in the symbol table.
      * Pushes a new subtable unto the scope stack.
@@ -35,4 +35,9 @@ interface ISymbolTable{
      */
     fun retrieveSymbol(name: String): Symbol
 
+    fun enterType(type: AstNode.Type.GenericType)
+
+    fun genericTypeInScope(type: AstNode.Type.GenericType): Boolean
+
+    fun genericTypeInScope(typeName: String): Boolean
 }

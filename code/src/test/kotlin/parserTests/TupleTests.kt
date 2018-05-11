@@ -8,8 +8,7 @@ import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import parser.ParserWithoutBuiltins
 
-class TupleTests
-{
+class TupleTests {
     @org.junit.jupiter.api.Test
     fun parseTupleTypeWithoutAssignment() {
         assertThat(
@@ -48,8 +47,7 @@ class TupleTests
             tuple.squareStart.number.`,`.text.squareEnd.identifier("myTuple").`=`.`(`.number(5.0)
                     .text("someText").`)`.newLine
         })
-        Assertions.assertThrows(WrongTokenTypeError::class.java)
-            { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test
@@ -58,8 +56,6 @@ class TupleTests
             tuple.squareStart.number.`,`.text.squareEnd.identifier("myTuple").`=`.`(`.number(5.0)
                     .`,`.`,`.text("someText").`)`.newLine
         })
-        Assertions.assertThrows(UnexpectedTokenError::class.java)
-            { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
-
 }

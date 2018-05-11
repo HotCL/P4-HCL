@@ -1,12 +1,8 @@
 package typeCheckerTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.UnexpectedTypeError
 import lexer.Token
-import org.junit.jupiter.api.Assertions
 import parser.AstNode
-import parser.Parser
-import parserTests.DummyLexer
 import parserTests.matchesAstChildren
 
 class TyperCheckerTests {
@@ -42,12 +38,13 @@ class TyperCheckerTests {
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Number,
-                                AstNode.Command.Expression.Value.Identifier("myNumber"),
+                                AstNode.Command.Expression.Value.Identifier("myNumber", AstNode.Type.Number),
                                 AstNode.Command.Expression.Value.Literal.Number(5.0)
                         ),
                         AstNode.Command.Declaration(
                                 AstNode.Type.Text,
-                                AstNode.Command.Expression.Value.Identifier("myText"),
+                                AstNode.Command.Expression.Value.Identifier("myText",
+                                        AstNode.Type.Text),
                                 AstNode.Command.Expression.Value.Literal.Text("someText")
                         ),
                         AstNode.Command.Declaration(
@@ -56,16 +53,21 @@ class TyperCheckerTests {
                                         AstNode.Type.Text
                                 )
                                 ),
-                                AstNode.Command.Expression.Value.Identifier("myTuple"),
+                                AstNode.Command.Expression.Value.Identifier("myTuple",
+                                        AstNode.Type.Tuple(listOf(
+                                                AstNode.Type.Number,
+                                                AstNode.Type.Text
+                                        ))),
                                 AstNode.Command.Expression.Value.Literal.Tuple(
                                         listOf(
-                                                AstNode.Command.Expression.Value.Identifier("myNumber"),
-                                                AstNode.Command.Expression.Value.Identifier("myText")
+                                                AstNode.Command.Expression.Value.Identifier("myNumber",
+                                                        AstNode.Type.Number),
+                                                AstNode.Command.Expression.Value.Identifier("myText",
+                                                        AstNode.Type.Text)
                                         )
                                 )
                         )
                 )
         )
     }
-
 }

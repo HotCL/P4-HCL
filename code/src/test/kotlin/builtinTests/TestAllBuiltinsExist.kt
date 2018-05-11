@@ -8,7 +8,6 @@ import parser.Parser
 import parserTests.DummyLexer
 import kotlin.test.assertTrue
 
-
 object TestAllBuiltinsExist : Spek({
     given("HCL Builtin functions") {
         val ast = Parser(DummyLexer(listOf())).generateAbstractSyntaxTree()
@@ -19,17 +18,29 @@ object TestAllBuiltinsExist : Spek({
                 "*",
                 "equals",
                 "notEquals",
-                "<",
-                ">",
+                "lessThan",
+                "lessThanEqual",
+                "greaterThan",
+                "greaterThanEqual",
                 "and",
                 "or",
                 "not",
                 "toText",
                 "then",
                 "while",
+                "each",
                 "length",
                 "at",
-                "subList"
+                "subList",
+                "map",
+                "filter",
+                "delayMillis",
+                "setDigitalPin",
+                "readDigitalPin",
+                "setAnalogPin",
+                "readAnalogPin",
+                "print"
+                // "printLine"
         )
         expectedBuiltinFunctions.forEach { expectedBuiltinFunction ->
             it("should contain the function \"$expectedBuiltinFunction\"") {

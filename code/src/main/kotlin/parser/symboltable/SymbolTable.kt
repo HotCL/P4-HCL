@@ -1,7 +1,7 @@
 package parser.symboltable
 
 import parser.AstNode
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 /**
  * The generic implementation of the ISymbolTable
@@ -9,18 +9,21 @@ import java.util.*
 class SymbolTable : ISymbolTable {
 
     private val symbolTable: Deque<MutableMap<String, MutableList<AstNode.Type>>> = ArrayDeque()
+    private val typeTable: Deque<MutableSet<AstNode.Type.GenericType>> = ArrayDeque()
 
     init { openScope() }
 
     override fun openScope() {
         symbolTable.addLast(mutableMapOf())
+        typeTable.addLast(mutableSetOf())
     }
 
     override fun closeScope() {
         symbolTable.removeLast()
+        typeTable.removeLast()
     }
 
-    private fun checkFunctionIsAllowed(func: AstNode.Type.Func.ExplicitFunc, name: String): EnterSymbolResult =
+    private fun checkFunctionIsAllowed(func: AstNode.Type.Func, name: String): EnterSymbolResult =
         retrieveSymbol(name).handle(
                 {
                     it.forEach {
@@ -40,12 +43,12 @@ class SymbolTable : ISymbolTable {
         val entry = symbolTable.last[name]
         return if (entry != null) {
             val entryFirst = entry.first()
-            if (entryFirst is AstNode.Type.Func.ExplicitFunc && type is AstNode.Type.Func.ExplicitFunc) {
+            if (entryFirst is AstNode.Type.Func && type is AstNode.Type.Func) {
                 checkFunctionIsAllowed(type, name).also { if (it == EnterSymbolResult.Success) entry.add(type) }
             } else EnterSymbolResult.IdentifierAlreadyDeclared
         } else {
-            val res = if (type is AstNode.Type.Func.ExplicitFunc) checkFunctionIsAllowed(type, name)
-                      else EnterSymbolResult.Success
+            val res = if (type is AstNode.Type.Func) checkFunctionIsAllowed(type, name)
+            else EnterSymbolResult.Success
             res.also { if (it == EnterSymbolResult.Success) symbolTable.last[name] = mutableListOf(type) }
         }
     }
@@ -56,4 +59,14 @@ class SymbolTable : ISymbolTable {
             // Example: single list. ((1, 2, 3), (4, 5, 6), (7, 8, 9) flatMapped == (1, 2, 3, 4, 5, 6, 7, 8, 9)).
             Symbol(symbolTable.reversed().map { it[name] }.flatMap { it ?: mutableListOf() })
 
+    override fun enterType(type: AstNode.Type.GenericType) {
+        typeTable.last.add(type)
+    }
+
+    override fun genericTypeInScope(type: AstNode.Type.GenericType): Boolean {
+        return genericTypeInScope(type.name)
+    }
+    override fun genericTypeInScope(typeName: String): Boolean {
+        return typeTable.any { it.any { typeName == it.name } }
+    }
 }

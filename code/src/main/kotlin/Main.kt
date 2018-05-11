@@ -6,25 +6,21 @@ import parser.Parser
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    val code = "" +
-            "tuple[num, txt] t\n" +
-            "tuple[list[num], func[none]] y\n" +
-            "var myVar = 5\n" +
-            "var plus5 = (num x): num { x + myVar }\n" +
-            "var shouldBe10 = myVar plus5"
+    val code = "var isBøs = true\n" +
+        "isBøs then { \"du bøs\" print }\n" +
+        "isBøs not then { \"du ik bøs\" print }"
 
     val lexer = Lexer(code)
     val parser = Parser(lexer)
     val logger = Logger()
     val ast = try {
-         parser.generateAbstractSyntaxTree()
+        parser.generateAbstractSyntaxTree()
     } catch (exception: CompilationException) {
         logger.logCompilationError(exception)
         exitProcess(-1)
     }
-    //println("Ast: $ast")
-    //println(SourceCodePrinter().generate(ast))
+    // println("Ast: $ast")
+    // println(SourceCodePrinter().generate(ast))
     val programFiles = ProgramGenerator().generate(ast)
     programFiles.forEach { print("FILE: ${it.fileName}:\n\n${it.content}\n\n\n") }
 }
-
