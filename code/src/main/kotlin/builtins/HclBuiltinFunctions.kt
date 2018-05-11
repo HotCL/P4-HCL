@@ -91,8 +91,10 @@ private inline fun <reified P, reified R> buildPrefixOperator(functionName: Stri
     body = "return $operator operand;"
 )
 
-private inline fun <reified V, reified H, reified R> buildOperator(functionName: String,
-                                                                   operator: String = functionName)
+private inline fun <reified V, reified H, reified R> buildOperator(
+    functionName: String,
+    operator: String = functionName
+)
     where V : Type, H : Type, R : Type = buildFunction(
     identifier = functionName,
     parameters = listOf(
