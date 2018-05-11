@@ -1,6 +1,11 @@
 package parserTests
 
+import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.ImplicitTypeNotAllowed
+import exceptions.UnexpectedTypeError
 import hclTestFramework.lexer.buildTokenSequence
+import hclTestFramework.parser.*
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import parser.ParserWithoutBuiltins

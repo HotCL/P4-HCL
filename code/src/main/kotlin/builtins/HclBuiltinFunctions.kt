@@ -25,9 +25,6 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Number>("notEquals", "!="),
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
-
-            buildOperatorBoolBoolToBool("and", "&&"),
-            buildOperatorBoolBoolToBool("or", "||"),
           
             buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
             buildModuloOperator(),
