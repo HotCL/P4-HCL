@@ -23,12 +23,13 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             children.add(it)
             enterSymbol(it.identifier.name, it.expression!!.type)
         }
+        enterSymbol("RETURN_CODE", AstNode.Type.Number)
 
         // Parse
         while (hasNext()) {
             if (current.token != Token.SpecialChar.EndOfLine) {
                 children.add(parseCommand())
-            }
+            } else moveNext()
         }
     }
 

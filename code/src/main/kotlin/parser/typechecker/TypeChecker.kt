@@ -3,8 +3,7 @@ package parser.typechecker
 import parser.AstNode
 
 class TypeChecker : ITypeChecker {
-    override fun List<AstNode.Type.Func>.getTypeDeclaration(types: List<AstNode.Type>):
-            AstNode.Type.Func? {
+    override fun List<AstNode.Type.Func>.getTypeDeclaration(types: List<AstNode.Type>): AstNode.Type.Func? {
         val genericTypes = mutableMapOf<String, AstNode.Type>()
 
         return this.firstOrNull {
@@ -69,7 +68,6 @@ class TypeChecker : ITypeChecker {
         val argumentType = second
 
         return when (declaredType) {
-
             is AstNode.Type.List ->
                 if (argumentType is AstNode.Type.List)
                     Pair(declaredType.elementType, argumentType.elementType).matchGenerics(genericTypes)
