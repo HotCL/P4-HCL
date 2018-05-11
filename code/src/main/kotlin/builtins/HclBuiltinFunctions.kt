@@ -26,7 +26,12 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
 
+            buildOperatorBoolBoolToBool("and", "&&"),
+            buildOperatorBoolBoolToBool("or", "||"),
+          
             buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
+            buildModuloOperator(),
+
             // Control structures
             buildThenFunction(),
             //buildElseTernaryFunction(),
@@ -101,9 +106,46 @@ private inline fun<reified V, reified H, reified R> buildOperator(functionName: 
     returnType = R::class.objectInstance!!,
     body = "return leftHand $operator rightHand;"
 )
+private fun buildModuloOperator() = buildFunction(
+        identifier = "mod",
+        parameters = listOf(
+                Parameter("leftHand", Type.Number),
+                Parameter("rightHand", Type.Number)
+        ),
+        returnType = Type.Number,
+        body = "return (long)leftHand % (long)rightHand;"
+)
 //endregion buildOperator_functions
 
 //region builtInFunctions
+private fun buildNotFunction() = buildFunction(
+        identifier = "not",
+        parameters = listOf(
+                Parameter("b", Type.Bool)
+        ),
+        returnType = Type.Bool,
+        body = "return !b;"
+)
+
+private fun buildTextEqualsFunction() = buildFunction(
+        identifier = "equals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) == 0;"
+)
+
+private fun buildTextNotEqualsFunction() = buildFunction(
+        identifier = "notEquals",
+        parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+        ),
+        returnType = Type.Bool,
+        body = "return strcmp(leftHand, rightHand) != 0;"
+)
 
 
 private fun buildNumberToTextFunction() = buildFunction(
