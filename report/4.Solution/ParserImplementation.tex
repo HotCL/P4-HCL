@@ -118,8 +118,7 @@ The \textbf{\textit{parseDeclaration}} method, as shown in snippet \ref{lis:pars
 The method then checks whether the new current symbol is an equals-symbol - if that's the case the declaration is followed by an expression - which means it's an declaration with an assignment otherwise the expression is set to null. 
 The method then returns a Declaration, which is a subclass of AstNode.  
 
-A more complex parsing routine is when an expression is to be parsed. 
-Since an expression in HCL may be either a function-call or any kind of value.
+A more complex parsing routine is when an expression is to be parsed, since an expression in HCL may be either a function-call or any kind of value.
 This means that there are a lot of options for the parser when parsing expressions.
 The parser firstly tries to parse a potential function-call using the \textbf{\textit{parsePotentialFunctionCall}} method.
 
