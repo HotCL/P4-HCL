@@ -120,7 +120,7 @@ The method then returns a Declaration, which is a subclass of AstNode.
 
 A more complex parsing routine is when an expression is to be parsed, since an expression in HCL may be either a function-call or any kind of value.
 This means that there are a lot of options for the parser when parsing expressions.
-The parser firstly tries to parse a potential function-call using the \textbf{\textit{parsePotentialFunctionCall}} method.
+The parser first tries to parse a potential function-call using the \textbf{\textit{parsePotentialFunctionCall}} method.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parsePotCall,caption=A simplified version of the parsePotentialFunctionCall method from the parser.]
 private fun parsePotentialFunctionCall(expression: AstExpression? = null): AstExpression =
@@ -155,7 +155,7 @@ The method looks for the needed arguments for the function, and parse them as ex
 The method then returns the function-call with its corresponding arguments (18).
 If the identifier does not signify a function, it is then parsed as a regular expression.
 
-All expressions that are determined not to be function-calls are parsed by the method \textbf{\textit{parseExpressionAtomic}} seen in snippet \ref{lis:parseExpr}.
+All expressions that are determined to be none function-calls, are parsed by the method \textbf{\textit{parseExpressionAtomic}} seen in snippet \ref{lis:parseExpr}.
 
 \begin{lstlisting}[language=Kotlin,label=lis:parseExpr,caption=A simplified version of the parseExpressionAtomic method from the parser.]
 private fun parseExpressionAtomic(): AstExpression =
