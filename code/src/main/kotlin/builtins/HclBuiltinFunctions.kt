@@ -91,7 +91,8 @@ private inline fun <reified P, reified R> buildPrefixOperator(functionName: Stri
     body = "return $operator operand;"
 )
 
-private inline fun <reified V, reified H, reified R> buildOperator(functionName: String, operator: String = functionName)
+private inline fun <reified V, reified H, reified R> buildOperator(functionName: String,
+                                                                   operator: String = functionName)
     where V : Type, H : Type, R : Type = buildFunction(
     identifier = functionName,
     parameters = listOf(
@@ -345,7 +346,8 @@ private fun buildWriteDigPinFunction() = buildFunction(
         "pinMode((int)pin, 1);\n" +
         "digitalWrite((int)pin, value);\n" +
         "#else\n" +
-        "std::cout << \"Set digital pin \" << (int)pin << \" to output \" << (value ? \"HIGH\" : \"LOW\") << std::endl;\n" +
+        "std::cout << \"Set digital pin \" << (int)pin << \" to output \" << (value ? \"HIGH\" : \"LOW\") << " +
+            "std::endl;\n" +
         "return;\n" +
         "#endif // ARDUINO_AVR_UNO" +
         "return;"
