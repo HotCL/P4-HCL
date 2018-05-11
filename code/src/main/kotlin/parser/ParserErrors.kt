@@ -1,6 +1,6 @@
 package parser
 
-import exceptions.*
+import exceptions.* // ktlint-disable no-wildcard-imports
 import lexer.Token
 
 fun Parser.unexpectedTypeError(expectedType: String, actualType: String): Nothing {
@@ -46,8 +46,7 @@ fun Parser.overloadWithDifferentAmountOfArgumentsException(): Nothing {
             lexer.inputLine(current.lineNumber))
 }
 
-
-fun Parser.error(msg: String, helpText: String= ""): Nothing {
-    throw GenericParserException(current.lineNumber,current.lineIndex, lexer.inputLine(current.lineNumber),
-            msg,helpText)
+fun Parser.error(msg: String, helpText: String = ""): Nothing {
+    throw GenericParserException(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+            msg, helpText)
 }

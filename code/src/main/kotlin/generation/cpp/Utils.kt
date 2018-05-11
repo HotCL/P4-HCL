@@ -7,8 +7,10 @@ import parser.BuiltinLambdaAttributes
 fun AbstractSyntaxTree.genFromFilter(predicate: (AstNode.Command) -> Boolean) =
         CodeGenerator().generate(filter(predicate))
 
-fun AbstractSyntaxTree.genFromFilterWithMap(predicate: (AstNode.Command) -> Boolean,
-                                            mapFunc: (AstNode.Command) -> AstNode.Command) =
+fun AbstractSyntaxTree.genFromFilterWithMap(
+    predicate: (AstNode.Command) -> Boolean,
+    mapFunc: (AstNode.Command) -> AstNode.Command
+) =
         AbstractSyntaxTree(children.map(mapFunc)).genFromFilter(predicate)
 
 fun AbstractSyntaxTree.builtins() = filter {
@@ -29,13 +31,11 @@ val AstNode.Command.Expression.Value.Literal.List.cppName get() = CppNameTransla
 val AstNode.Command.Expression.Value.Identifier.cppName get() = CppNameTranslator.getValidIdentifierName(this)
 
 val String.cppName get() =
-    CppNameTranslator.getValidIdentifierName(parser.AstNode.Command.Expression.Value.Identifier(this,AstNode.Type.None))
-
+    CppNameTranslator.getValidIdentifierName(parser.AstNode.Command.Expression.Value.Identifier(this, AstNode.Type.None))
 
 val AstNode.Type.Func.getGeneric get() = paramTypes
 
-
-val AstNode.Type.getGenerics get():List<AstNode.Type.GenericType> = when(this){
+val AstNode.Type.getGenerics get(): List<AstNode.Type.GenericType> = when (this) {
     is AstNode.Type.GenericType -> listOf(this)
     is AstNode.Type.List -> this.elementType.getGenerics
     is AstNode.Type.Tuple -> this.elementTypes.flatMap { it.getGenerics }

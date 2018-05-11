@@ -2,8 +2,7 @@ package generation
 
 import parser.AstNode
 
-
-fun AstNode.Type.makePretty(): String = when(this){
+fun AstNode.Type.makePretty(): String = when (this) {
     AstNode.Type.Number -> "num"
     AstNode.Type.Text -> "text"
     AstNode.Type.Bool -> "bool"

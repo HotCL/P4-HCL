@@ -15,7 +15,7 @@ fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<Lis
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
                 println("Test for code:\n " + formatTokens(actual))
-                val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
+                val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence { yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
                 else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n" +
@@ -41,7 +41,7 @@ fun matchesAstWithActualLexer(expected: String): Matcher<String> =
             override val negatedDescription: String get() = "was not equal to the expected AST"
         }
 
-class DummyLexer(private val tokens: Sequence<Token>): ILexer {
+class DummyLexer(private val tokens: Sequence<Token>) : ILexer {
     override fun getTokenSequence() = buildSequence {
         tokens.forEach {
             print(formatToken(it) + " ")

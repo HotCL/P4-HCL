@@ -7,7 +7,6 @@ import parser.AbstractSyntaxTree
 import parser.AstNode
 import kotlin.test.assertEquals
 
-
 class SourceCodePrinterTests {
 
     @Test
@@ -22,10 +21,10 @@ class SourceCodePrinterTests {
         )
         )
         assertEquals(
-                "a = 5.0\n"+
-                        "b = \"hej med dig\"\n"+
-                        "c = True\n"+
-                        "d = [1.0, 2.0]\n"+
+                "a = 5.0\n" +
+                        "b = \"hej med dig\"\n" +
+                        "c = True\n" +
+                        "d = [1.0, 2.0]\n" +
                         "e = (1.0, 2.0)\n",
                 output
         )
@@ -65,7 +64,7 @@ class SourceCodePrinterTests {
     @Test
     fun canPrintDeclarationOfAllTypes() {
         val output = SourceCodePrinter().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                "test" declaredAs tpl(func(none,listOf(num,txt)),list(bool))
+                "test" declaredAs tpl(func(none, listOf(num, txt)), list(bool))
         ).toMutableList()))
         assertEquals(
                 "tuple[func[num, text, none], list[bool]] test\n",

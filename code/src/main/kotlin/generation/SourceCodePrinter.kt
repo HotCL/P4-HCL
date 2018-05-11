@@ -40,7 +40,6 @@ class SourceCodePrinter : IPrinter {
     private fun Command.Expression.Value.Literal.Tuple.format(): String =
             "(${elements.joinToString { it.format() }})"
 
-
     private fun Command.Expression.Value.Literal.List.format(): String =
             "[${elements.joinToString { it.format() }}]"
 
@@ -50,7 +49,7 @@ class SourceCodePrinter : IPrinter {
 
     private fun Command.Expression.FunctionCall.format(): String =
             "${arguments.firstOrNull()?.format()?.let { "$it " } ?: ""}${identifier.name}" +
-                    arguments.drop(1).run { if (isEmpty()) "" else  " " +
+                    arguments.drop(1).run { if (isEmpty()) "" else " " +
                             joinToString(" ") { it.format() }
                     }
 

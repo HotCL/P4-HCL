@@ -13,7 +13,7 @@ import parser.typechecker.ExprResult
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
-open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), ISymbolTable by SymbolTable(),
+open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), ISymbolTable by SymbolTable(),
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     // Used for recursive calls
     private var currentFunctionName: String? = null
@@ -41,7 +41,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
                 peek().token == Token.SpecialChar.Equals -> parseAssignment()
                 else -> parseExpression()
             }
-            is Token.Literal, //Fallthrough
+            is Token.Literal, // Fallthrough
             Token.SpecialChar.BlockStart,
             Token.SpecialChar.SquareBracketStart,
             Token.SpecialChar.Colon,
@@ -60,7 +60,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         return AstNode.Command.Return(expression)
     }
 
-    private inline fun<reified T: Token> accept(): T {
+    private inline fun <reified T : Token> accept(): T {
         val token = current.token
         moveNext()
         if (token is T) {
@@ -70,7 +70,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         }
     }
 
-    private inline fun<reified T> tryAccept() = (current.token as? T)?.let { moveNext(); true } ?: false
+    private inline fun <reified T> tryAccept() = (current.token as? T)?.let { moveNext(); true } ?: false
 
     private fun flushNewLine(requireNewLine: Boolean = true) {
         if (hasNext() && requireNewLine) accept<Token.SpecialChar.EndOfLine>()
@@ -133,7 +133,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
                     overloadWithDifferentAmountOfArgumentsException()
                 EnterSymbolResult.IdentifierAlreadyDeclared -> alreadyDeclaredException()
                 else -> AstNode.Command.Declaration(expression.type,
-                        AstNode.Command.Expression.Value.Identifier(identifierName,expression.type), expression)
+                        AstNode.Command.Expression.Value.Identifier(identifierName, expression.type), expression)
             }
         } else {
             if (type == ImplicitFuncDeclaration || type == VarDeclaration)
@@ -158,12 +158,12 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         return if (!retrieveSymbol(identifierName).handle({ true }, { it == expression.type }, { false }))
             unexpectedTypeError(retrieveSymbol(identifierName).identifier.toString(), expression.type.toString())
         else AstNode.Command.Assignment(AstNode.Command.Expression.Value.Identifier(
-                identifierName,expression.type
+                identifierName, expression.type
         ), expression)
     }
 
-    //region Type declarations
-    private fun  parseType(implicitAllowed: Boolean = false, genericAllowed: Boolean = false): TypeWithImplicit {
+    // region Type declarations
+    private fun parseType(implicitAllowed: Boolean = false, genericAllowed: Boolean = false): TypeWithImplicit {
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
@@ -193,8 +193,6 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
             if (!tryAccept<Token.SpecialChar.ListSeparator>()) return elementTypes
         }
     }
-
-
 
     private fun parseFuncType(implicitAllowed: Boolean): TypeWithImplicit {
         return when {
@@ -237,7 +235,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         return AstNode.Command.Expression.LambdaExpression(parameters, returnType, lambda.lambdaBody)
     }
 
-    private val AstNode.Type.getGenerics get():Set<AstNode.Type.GenericType> = when(this){
+    private val AstNode.Type.getGenerics get(): Set<AstNode.Type.GenericType> = when (this) {
         is AstNode.Type.GenericType -> setOf(this)
         is AstNode.Type.List -> this.elementType.getGenerics
         is AstNode.Type.Tuple -> this.elementTypes.flatMap { it.getGenerics }.toSet()
@@ -282,9 +280,9 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         accept<Token.SpecialChar.SquareBracketEnd>()
         return AstNode.Type.List(elementType)
     }
-//endregion
+// endregion
 
-    //region ExpressionParsing
+    // region ExpressionParsing
 
     private fun parseExpression() = parsePotentialFunctionCall(
             if (current.token == Token.SpecialChar.BlockStart) null
@@ -305,14 +303,14 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
     }
 
     private fun getLambdaParameter(func: List<AstNode.Type.Func>, index: Int): AstExpression {
-        val funcAcceptingLambda = func.firstOrNull{
+        val funcAcceptingLambda = func.firstOrNull {
             it.paramTypes[index] is AstNode.Type.Func
         } ?: error("No function found that takes a lambda at the current position")
         val lambdaFuncType = funcAcceptingLambda.paramTypes[index] as AstNode.Type.Func
         val lambdaParams = when (lambdaFuncType.paramTypes.size) {
             0 -> emptyList()
             1 -> listOf(AstNode.ParameterDeclaration(lambdaFuncType.paramTypes[0],
-                    AstNode.Command.Expression.Value.Identifier("value",lambdaFuncType.paramTypes[0])))
+                    AstNode.Command.Expression.Value.Identifier("value", lambdaFuncType.paramTypes[0])))
             else -> {
                 lambdaFuncType.paramTypes.mapIndexed { idx, type ->
                     AstNode.ParameterDeclaration(type,
@@ -360,7 +358,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
                         if (declaration == null) undeclaredError(token.value)
                         else AstNode.Command.Expression.FunctionCall(
                                 AstNode.Command.Expression.Value.Identifier(token.value,
-                                        getTypeOnFuncCall(declaration,argTypes)),
+                                        getTypeOnFuncCall(declaration, argTypes)),
                                 listOf(expression) + secondaryArguments,
                                 declaration.paramTypes
                         )
@@ -379,9 +377,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
                 Token.SpecialChar.ParenthesesStart -> {
                     if (isLambdaParameters()) {
                         parseLambdaLiteral()
-                    }
-
-                    else {
+                    } else {
                         if (upcomingTuple()) parseTupleExpression() else {
                             accept<Token.SpecialChar.ParenthesesStart>()
                             parseExpression().apply { accept<Token.SpecialChar.ParenthesesEnd>() }
@@ -397,14 +393,13 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
 
                     retrieveSymbol(token.value).handle(
                             {
-                                if(it.any {it.containsGeneric()})
+                                if (it.any { it.containsGeneric() })
                                     genericPassedFunctionException()
                                 AstIdentifier(token.value, it[0]) // TODO probably shouldn't be it[0]
                             },
                             { undeclaredError(token.value) },
                             { undeclaredError(token.value) }
                     )
-
                 }
                 is Token.Identifier -> {
                     val token = accept<Token.Identifier>()
@@ -418,7 +413,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
                                     )
                                 } else error("Function ${token.value} can not be invoked with 0 arguments")
                             },
-                            { AstIdentifier(token.value,it) },
+                            { AstIdentifier(token.value, it) },
                             { undeclaredError(token.value) }
                     )
                 }
@@ -428,7 +423,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
     private fun upcomingTuple(): Boolean {
         var depth = 0
         return findElement({
-            when(it.token) {
+            when (it.token) {
                 Token.SpecialChar.ParenthesesEnd -> if (depth == 0) return@findElement false else depth--
                 Token.SpecialChar.ParenthesesStart,
                 Token.SpecialChar.SquareBracketStart -> depth++
@@ -452,7 +447,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
                     }
             )
 
-    private fun parseListLiteral(type: AstNode.Type):AstNode.Command.Expression.Value.Literal.List {
+    private fun parseListLiteral(type: AstNode.Type): AstNode.Command.Expression.Value.Literal.List {
         var inputType = type
         return AstNode.Command.Expression.Value.Literal.List(
                 mutableListOf<AstNode.Command.Expression>().apply {
@@ -470,21 +465,21 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         )
     }
 
-    //endregion ExpressionParsing
+    // endregion ExpressionParsing
 
     fun ExprResult.type() = when (this) {
         is ExprResult.Success -> this.type
-        ExprResult.NoEmptyOverloading ,
+        ExprResult.NoEmptyOverloading,
         ExprResult.UndeclaredIdentifier,
         ExprResult.NoFuncDeclarationForArgs -> undeclaredError((current.token as? Token.Identifier)?.value ?: "")
         ExprResult.BodyWithMultiReturnTypes -> error("Lambda body with multiple return types")
     }
 
-    private fun AstNode.Type.containsGeneric() : Boolean = when(this) {
+    private fun AstNode.Type.containsGeneric(): Boolean = when (this) {
         is AstNode.Type.List -> this.elementType.containsGeneric()
-        is AstNode.Type.Tuple -> this.elementTypes.any {it.containsGeneric()}
+        is AstNode.Type.Tuple -> this.elementTypes.any { it.containsGeneric() }
         is AstNode.Type.Func ->
-            this.paramTypes.any {it.containsGeneric()} || this.returnType.containsGeneric()
+            this.paramTypes.any { it.containsGeneric() } || this.returnType.containsGeneric()
         is AstNode.Type.GenericType -> true
         else -> false
     }

@@ -3,16 +3,15 @@ package generation.cpp
 import generation.IValidNameTranslator
 import parser.AstNode
 
-
-object CppNameTranslator : IValidNameTranslator{
+object CppNameTranslator : IValidNameTranslator {
     override fun getValidIdentifierName(node: AstNode.Command.Expression.Value.Identifier) = node.getValidName()
     override fun getValidTypeName(node: AstNode.Type) = node.getValidName()
     override fun getValidtListLiteralName(node: AstNode.Command.Expression.Value.Literal.List) =
             "LST_IT_0x${Integer.toHexString(this.hashCode())}"
 
-    private fun AstNode.Type.getValidName():String = when(this){
+    private fun AstNode.Type.getValidName(): String = when (this) {
         AstNode.Type.Number -> "double"
-        AstNode.Type.Text ->  "List<char>"
+        AstNode.Type.Text -> "List<char>"
         AstNode.Type.Bool -> "bool"
         AstNode.Type.None -> "void"
         is AstNode.Type.GenericType -> this.name
@@ -23,5 +22,5 @@ object CppNameTranslator : IValidNameTranslator{
     }
 
     private fun AstNode.Command.Expression.Value.Identifier.getValidName() = "IDT_0x" + name.hashed
-    private val String.hashed get () = Integer.toHexString(this.hashCode())
+    private val String.hashed get() = Integer.toHexString(this.hashCode())
 }
