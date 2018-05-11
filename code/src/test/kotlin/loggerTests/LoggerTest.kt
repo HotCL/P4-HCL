@@ -1,6 +1,6 @@
 package loggerTests
 import exceptions.*
-import logger.*
+import logger.TestLogger
 import org.junit.jupiter.api.Assertions.assertEquals
 
 class TokenTest {

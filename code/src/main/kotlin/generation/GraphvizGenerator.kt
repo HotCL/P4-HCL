@@ -38,6 +38,8 @@ class GraphvizGenerator : IPrinter {
             is Command.Expression.LambdaExpression -> toLabel(id,"Lambda")+this.returnType.visit(id)+
                 this.paramDeclarations.visit(id)+this.body.visit(id)
 
+            is Command.Expression.Value.Identifier -> toLabel(id,"Identifier(name=$name)")
+
             is Command.Expression.Value.Literal.List -> toLabel(id,"Literal: List")+
                     this.elements.joinToString("\n") { it.visit(id) }
 
@@ -62,9 +64,9 @@ class GraphvizGenerator : IPrinter {
 
     private fun Type.visitType(id: Int): String = toLabel(id,this.getTypeName()) + when(this){
         is Type.List -> this.elementType.visit(id)
-        is Type.Func.ExplicitFunc -> this.paramTypes.joinToString("\n") {it.visit(id) }
+        is Type.Func -> this.paramTypes.joinToString("\n") {it.visit(id) }
         is Type.Tuple -> this.elementTypes.joinToString("\n") {it.visit(id) }
-        else -> toLabel(id,this.getTypeName())
+        else -> toLabel(id, this.getTypeName())
 
     }
 
@@ -74,8 +76,7 @@ class GraphvizGenerator : IPrinter {
         Type.Bool -> "bool"
         Type.None -> "none"
         is Type.GenericType -> "T"
-        Type.Func.ImplicitFunc -> "func"
-        is Type.Func.ExplicitFunc -> "func"
+        is Type.Func -> "func"
         else -> this::class.simpleName.toString()
     }
 }

@@ -1,11 +1,10 @@
 package symbolTableTests
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import parser.AstNode
 import parser.symboltable.EnterSymbolResult
 import parser.symboltable.SymbolTable
-import parser.typechecker.ExprResult
 
 class SymbolTableTest {
     @Test
@@ -38,7 +37,7 @@ class SymbolTableTest {
     @Test
     fun testFunctionDeclarationsSymbolTable() {
         val st = SymbolTable()
-        st.enterSymbol("myFun", AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Bool))
+        st.enterSymbol("myFun", AstNode.Type.Func(listOf(AstNode.Type.Number), AstNode.Type.Bool))
         val symbol = st.retrieveSymbol("myFun").functions
         assertTrue(symbol[0].paramTypes[0] == AstNode.Type.Number)
         assertTrue(symbol[0].returnType == AstNode.Type.Bool)
@@ -47,8 +46,8 @@ class SymbolTableTest {
     @Test
     fun testFunctionDeclarationsMultipleScopesSymbolTable() {
         val st = SymbolTable()
-        st.enterSymbol("myFun", AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Bool))
-        st.enterSymbol("myFun", AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Bool), AstNode.Type.Number))
+        st.enterSymbol("myFun", AstNode.Type.Func(listOf(AstNode.Type.Number), AstNode.Type.Bool))
+        st.enterSymbol("myFun", AstNode.Type.Func(listOf(AstNode.Type.Bool), AstNode.Type.Number))
         st.openScope()
         val symbol = st.retrieveSymbol("myFun").functions
         assertTrue(symbol[0].paramTypes[0] == AstNode.Type.Number)
@@ -63,8 +62,8 @@ class SymbolTableTest {
         val st = SymbolTable()
         st.enterSymbol("myFun", AstNode.Type.Number)
         st.openScope()
-        st.enterSymbol("myFun", AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Bool))
-        st.enterSymbol("myFun", AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Bool), AstNode.Type.Number))
+        st.enterSymbol("myFun", AstNode.Type.Func(listOf(AstNode.Type.Number), AstNode.Type.Bool))
+        st.enterSymbol("myFun", AstNode.Type.Func(listOf(AstNode.Type.Bool), AstNode.Type.Number))
         st.openScope()
         val symbol = st.retrieveSymbol("myFun").functions
         assertTrue(symbol[0].paramTypes[0] == AstNode.Type.Number)
