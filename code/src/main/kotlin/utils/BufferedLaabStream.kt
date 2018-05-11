@@ -1,8 +1,6 @@
 package utils
 
-import lexer.Token
-
-class BufferedLaabStream<out T>(sequence: Sequence<T>): IBufferedLaabStream<T> {
+class BufferedLaabStream<out T>(sequence: Sequence<T>) : IBufferedLaabStream<T> {
     private val buffer = sequence.toList()
     private var index = 0
     override val current: T get() = buffer[index]
@@ -17,7 +15,7 @@ class BufferedLaabStream<out T>(sequence: Sequence<T>): IBufferedLaabStream<T> {
         return buffer[index]
     }
 
-    override fun<U> findElement(getFunc: (T) -> U? , exitCondition: (T) -> Boolean, startAhead: Int): U? {
+    override fun <U> findElement(getFunc: (T) -> U?, exitCondition: (T) -> Boolean, startAhead: Int): U? {
         var ahead = startAhead
         while (hasAhead(ahead)) {
             val current = lookAhead(ahead++)

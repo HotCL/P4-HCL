@@ -14,14 +14,13 @@ fun main(args: Array<String>) {
     val parser = Parser(lexer)
     val logger = Logger()
     val ast = try {
-         parser.generateAbstractSyntaxTree()
+        parser.generateAbstractSyntaxTree()
     } catch (exception: CompilationException) {
         logger.logCompilationError(exception)
         exitProcess(-1)
     }
-    //println("Ast: $ast")
-    //println(SourceCodePrinter().generate(ast))
+    // println("Ast: $ast")
+    // println(SourceCodePrinter().generate(ast))
     val programFiles = ProgramGenerator().generate(ast)
     programFiles.forEach { print("FILE: ${it.fileName}:\n\n${it.content}\n\n\n") }
 }
-

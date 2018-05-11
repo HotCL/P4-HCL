@@ -13,6 +13,7 @@ buildscript {
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.15"
         classpath "gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC6-3"
         classpath 'com.palantir:jacoco-coverage:0.4.0'
+        classpath "gradle.plugin.org.jmailen.gradle:kotlinter-gradle:1.12.0"
     }
 }
 
@@ -30,6 +31,7 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: "io.gitlab.arturbosch.detekt"
 apply plugin: 'com.palantir.jacoco-coverage'
+apply plugin: 'org.jmailen.kotlinter'
 
 detekt {
     version = "1.0.0.RC6-3"

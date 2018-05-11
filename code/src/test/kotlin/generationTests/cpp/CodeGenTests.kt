@@ -1,7 +1,6 @@
 package generationTests.cpp
 
 import builtins.HclBuiltinFunctions
-import com.natpryce.hamkrest.assertion.assertThat
 import exceptions.CompilationException
 import generation.cpp.ProgramGenerator
 import hclTestFramework.codegen.*
@@ -52,7 +51,7 @@ fun testExplicitReturn5() = setRet(num(5))
 fun testReturnVarX5PlusVarY10() = listOf(
     "x" declaredAs num withValue num(5),
     "y" declaredAs num withValue num(10),
-    setRet("+" returning num calledWith  listOf("x".asIdentifier(num), "y".asIdentifier(num)))
+    setRet("+" returning num calledWith listOf("x".asIdentifier(num), "y".asIdentifier(num)))
 )
 
 fun testSimpleLambda() =
@@ -74,7 +73,7 @@ fun testCreateList() =
 fun testCreateTuple() =
     listOf("myTuple" declaredAs tpl(num, txt) withValue tpl(num(1), txt("hello")),
 
-        setRet("element0" returning num calledWith listOf("myTuple".asIdentifier(tpl(num,txt))))
+        setRet("element0" returning num calledWith listOf("myTuple".asIdentifier(tpl(num, txt))))
     )
 
 fun testPrint() =
@@ -103,9 +102,8 @@ fun testGenericHighOrderFunctionAdvanced () = listOf(
         )
 )
 
-
 fun testPrintList() =
-    listOf("print" returning none calledWith listOf(list(num(1),num(2))) expectedArgumentType list(generic("T"))
+    listOf("print" returning none calledWith listOf(list(num(1), num(2))) expectedArgumentType list(generic("T"))
     )
 
 fun testHighOrderFunction () = listOf(
@@ -154,16 +152,15 @@ fun testFilterFunction() = listOf(
         ))
 )
 
-
 object CodeGenerationTest : Spek({
     given("HCL CPP code generator") {
         listOf (
             testReturnNoExplicitReturn() shouldReturn 0,
             testExplicitReturn5() shouldReturn 5,
             testReturnVarX5PlusVarY10() shouldReturn 15,
-            testSimpleLambda()  shouldReturn 20,
+            testSimpleLambda() shouldReturn 20,
             testCreateList() shouldReturn 3,
-            //testCreateTuple() shouldReturn 1,
+            // testCreateTuple() shouldReturn 1,
             testPrint() shouldReturn "hello world",
             testHighOrderFunction() shouldReturn 12,
             testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7,

@@ -9,15 +9,14 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import parser.ParserWithoutBuiltins
 
-
 class FunctionDeclarationTests {
 
     @Test
     fun canDeclareFunction() {
         assertThat(
             buildTokenSequence {
-                    func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.
-                    identifier("myParam1").`)`.colon.text.`{`.text("hey").`}`.newLine
+                    func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number
+                    .identifier("myParam1").`)`.colon.text.`{`.text("hey").`}`.newLine
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(txt, num) withValue (
@@ -30,8 +29,8 @@ class FunctionDeclarationTests {
     @Test
     fun failOnTypesNotMatchingWithExpression() {
         val lexer = DummyLexer(buildTokenSequence {
-            func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.text.identifier("myParam1").`)`.
-            colon.text.`{`.text("thomas").`}`.newLine
+            func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.text.identifier("myParam1").`)`
+            .colon.text.`{`.text("thomas").`}`.newLine
         })
         assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
@@ -39,8 +38,8 @@ class FunctionDeclarationTests {
     @Test
     fun failOnReturnTypeNotMatchingWithExpression() {
         val lexer = DummyLexer(buildTokenSequence {
-            func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`)`.
-            colon.number.`{`.number(3.0).`}`.newLine
+            func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`)`
+            .colon.number.`{`.number(3.0).`}`.newLine
         })
         assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
@@ -53,7 +52,6 @@ class FunctionDeclarationTests {
         assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
-
     @Test
     fun failOnUndeclaredFunction() {
         val lexer = DummyLexer(buildTokenSequence {
@@ -61,7 +59,6 @@ class FunctionDeclarationTests {
         })
         assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
-
 
     @org.junit.jupiter.api.Test
     fun failsOnLackingSeperator() {
@@ -75,7 +72,7 @@ class FunctionDeclarationTests {
     fun failsOnEmptyTypeSet() {
         val lexer = DummyLexer(buildTokenSequence {
                 func.squareStart.squareEnd.identifier("myFunc")
-                //should fail before this token
+                // should fail before this token
         })
         assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
@@ -109,15 +106,15 @@ class FunctionDeclarationTests {
         })
         Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
-    //endregion FuncTypeDcl
+    // endregion FuncTypeDcl
 
-    //region LambdaExpression
+    // region LambdaExpression
     @org.junit.jupiter.api.Test
     fun parsesFunctionWithTwoLambdaParameters() {
         assertThat(
             buildTokenSequence {
-                func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`.text.identifier("myParam2").`)`.
-                colon.none.`{`.`}`.newLine
+                func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`.text.identifier("myParam2").`)`
+                .colon.none.`{`.`}`.newLine
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(none, listOf(num, txt)) withValue (
@@ -131,8 +128,8 @@ class FunctionDeclarationTests {
     fun parsesWithFuncParamAndLambdaParam() {
         assertThat(
             buildTokenSequence {
-                func.squareStart.number.`,`.none.squareEnd.identifier("myFunc").`=`.`(`.number.
-                identifier("myParam1").`)`.colon.none.`{`.`}`.newLine
+                func.squareStart.number.`,`.none.squareEnd.identifier("myFunc").`=`.`(`.number
+                .identifier("myParam1").`)`.colon.none.`{`.`}`.newLine
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(none, num) withValue (lambda() withArgument ("myParam1" asType num))
@@ -141,21 +138,20 @@ class FunctionDeclarationTests {
     }
 
     @Test
-    fun failsOnAssignmentInLambdaParameterDefinition(){
+    fun failsOnAssignmentInLambdaParameterDefinition() {
         val lexer = DummyLexer(buildTokenSequence {
             func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`=`.number(5.0).`)`.colon.none.newLine
         })
         Assertions.assertThrows(InitializedFunctionParameterError::class.java,
                 { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
-
     }
 
     @Test
     fun canDeclareFunctionWithFunctionAsParameter() {
         assertThat(
             buildTokenSequence {
-                func.squareStart.func.squareStart.text.squareEnd.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.
-                func.squareStart.text.squareEnd.identifier("myParam").`)`.colon.text.`{`.text("HEY").`}`.newLine
+                func.squareStart.func.squareStart.text.squareEnd.`,`.text.squareEnd.identifier("myFunc").`=`.`(`
+                .func.squareStart.text.squareEnd.identifier("myParam").`)`.colon.text.`{`.text("HEY").`}`.newLine
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(txt, func(txt)) withValue (
@@ -166,11 +162,11 @@ class FunctionDeclarationTests {
     }
 
     @Test
-    fun failsOnOverloadingWithDifferentAmountOfParameters(){
+    fun failsOnOverloadingWithDifferentAmountOfParameters() {
         val lexer = DummyLexer(buildTokenSequence {
-            func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`)`.colon.none.`{`.`}`.newLine.
-            func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`.number.identifier("myParam1").`)`.colon.
-            none.`{`.`}`.newLine
+            func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`)`.colon.none.`{`.`}`.newLine
+            .func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`.number.identifier("myParam1").`)`.colon
+            .none.`{`.`}`.newLine
         })
 
         Assertions.assertThrows(OverloadWithDifferentAmountOfArgumentsException::class.java,
@@ -178,24 +174,23 @@ class FunctionDeclarationTests {
     }
 
     @Test
-    fun failsOnOverloadingWithSameParameters(){
+    fun failsOnOverloadingWithSameParameters() {
         val lexer = DummyLexer(buildTokenSequence {
-            func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`.number.identifier("myParam1").`)`.colon.
-            number.`{`.number(5.0).`}`.newLine.func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`.
-            number.identifier("myParam1").`)`.colon.bool.`{`.bool(true).`}`.newLine
+            func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`.number.identifier("myParam1").`)`.colon
+            .number.`{`.number(5.0).`}`.newLine.func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`,`
+            .number.identifier("myParam1").`)`.colon.bool.`{`.bool(true).`}`.newLine
         })
 
         Assertions.assertThrows(AlreadyDeclaredException::class.java,
                 { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
-
     }
 
     @org.junit.jupiter.api.Test
     fun parsesFuncWithBody() {
         assertThat(
             buildTokenSequence {
-                func.identifier("myFunc").`=`.`(`.`)`.colon.none.newLine.`{`.number.identifier("myNum").newLine.
-                text.identifier("myText").newLine.`}`.newLine
+                func.identifier("myFunc").`=`.`(`.`)`.colon.none.newLine.`{`.number.identifier("myNum").newLine
+                .text.identifier("myText").newLine.`}`.newLine
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(none) withValue

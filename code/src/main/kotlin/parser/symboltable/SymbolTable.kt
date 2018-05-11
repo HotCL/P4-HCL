@@ -1,7 +1,7 @@
 package parser.symboltable
 
 import parser.AstNode
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 
 /**
  * The generic implementation of the ISymbolTable
@@ -48,7 +48,7 @@ class SymbolTable : ISymbolTable {
             } else EnterSymbolResult.IdentifierAlreadyDeclared
         } else {
             val res = if (type is AstNode.Type.Func) checkFunctionIsAllowed(type, name)
-                      else EnterSymbolResult.Success
+            else EnterSymbolResult.Success
             res.also { if (it == EnterSymbolResult.Success) symbolTable.last[name] = mutableListOf(type) }
         }
     }
@@ -58,7 +58,6 @@ class SymbolTable : ISymbolTable {
             // dictionary that matches the name of the symbol. Flat map adds all elements from a list of lists into a
             // Example: single list. ((1, 2, 3), (4, 5, 6), (7, 8, 9) flatMapped == (1, 2, 3, 4, 5, 6, 7, 8, 9)).
             Symbol(symbolTable.reversed().map { it[name] }.flatMap { it ?: mutableListOf() })
-
 
     override fun enterType(type: AstNode.Type.GenericType) {
         typeTable.last.add(type)
@@ -70,5 +69,4 @@ class SymbolTable : ISymbolTable {
     override fun genericTypeInScope(typeName: String): Boolean {
         return typeTable.any { it.any { typeName == it.name } }
     }
-
 }

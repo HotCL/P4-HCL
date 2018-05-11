@@ -19,7 +19,7 @@ class PrimitiveTypeTests {
         )
     }
     @Test
-    fun canParseTxtDeclaration(){
+    fun canParseTxtDeclaration() {
         assertThat(
                 buildTokenSequence {
                     text.identifier("myText").`=`.text("someText").newLine
@@ -88,7 +88,6 @@ class PrimitiveTypeTests {
         val lexer = DummyLexer(buildTokenSequence {
             bool.identifier("myId").`=`.number(5.0).newLine
         })
-        Assertions.assertThrows(UnexpectedTypeError::class.java)
-            { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 }

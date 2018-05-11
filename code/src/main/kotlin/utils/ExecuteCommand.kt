@@ -19,7 +19,7 @@ fun String.runCommand(workingDir: File = File("./")): CommandResult {
         CommandResult(proc.inputStream.bufferedReader().readText() + proc.errorStream.bufferedReader().readText().let {
             if (it.isNotBlank()) { "Error: $it" } else ""
         }, proc.exitValue())
-    } catch(e: IOException) {
+    } catch (e: IOException) {
         e.printStackTrace()
         CommandResult("IO EXCEPTION!", -1)
     }

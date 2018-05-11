@@ -26,8 +26,8 @@ class ListTests {
     fun parseListDeclarationWithAssignment() {
         assertThat(
             buildTokenSequence {
-                list.squareStart.number.squareEnd.identifier("myList").`=`.squareStart.number(5.0).`,`.number(10.0).
-                squareEnd.newLine
+                list.squareStart.number.squareEnd.identifier("myList").`=`.squareStart.number(5.0).`,`.number(10.0)
+                .squareEnd.newLine
             },
             matchesAstChildren("myList" declaredAs list(num) withValue list(num(5), num(10)))
         )
@@ -37,9 +37,9 @@ class ListTests {
     fun parseListWithLists() {
         assertThat(
             buildTokenSequence {
-                list.squareStart.number.squareEnd.identifier("myNumberList").`=`.squareStart.number(10.0).squareEnd.newLine.
-                list.squareStart.list.squareStart.number.squareEnd.squareEnd.identifier("myList").`=`.squareStart.
-                identifier("myNumberList").squareEnd.newLine
+                list.squareStart.number.squareEnd.identifier("myNumberList").`=`.squareStart.number(10.0).squareEnd.newLine
+                .list.squareStart.list.squareStart.number.squareEnd.squareEnd.identifier("myList").`=`.squareStart
+                .identifier("myNumberList").squareEnd.newLine
             },
             matchesAstChildren(
                 "myNumberList" declaredAs list(num) withValue list(num(10)),
@@ -52,8 +52,8 @@ class ListTests {
     fun parseListWithFuncCall() {
         assertThat(
             buildTokenSequence {
-                func.squareStart.number.squareEnd.identifier("myFunc").`=`.`(`.`)`.colon.number.`{`.number(5.0).`}`.newLine.
-                list.squareStart.number.squareEnd.identifier("myList").`=`.squareStart.identifier("myFunc").squareEnd.newLine
+                func.squareStart.number.squareEnd.identifier("myFunc").`=`.`(`.`)`.colon.number.`{`.number(5.0).`}`.newLine
+                .list.squareStart.number.squareEnd.identifier("myList").`=`.squareStart.identifier("myFunc").squareEnd.newLine
             },
             matchesAstChildren(
                 "myFunc" declaredAs func(num) withValue (lambda() returning num withBody ret(num(5))),
@@ -68,7 +68,6 @@ class ListTests {
             list.squareStart.number.squareEnd.identifier("MyList").`=`.squareStart.number(5.0).number(10.0).squareEnd.newLine
         })
         Assertions.assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
-
     }
 
     @org.junit.jupiter.api.Test

@@ -38,7 +38,7 @@ class TyperCheckerTests {
                 matchesAstChildren(
                         AstNode.Command.Declaration(
                                 AstNode.Type.Number,
-                                AstNode.Command.Expression.Value.Identifier("myNumber",AstNode.Type.Number),
+                                AstNode.Command.Expression.Value.Identifier("myNumber", AstNode.Type.Number),
                                 AstNode.Command.Expression.Value.Literal.Number(5.0)
                         ),
                         AstNode.Command.Declaration(
@@ -70,5 +70,4 @@ class TyperCheckerTests {
                 )
         )
     }
-
 }

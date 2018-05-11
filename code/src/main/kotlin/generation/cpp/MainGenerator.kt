@@ -23,14 +23,14 @@ class MainGenerator : IPrinter {
         stringBuilder.appendln(loop.wrapLoop())
 
         stringBuilder.appendln(("setup();\n" +
-                (if (loop.isNotBlank()) "while(1) { loop(); }\n"  else "")).wrapMain()
+                (if (loop.isNotBlank()) "while(1) { loop(); }\n" else "")).wrapMain()
         )
         return stringBuilder.toString()
     }
 
     private fun String.prefixSerialBegin() = "\n#if ARDUINO_AVR_UNO\n" +
             "Serial.begin(9600);\n" +
-            "#endif\n"+this
+            "#endif\n" + this
 
     private fun String.wrapLoop() = "void loop() {\n${this.splitIndented}\n}"
     private fun String.wrapSetup() = "void setup() { \n${this.prefixSerialBegin().splitIndented}\n}"

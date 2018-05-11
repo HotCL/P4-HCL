@@ -15,5 +15,5 @@ interface IBufferedLaabStream<out T> {
 
     fun peek(): T
 
-    fun<U> findElement(getFunc: (T) -> U? , exitCondition: (T) -> Boolean = { false }, startAhead: Int = 0): U?
+    fun <U> findElement(getFunc: (T) -> U?, exitCondition: (T) -> Boolean = { false }, startAhead: Int = 0): U?
 }

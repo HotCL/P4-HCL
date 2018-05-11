@@ -1,9 +1,9 @@
 package builtins
 
 import generation.cpp.cppName
-import parser.*
 import parser.AstNode.Type
-
+import parser.Parameter
+import parser.buildFunction
 
 object HclBuiltinFunctions {
     val functions =
@@ -17,21 +17,21 @@ object HclBuiltinFunctions {
             buildOperatorBoolBoolToBool("and", "&&"),
             buildOperatorBoolBoolToBool("or", "||"),
 
-            buildOperatorToBool<Type.Number>("greaterThanEqual",">="),
-            buildOperatorToBool<Type.Number>("lessThanEqual","<="),
-            buildOperatorToBool<Type.Number>("greaterThan",">"),
-            buildOperatorToBool<Type.Number>("lessThan","<"),
+            buildOperatorToBool<Type.Number>("greaterThanEqual", ">="),
+            buildOperatorToBool<Type.Number>("lessThanEqual", "<="),
+            buildOperatorToBool<Type.Number>("greaterThan", ">"),
+            buildOperatorToBool<Type.Number>("lessThan", "<"),
             buildOperatorToBool<Type.Number>("equals", "=="),
             buildOperatorToBool<Type.Number>("notEquals", "!="),
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
-          
+
             buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
             buildModuloOperator(),
 
             // Control structures
             buildThenFunction(),
-            //buildElseTernaryFunction(),
+            // buildElseTernaryFunction(),
             buildWhileFunction(),
             buildEachFunction(),
             // Standard functions
@@ -70,20 +70,18 @@ object HclBuiltinFunctions {
         )
 }
 
-//region buildOperator_functions
-private inline fun<reified T: Type> buildOperatorToBool(functionName: String, operator: String = functionName)=
+// region buildOperator_functions
+private inline fun <reified T : Type> buildOperatorToBool(functionName: String, operator: String = functionName) =
     buildOperator<T, T, Type.Bool>(functionName, operator)
-
 
 private fun buildOperatorNumNumToNum(functionName: String, operator: String = functionName) =
     buildOperator<Type.Number, Type.Number, Type.Number>(functionName, operator)
 
-
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
     buildOperator<Type.Bool, Type.Bool, Type.Bool>(functionName, operator)
 
-//"Prefix" means it will be prefixed in C++, but postfixed in HCL
-private inline fun<reified P, reified R> buildPrefixOperator(functionName: String, operator: String = functionName)
+// "Prefix" means it will be prefixed in C++, but postfixed in HCL
+private inline fun <reified P, reified R> buildPrefixOperator(functionName: String, operator: String = functionName)
     where P : Type, R : Type = buildFunction(
     identifier = functionName,
     parameters = listOf(
@@ -93,7 +91,10 @@ private inline fun<reified P, reified R> buildPrefixOperator(functionName: Strin
     body = "return $operator operand;"
 )
 
-private inline fun<reified V, reified H, reified R> buildOperator(functionName: String, operator: String = functionName)
+private inline fun <reified V, reified H, reified R> buildOperator(
+    functionName: String,
+    operator: String = functionName
+)
     where V : Type, H : Type, R : Type = buildFunction(
     identifier = functionName,
     parameters = listOf(
@@ -112,9 +113,9 @@ private fun buildModuloOperator() = buildFunction(
         returnType = Type.Number,
         body = "return (long)leftHand % (long)rightHand;"
 )
-//endregion buildOperator_functions
+// endregion buildOperator_functions
 
-//region builtInFunctions
+// region builtInFunctions
 private fun buildNotFunction() = buildFunction(
         identifier = "not",
         parameters = listOf(
@@ -143,7 +144,6 @@ private fun buildTextNotEqualsFunction() = buildFunction(
         returnType = Type.Bool,
         body = "return strcmp(leftHand, rightHand) != 0;"
 )
-
 
 private fun buildNumberToTextFunction() = buildFunction(
     identifier = "toText",
@@ -216,7 +216,6 @@ private fun buildListNotEqualsFunction() = buildFunction(
     returnType = Type.Bool,
     body = "return !equals(leftHand,rightHand);"
 )
-
 
 private fun buildAtListFunction() = buildFunction(
     identifier = "at",
@@ -334,13 +333,13 @@ private fun buildDelayMillisFunction() = buildFunction(
 
         "#else //If unix based PC\n" +
 
-        "usleep(((unsigned int)millis));\n"+
+        "usleep(((unsigned int)millis));\n" +
 
         "#endif //_WIN32\n" +
         "return;"
 )
 
-//region PinFunctions
+// region PinFunctions
 private fun buildWriteDigPinFunction() = buildFunction(
     identifier = "setDigitalPin",
     parameters = listOf(Parameter("pin", Type.Number), Parameter("value", Type.Bool)),
@@ -349,7 +348,8 @@ private fun buildWriteDigPinFunction() = buildFunction(
         "pinMode((int)pin, 1);\n" +
         "digitalWrite((int)pin, value);\n" +
         "#else\n" +
-        "std::cout << \"Set digital pin \" << (int)pin << \" to output \" << (value ? \"HIGH\" : \"LOW\") << std::endl;\n" +
+        "std::cout << \"Set digital pin \" << (int)pin << \" to output \" << (value ? \"HIGH\" : \"LOW\") << " +
+            "std::endl;\n" +
         "return;\n" +
         "#endif // ARDUINO_AVR_UNO" +
         "return;"
@@ -361,10 +361,10 @@ private fun buildReadDigPinFunction() = buildFunction(
     returnType = Type.Number,
     body = "#ifdef ARDUINO_AVR_UNO\n" +
         "pinMode((int)pin, 0);\n" +
-        "return (double)digitalRead((int)pin);\n"+
+        "return (double)digitalRead((int)pin);\n" +
         "#else\n" +
         "std::cout << \"Reading from digital pin \" << (int)pin << std::endl;\n" +
-        "return 0;\n"+
+        "return 0;\n" +
         "#endif // ARDUINO_AVR_UNO\n"
 )
 
@@ -390,15 +390,15 @@ private fun buildReadAnaPinFunction() = buildFunction(
     returnType = Type.Number,
     body = "#ifdef ARDUINO_AVR_UNO\n" +
         "pinMode((int)pin, 0);\n" +
-        "return analogRead((int)pin);\n"+
+        "return analogRead((int)pin);\n" +
         "#else\n" +
         "std::cout << \"Reading from analog pin \" << (int)pin << std::endl;\n" +
-        "return 0;\n"+
+        "return 0;\n" +
         "#endif // ARDUINO_AVR_UNO\n"
 )
-//endregion PinFunctions
+// endregion PinFunctions
 
-//region PrintFunctions
+// region PrintFunctions
 private fun buildPrintFunction() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
@@ -461,8 +461,7 @@ private inline fun<reified T: Type> buildPrintLineFunction() = buildFunction(
 )
 */
 
-//endregion PrintFunctions
-//endregion builtInFunctions
+// endregion PrintFunctions
+// endregion builtInFunctions
 
-
-//endregion builtInFunctions
+// endregion builtInFunctions

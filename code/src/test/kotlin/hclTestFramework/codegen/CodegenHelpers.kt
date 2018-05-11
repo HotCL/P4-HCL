@@ -45,11 +45,10 @@ fun compileAndExecuteForAst(astNodes: List<AstNode.Command>) =
 
 private fun FilePair.writeFile(dir: String) = File("$dir/$fileName").writeText(content)
 
-
 sealed class ExpectedResult
-data class TextOutput(val string: String): ExpectedResult()
-data class ReturnValue(val value: Int): ExpectedResult()
-data class TextAndReturn(val string: String, val value: Int): ExpectedResult()
+data class TextOutput(val string: String) : ExpectedResult()
+data class ReturnValue(val value: Int) : ExpectedResult()
+data class TextAndReturn(val string: String, val value: Int) : ExpectedResult()
 
 data class TestCase(val astNodes: List<AstNode.Command>, val expectedResult: ExpectedResult)
 
@@ -65,4 +64,3 @@ infix fun Int.and(string: String) = TextAndReturn(string, this)
 infix fun String.and(int: Int) = TextAndReturn(this, int)
 
 fun setRet(code: AstNode.Command.Expression) = "RETURN_CODE" assignedTo code
-

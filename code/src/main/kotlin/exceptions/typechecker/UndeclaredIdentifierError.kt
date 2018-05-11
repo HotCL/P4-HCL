@@ -1,3 +1,3 @@
 package exceptions.typechecker
 
-class UndeclaredIdentifierError(val idName: String): Exception()
+class UndeclaredIdentifierError(val idName: String) : Exception()

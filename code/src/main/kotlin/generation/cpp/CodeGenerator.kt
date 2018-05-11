@@ -17,19 +17,19 @@ class CodeGenerator : IPrinter {
     }
 
     private fun List<AstNode.Command>.format() = joinToString("\n") {
-        //generate lists if needed
+        // generate lists if needed
         val literalLists = it.fetchList()
 
-        (if (literalLists.count() > 0) //TODO MAYBE SHOULD BE CONSTANT?
+        (if (literalLists.count() > 0) // TODO MAYBE SHOULD BE CONSTANT?
             literalLists.joinToString { "${(it.type as AstNode.Type.List).elementType.cppName} ${it.cppName}[] = {${
             it.elements.formatToList()}};\n"
             } else "") + it.format()
     }
 
-    //private fun Iterable<AstNode.Command.Expression>.format() = joinToString(",") { it.format() }
+    // private fun Iterable<AstNode.Command.Expression>.format() = joinToString(",") { it.format() }
 
     private fun AstNode.Command.format(): String =
-            when(this) {
+            when (this) {
                 is AstNode.Command.Declaration -> format()
                 is AstNode.Command.Assignment -> format()
                 is AstNode.Command.Expression -> format() + ";"
@@ -45,7 +45,7 @@ class CodeGenerator : IPrinter {
         else -> "${type.cppName} ${identifier.cppName} = " + (expression?.format() ?: type.defaultValue) + ";"
     }
 
-    private val AstNode.Type.defaultValue get (): String = when (this) {
+    private val AstNode.Type.defaultValue get(): String = when (this) {
         AstNode.Type.Number -> "0"
         AstNode.Type.Text -> "\"\""
         AstNode.Type.Bool -> "false"
@@ -82,7 +82,6 @@ class CodeGenerator : IPrinter {
 
     private fun List<AstNode.Command.Expression>.formatToList() = this.joinToString { it.format() }
 
-
     private fun AstNode.Command.Expression.format(): String =
         when (this) {
             is AstNode.Command.Expression.Value.Identifier -> cppName
@@ -105,7 +104,7 @@ class CodeGenerator : IPrinter {
                 }
         }
 
-    private val AstNode.Command.Expression.FunctionCall.genericTemplateArguments get (): String {
+    private val AstNode.Command.Expression.FunctionCall.genericTemplateArguments get(): String {
         val generics = expectedArgumentTypes.flatMap { it.getGenerics }.toSet()
         return if (generics.isEmpty()) "" else {
             val pairedGenerics = expectedArgumentTypes.zip(arguments.map { it.type })
@@ -118,7 +117,7 @@ class CodeGenerator : IPrinter {
     private fun List<AstNode>.fetchLists(): Set<AstNode.Command.Expression.Value.Literal.List> =
         flatMap { it.fetchList() }.toSet()
 
-    private fun AstNode.fetchList(): Set<AstNode.Command.Expression.Value.Literal.List> = when(this){
+    private fun AstNode.fetchList(): Set<AstNode.Command.Expression.Value.Literal.List> = when (this) {
         is AstNode.Command.Expression.FunctionCall -> arguments.fetchLists()
         is AstNode.Command.Assignment -> expression.fetchList()
         is AstNode.Command.Declaration -> type.fetchList() + (this.expression?.fetchList() ?: emptySet())
@@ -136,8 +135,8 @@ class CodeGenerator : IPrinter {
             "${it.type.makePretty()} ${it.identifier.name}" }
         }) -> ${decl.type.makePretty()}"
 
-    private val String.indented get () = "    " * indents + this
-    private val String.indentedPostInc get () = indented.also { indents ++ }
-    private val String.indentedPreDec get () = (--indents).run { indented }
+    private val String.indented get() = "    " * indents + this
+    private val String.indentedPostInc get() = indented.also { indents ++ }
+    private val String.indentedPreDec get() = (--indents).run { indented }
     private fun buildString(f: StringBuilder.() -> Unit) = StringBuilder().apply(f).toString()
 }

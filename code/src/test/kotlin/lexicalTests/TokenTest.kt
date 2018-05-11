@@ -24,17 +24,16 @@ class TokenTest {
         assertEquals(Token.Literal.Bool(true).component1(), Token.Literal.Bool(true).component1())
     }
 
-
     @org.junit.jupiter.api.Test
     fun testTokens() {
         val tokens = listOf("Identifier", "\"Text\"", "5", "true", "var", "num", "bool", "text", "func",
                                        "tuple", "list", "{", "}", "\n", "[", "]", "(", ")", ",", ":", "=",
                                        "return").mapIndexed { index, lexeme ->
-            when(lexeme) {
+            when (lexeme) {
                 "Identifier" -> Token.Identifier(lexeme)
                 "\"Text\"" -> Token.Literal.Text(lexeme.drop(1).dropLast(1))
-                "5"      -> Token.Literal.Number(lexeme.toDouble())
-                "true"   -> Token.Literal.Bool(true)
+                "5" -> Token.Literal.Number(lexeme.toDouble())
+                "true" -> Token.Literal.Bool(true)
                 "return" -> Token.Return
                 "tuple" -> Token.Type.Tuple
                 "bool" -> Token.Type.Bool
@@ -60,11 +59,11 @@ class TokenTest {
             }
         }
         tokens.map { it.token }.forEach {
-            when(it) {
-                is Token.Identifier     -> assertThat(it.value, equalTo("Identifier"))
-                is Token.Literal.Text   -> assertThat(it.value, equalTo("Text"))
+            when (it) {
+                is Token.Identifier -> assertThat(it.value, equalTo("Identifier"))
+                is Token.Literal.Text -> assertThat(it.value, equalTo("Text"))
                 is Token.Literal.Number -> assertThat(it.value, equalTo(5.0))
-                is Token.Literal.Bool   -> assertThat(it.value, equalTo(true))
+                is Token.Literal.Bool -> assertThat(it.value, equalTo(true))
             }
         }
         assertThat(tokens.sumBy { it.lineNumber }, equalTo((0 until tokens.size).sum()))

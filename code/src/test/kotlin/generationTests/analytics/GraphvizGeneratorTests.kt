@@ -7,13 +7,12 @@ import parser.AbstractSyntaxTree
 import parser.AstNode
 import kotlin.test.assertEquals
 
-
 class GraphvizGeneratorTests {
     /**
      * As we don't really care how newlines or comments are structured - these are a nice to have - not a requirement
      */
-    private fun compactOutput(input: String): String = input.
-            replace(Regex("#.*\n"),"").replace("\n","")
+    private fun compactOutput(input: String): String = input
+            .replace(Regex("#.*\n"), "").replace("\n", "")
 
     @Test
     fun canPrintAllLiteralAssignments() {
@@ -21,8 +20,8 @@ class GraphvizGeneratorTests {
                 "a" assignedTo num(5.0),
                 "b" assignedTo txt("hej med dig"),
                 "c" assignedTo bool(true),
-                "d" assignedTo list(num(1),num(2)),
-                "e" assignedTo tpl(num(1),num(2))
+                "d" assignedTo list(num(1), num(2)),
+                "e" assignedTo tpl(num(1), num(2))
         ).toMutableList()
         )
         )
@@ -37,7 +36,6 @@ class GraphvizGeneratorTests {
                 compactOutput(output)
         )
     }
-
 
     @Test
     fun canPrintNestedFunctionCall() {
@@ -81,7 +79,7 @@ class GraphvizGeneratorTests {
     @Test
     fun canPrintDeclarationOfAllTypes() {
         val output = GraphvizGenerator().generate(AbstractSyntaxTree(listOf<AstNode.Command>(
-                "test" declaredAs tpl(func(num,listOf(num,txt)),list(bool))
+                "test" declaredAs tpl(func(num, listOf(num, txt)), list(bool))
         ).toMutableList()))
 
         assertEquals(

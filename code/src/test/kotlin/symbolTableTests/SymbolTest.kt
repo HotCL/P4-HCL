@@ -16,7 +16,7 @@ class SymbolTest {
         symbol.handle(
                 { assertTrue(false) },
                 { assertTrue(false) },
-                { assertTrue(true)  }
+                { assertTrue(true) }
         )
     }
 
@@ -53,5 +53,4 @@ class SymbolTest {
                 { assertTrue(false) }
         )
     }
-
 }
