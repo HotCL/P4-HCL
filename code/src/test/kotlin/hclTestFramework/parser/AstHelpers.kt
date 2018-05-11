@@ -16,7 +16,7 @@ infix fun String.assignedTo(expression: AstNode.Command.Expression) =
         AstNode.Command.Assignment(asIdentifier(expression.type), expression)
 infix fun AstNode.Command.Declaration.withValue(value: AstNode.Command.Expression) = copy(expression = value)
 
-fun func(returnType: AstNode.Type, argTypes: List<AstNode.Type> = listOf()) = AstNode.Type.Func.ExplicitFunc(argTypes, returnType)
+fun func(returnType: AstNode.Type, argTypes: List<AstNode.Type> = listOf()) = AstNode.Type.Func(argTypes, returnType)
 fun func(returnType: AstNode.Type, argType: AstNode.Type) = func(returnType, listOf(argType))
 fun body(vararg commands: AstNode.Command) = AstNode.Command.Expression.LambdaBody(commands.toList())
 fun lambda(argTypes: List<AstNode.ParameterDeclaration> = listOf(),

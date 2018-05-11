@@ -25,7 +25,7 @@ class TypeGenerator: IPrinter {
         is AstNode.Command.Declaration -> type.fetchTuple() + (this.expression?.fetchTuple() ?: emptySet())
     //types
         is AstNode.Type.List -> elementType.fetchTuple()
-        is AstNode.Type.Func.ExplicitFunc -> paramTypes.fetchTuples() + returnType.fetchTuple()
+        is AstNode.Type.Func -> paramTypes.fetchTuples() + returnType.fetchTuple()
         is AstNode.Type.Tuple -> setOf(this)
         else -> emptySet()
     }
@@ -33,11 +33,11 @@ class TypeGenerator: IPrinter {
             "typedef struct {\n  "+
             elementTypes.mapIndexed {i, it ->
                 "${it.cppName} element$i;" }.joinToString("\n  ") +
-            "\n} ${this.cppName};\n\n"+generateFunctions()
+            "\n} ${this.cppName};\n\n"//+generateFunctions()
 
 
 
-    private fun AstNode.Type.Tuple.generateFunctions() = CodeGenerator().generate(
+/*    private fun AstNode.Type.Tuple.generateFunctions() = CodeGenerator().generate(
             AbstractSyntaxTree(listOf(buildFunction(
                     identifier = "toText",
                     parameters = listOf(
@@ -75,7 +75,7 @@ class TypeGenerator: IPrinter {
                     body = "${this.cppName} output = ${this.elementTypes.mapIndexed{
                         index, _ -> "element$index" }.joinToString()};\nreturn output;"
             )
-            )))
+            )))*/
 
 
 }

@@ -2,12 +2,10 @@ package parser.typechecker
 
 
 import parser.AstNode
-import parser.symboltable.ISymbolTable
-import parser.symboltable.SymbolTable
 
 class TypeChecker: ITypeChecker {
-    override fun List<AstNode.Type.Func.ExplicitFunc>.getTypeDeclaration(types: List<AstNode.Type>):
-            AstNode.Type.Func.ExplicitFunc? {
+    override fun List<AstNode.Type.Func>.getTypeDeclaration(types: List<AstNode.Type>):
+            AstNode.Type.Func? {
         val genericTypes = mutableMapOf<String, AstNode.Type>()
 
         return this.firstOrNull{
@@ -24,7 +22,7 @@ class TypeChecker: ITypeChecker {
     }
 
 
-    override fun getTypeOnFuncCall(decl: AstNode.Type.Func.ExplicitFunc, arguments: List<AstNode.Type>) =
+    override fun getTypeOnFuncCall(decl: AstNode.Type.Func, arguments: List<AstNode.Type>) =
             if(decl.returnType is AstNode.Type.GenericType)
             decl.paramTypes.zip(arguments).getTypeFromGenericType(decl.returnType.name) ?: TODO()
     else decl.returnType
@@ -54,8 +52,8 @@ class TypeChecker: ITypeChecker {
                     Pair(declaredType.elementType, (argumentType as AstNode.Type.List).elementType).
                             getTypeFromGenericType(typeName)
             // expecting count to be the same, as matchGenerics should be run before using getTypeFromGenericType
-            is AstNode.Type.Func.ExplicitFunc ->
-                    declaredType.paramTypes.zip((argumentType as AstNode.Type.Func.ExplicitFunc).paramTypes).
+            is AstNode.Type.Func ->
+                    declaredType.paramTypes.zip((argumentType as AstNode.Type.Func).paramTypes).
                             getTypeFromGenericType(typeName) ?:
                     Pair(declaredType.returnType, argumentType.returnType).getTypeFromGenericType(typeName)
 
@@ -82,8 +80,8 @@ class TypeChecker: ITypeChecker {
                     Pair(declaredType.elementType, argumentType.elementType).matchGenerics(genericTypes)
                 else false
 
-            is AstNode.Type.Func.ExplicitFunc ->
-                if(argumentType is AstNode.Type.Func.ExplicitFunc &&
+            is AstNode.Type.Func ->
+                if(argumentType is AstNode.Type.Func &&
                         declaredType.paramTypes.count() == argumentType.paramTypes.count())
                     Pair(declaredType.returnType, argumentType.returnType).matchGenerics(genericTypes) &&
                             declaredType.paramTypes.zip(argumentType.paramTypes).all{ it.matchGenerics(genericTypes) }

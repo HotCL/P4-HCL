@@ -19,7 +19,7 @@ sealed class AstNode {
                 is AstNode.Command.Expression.Value.Literal.Tuple -> Type.Tuple(this.elements.map { it.type })
                 is AstNode.Command.Expression.Value.Literal.List -> Type.List(this.innerType)
                 is AstNode.Command.Expression.LambdaExpression ->
-                    Type.Func.ExplicitFunc(paramDeclarations.map{it.type},returnType)
+                    Type.Func(paramDeclarations.map{it.type},returnType)
                 is AstNode.Command.Expression.LambdaBody -> {
                     val returnStatements = commands.filterIsInstance<AstNode.Command.Return>()
                     if (returnStatements.isEmpty()) AstNode.Type.None else {
@@ -39,7 +39,7 @@ sealed class AstNode {
                     data class Text(val value: String): Literal()
                     data class Bool(val value: Boolean): Literal()
                     data class Tuple(val elements: kotlin.collections.List<Expression>): Literal()
-                    data class List(val elements: kotlin.collections.List<Expression>,val innerType: Type): Literal()
+                    data class List(val elements: kotlin.collections.List<Expression>, val innerType: Type): Literal()
                 }
             }
             data class LambdaExpression(val paramDeclarations: List<ParameterDeclaration>, val returnType: Type,
@@ -59,15 +59,16 @@ sealed class AstNode {
         object Text: Type()
         object Bool: Type()
         object None: Type()
-        object Var: Type()
         data class GenericType(val name: String): Type()
         data class List(val elementType: Type): Type()
-        sealed class Func: Type() {
-            data class ExplicitFunc(val paramTypes: kotlin.collections.List<Type>, val returnType: Type): Func()
-            object ImplicitFunc: Func() //TODO make this obsolete probably
-        }
+        data class Func(val paramTypes: kotlin.collections.List<Type>, val returnType: Type): Type()
         data class Tuple(val elementTypes: kotlin.collections.List<Type>): Type()
     }
 
     data class ParameterDeclaration(val type: Type, val identifier: Command.Expression.Value.Identifier) : AstNode()
 }
+
+sealed class TypeWithImplicit
+object VarDeclaration: TypeWithImplicit()
+object ImplicitFuncDeclaration: TypeWithImplicit()
+data class AstNodeType(val type: AstNode.Type): TypeWithImplicit()

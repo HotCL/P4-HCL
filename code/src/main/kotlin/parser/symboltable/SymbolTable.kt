@@ -23,7 +23,7 @@ class SymbolTable : ISymbolTable {
         typeTable.removeLast()
     }
 
-    private fun checkFunctionIsAllowed(func: AstNode.Type.Func.ExplicitFunc, name: String): EnterSymbolResult =
+    private fun checkFunctionIsAllowed(func: AstNode.Type.Func, name: String): EnterSymbolResult =
         retrieveSymbol(name).handle(
                 {
                     it.forEach {
@@ -43,11 +43,11 @@ class SymbolTable : ISymbolTable {
         val entry = symbolTable.last[name]
         return if (entry != null) {
             val entryFirst = entry.first()
-            if (entryFirst is AstNode.Type.Func.ExplicitFunc && type is AstNode.Type.Func.ExplicitFunc) {
+            if (entryFirst is AstNode.Type.Func && type is AstNode.Type.Func) {
                 checkFunctionIsAllowed(type, name).also { if (it == EnterSymbolResult.Success) entry.add(type) }
             } else EnterSymbolResult.IdentifierAlreadyDeclared
         } else {
-            val res = if (type is AstNode.Type.Func.ExplicitFunc) checkFunctionIsAllowed(type, name)
+            val res = if (type is AstNode.Type.Func) checkFunctionIsAllowed(type, name)
                       else EnterSymbolResult.Success
             res.also { if (it == EnterSymbolResult.Success) symbolTable.last[name] = mutableListOf(type) }
         }

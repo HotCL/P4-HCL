@@ -78,8 +78,8 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
             accept<Token.SpecialChar.EndOfLine>()
     }
 
-    private fun acceptIdentifier(type:AstNode.Type) =
-            AstNode.Command.Expression.Value.Identifier(accept<Token.Identifier>().value,type)
+    private fun acceptIdentifier(type: AstNode.Type) =
+            AstNode.Command.Expression.Value.Identifier(accept<Token.Identifier>().value, type)
 
     private fun acceptIdentifierName() = accept<Token.Identifier>().value
 
@@ -93,10 +93,10 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
     }
 
     private fun parseSingleParameter(): AstNode.ParameterDeclaration {
-        val type = parseType(genericAllowed = true)
-        val identifier = acceptIdentifier(type)
+        val type = parseType(genericAllowed = true) as AstNodeType
+        val identifier = acceptIdentifier(type.type)
         if (current.token == Token.SpecialChar.Equals) initializedFunctionParameterError()
-        return AstNode.ParameterDeclaration(type, identifier)
+        return AstNode.ParameterDeclaration(type.type, identifier)
     }
 
     private fun parseFunctionParameters(): List<AstNode.ParameterDeclaration> {
@@ -121,7 +121,9 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
 
             val expression = parseExpression()
             currentFunctionName = null
-            if (type != AstNode.Type.Func.ImplicitFunc && type != AstNode.Type.Var && expression.type != type)
+            if (type != ImplicitFuncDeclaration &&
+                type != VarDeclaration &&
+                expression.type != (type as AstNodeType).type)
                 unexpectedTypeError(type.toString(), expression.type.toString())
 
             when (enterSymbol(identifierName, expression.type)) {
@@ -134,18 +136,18 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
                         AstNode.Command.Expression.Value.Identifier(identifierName,expression.type), expression)
             }
         } else {
-            if (type == AstNode.Type.Func.ImplicitFunc || type == AstNode.Type.Var)
+            if (type == ImplicitFuncDeclaration || type == VarDeclaration)
                 error("Cannot declare implicit type without expression")
-            if (type is AstNode.Type.Func)
+            if (type is AstNodeType && type.type is AstNode.Type.Func)
                 error("cannot declare function without body")
 
-            enterSymbol(identifierName, type).let {
+            enterSymbol(identifierName, (type as AstNodeType).type).let {
                 if (it == EnterSymbolResult.IdentifierAlreadyDeclared)
                     alreadyDeclaredException()
             }
 
-            AstNode.Command.Declaration(type,
-                    AstNode.Command.Expression.Value.Identifier(identifierName,type), null)
+            AstNode.Command.Declaration(type.type,
+                    AstNode.Command.Expression.Value.Identifier(identifierName, type.type), null)
         }
     }
 
@@ -161,23 +163,23 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
     }
 
     //region Type declarations
-    private fun  parseType(implicitAllowed: Boolean = false, genericAllowed: Boolean = false): AstNode.Type {
+    private fun  parseType(implicitAllowed: Boolean = false, genericAllowed: Boolean = false): TypeWithImplicit {
         val currentPosToken = current
         moveNext()
         return when (currentPosToken.token) {
-            Token.Type.Number -> AstNode.Type.Number
-            Token.Type.Text -> AstNode.Type.Text
-            Token.Type.Bool -> AstNode.Type.Bool
+            Token.Type.Number -> AstNodeType(AstNode.Type.Number)
+            Token.Type.Text -> AstNodeType(AstNode.Type.Text)
+            Token.Type.Bool -> AstNodeType(AstNode.Type.Bool)
             Token.Type.Var ->
-                if (implicitAllowed) AstNode.Type.Var
+                if (implicitAllowed) VarDeclaration
                 else implicitTypeNotAllowedError()
             Token.Type.Func -> parseFuncType(implicitAllowed)
-            Token.Type.Tuple -> parseTupleType(genericAllowed)
-            Token.Type.List -> parseListType(genericAllowed)
+            Token.Type.Tuple -> AstNodeType(parseTupleType(genericAllowed))
+            Token.Type.List -> AstNodeType(parseListType(genericAllowed))
         // generic
             is Token.Identifier ->
                 if (genericAllowed || genericTypeInScope(currentPosToken.token.value))
-                    AstNode.Type.GenericType(currentPosToken.token.value)
+                    AstNodeType(AstNode.Type.GenericType(currentPosToken.token.value))
                 else unexpectedTokenError(currentPosToken.token)
             else -> unexpectedTokenError(currentPosToken.token)
         }
@@ -194,21 +196,24 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
 
 
 
-    private fun parseFuncType(implicitAllowed: Boolean): AstNode.Type.Func {
-        return if (current.token == Token.SpecialChar.SquareBracketStart) {
-            accept<Token.SpecialChar.SquareBracketStart>()
+    private fun parseFuncType(implicitAllowed: Boolean): TypeWithImplicit {
+        return when {
+            current.token == Token.SpecialChar.SquareBracketStart -> {
+                accept<Token.SpecialChar.SquareBracketStart>()
 
-            val parameters = parseTypes({
-                if (peek().token == Token.SpecialChar.SquareBracketEnd && tryAccept<Token.Type.None>())
-                    AstNode.Type.None
-                else parseType(genericAllowed = true)
-            })
-            accept<Token.SpecialChar.SquareBracketEnd>()
-            val returnType = parameters.last()
+                val parameters = parseTypes({
+                    if (peek().token == Token.SpecialChar.SquareBracketEnd && tryAccept<Token.Type.None>())
+                        AstNode.Type.None
+                    else (parseType(genericAllowed = true) as AstNodeType).type
+                })
+                accept<Token.SpecialChar.SquareBracketEnd>()
+                val returnType = parameters.last()
 
-            AstNode.Type.Func.ExplicitFunc(parameters.dropLast(1), returnType)
+                AstNodeType(AstNode.Type.Func(parameters.dropLast(1), returnType))
+            }
+            implicitAllowed -> ImplicitFuncDeclaration
+            else -> implicitTypeNotAllowedError()
         }
-        else if (implicitAllowed) AstNode.Type.Func.ImplicitFunc else implicitTypeNotAllowedError()
     }
 
     private fun parseLambdaLiteral(): AstNode.Command.Expression.LambdaExpression {
@@ -217,13 +222,13 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         val returnType = if (current.token == Token.Type.None) {
             moveNext()
             AstNode.Type.None
-        } else parseType(genericAllowed = true)
+        } else (parseType(genericAllowed = true) as AstNodeType).type
 
         flushNewLine(false)
 
         // add recursive call if valid
         val recCall = currentFunctionName?.let { listOf(AstNode.ParameterDeclaration(
-                AstNode.Type.Func.ExplicitFunc(parameters.map { it.type }, returnType),
+                AstNode.Type.Func(parameters.map { it.type }, returnType),
                 AstNode.Command.Expression.Value.Identifier(it, returnType)))
         } ?: listOf()
 
@@ -236,7 +241,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         is AstNode.Type.GenericType -> setOf(this)
         is AstNode.Type.List -> this.elementType.getGenerics
         is AstNode.Type.Tuple -> this.elementTypes.flatMap { it.getGenerics }.toSet()
-        is AstNode.Type.Func.ExplicitFunc ->
+        is AstNode.Type.Func ->
             (this.paramTypes.flatMap { it.getGenerics } + returnType.getGenerics).toSet()
         else -> setOf()
     }
@@ -266,14 +271,14 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
 
     private fun parseTupleType(genericAllowed: Boolean): AstNode.Type.Tuple {
         accept<Token.SpecialChar.SquareBracketStart>()
-        val elementTypes = parseTypes { parseType(genericAllowed = genericAllowed) }
+        val elementTypes = parseTypes { (parseType(genericAllowed = genericAllowed) as AstNodeType).type }
         accept<Token.SpecialChar.SquareBracketEnd>()
         return AstNode.Type.Tuple(elementTypes)
     }
 
     private fun parseListType(genericAllowed: Boolean): AstNode.Type.List {
         accept<Token.SpecialChar.SquareBracketStart>()
-        val elementType: AstNode.Type = parseType(genericAllowed = genericAllowed)
+        val elementType: AstNode.Type = (parseType(genericAllowed = genericAllowed) as AstNodeType).type
         accept<Token.SpecialChar.SquareBracketEnd>()
         return AstNode.Type.List(elementType)
     }
@@ -299,11 +304,11 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
         }, { scopeDepth == 0 && it.token !is Token.Identifier }, 1)
     }
 
-    private fun getLambdaParameter(func: List<AstNode.Type.Func.ExplicitFunc>, index: Int): AstExpression {
+    private fun getLambdaParameter(func: List<AstNode.Type.Func>, index: Int): AstExpression {
         val funcAcceptingLambda = func.firstOrNull{
-            it.paramTypes[index] is AstNode.Type.Func.ExplicitFunc
+            it.paramTypes[index] is AstNode.Type.Func
         } ?: error("No function found that takes a lambda at the current position")
-        val lambdaFuncType = funcAcceptingLambda.paramTypes[index] as AstNode.Type.Func.ExplicitFunc
+        val lambdaFuncType = funcAcceptingLambda.paramTypes[index] as AstNode.Type.Func
         val lambdaParams = when (lambdaFuncType.paramTypes.size) {
             0 -> emptyList()
             1 -> listOf(AstNode.ParameterDeclaration(lambdaFuncType.paramTypes[0],
@@ -478,7 +483,7 @@ open class Parser(val lexer: ILexer): IParser, ITypeChecker by TypeChecker(), IS
     private fun AstNode.Type.containsGeneric() : Boolean = when(this) {
         is AstNode.Type.List -> this.elementType.containsGeneric()
         is AstNode.Type.Tuple -> this.elementTypes.any {it.containsGeneric()}
-        is AstNode.Type.Func.ExplicitFunc ->
+        is AstNode.Type.Func ->
             this.paramTypes.any {it.containsGeneric()} || this.returnType.containsGeneric()
         is AstNode.Type.GenericType -> true
         else -> false

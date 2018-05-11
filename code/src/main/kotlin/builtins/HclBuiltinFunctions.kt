@@ -36,6 +36,7 @@ object HclBuiltinFunctions {
             buildNumberToTextFunction(),
             buildBoolToTextFunction(),
             buildListToTextFunction(),
+            buildTextToTextFunction(),
             buildGetListLengthFunction(),
             buildListEqualsFunction(),
             buildListNotEqualsFunction(),
@@ -61,6 +62,8 @@ object HclBuiltinFunctions {
             buildPrintLineFunction<Type.Text>(),
             buildPrintLineFunction<Type.List>()
             */
+            buildPrintFunctionText(),
+            buildPrintFunctionList(),
             buildPrintFunction()
         )
 }
@@ -129,9 +132,20 @@ private fun buildListToTextFunction() = buildFunction(
     returnType = Type.Text,
     body = "auto output = ConstList<char>::string((char*)\"[\");\n" +
         "for(int i = 0; i < input.get()->size; i++) {\n" +
-        "   output = ConstList<T>::concat(output, ${"toText".cppName}(ConstList<T>::at(input,i)));\n" +
+        "   output = ConstList<char>::concat(output, ${"toText".cppName}(ConstList<T>::at(input, i)));\n" +
+        "   if (i != input.get()->size - 1)\n" +
+        "       output = ConstList<char>::concat(output, ConstList<char>::string((char*)\", \"));" +
         "}\n" +
-        "return output;"
+        "return ConstList<char>::concat(output, ConstList<char>::string((char*)\"]\\0\"));"
+)
+
+private fun buildTextToTextFunction() = buildFunction(
+        identifier = "toText",
+        parameters = listOf(
+                Parameter("input", Type.Text)
+        ),
+        returnType = Type.Text,
+        body = "return input;"
 )
 
 private fun buildGetListLengthFunction() = buildFunction(
@@ -199,8 +213,8 @@ private fun buildSubListFunction() = buildFunction(
 private fun buildWhileFunction() = buildFunction(
     identifier = "while",
     parameters = listOf(
-        Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None)),
-        Parameter("condition", Type.Func.ExplicitFunc(listOf(), Type.Bool))
+        Parameter("body", Type.Func(listOf(), Type.None)),
+        Parameter("condition", Type.Func(listOf(), Type.Bool))
     ),
     returnType = Type.Bool,
     body = "while (condition()) body();"
@@ -210,7 +224,7 @@ private fun buildThenFunction() = buildFunction(
     identifier = "then",
     parameters = listOf(
         Parameter("condition", Type.Bool),
-        Parameter("body", Type.Func.ExplicitFunc(listOf(), Type.None))
+        Parameter("body", Type.Func(listOf(), Type.None))
     ),
     returnType = Type.Bool,
     body = "if (condition) { body(); }\nreturn condition;"
@@ -220,7 +234,7 @@ private fun buildEachFunction() = buildFunction(
     identifier = "each",
     parameters = listOf(
         Parameter("list", Type.List(Type.GenericType("T"))),
-        Parameter("body", Type.Func.ExplicitFunc(listOf(Type.GenericType("T")), Type.None))
+        Parameter("body", Type.Func(listOf(Type.GenericType("T")), Type.None))
     ),
     returnType = Type.None,
     body = "for (int i = 0; i < list.get()->size; i++) {\n" +
@@ -233,7 +247,7 @@ private fun buildMapFunction() = buildFunction(
     identifier = "map",
     parameters = listOf(
         Parameter("list", Type.List(Type.GenericType("T"))),
-        Parameter("fun", Type.Func.ExplicitFunc(
+        Parameter("fun", Type.Func(
             listOf(Type.GenericType("T")),
             Type.GenericType("T2"))
         )
@@ -251,7 +265,7 @@ private fun buildFilterFunction() = buildFunction(
     parameters = listOf(
         Parameter("list", Type.List(Type.GenericType("T"))),
         Parameter("fun",
-            Type.Func.ExplicitFunc(
+            Type.Func(
                 listOf(Type.GenericType("T")),
                 Type.Bool
             )
@@ -298,7 +312,7 @@ private fun buildWriteDigPinFunction() = buildFunction(
         "#else\n" +
         "std::cout << \"Set digital pin \" << (int)pin << \" to output \" << (value ? \"HIGH\" : \"LOW\") << std::endl;\n" +
         "return;\n" +
-        "#endif //ARDUINO_AVR_UNO" +
+        "#endif // ARDUINO_AVR_UNO" +
         "return;"
 )
 
@@ -312,7 +326,7 @@ private fun buildReadDigPinFunction() = buildFunction(
         "#else\n" +
         "std::cout << \"Reading from digital pin \" << (int)pin << std::endl;\n" +
         "return 0;\n"+
-        "#endif //ARDUINO_AVR_UNO\n"
+        "#endif // ARDUINO_AVR_UNO\n"
 )
 
 private fun buildWriteAnaPinFunction() = buildFunction(
@@ -327,7 +341,7 @@ private fun buildWriteAnaPinFunction() = buildFunction(
         "analogWrite((int)pin, value);\n" +
         "#else\n" +
         "std::cout << \"Set analog pin \" << (int)pin << \" to output \" << value << std::endl;\n" +
-        "#endif //ARDUINO_AVR_UNO\n" +
+        "#endif // ARDUINO_AVR_UNO\n" +
         "return;"
 )
 
@@ -341,7 +355,7 @@ private fun buildReadAnaPinFunction() = buildFunction(
         "#else\n" +
         "std::cout << \"Reading from analog pin \" << (int)pin << std::endl;\n" +
         "return 0;\n"+
-        "#endif //ARDUINO_AVR_UNO\n"
+        "#endif // ARDUINO_AVR_UNO\n"
 )
 //endregion PinFunctions
 
@@ -351,14 +365,44 @@ private fun buildPrintFunction() = buildFunction(
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
     returnType = Type.None,
     body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.begin(9600); //9600 is the baud rate - must be the same rate used for monitor\n" +
-        "while(!Serial);     //Wait for Serial to initialize\n" +
-        "Serial.print(input.get()->data);\n" +
+        "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
+        "while(!Serial);     // Wait for Serial to initialize\n" +
+        "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
         "Serial.end();\n" +
-        "#else //NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << input.get()->data;\n" +
-        "#endif //ARDUINO_AVR_UNO\n" +
+        "#else // NOT ARDUINO_AVR_UNO\n" +
+        "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
+        "#endif // ARDUINO_AVR_UNO\n" +
         "return;"
+)
+
+private fun buildPrintFunctionList() = buildFunction(
+        identifier = "print",
+        parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
+        returnType = Type.None,
+        body = "#ifdef ARDUINO_AVR_UNO\n" +
+                "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
+                "while(!Serial);     // Wait for Serial to initialize\n" +
+                "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
+                "Serial.end();\n" +
+                "#else // NOT ARDUINO_AVR_UNO\n" +
+                "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
+                "#endif // ARDUINO_AVR_UNO\n" +
+                "return;"
+)
+
+private fun buildPrintFunctionText() = buildFunction(
+        identifier = "print",
+        parameters = listOf(Parameter("input", Type.Text)),
+        returnType = Type.None,
+        body = "#ifdef ARDUINO_AVR_UNO\n" +
+                "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
+                "while(!Serial);     // Wait for Serial to initialize\n" +
+                "Serial.print(input.get()->data);\n" +
+                "Serial.end();\n" +
+                "#else // NOT ARDUINO_AVR_UNO\n" +
+                "std::cout << input.get()->data;\n" +
+                "#endif // ARDUINO_AVR_UNO\n" +
+                "return;"
 )
 /* THESE SHOULDN*T BE NEEDED. generics should work
 private inline fun<reified T: Type> buildPrintFunction() = buildFunction(

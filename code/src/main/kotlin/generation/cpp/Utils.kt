@@ -32,14 +32,14 @@ val String.cppName get() =
     CppNameTranslator.getValidIdentifierName(parser.AstNode.Command.Expression.Value.Identifier(this,AstNode.Type.None))
 
 
-val AstNode.Type.Func.ExplicitFunc.getGeneric get() = paramTypes
+val AstNode.Type.Func.getGeneric get() = paramTypes
 
 
 val AstNode.Type.getGenerics get():List<AstNode.Type.GenericType> = when(this){
     is AstNode.Type.GenericType -> listOf(this)
     is AstNode.Type.List -> this.elementType.getGenerics
     is AstNode.Type.Tuple -> this.elementTypes.flatMap { it.getGenerics }
-    is AstNode.Type.Func.ExplicitFunc -> this.paramTypes.flatMap { it.getGenerics } + returnType.getGenerics
+    is AstNode.Type.Func -> this.paramTypes.flatMap { it.getGenerics } + returnType.getGenerics
     else -> listOf()
 }
 

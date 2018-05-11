@@ -50,9 +50,9 @@ class CodeGenerator : IPrinter {
         AstNode.Type.Text -> "\"\""
         AstNode.Type.Bool -> "false"
         is AstNode.Type.List -> "ConstList<${elementType.cppName}>::create(nullptr, 0)"
-        is AstNode.Type.Func.ExplicitFunc -> "nullptr"
+        is AstNode.Type.Func -> "nullptr"
         is AstNode.Type.Tuple -> "{${ this.elementTypes.joinToString { it.defaultValue } }}"
-        is AstNode.Type.GenericType -> "nullptr"
+
         else -> throw Exception("Unable to determine default value of type: $this")
     }
 
@@ -72,7 +72,7 @@ class CodeGenerator : IPrinter {
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDeclDefault(decl: AstNode.Command.Declaration) =
         buildString {
             appendln(("// Lambda function for name ${toComment(decl)}").indented)
-            val type = AstNode.Type.Func.ExplicitFunc(paramDeclarations.map { it.type }, returnType)
+            val type = AstNode.Type.Func(paramDeclarations.map { it.type }, returnType)
             appendln("${type.cppName} ${decl.identifier.cppName} = ".indented + format() + ";")
         }
 
