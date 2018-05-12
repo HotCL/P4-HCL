@@ -12,9 +12,10 @@ import java.io.File
 
 fun compileAndExecuteCpp(files: List<FilePair>, dir: String, keepFiles: Boolean = false): CommandResult? {
     compileCpp(files, dir, keepFiles)
+    val programFile = File("program")
     return try {
-        File("./program").setExecutable(true)
-        "./program".runCommand()
+        programFile.setExecutable(true)
+        programFile.absolutePath.runCommand()
     } catch (e: Exception) {
         null
     } finally {

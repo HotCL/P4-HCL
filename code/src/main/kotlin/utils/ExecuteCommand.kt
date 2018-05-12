@@ -35,11 +35,11 @@ fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolea
         cppFiles.forEach {
             it.writeFile(dir)
             "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
-                println(runCommand(File("./$dir")))
+                println(runCommand(File(dir)))
             }
         }
         "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o $outputFile".apply {
-            println(runCommand(File("./$dir")))
+            println(runCommand(File(dir)))
         }
         val program = File("./$dir/$outputFile")
         program.copyTo(File(program.parentFile.parentFile.absolutePath + "/$outputFile"), true)
