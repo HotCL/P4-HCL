@@ -18,7 +18,7 @@ fun compileAndExecuteCpp(files: List<FilePair>, dir: String, keepFiles: Boolean 
     } catch (e: Exception) {
         null
     } finally {
-        "rm program".runCommand()
+        File("program").delete()
     }
 }
 
