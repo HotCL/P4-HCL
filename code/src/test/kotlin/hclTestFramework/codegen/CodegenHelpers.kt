@@ -9,34 +9,33 @@ import utils.CommandResult
 import utils.runCommand
 import java.io.File
 
-fun compileAndExecuteCpp(files: List<FilePair>): CommandResult? {
-    val testDir = "testDir"
-    File(testDir).mkdir()
+fun compileAndExecuteCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolean = false): CommandResult? {
+    File(dir).mkdir()
     return try {
         val headerFiles = files.filter { it.fileName.endsWith(".h") }
         val cppFiles = files.filter { it.fileName.endsWith(".cpp") }
-        headerFiles.forEach { it.writeFile(testDir) }
+        headerFiles.forEach { it.writeFile(dir) }
         cppFiles.forEach {
-            it.writeFile(testDir)
+            it.writeFile(dir)
             "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
                 println(this)
-                println(runCommand(File("./testDir")))
+                println(runCommand(File("./$dir")))
             }
         }
         println("Linking:")
         "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o program".apply {
             println(this)
-            println(runCommand(File("./testDir")))
+            println(runCommand(File("./$dir")))
         }
         println("Running command:")
         "./program".run {
             println(this)
-            runCommand(File("./testDir"))
+            runCommand(File("./$dir"))
         }
     } catch (e: Exception) {
         null
     } finally {
-        File(testDir).deleteRecursively()
+        if (!keepFiles) File(dir).deleteRecursively()
     }
 }
 

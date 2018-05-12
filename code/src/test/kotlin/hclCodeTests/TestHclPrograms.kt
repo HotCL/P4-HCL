@@ -34,9 +34,12 @@ object TestHclPrograms : Spek({
             val constraints = fileContent.split("\n").first().split("should ").drop(1).map { it.split(" ") }
             val expectedReturn = constraints.firstOrNull { it.first() == "return" }?.get(1)?.toInt() ?: 0
             val expectedPrint = constraints.firstOrNull { it.first() == "print" }?.drop(1)?.joinToString(" ") ?: ""
-            it("should return $expectedReturn and print \"$expectedPrint\"") {
+            if (fileContent.contains("TEST_DISABLED")) {
+                it("should not be executed") {}
+            } else it("should return $expectedReturn and print \"$expectedPrint\"") {
                 val outputFiles = generateFilesFromCode(fileContent)
-                val output = compileAndExecuteCpp(outputFiles)!!
+                val keepFiles = fileContent.contains("KEEP_FILES")
+                val output = compileAndExecuteCpp(outputFiles, file.split(".").first(), keepFiles)!!
                 assertEquals(expectedReturn, output.returnValue)
                 assertThat(output.string, startsWith(expectedPrint))
             }
