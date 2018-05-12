@@ -128,6 +128,7 @@ mainClassName = 'MainKt'
 repositories {
     mavenCentral()
     maven { url "http://dl.bintray.com/jetbrains/spek" }
+    maven { url "https://dl.bintray.com/ajalt/maven" }
 }
 
 sourceSets {
@@ -140,6 +141,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile 'com.natpryce:hamkrest:1.4.2.2'
+    compile 'com.github.ajalt:clikt:1.2.0'
 
     testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"

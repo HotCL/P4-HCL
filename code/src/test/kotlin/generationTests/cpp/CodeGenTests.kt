@@ -3,8 +3,8 @@ package generationTests.cpp
 import builtins.HclBuiltinFunctions
 import exceptions.CompilationException
 import generation.cpp.ProgramGenerator
-import hclTestFramework.codegen.*
-import hclTestFramework.parser.*
+import hclTestFramework.codegen.* // ktlint-disable no-wildcard-imports
+import hclTestFramework.parser.* // ktlint-disable no-wildcard-imports
 import lexer.Lexer
 import logger.Logger
 import org.jetbrains.spek.api.Spek
@@ -42,7 +42,7 @@ class CodeGenTests {
         }
 
         val programFiles = ProgramGenerator().generate(ast)
-        compileAndExecuteCpp(programFiles)
+        compileAndExecuteCpp(programFiles, "testDir")
     }
 }
 
