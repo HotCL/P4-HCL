@@ -6,43 +6,24 @@ import hclTestFramework.parser.assignedTo
 import parser.AbstractSyntaxTree
 import parser.AstNode
 import utils.CommandResult
+import utils.compileCpp
 import utils.runCommand
 import java.io.File
 
-fun compileAndExecuteCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolean = false): CommandResult? {
-    File(dir).mkdir()
+fun compileAndExecuteCpp(files: List<FilePair>, dir: String, keepFiles: Boolean = false): CommandResult? {
+    compileCpp(files, dir, keepFiles)
     return try {
-        val headerFiles = files.filter { it.fileName.endsWith(".h") }
-        val cppFiles = files.filter { it.fileName.endsWith(".cpp") }
-        headerFiles.forEach { it.writeFile(dir) }
-        cppFiles.forEach {
-            it.writeFile(dir)
-            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
-                println(this)
-                println(runCommand(File("./$dir")))
-            }
-        }
-        println("Linking:")
-        "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o program".apply {
-            println(this)
-            println(runCommand(File("./$dir")))
-        }
-        println("Running command:")
-        "./program".run {
-            println(this)
-            runCommand(File("./$dir"))
-        }
+        File("./program").setExecutable(true)
+        "./program".runCommand()
     } catch (e: Exception) {
         null
     } finally {
-        if (!keepFiles) File(dir).deleteRecursively()
+        "rm program".runCommand()
     }
 }
 
 fun compileAndExecuteForAst(astNodes: List<AstNode.Command>) =
-        compileAndExecuteCpp(ProgramGenerator().generate(AbstractSyntaxTree(astNodes)))
-
-private fun FilePair.writeFile(dir: String) = File("$dir/$fileName").writeText(content)
+        compileAndExecuteCpp(ProgramGenerator().generate(AbstractSyntaxTree(astNodes)), "testDir")
 
 sealed class ExpectedResult
 data class TextOutput(val string: String) : ExpectedResult()
