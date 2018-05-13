@@ -2,11 +2,47 @@
 %Content includes all type rules in HCL
 %Should be a relatively short section, since much of the content is self explanatory.
 \section{Type Rules}
-To ensure that any program written in HCL runs correctly after compilation, the language follows certain type rules.
+To ensure that any program written in HCL runs correctly after compilation, the language follows certain type rules which are enforced at compile-time.
+Essentially, these rules specify when certain expressions have to evaluate to specific types.
+The rules have been split up in two sections:
+\begin{itemize}
+	\item Rules for expressions
+	\item Rules for statements
+\end{itemize}
+The former specifies which type an expression evaluates to, if given the correct input.
+The latter specifies where certain types are needed for a program to run correctly.
 
+\textbf{Notation}\\
+The notation for type rules is very similar to the notation of semantics with few differences.
+Below is an example:\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1 : num \quad e_2 : num}
+	{E \vdash e_1\ + e_2 : num}
+	\end{math}
+\end{center}
+This is the type rule for addition of two numbers.
+It means that given the current environment, the resulting value will be of type $num$ if the two input expressions are both of type $num$.
+
+As the type rules do not change the state of a program, and therefore also do not change the variable- and function environments, the environment can be simplified to one symbol, $E$.
+The colon is used to show that an expression is of a certain type.
 
 \subsection{Type Rules for Expressions}
-%quick introduction.
+%Introduktion
+
+
+\textbf{Variable type}\\
+The type of a variable is found by looking up the variable in the environment:\\
+\begin{center}
+	\begin{math}
+	E(x) : T
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $T$ is the type that the variable was declared with
+\end{center}
+
+
 \textbf{Num type}\\
 \begin{center}
 	\begin{math}
@@ -47,7 +83,8 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 	\end{math}
 	\\[1\baselineskip]
 	\texttt{where} $T_i \notin \{none, var, generic\}$\\
-	\texttt{and} $k > 0$
+	\texttt{and} $k > 0$\\
+	\texttt{and} $1 \le i \le k$
 \end{center}
 
 \textbf{Function type}\\
@@ -62,11 +99,29 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 	\texttt{where for each} $T \in \{T_1,\ .
 	.
 	.
-	\ ,\ T_{k-1}\}\ T \notin \{none, var\}$\\
+	\ ,\ T_{k-1}\},\ T \notin \{none, var\}$\\
 	\texttt{and} $T_k \notin \{var\}$\\
 	\texttt{and} $k > 0$
 \end{center}
 
+\textbf{Lambda type}\\
+\begin{center}
+	\begin{math}
+	E \vdash \{\ S\ \} : func[T_1,\ .
+	.
+	.
+	\ ,\ T_k]
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $T_k$ is the type of the return expression\\
+	\texttt{and} $T_1, \ .
+	.
+	.
+	\ ,\ T_{k-1}$ are inferred from the function whom the expression is the argument for%Jeg er ikke sikker på, om denne sætning beskriver det godt nok
+\end{center}
+
+For the sake of brevity, the type rules for expressions have been simplified significantly compared to the semantic rules.
+Unlike the semantics, where certain function calls must have its own rule in order for the semantics of HCL to be properly defined, the type rules for all function calls can be explained with a single rule.
 \textbf{Function call}\\
 \begin{center}
 	\begin{math}
@@ -91,13 +146,27 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 	.
 	\ T_k$ are the types of the formal parameters of $f$\\
 	\texttt{and} $T_f$ is the return type of $f$\\
-	\texttt{and} $k >= 0$
+	\texttt{and} $k \ge 0$
 \end{center}
 
 
 
 \subsection{Type Rules for Statements}
 %quick introduction.
+The type rules for statements are, as mentioned earlier, different from the rules for expressions.
+%explain what "ok" means
+\textbf{Compositional type rule}\\
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash S_1 : \texttt{ok}\quad E \vdash S_2 : \texttt{ok}}
+	{E \vdash S_1;S_2 : \texttt{ok}}
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $T \in \{num, bool, txt, list, tuple\}$
+\end{center}
+
+
 \textbf{Explicit variable declaration}\\
 \begin{center}
 	\begin{math}
@@ -109,6 +178,13 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 	\texttt{where} $T \in \{num, bool, txt, list, tuple\}$
 \end{center}
 
+\textbf{Implicit variable declaration}\\
+\begin{center}
+	\begin{math}
+	E \vdash var\ x = e : \texttt{ok}
+	\end{math}
+\end{center}
+
 \textbf{Explicit function declaration}\\
 \begin{center}
 	\begin{math}
@@ -118,15 +194,15 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 			.
 			.
 			\ E \vdash U_k : T_k}
-		{E \vdash func[T_1\
+		{E \vdash func[T_1,\
 			.
 			.
 			.
-			\ T_k]\ f = (U_1\ p_1\
+			\ ,\ T_k]\ f = (U_1\ p_1\
 			.
 			.
 			.
-			\ U_{k-1}\ p_{k-1}): U_k\ \{ S \} : \texttt{ok}}
+			\ U_{k-1}\ p_{k-1}): U_k\ \{\ S\ \} : \texttt{ok}}
 	\end{math}
 	\\[1\baselineskip]
 	\texttt{where for each} $T \in \{T_1,\ .
@@ -141,11 +217,11 @@ To ensure that any program written in HCL runs correctly after compilation, the 
 	\begin{math}
 		\cfrac
 		{E\vdash S : \texttt{ok}\quad}
-		{E \vdash func\ f = (T_1\ p_1\
+		{E \vdash func\ f = (T_1\ p_1,\
 		.
 		.
 		.
-		\ T_{k-1}\ p_{k-1}): T_k\ \{ S \} : \texttt{ok}}
+		\ ,\ T_{k-1}\ p_{k-1}): T_k\ \{\ S\ \} : \texttt{ok}}
 	\end{math}
 	\\[1\baselineskip]
 	\texttt{where for each} $T \in \{T_1,\ .
