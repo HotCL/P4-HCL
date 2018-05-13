@@ -2,15 +2,38 @@
 %Content includes all type rules in HCL
 %Should be a relatively short section, since much of the content is self explanatory.
 \section{Type Rules}
-To ensure that any program written in HCL runs correctly after compilation, the language follows certain type rules which are enforced at compile-time.
-Essentially, these rules specify when certain expressions have to evaluate to specific types.
+HCL employs types.
+This is done because of three reasons:
+\begin{itemize}
+	\item To avoid certain runtime errors, which would not have been caught beforehand (these errors are explained below).
+	\item It makes it a lot easier to allocate memory\footnote{This is not immediately crucial to HCL since i it compiles to C++, which have a type system.
+	}.
+	\item As described in the problem analysis, types makes it easier for novices to understand constructions such as function definitions.
+\end{itemize}
+The code snippet shown in listing \ref{lis:TypeEx} is a syntactically correct assignment in HCL.
+If HCL did not have types, the assignment would lead to a runtime error since the second argument to the plus function would evaluate to a value of type bool, since the plus function requires that the two arguments are of the same type, this is an error.
+
+To avoid this, the HCL compiler utilize a type checker.
+This will be described in later chapters.
+\begin{lstlisting}[language=HCL,label=lis:TypeEx,caption=An HCL expression,firstnumber=9]
+x = 10 + (2 equals 3)
+\end{lstlisting}
+
+The HCL type system consists of three components:
+\begin{itemize}
+	\item The set of all types in HCL.
+	\item A type rules for each syntactic category.
+	\item A definition for each type rule.
+\end{itemize}
+
+Essentially, the type rules specify when certain expressions have to evaluate to specific types.
 The rules have been split up in two sections:
 \begin{itemize}
 	\item Rules for expressions
 	\item Rules for statements
 \end{itemize}
-The former specifies which type an expression evaluates to, if given the correct input.
-The latter specifies where certain types are needed for a program to run correctly.
+The former specifies which type an expression evaluates to, depending on the input.
+The latter specifies what types the components of a statement must be to be type valid.
 
 \textbf{Notation}\\
 The notation for type rules is very similar to the notation of semantics with few differences.
@@ -231,5 +254,8 @@ The type rules for statements are, as mentioned earlier, different from the rule
 	\texttt{and} $T_k \notin \{var\}$
 \end{center}
 
+
+The type system is used to create the type checker component of the HCL compiler. Which will be described in later chapters.
+Essentially, a snippet of code is valid, if it is possible to create a transition tree of rules using the type system. 
 %Conclusion.
 
