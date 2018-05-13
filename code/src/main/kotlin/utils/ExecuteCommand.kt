@@ -1,5 +1,6 @@
 package utils
 
+import generation.FilePair
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -22,5 +23,29 @@ fun String.runCommand(workingDir: File = File("./")): CommandResult {
     } catch (e: IOException) {
         e.printStackTrace()
         CommandResult("IO EXCEPTION!", -1)
+    }
+}
+
+fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolean = false, outputFile: String = "program") {
+    File(dir).mkdir()
+    try {
+        val headerFiles = files.filter { it.fileName.endsWith(".h") }
+        val cppFiles = files.filter { it.fileName.endsWith(".cpp") }
+        headerFiles.forEach { it.writeFile(dir) }
+        cppFiles.forEach {
+            it.writeFile(dir)
+            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
+                println(runCommand(File(dir)))
+            }
+        }
+        "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o $outputFile".apply {
+            println(runCommand(File(dir)))
+        }
+        val program = File("./$dir/$outputFile")
+        program.copyTo(File(program.parentFile.parentFile.absolutePath + "/$outputFile"), true)
+    } catch (e: Exception) {
+        throw e
+    } finally {
+        if (!keepFiles) File(dir).deleteRecursively()
     }
 }
