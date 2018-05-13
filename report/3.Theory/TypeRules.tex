@@ -5,16 +5,14 @@
 HCL employs types.
 This is done because of three reasons:
 \begin{itemize}
-	\item To avoid certain runtime errors, which would not have been caught beforehand (these errors are explained below).
-	\item It makes it a lot easier to allocate memory\footnote{This is not immediately crucial to HCL since i it compiles to C++, which have a type system.
-	}.
-	\item As described in the problem analysis, types makes it easier for novices to understand constructions such as function definitions.
+	\item To avoid certain runtime errors, which would not be caught without types.
+	\item It is easier to allocate memory, as each type has a pre-defined size.
+	\item As described in the problem analysis, types make it easier for novices to understand constructions such as function definitions.
 \end{itemize}
 The code snippet shown in listing \ref{lis:TypeEx} is a syntactically correct assignment in HCL.
-If HCL did not have types, the assignment would lead to a runtime error since the second argument to the plus function would evaluate to a value of type bool, since the plus function requires that the two arguments are of the same type, this is an error.
+If type rules were not enforced, this program would fail (or run with unexpected results), as the second argument for the "$+$" function would evaluate to a value of type bool, and no definition for this function allows bool-type arguments.
 
-To avoid this, the HCL compiler utilize a type checker.
-This will be described in later chapters.
+To avoid this, the HCL compiler includes a type-checker which will be described in a later chapter.
 \begin{lstlisting}[language=HCL,label=lis:TypeEx,caption=An HCL expression,firstnumber=9]
 x = 10 + (2 equals 3)
 \end{lstlisting}
@@ -22,7 +20,7 @@ x = 10 + (2 equals 3)
 The HCL type system consists of three components:
 \begin{itemize}
 	\item The set of all types in HCL.
-	\item A type rules for each syntactic category.
+	\item Type rules for each syntactic category.
 	\item A definition for each type rule.
 \end{itemize}
 
@@ -52,8 +50,10 @@ As the type rules do not change the state of a program, and therefore also do no
 The colon is used to show that an expression is of a certain type.
 
 \subsection{Type Rules for Expressions}
-%Introduktion
-
+As mentioned earlier, an expression evaluates to a type, if certain premises are upheld (where such apply).
+For the sake of brevity, the type rules for expressions have been simplified significantly compared to the semantic rules.
+Unlike the semantics, where certain function calls must have its own rule in order for the semantics of HCL to be properly defined, the type rules for all function calls can be explained with a single rule.
+The following are the type rules for all expressions.
 
 \textbf{Variable type}\\
 The type of a variable is found by looking up the variable in the environment:\\
@@ -66,51 +66,80 @@ The type of a variable is found by looking up the variable in the environment:\\
 \end{center}
 
 
-\textbf{Num type}\\
+\textbf{Num literal type}\\
+A $num$ literal is always of type $num$.
+
 \begin{center}
 	\begin{math}
 		E \vdash n : num
 	\end{math}
 \end{center}
 
-\textbf{Bool type}\\
+\textbf{Bool literal type}\\
+A $bool$ literal is always of type $bool$.
+
 \begin{center}
 	\begin{math}
 	E \vdash b : bool
 	\end{math}
 \end{center}
 
-\textbf{Txt type}\\
+\textbf{Txt literal type}\\
+A $txt$ literal is always of type $txt$.
+
 \begin{center}
 	\begin{math}
 	E \vdash t : txt
 	\end{math}
 \end{center}
 
-\textbf{List type}\\
+\textbf{List literal type}\\
+Every entry in any given list must be of the same type, as long as that type isn't $none$.
+
 \begin{center}
 	\begin{math}
-	E \vdash lst : list[T]
+	\cfrac
+	{E \vdash e_1 : T\ .
+		.
+		.
+		\ E \vdash e_k : T}
+	{E \vdash [e_1,\ .
+		.
+		.
+		\ , \ e_k] : list[T]}
 	\end{math}
 	\\[1\baselineskip]
-	\texttt{where} $T \notin \{none, var, generic\}$
+	\texttt{where} $T \notin \{none\}$
+	\texttt{and} $k > 0$
 \end{center}
 
-\textbf{Tuple type}\\
+\textbf{Tuple literal type}\\
+The tuple type allows each entry to have any type that isn't $none$ or $generic$.
+
 \begin{center}
 	\begin{math}
-	E \vdash tpl : tuple[T_1, \ .
+	\cfrac
+	{E \vdash e_1 : T_1,\ .
 	.
 	.
-	\ ,\ T_k]
+	\ , \ E \vdash e_k : T_k}
+	{E \vdash (e_1,\ .
+		.
+		.
+		\ ,\ e_k) : tuple[T_1, \ .
+		.
+		.
+		\ ,\ T_k]}
 	\end{math}
 	\\[1\baselineskip]
-	\texttt{where} $T_i \notin \{none, var, generic\}$\\
+	\texttt{where} $T_i \notin \{none\}$\\
 	\texttt{and} $k > 0$\\
 	\texttt{and} $1 \le i \le k$
 \end{center}
 
 \textbf{Function type}\\
+The function type allows parameters of any type that isn't $none$, and a return type of any type.
+
 \begin{center}
 	\begin{math}
 	E \vdash f : func[T_1,\ .
@@ -122,12 +151,13 @@ The type of a variable is found by looking up the variable in the environment:\\
 	\texttt{where for each} $T \in \{T_1,\ .
 	.
 	.
-	\ ,\ T_{k-1}\},\ T \notin \{none, var\}$\\
-	\texttt{and} $T_k \notin \{var\}$\\
+	\ ,\ T_{k-1}\},\ T \notin \{none\}$\\
 	\texttt{and} $k > 0$
 \end{center}
 
-\textbf{Lambda type}\\
+\textbf{In-line lambda expression type}\\
+The inline lambda expression is special in that the return type is inferred from the return statement in the expression, but the types of the parameters in the expression are determined by the function whom the lambda expression is passed to.
+
 \begin{center}
 	\begin{math}
 	E \vdash \{\ S\ \} : func[T_1,\ .
@@ -140,12 +170,12 @@ The type of a variable is found by looking up the variable in the environment:\\
 	\texttt{and} $T_1, \ .
 	.
 	.
-	\ ,\ T_{k-1}$ are inferred from the function whom the expression is the argument for%Jeg er ikke sikker på, om denne sætning beskriver det godt nok
+	\ ,\ T_{k-1}$ are inferred from the function whom the lambda expression is passed to%Jeg er ikke sikker på, om denne sætning beskriver det godt nok
 \end{center}
 
-For the sake of brevity, the type rules for expressions have been simplified significantly compared to the semantic rules.
-Unlike the semantics, where certain function calls must have its own rule in order for the semantics of HCL to be properly defined, the type rules for all function calls can be explained with a single rule.
 \textbf{Function call}\\
+A function call evaluates to a value of its return type if the arguments for the call match the types specified in the function's declaration.
+
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -177,8 +207,17 @@ Unlike the semantics, where certain function calls must have its own rule in ord
 \subsection{Type Rules for Statements}
 %quick introduction.
 The type rules for statements are, as mentioned earlier, different from the rules for expressions.
-%explain what "ok" means
+Statements are not evaluated to a type.
+Rather, they only determine if a program is type valid.
+If a statement is type valid, it is evaluated to \texttt{ok}.
+Otherwise, the compiler with throw an error.
+
+Just like the rules for expressions, the type rules for statements have been simplified to not include any function calls.
+That means that the only rules needed are the rules for compositional statements (the same one described in the abstract syntax in section \ref{abstract_syntax}), and variable- and function declarations, and assignments.
+
 \textbf{Compositional type rule}\\
+The type rule for compositional statements states that for the whole statement to be type valid, both sub-statements must also be type valid.
+
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -190,7 +229,9 @@ The type rules for statements are, as mentioned earlier, different from the rule
 \end{center}
 
 
-\textbf{Explicit variable declaration}\\
+\textbf{Explicit variable declaration w/ assignment}\\
+When explicitly declaring a variable of a certain type, the expression that is assigned to the variable must be of the same type as the variable.
+
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -201,14 +242,30 @@ The type rules for statements are, as mentioned earlier, different from the rule
 	\texttt{where} $T \in \{num, bool, txt, list, tuple\}$
 \end{center}
 
+\textbf{Explicit variable declaration w/o assignment}\\
+If no expression is assigned to the variable, the statement is automatically valid, as long as a valid type is used.
+
+\begin{center}
+	\begin{math}
+		E \vdash T\ x : \texttt{ok}
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $T \in \{num, bool, txt, list, tuple\}$
+\end{center}
+
 \textbf{Implicit variable declaration}\\
+When declaring a variable with implicit type, the type is inferred from the expression.
+
 \begin{center}
 	\begin{math}
 	E \vdash var\ x = e : \texttt{ok}
 	\end{math}
 \end{center}
 
-\textbf{Explicit function declaration}\\
+\textbf{Explicit function declaration w/ assignment}\\
+The parameters' types and the return type must match the type of the function.
+Only the return type may be of type $none$.
+
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -231,11 +288,31 @@ The type rules for statements are, as mentioned earlier, different from the rule
 	\texttt{where for each} $T \in \{T_1,\ .
 	.
 	.
-	\ ,\ T_{k-1}\}\ T \notin \{none, var\}$\\
-	\texttt{and} $T_k \notin \{var\}$
+	\ ,\ T_{k-1}\}\ T \notin \{none\}$
+\end{center}
+
+\textbf{Explicit function declaration w/o assignment}\\
+Only the return type may be of type $none$.
+
+\begin{center}
+	\begin{math}
+	E \vdash func[T_1,\
+		.
+		.
+		.
+		\ ,\ T_k]\ f : \texttt{ok}
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where for each} $T \in \{T_1,\ .
+	.
+	.
+	\ ,\ T_{k-1}\}\ T \notin \{none\}$
 \end{center}
 
 \textbf{Implicit function declaration}\\
+Just like implicit variable declarations, the type of the function when declared with implicit type is inferred from the expression assigned to it.
+This rule has the function be declared with the $func$ keyword, but functions can be implicitly declared using either of the keywords $var$ or $func$.
+
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -250,12 +327,45 @@ The type rules for statements are, as mentioned earlier, different from the rule
 	\texttt{where for each} $T \in \{T_1,\ .
 	.
 	.
-	\ ,\ T_{k-1}\}\ T \notin \{none, var\}$\\
-	\texttt{and} $T_k \notin \{var\}$
+	\ ,\ T_{k-1}\}\ T \notin \{none\}$
 \end{center}
 
+\textbf{Assignment}\\
+When assigning an expression to a variable (or function), the expression must be of the same type as the variable it is assigned to.
 
-The type system is used to create the type checker component of the HCL compiler. Which will be described in later chapters.
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E\vdash e : \texttt{T}\quad E(x) : T}
+	{E \vdash x = e : \texttt{ok}}
+	\end{math}
+\end{center}
+
+\subsection{Generics}
+HCL also employs parametric polymorphism (dubbed generics).
+This means that functions can be called with arguments of any type, where a generic type has been specified.
+The type used when passing an argument to a generic function is determined at compile-time.
+
+In a generic function, each generic type is given a name, for example $T$.
+Anytime the name $T$ occurs in the body will be recognized by the compiler as a reference to that generic type.
+If more than one generic parameters with different type names have been specified in a function's declaration, these types will behave as if they are of different types within the function body.
+On top of that, if more than one generic parameter is created with the same generic type, the two parameters will behave as if they are of the same type.
+
+Snippet \ref{lis:genericsExample} shows an example of a generic function declaration and how it can be called with arguments of any type.
+\begin{lstlisting}[language=HCL,label=lis:genericsExample,caption=An example of a generic function declaration.]
+func combine = (T1 p1, T2 p2): tuple[T1, T2] {
+	return (p1, p2) # return 2-tuple with the parameters as elements
+}
+
+var x = 3 combine False
+var y = "hello" combine x
+
+x print # (3, False)
+y print # (hello, (3, False))
+\end{lstlisting}
+
+\subsection{Conclusion to type rules}
+The type system is used to create the type checker component of the HCL compiler which will be described in a later chapter.
 Essentially, a snippet of code is valid, if it is possible to create a transition tree of rules using the type system. 
 %Conclusion.
 
