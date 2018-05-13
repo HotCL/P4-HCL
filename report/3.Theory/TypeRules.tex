@@ -3,19 +3,20 @@
 %Should be a relatively short section, since much of the content is self explanatory.
 \section{Type Rules}
 HCL employs types.
-This is done because of three reasons:
+This is done for three reasons:
 \begin{itemize}
 	\item To avoid certain runtime errors, which would not be caught without types.
-	\item It is easier to allocate memory, as each type has a pre-defined size.
+	\item Easier allocation of memory, as each type has a pre-defined size.
 	\item As described in the problem analysis, types make it easier for novices to understand constructions such as function definitions.
 \end{itemize}
 The code snippet shown in listing \ref{lis:TypeEx} is a syntactically correct assignment in HCL.
 If type rules were not enforced, this program would fail (or run with unexpected results), as the second argument for the "$+$" function would evaluate to a value of type bool, and no definition for this function allows bool-type arguments.
 
-To avoid this, the HCL compiler includes a type-checker which will be described in a later chapter.
-\begin{lstlisting}[language=HCL,label=lis:TypeEx,caption=An HCL expression,firstnumber=9]
+\begin{lstlisting}[language=HCL,label=lis:TypeEx,caption=An HCL expression,firstnumber=1]
 x = 10 + (2 equals 3)
 \end{lstlisting}
+
+To avoid this, the HCL compiler includes a type-checker which will be described in a later chapter.
 
 The HCL type system consists of three components:
 \begin{itemize}
@@ -34,7 +35,7 @@ The former specifies which type an expression evaluates to, depending on the inp
 The latter specifies what types the components of a statement must be to be type valid.
 
 \textbf{Notation}\\
-The notation for type rules is very similar to the notation of semantics with few differences.
+The notation for type rules is very similar to the notation of semantics with a few differences.
 Below is an example:\\
 \begin{center}
 	\begin{math}
@@ -174,7 +175,7 @@ The inline lambda expression is special in that the return type is inferred from
 \end{center}
 
 \textbf{Function call}\\
-A function call evaluates to a value of its return type if the arguments for the call match the types specified in the function's declaration.
+A function call evaluates to a value of its return type, if the arguments for the call match the types specified in the function's declaration.
 
 \begin{center}
 	\begin{math}
@@ -213,7 +214,7 @@ If a statement is type valid, it is evaluated to \texttt{ok}.
 Otherwise, the compiler with throw an error.
 
 Just like the rules for expressions, the type rules for statements have been simplified to not include any function calls.
-That means that the only rules needed are the rules for compositional statements (the same one described in the abstract syntax in section \ref{abstract_syntax}), and variable- and function declarations, and assignments.
+That means that the only rules needed are the rules for compositional statements\footnote{The same one described in the abstract syntax in section \ref{abstract_syntax}}, variable- and function declarations, and assignments.
 
 \textbf{Compositional type rule}\\
 The type rule for compositional statements states that for the whole statement to be type valid, both sub-statements must also be type valid.
@@ -351,7 +352,6 @@ Anytime the name $T$ occurs in the body will be recognized by the compiler as a 
 If more than one generic parameters with different type names have been specified in a function's declaration, these types will behave as if they are of different types within the function body.
 On top of that, if more than one generic parameter is created with the same generic type, the two parameters will behave as if they are of the same type.
 
-Snippet \ref{lis:genericsExample} shows an example of a generic function declaration and how it can be called with arguments of any type.
 \begin{lstlisting}[language=HCL,label=lis:genericsExample,caption=An example of a generic function declaration.]
 func combine = (T1 p1, T2 p2): tuple[T1, T2] {
 	return (p1, p2) # return 2-tuple with the parameters as elements
@@ -363,6 +363,8 @@ var y = "hello" combine x
 x print # (3, False)
 y print # (hello, (3, False))
 \end{lstlisting}
+
+Snippet \ref{lis:genericsExample} shows an example of a generic function declaration and how it can be called with arguments of any type.
 
 \subsection{Conclusion to type rules}
 The type system is used to create the type checker component of the HCL compiler which will be described in a later chapter.
