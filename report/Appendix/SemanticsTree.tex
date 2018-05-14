@@ -10,7 +10,7 @@ num x
 x = 5
 \end{lstlisting}
 
-Rewritten using the abstract syntax described in section \ref{sec:semantics}, we get the following big step semantic:
+Using the abstract syntax described in section \ref{sec:semantics}, the code can be written as the following big step semantic:
 
 \begin{center}
 	$env_V, env_F \vdash \langle num\ x;\ x = 5, env_V, env_F, sto \rangle \rightarrow_{stm} (sto', env_V', env_F')$
