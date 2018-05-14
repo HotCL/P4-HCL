@@ -1,6 +1,5 @@
 package lexer
 
-
 /** TODO make header.
  * Delegation of responsibility. This class has the positional data regarding a token, following, basically,
  * a wrapper pattern.

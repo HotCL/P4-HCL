@@ -16,7 +16,7 @@ class SourceCodePrinter : IPrinter {
         is Command.Assignment -> format()
         is Command.Declaration -> format()
         is Command.Expression -> format()
-        is Command.RawCpp -> "Raw cpp: \"${this.content}\""
+        is Command.RawCpp -> "Raw cppName: \"${this.content}\""
         is Command.Return -> "return ${expression.format()}"
     }
 
@@ -40,7 +40,6 @@ class SourceCodePrinter : IPrinter {
     private fun Command.Expression.Value.Literal.Tuple.format(): String =
             "(${elements.joinToString { it.format() }})"
 
-
     private fun Command.Expression.Value.Literal.List.format(): String =
             "[${elements.joinToString { it.format() }}]"
 
@@ -50,21 +49,9 @@ class SourceCodePrinter : IPrinter {
 
     private fun Command.Expression.FunctionCall.format(): String =
             "${arguments.firstOrNull()?.format()?.let { "$it " } ?: ""}${identifier.name}" +
-                    arguments.drop(1).run { if (isEmpty()) "" else  " " +
+                    arguments.drop(1).run { if (isEmpty()) "" else " " +
                             joinToString(" ") { it.format() }
                     }
 
-    private fun Type.format(): String = when(this){
-        Type.Number -> "num"
-        Type.Text -> "text"
-        Type.Bool -> "bool"
-        Type.None -> "none"
-        Type.Func.ImplicitFunc -> "func"
-        Type.Var -> error("Impossible")
-        is Type.Func.ExplicitFunc -> "func[${if (!paramTypes.isEmpty())"${paramTypes.joinToString { it.format() }}, "
-                                            else ""}${returnType.format()}]"
-        is Type.GenericType -> name
-        is Type.List -> "list[${elementType.format()}]"
-        is Type.Tuple -> "tuple[${elementTypes.joinToString { it.format() }}]"
-    }
+    private fun Type.format(): String = this.makePretty()
 }

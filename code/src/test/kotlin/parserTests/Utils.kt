@@ -5,10 +5,8 @@ import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import generation.SourceCodePrinter
 import lexer.*
-import org.jetbrains.spek.api.Spek
 import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
-import parser.Parser
 import parser.AstNode
 import parser.ParserWithoutBuiltins
 import kotlin.coroutines.experimental.buildSequence
@@ -16,11 +14,10 @@ import kotlin.coroutines.experimental.buildSequence
 fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<List<Token>> =
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
-                println("Test for code:\n " + formatTokens(actual))
-                val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence{ yieldAll(actual) })).generateAbstractSyntaxTree()
+                val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence { yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
-                else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n" +
+                else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n"+
                         "${SourceCodePrinter().generate(expectedAst)}\n" +
                         "But got this:\n$actualAst\n" +
                         "${SourceCodePrinter().generate(actualAst)}\n")
@@ -32,7 +29,6 @@ fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<Lis
 fun matchesAstWithActualLexer(expected: String): Matcher<String> =
         object : Matcher<String> {
             override fun invoke(actual: String): MatchResult {
-                println("Test for code: \n$actual")
                 val actualAst = ParserWithoutBuiltins(Lexer(actual)).generateAbstractSyntaxTree()
                 val actualAstString = SourceCodePrinter().generate(actualAst)
                 return if (actualAstString == expected) MatchResult.Match
@@ -43,10 +39,9 @@ fun matchesAstWithActualLexer(expected: String): Matcher<String> =
             override val negatedDescription: String get() = "was not equal to the expected AST"
         }
 
-class DummyLexer(private val tokens: Sequence<Token>): ILexer {
+class DummyLexer(private val tokens: Sequence<Token>) : ILexer {
     override fun getTokenSequence() = buildSequence {
         tokens.forEach {
-            print(formatToken(it) + " ")
             yield(PositionalToken(it, -1, -1)) }
     }
 

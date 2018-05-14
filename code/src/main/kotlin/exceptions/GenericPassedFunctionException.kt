@@ -1,6 +1,5 @@
 package exceptions
 
-import lexer.Token
 /**
  * It is not allowed to pass a function into another function if the argument-function is generic.
  * For instance:
@@ -10,8 +9,7 @@ import lexer.Token
  * is not allowed.
  */
 class GenericPassedFunctionException(lineNumber: Int, lineIndex: Int, lineText: String)
-    : ParserException(lineNumber, lineIndex, lineText){
+    : ParserException(lineNumber, lineIndex, lineText) {
     override val errorMessage = "You cannot pass a function with generic types into another function."
     override val helpText = "Change your shitcode tbh."
 }
-

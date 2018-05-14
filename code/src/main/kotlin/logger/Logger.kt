@@ -4,7 +4,7 @@ import exceptions.CompilationException
 /**
  * The logger class, used for all output from the compiler.
  */
-open class Logger: ILogger {
+open class Logger : ILogger {
     /**
      * Function used to log all compilation errors from the compiler.
      */
@@ -15,11 +15,9 @@ open class Logger: ILogger {
         writeLine(" | ${error.errorMessage}")
         if (error.helpText != "") writeLine(" | -->help: ${error.helpText}")
     }
-    private operator fun String.times (num: Int) = (0 .. num).joinToString("") { this }
+    private operator fun String.times (num: Int) = (0..num).joinToString("") { this }
 
-    open fun writeLine(text: String){
+    open fun writeLine(text: String) {
         println(text)
     }
 }
-
-
