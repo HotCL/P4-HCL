@@ -18,7 +18,6 @@ var any (list[T] myList, func[T,bool] compareFunc):bool{
 
 var all (list[T] myList, func[T,bool] compareFunc):bool{
 	myList filter :compareFunc length equals myList length
-	
 }
 
 var in = (T element, list[T] myList):bool{

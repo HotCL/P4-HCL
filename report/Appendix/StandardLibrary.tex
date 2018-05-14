@@ -1,0 +1,30 @@
+\section{Standard Library Functions}
+\label{standardLib}
+HCL includes multiple functions as part of its standard library.
+All standard library functions are implemented exclusively using the HCL syntax and builtin-functions. 
+
+Snippet \ref{lis:st-to} shows the 'to' function used to create a range of numbers.
+\begin{lstlisting}[language=Kotlin,label=lis:st-to,caption=\texttt{to} function.]
+var to (num from, num to):list[num] {
+	num i = from
+	list[num] output
+	{
+		output = output + [i]
+		i = i + 1
+	} while { i < to }
+}
+\end{lstlisting}
+
+Snippet \ref{lis:st-any}, returns true if any element in a list uphold compare predicate.
+\begin{lstlisting}[language=Kotlin,label=lis:st-any,caption=\texttt{any} function.]
+var any (list[T] myList, func[T,bool] compareFunc):bool{
+	myList filter :compareFunc length greaterThan 0
+}
+\end{lstlisting}
+
+Snippet \ref{lis:st-all} returns true if all elements in a list uphold compare predicate.
+\begin{lstlisting}[language=Kotlin,label=lis:st-all,caption=\texttt{all} function.]
+var all (list[T] myList, func[T,bool] compareFunc):bool{
+	myList filter :compareFunc length equals myList length
+}
+\end{lstlisting}
