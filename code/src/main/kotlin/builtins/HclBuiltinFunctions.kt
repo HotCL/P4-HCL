@@ -431,9 +431,9 @@ private fun buildPrintFunction() = buildFunction(
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
     returnType = Type.None,
     body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
+        "Serial.print((${"toText".cppName}(input)).get()->data);\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
+        "std::cout << (${"toText".cppName}(input)).get()->data;\n" +
         "#endif // ARDUINO_AVR_UNO\n" +
         "return;"
 )
