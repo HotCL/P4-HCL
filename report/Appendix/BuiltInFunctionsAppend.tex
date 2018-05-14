@@ -42,6 +42,7 @@ These functions compare numeral, textual or boolean values and returns a boolean
 		Not                                                             & not            & bool             & bool        \\ \hline
 	\end{tabular}
 \end{table}
+\newpage
 
 \textbf{Text Manipulation}\\
 Functions used to manipulate text-objects or converts values to text, seen in table \ref{tbl:text}.
@@ -56,8 +57,10 @@ Functions used to manipulate text-objects or converts values to text, seen in ta
 		Numeric To Text & toText & num              & txt         \\ \hline
 		Boolean To Text & toText & bool             & txt         \\ \hline
 		Textual To Text & toText & txt              & txt         \\ \hline
+		List To Text    & toText & list{[}T{]}      & txt         \\ \hline
 	\end{tabular}
 \end{table}
+
 
 \textbf{Control Structures}\\
 Functions used as control structures in HCL, seen in table \ref{tbl:control}
@@ -70,7 +73,7 @@ Functions used as control structures in HCL, seen in table \ref{tbl:control}
 		Operation                                                 & Symbol & Input Parameters            & Return Type \\ \hline
 		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, func{[}none{]}        & bool        \\ \hline
 		While Loop                                                & while  & func{[}none{]}, bool        & bool        \\ \hline
-		Foreach Loop                                              & each   & List{[}T{]}, func{[}none{]} & none        \\ \hline
+		Foreach Loop                                              & each   & list{[}T{]}, func{[}none{]} & none        \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -91,6 +94,7 @@ Functions used to manipulate or monitor lists, seen in table \ref{tbl:list}.
 		Filter List   & filter  & list{[}T{]}, func[T, bool]  & list{[}T{]} \\ \hline
 	\end{tabular}
 \end{table}
+\newpage
 
 \textbf{Pin-Functions}\\
 Functions used to read and write from arduino's analogue and digital pins, seen in table \ref{tbl:pins}.
@@ -100,13 +104,12 @@ Functions used to read and write from arduino's analogue and digital pins, seen 
 	\label{tbl:pins}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                      & Symbol      & Input Parameters & Return Type \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Set Digital Pin\\ HIGH\end{tabular} & HIGH        & num              & none        \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Set Digital Pin \\ LOW\end{tabular} & LOW         & num              & none        \\ \hline
-		Read Digital Pin                                               & readDigital & num              & num         \\ \hline
-		Write Analog Pin                                               & writeAnalog & num, num         & none        \\ \hline
-		Read Analog Pin                                                & readAnalog  & num              & num         \\ \hline
-		Delay                                                          & delayMillis & num              & none        \\ \hline
+		Operation                                                      & Symbol         & Input Parameters & Return Type \\ \hline
+		Set Digital Pin                                                & setDigitalPin  & num, bool        & none        \\ \hline
+		Read Digital Pin                                               & readDigitalPin & num              & num         \\ \hline
+		Write Analog Pin                                               & setAnalogPin   & num, num         & none        \\ \hline
+		Read Analog Pin                                                & readAnalogPin  & num              & num         \\ \hline
+		Delay                                                          & delayMillis    & num              & none        \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -120,6 +123,7 @@ Functions used to print to output, seen in table \ref{tbl:print}.
 		\hline
 		Operation  & Symbol    & Input Parameters & Return Type \\ \hline
 		Print      & print     & num/bool/txt     & none        \\ \hline
-		Print Line & printLine & num/bool/txt     & none        \\ \hline
+		Print List & print     & list[T]          & none        \\ \hline
 	\end{tabular}
 \end{table}
+\newpage
