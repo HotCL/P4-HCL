@@ -1,6 +1,6 @@
 # should print [7, 4, 5, 1, 4, 3, 2, 9]
 
-swap(T list, num firstIndex, num secondIndex): T{
+var swap = (T list, num firstIndex, num secondIndex): T{
     var tmpFirst = [(list at firstIndex)]
     var tmpSecond = [(list at secondIndex)]
 
