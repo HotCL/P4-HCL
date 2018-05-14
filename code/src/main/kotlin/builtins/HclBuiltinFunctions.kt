@@ -25,8 +25,6 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Number>("notEquals", "!="),
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
-            buildTextEqualsFunction(),
-            buildTextNotEqualsFunction(),
             buildNotFunction(),
 
 
