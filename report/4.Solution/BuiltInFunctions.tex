@@ -1,0 +1,57 @@
+\subsection{Built-in Functions}
+HCL includes several built-in functions that map the languages functionality directly to its C++ equivalent. 
+These functions are considered to be the most basic functionality of the language, and their use is often required in order to specify more complex functions. 
+This section describes the built-in functions of HCL, their implementation and their functionality.
+
+\textbf{Build Functions}\\
+The implementation of all built-in functions is handled by the \texttt{buildFunction} function seen in snippet \ref{lis:buildFunction}.
+
+\begin{lstlisting}[language=Kotlin,label=lis:buildFunction,caption=The implementation of buildFunction.]
+private fun buildFunction(identifier: String, parameters: List<Parameter>, returnType: Type, body: String, attributes: LambdaExpressionAttributes = BuiltinLambdaAttributes) =
+    AstNode.Command.Declaration(returnType, identifier.asIdentifier(),
+	    AstNode.Command.Expression.LambdaExpression(
+            paramDeclarations = parameters.map {
+                AstNode.ParameterDeclaration(it.type, it.identifier.asIdentifier())
+            },
+            returnType = returnType,
+            attributes = attributes,
+            body = body.asRawCppLambdaBody()
+        )
+    )
+\end{lstlisting}
+The function returns a function-declaration with specified identifier, return-type and lambda-body, where the lambda-body is composed of raw C++ code. 
+Using the implementation to build functions is then simply a manner of passing in the required arguments, as seen in snippet \ref{lis:thenFunction}.
+
+\begin{lstlisting}[language=Kotlin,label=lis:thenFunction,caption=built-in 'then' function implemented using \texttt{buildFunction}.]
+private fun buildThenFunction() = buildFunction(
+        identifier = "then",
+        parameters = listOf(
+                Parameter("condition", Type.Bool),
+                Parameter("body", Type.Func.ExplicitFunc(listOf(Type.None))
+        ),
+        returnType = Type.Bool,
+        body = "if (condition) { body(); }\nreturn condition;"
+)
+\end{lstlisting}
+The above snippet shows how the built-in function \texttt{then} is declared using the \texttt{buildFunction} implementation. 
+The arguments provided specify the identifier for the function (2), the parameters for the function (3), namely a condition of type \texttt{bool} and a body of type \texttt{ExplicitFunc} without a return-type.
+It also specifies that the return-type of the function itself is a \texttt{bool}(7) and then presents the body of the function in raw c++ code (8). 
+
+In order to follow the DRY\footnote{Don't repeat yourself (DRY) is a principle aimed at reducing code repetition in software development.
+} principles of coding, a helper-function for implementing simple arithmetic functions is provided in snippet \ref{lis:buildOperator}.
+\begin{lstlisting}[language=Kotlin,label=lis:buildOperator,caption=The implementation of buildOperator.]
+private inline fun<reified V, reified H, reified R>buildOperator(functionName: String, operator: String = functionName)
+        where V : Type, H : Type, R : Type = buildFunction(
+        identifier = functionName,
+        parameters = listOf(
+                Parameter("leftHand", V::class.objectInstance!!),
+                Parameter("rightHand", H::class.objectInstance!!)
+        ),
+        returnType = R::class.objectInstance!!,
+        body = "return leftHand $operator rightHand;"
+)
+\end{lstlisting}
+The \texttt{buildOperator} function is a generic function that is called with specified types for input-parameters and return-type. 
+The function uses those types to specify the arguments for the \texttt{buildFunction} function.
+
+All built-in functions are listed in appendix at \ref{builtinAppend}.

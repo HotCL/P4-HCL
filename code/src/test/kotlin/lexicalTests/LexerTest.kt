@@ -1,21 +1,22 @@
 package lexicalTests
 
 import exceptions.StringDoesntEndError
+import hclTestFramework.lexer.buildTokenSequence
 import lexer.Lexer
 import lexer.PositionalToken
-import hclTestFramework.lexer.buildTokenSequence
 import lexer.Token
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 
 class LexerTestMisc {
     @org.junit.jupiter.api.Test
     fun lexerUnfinishedStringFails() {
-        assertThrows(StringDoesntEndError::class.java, {Lexer("\"hej").getTokenSequence().toList()})
-        assertThrows(StringDoesntEndError::class.java, {Lexer("'hej").getTokenSequence().toList()})
+        assertThrows(StringDoesntEndError::class.java, { Lexer("\"hej").getTokenSequence().toList() })
+        assertThrows(StringDoesntEndError::class.java, { Lexer("'hej").getTokenSequence().toList() })
     }
 
     @org.junit.jupiter.api.Test
@@ -30,8 +31,8 @@ class LexerTestMisc {
 private fun lexerTestTokenGeneration() = TestData(
     "var x = 5 + 7\nx = x times 10.0;",
     buildTokenSequence {
-        `var`.identifier("x").`=`.number(5.0).identifier("+").number(7.0).newLine.
-        identifier("x").`=`.identifier("x").identifier("times").number(10.0).newLine
+        `var`.identifier("x").`=`.number(5.0).identifier("+").number(7.0).newLine
+        .identifier("x").`=`.identifier("x").identifier("times").number(10.0).newLine
     },
     listOf (
             listOf(0, 4, 6, 8, 10, 12, 13),
@@ -95,7 +96,7 @@ private fun testAllSpecialChars() = TestData(
         `=`.`{`.`}`.`(`.`)`.squareStart.squareEnd.colon.`,`.newLine
     },
     listOf (
-        (0 .. 9).toList()
+        (0..9).toList()
     )
 )
 

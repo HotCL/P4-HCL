@@ -1,6 +1,6 @@
 package parser
 
-data class AbstractSyntaxTree(val children: MutableList<AstNode.Command> = mutableListOf()){
+data class AbstractSyntaxTree(val children: MutableList<AstNode.Command> = mutableListOf()) {
     inline fun filter(predicate: (AstNode.Command) -> Boolean): AbstractSyntaxTree {
         return AbstractSyntaxTree(children.filter(predicate))
     }

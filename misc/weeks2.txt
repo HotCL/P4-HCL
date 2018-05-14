@@ -1,0 +1,4 @@
+week 19: 		finish major parts of Codegen
+week 20: 		Codegen done + documentation done + start conclusion 
+week 21*: 		conclusion done + rettelser
+week 22: 		rettelser

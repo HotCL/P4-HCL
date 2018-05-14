@@ -16,7 +16,7 @@ class SymbolTest {
         symbol.handle(
                 { assertTrue(false) },
                 { assertTrue(false) },
-                { assertTrue(true)  }
+                { assertTrue(true) }
         )
     }
 
@@ -36,8 +36,8 @@ class SymbolTest {
     @Test
     fun testSymbolClassFunDeclarations() {
         val symbol = Symbol(listOf(
-                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Number), AstNode.Type.Number),
-                AstNode.Type.Func.ExplicitFunc(listOf(AstNode.Type.Text), AstNode.Type.Text)
+                AstNode.Type.Func(listOf(AstNode.Type.Number), AstNode.Type.Number),
+                AstNode.Type.Func(listOf(AstNode.Type.Text), AstNode.Type.Text)
         ))
         assertTrue(!symbol.undeclared)
         assertTrue(!symbol.isIdentifier)
@@ -53,5 +53,4 @@ class SymbolTest {
                 { assertTrue(false) }
         )
     }
-
 }

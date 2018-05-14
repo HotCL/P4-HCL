@@ -3,7 +3,7 @@ package parser
 import lexer.ILexer
 import lexer.Token
 
-class ParserWithoutBuiltins(l: ILexer): Parser(l) {
+class ParserWithoutBuiltins(l: ILexer) : Parser(l) {
     override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
         // Parse
         while (hasNext()) {
@@ -13,4 +13,3 @@ class ParserWithoutBuiltins(l: ILexer): Parser(l) {
         }
     }
 }
-
