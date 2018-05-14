@@ -52,12 +52,16 @@ Functions used to manipulate text-objects or converts values to text, seen in ta
 	\label{tbl:text}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation       & Symbol & Input Parameters & Return Type \\ \hline
-		Concat Text     & +      & txt, txt         & txt         \\ \hline
-		Numeric To Text & toText & num              & txt         \\ \hline
-		Boolean To Text & toText & bool             & txt         \\ \hline
-		Textual To Text & toText & txt              & txt         \\ \hline
-		List To Text    & toText & list{[}T{]}      & txt         \\ \hline
+		Operation          & Symbol  & Input Parameters & Return Type \\ \hline
+		Concat Text        & +       & txt, txt         & txt         \\ \hline
+		Numeric To Text    & toText  & num              & txt         \\ \hline
+		Boolean To Text    & toText  & bool             & txt         \\ \hline
+		Textual To Text    & toText  & txt              & txt         \\ \hline
+		List To Text       & toText  & list{[}T{]}      & txt         \\ \hline
+		At index           & at      & txt, num         & txt         \\ \hline
+		Text Concatenation & +       & txt, txt         & txt         \\ \hline
+		Sub Text           & subText & txt, num, num    & txt         \\ \hline
+		Text Length        & lenght  & txt              & num         \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -92,6 +96,7 @@ Functions used to manipulate or monitor lists, seen in table \ref{tbl:list}.
 		Get Sublist   & subList & list{[}T{]}, num, num       & list{[}T{]} \\ \hline
 		Map           & map     & list{[}T{]}, func[T, T]     & list{[}T{]} \\ \hline
 		Filter List   & filter  & list{[}T{]}, func[T, bool]  & list{[}T{]} \\ \hline
+		To List       & to      & num, num                    & list[num]   \\ \hline
 	\end{tabular}
 \end{table}
 \newpage
