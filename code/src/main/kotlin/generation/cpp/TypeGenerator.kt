@@ -50,7 +50,7 @@ class TypeGenerator : IPrinter {
                             "(self.element$index));\n" +
                             if (index != this.elementTypes.count() - 1) {
                                 "output = ConstList<char>::concat(output, " +
-                                    "ConstList<char>::string((char*)\",\"));\n"
+                                    "ConstList<char>::string((char*)\", \"));\n"
                             } else ""
                     }.joinToString("") +
                     "return output;"

@@ -28,7 +28,6 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 object TestHclPrograms : Spek({
     val files = listOf(
         "HelloWorld.hcl",
-        "nestedFunctions.hcl",
         "ReturnSimple.hcl",
         "stringConcat.hcl",
         "thenElse.hcl",
@@ -43,8 +42,10 @@ object TestHclPrograms : Spek({
         "printTuple.hcl",
         "stringAt.hcl",
         "Swap.hcl",
-        "useTo.hcl"
-        )
+        "useTo.hcl",
+        "printTuple.hcl",
+        "OOP.hcl"
+    )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
             val fileContent = javaClass.classLoader.getResource(file).readText()

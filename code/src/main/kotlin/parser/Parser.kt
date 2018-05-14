@@ -390,6 +390,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
 
     /* Doesn't work with generics */
     private fun isLambdaParameters() = peek().token is Token.Type ||
+            (peek().token as? Token.Identifier)?.let { retrieveSymbol(it.value).undeclared } ?: false ||
             peek().token == Token.SpecialChar.ParenthesesEnd
 
     private fun parseExpressionAtomic(): AstExpression =
