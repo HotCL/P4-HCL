@@ -23,21 +23,24 @@ class MainGenerator : IPrinter {
         stringBuilder.appendln(loop.wrapLoop())
 
         stringBuilder.appendln(("setup();\n" +
-                (if (loop.isNotBlank()) "while(1) { loop(); }\n" else "")).wrapMain()
+            (if (loop.isNotBlank()) "while(1) { loop(); }\n" else "")).wrapMain()
         )
         return stringBuilder.toString()
     }
 
-    private fun String.prefixSerialBegin() = "\n#if ARDUINO_AVR_UNO\n" +
-            "Serial.begin(9600);\n" +
-            "#endif\n" + this
+
+    private fun String.prefixSerialBegin() = "" +
+        "\n#ifdef ARDUINO_AVR_UNO\n" +
+        "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
+        "while(!Serial);     // Wait for Serial to initialize\n" +
+        "#endif\n" + this
 
     private fun String.wrapLoop() = "void loop() {\n${this.splitIndented}\n}"
     private fun String.wrapSetup() = "void setup() { \n${this.prefixSerialBegin().splitIndented}\n}"
     private fun String.wrapMain() = "" +
-            "#ifndef ARDUINO_AVR_UNO\n" +
-            "int main() {\n${this.splitIndented}\n    return ${"RETURN_CODE".cppName};\n}\n" +
-            "#endif"
+        "#ifndef ARDUINO_AVR_UNO\n" +
+        "int main() {\n${this.splitIndented}\n    return ${"RETURN_CODE".cppName};\n}\n" +
+        "#endif"
 
     private val String.splitIndented get() = this.split("\n").joinToString("\n") { "    $it" }
     private val AstNode.Command.isLoop get() =
@@ -45,7 +48,7 @@ class MainGenerator : IPrinter {
     private val AstNode.Command.isDecl get() = this is AstNode.Command.Declaration
 
     private val mainHeader =
-            """
+        """
 #include <functional>
 
 #include "ConstList.h"
@@ -54,6 +57,7 @@ class MainGenerator : IPrinter {
 #ifndef ARDUINO_AVR_UNO
 
 #include <iostream>
+#include <functional>
 
 #endif
 
