@@ -14,6 +14,7 @@ import kotlin.coroutines.experimental.buildSequence
 fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<List<Token>> =
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
+                println("Test for code:\n " + formatTokens(actual))
                 val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence { yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
@@ -29,6 +30,7 @@ fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<Lis
 fun matchesAstWithActualLexer(expected: String): Matcher<String> =
         object : Matcher<String> {
             override fun invoke(actual: String): MatchResult {
+                println("Test for code: \n$actual")
                 val actualAst = ParserWithoutBuiltins(Lexer(actual)).generateAbstractSyntaxTree()
                 val actualAstString = SourceCodePrinter().generate(actualAst)
                 return if (actualAstString == expected) MatchResult.Match
@@ -42,6 +44,7 @@ fun matchesAstWithActualLexer(expected: String): Matcher<String> =
 class DummyLexer(private val tokens: Sequence<Token>) : ILexer {
     override fun getTokenSequence() = buildSequence {
         tokens.forEach {
+            print(formatToken(it) + " ")
             yield(PositionalToken(it, -1, -1)) }
     }
 
