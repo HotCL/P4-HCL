@@ -300,7 +300,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             null
         }, { scopeDepth == 0 && it.token !is Token.Identifier }, 1)
     }
-    
+
     private fun getLambdaParameter(func: List<AstNode.Type.Func>, index: Int): AstExpression {
         val funcAcceptingLambda = func.firstOrNull {
             it.paramTypes[index] is AstNode.Type.Func

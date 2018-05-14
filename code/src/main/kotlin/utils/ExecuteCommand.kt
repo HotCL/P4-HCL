@@ -41,8 +41,8 @@ fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolea
         "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o $outputFile".apply {
             println(runCommand(File(dir)))
         }
-        val program = File("./$dir/$outputFile")
-        program.copyTo(File(program.parentFile.parentFile.absolutePath + "/$outputFile"), true)
+        val program = File(dir).listFiles().first { it.nameWithoutExtension == outputFile }
+        program.copyTo(File(program.name), true)
     } catch (e: Exception) {
         throw e
     } finally {
