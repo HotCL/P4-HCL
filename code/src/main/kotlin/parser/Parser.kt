@@ -29,6 +29,9 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         //enterSymbol("toText", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
         //    AstNode.Type.None))
 
+        enterSymbol("+", AstNode.Type.Func(listOf(AstNode.Type.Text, AstNode.Type.Text),
+            AstNode.Type.Text))
+
         enterSymbol("loop", AstNode.Type.Func(listOf(AstNode.Type.Func(listOf(), AstNode.Type.None)),
             AstNode.Type.None))
 

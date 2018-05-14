@@ -18,15 +18,17 @@ class Lexer(private val inputContent: String) : ILexer {
         inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->
             (line + '\n').forEachIndexed { indexNumber, char ->
                 // handle if we are reading string literal
-                if (currentString.isNotEmpty() && currentString[0] in listOf('\'', '"') &&
-                    (char !in listOf('\'', '"') || currentString.last() == '\\')) {
+                if ((currentString.isEmpty() && char in listOf('\'', '"')) ||
+                    (currentString.isNotEmpty() && currentString[0] in listOf('\'', '"') &&
+                    (char !in listOf('\'', '"') || currentString.last() == '\\'))) {
                     if (char == '\n') {
                         throw StringDoesntEndError(lineNumber, indexNumber, currentString.toString())
                     }
                     currentString.append(char)
                     return@forEachIndexed
                 }
-                if (char !in listOf(' ', '\t')) currentString.append(char)
+                if (char !in listOf(' ', '\t'))
+                    currentString.append(char)
                 if (char == '#') {
                     yield(PositionalToken(Token.SpecialChar.EndOfLine, lineNumber, indexNumber))
                     currentString.setLength(0)
@@ -74,7 +76,7 @@ class Lexer(private val inputContent: String) : ILexer {
     private fun isNextSpecialCharWhiteSpaceOrComment(lineNumber: Int, indexNumber: Int) = with(inputLine(lineNumber)) {
         val nextCharIndex = indexNumber + 1
         nextCharIndex < length && specialChars.any { get(nextCharIndex) == it } ||
-                get(nextCharIndex).isWhitespace() || get(nextCharIndex) == '#'
+            get(nextCharIndex).isWhitespace() || get(nextCharIndex) == '#'
     }
 
     override fun inputLine(lineNumber: Int) = inputContent.split(endOfLineRegex)[lineNumber] + '\n'

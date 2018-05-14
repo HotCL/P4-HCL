@@ -47,7 +47,7 @@ class TypeGenerator : IPrinter {
                     " output = ConstList<char>::string((char*)\"\");\n" +
                     elementTypes.mapIndexed { index, _ ->
                         "output = ConstList<char>::concat(output, ${"toText".cppName}" +
-                            "<char>(self.element$index));\n" +
+                            "(self.element$index));\n" +
                             if (index != this.elementTypes.count() - 1) {
                                 "output = ConstList<char>::concat(output, " +
                                     "ConstList<char>::string((char*)\",\"));\n"
@@ -68,8 +68,8 @@ class TypeGenerator : IPrinter {
                 identifier = "create_struct",
                 parameters = this.elementTypes.mapIndexed { index, it -> Parameter("element$index", it) },
                 returnType = this,
-                body = "${this.cppName} output = ${this.elementTypes.mapIndexed{
-                    index, _ -> "element$index" }.joinToString()};\nreturn output;"
+                body = "${this.cppName} output = {${this.elementTypes.mapIndexed{
+                    index, _ -> "element$index" }.joinToString()}};\nreturn output;"
             )
         )))
 }

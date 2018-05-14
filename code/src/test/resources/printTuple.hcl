@@ -1,4 +1,4 @@
-# should return 3 and print "hej"
+# should return 3 and should print hej
 
 var t = (3,"hej")
 
