@@ -1,7 +1,9 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
+import exceptions.LackingParanthesisError
 import exceptions.UnexpectedTokenError
+import exceptions.UnexpectedTypeError
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
@@ -48,6 +50,16 @@ class TupleTests {
                     .text("someText").`)`.newLine
         })
         Assertions.assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+    }
+
+
+    @org.junit.jupiter.api.Test
+    fun failsOnLackingClosingParenthesis() {
+        val lexer = DummyLexer(buildTokenSequence {
+            tuple.squareStart.number.`,`.text.squareEnd.identifier("myTuple").`=`.`(`.number(5.0)
+                .text("someText").newLine
+        })
+        Assertions.assertThrows(LackingParanthesisError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test

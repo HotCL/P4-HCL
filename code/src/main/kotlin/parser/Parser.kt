@@ -9,7 +9,6 @@ import lexer.Token
 import parser.symboltable.EnterSymbolResult
 import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
-import parser.typechecker.ExprResult
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
@@ -433,7 +432,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                 else -> { }
             }
             null
-        }, { false }, 1)?.let { it } ?: error("Unclosed parentheses")
+        }, { false }, 1)?.let { it } ?: lackingParanthesis()
     }
 
     private fun parseTupleExpression() =
@@ -467,14 +466,6 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
     }
 
     // endregion ExpressionParsing
-
-    fun ExprResult.type() = when (this) {
-        is ExprResult.Success -> this.type
-        ExprResult.NoEmptyOverloading,
-        ExprResult.UndeclaredIdentifier,
-        ExprResult.NoFuncDeclarationForArgs -> undeclaredError((current.token as? Token.Identifier)?.value ?: "")
-        ExprResult.BodyWithMultiReturnTypes -> error("Lambda body with multiple return types")
-    }
 
     private fun AstNode.Type.containsGeneric(): Boolean = when (this) {
         is AstNode.Type.List -> this.elementType.containsGeneric()
