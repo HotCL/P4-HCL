@@ -2,6 +2,7 @@
 %Content includes all type rules in HCL
 %Should be a relatively short section, since much of the content is self explanatory.
 \section{Type Rules}
+\label{typerules}
 HCL employs types.
 This is done for three reasons:
 \begin{itemize}
@@ -174,7 +175,7 @@ The inline lambda expression is special in that the return type is inferred from
 	\ ,\ T_{k-1}$ are inferred from the function whom the lambda expression is passed to%Jeg er ikke sikker på, om denne sætning beskriver det godt nok
 \end{center}
 
-\textbf{Function call}\\
+\textbf{Function call - expression}\\
 A function call evaluates to a value of its return type, if the arguments for the call match the types specified in the function's declaration.
 
 \begin{center}
@@ -340,6 +341,37 @@ When assigning an expression to a variable (or function), the expression must be
 	{E\vdash e : \texttt{T}\quad E(x) : T}
 	{E \vdash x = e : \texttt{ok}}
 	\end{math}
+\end{center}
+
+\textbf{Function call - statement}\\
+Function calls can also appear as statements in HCL.
+There must, therefore, also be a rule expressing what a type valid function call is.
+Since a function call statement both evaluates to a type and \texttt{ok}, the result of this type rule is a 2-tuple containing the function's return type and \texttt{ok}.
+
+\begin{center}
+	\begin{math}
+	\cfrac
+	{E \vdash e_1 : T_1 \ .
+		.
+		.
+		\ E \vdash e_k : T_k}
+	{E \vdash e_1\ f\ e_2 \ .
+		.
+		.
+		\ e_k : (T_f, \texttt{ok})}
+	\end{math}
+	\\[1\baselineskip]
+	\texttt{where} $f$ is a function identifier\\
+	$e_1\ .
+	.
+	.
+	\ e_k$ are the expressions passed to function $f$\\
+	\texttt{and} $T_1\ .
+	.
+	.
+	\ T_k$ are the types of the formal parameters of $f$\\
+	\texttt{and} $T_f$ is the return type of $f$\\
+	\texttt{and} $k \ge 0$
 \end{center}
 
 \subsection{Generics}

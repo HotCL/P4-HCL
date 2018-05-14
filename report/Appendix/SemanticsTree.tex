@@ -1,0 +1,44 @@
+% !TeX root = ../main.tex
+\begin{landscape}
+\section{Semantics Derivation Tree Example}
+\label{sec:semanticsTree}
+This is an example of how to create a semantic derivation tree for a program written in HCL.
+It is based on the following code snippet.
+
+\begin{lstlisting}[language=HCL,label=lis:derivationCode,firstnumber=1]
+num x
+x = 5
+\end{lstlisting}
+
+Rewritten using the abstract syntax described in section \ref{sec:semantics}, we get the following big step semantic:
+
+\begin{center}
+	$env_V, env_F \vdash \langle num\ x;\ x = 5, env_V, env_F, sto \rangle \rightarrow_{stm} (sto', env_V', env_F')$
+\end{center}
+Using the Compositional Big Step Semantic rule, we get the following derivation:
+
+\begin{center}
+	\begin{math}
+		\cfrac
+		{env_V, env_F \vdash \langle num\ x, env_V, env_F, sto \rangle \rightarrow_{stm} (sto'', env_V'', env_F'')\quad env_V'', env_F'' \vdash \langle x = 5, env_V'', env_F'', sto'' \rangle \rightarrow_{stm} (sto', env_V', env_F')}
+		{env_V, env_F \vdash \langle num\ x;\ x = 5, env_V, env_F, sto \rangle \rightarrow_{stm} (sto', env_V', env_F')}
+	\end{math}
+\end{center}
+
+Table \ref{tbl:progstates} shows how the program state changes after each statement in the code is run.
+
+\begin{table}[H]
+	\centering
+	\caption{Table of program states after each statement.}
+	\label{tbl:progstates}
+	\setlength\extrarowheight{5pt}
+	\begin{tabular}{|c|c|c|}
+		\hline
+		& Abstract program state      & Concrete program state                          \\ \hline
+		Initial state          & $(sto, env_V, env_F)$       & $(sto, env_V, env_F)$                           \\ \hline
+		After first statement  & $(sto'', env_V'', env_F'')$ & $(sto[l \mapsto 0], env_V[x \mapsto l], env_F)$ \\ \hline
+		After second statement & $(sto', env_V', env_F')$    & $(sto[l \mapsto 5], env_V[x \mapsto l], env_F)$  \\ \hline
+	\end{tabular}
+\end{table}
+
+\end{landscape}
