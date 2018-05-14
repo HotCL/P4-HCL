@@ -10,18 +10,33 @@ class TypeChecker : ITypeChecker {
             it.paramTypes.zip(types).all {
                 if (it.first == it.second) {
                     if (it.first is AstNode.Type.GenericType)
-                        TODO("throw ambigous type error")
+                        TODO("throw ambiguous type error")
                     true
                 } else it.matchGenerics(genericTypes)
             }
         }
     }
 
-    override fun getTypeOnFuncCall(decl: AstNode.Type.Func, arguments: List<AstNode.Type>) =
+    private fun AstNode.Type.fillGenerics(genericCouples: List<Pair<AstNode.Type, AstNode.Type>>): AstNode.Type
+            = when (this) {
+        is AstNode.Type.GenericType -> genericCouples.getTypeFromGenericType(name)
+                ?: error("Unable to infer generic type $name")
+        is AstNode.Type.List -> AstNode.Type.List(elementType.fillGenerics(genericCouples))
+        is AstNode.Type.Func -> AstNode.Type.Func(paramTypes.map { it.fillGenerics(genericCouples) },
+                returnType.fillGenerics(genericCouples))
+        is AstNode.Type.Tuple -> AstNode.Type.Tuple(elementTypes.map { it.fillGenerics(genericCouples) })
+        else -> this
+    }
+
+    override fun getTypeOnFuncCall(decl: AstNode.Type.Func, arguments: List<AstNode.Type>): AstNode.Type {
+        val generics = decl.paramTypes.zip(arguments)
+        return decl.returnType.fillGenerics(generics)
+    }
+    /*
             if (decl.returnType is AstNode.Type.GenericType)
             decl.paramTypes.zip(arguments).getTypeFromGenericType(decl.returnType.name) ?: TODO()
     else decl.returnType
-
+*/
     /**
      * Pair = declaredType and argumentType
      * It is certain that argumentType doesn't contain any generics. This is a rule of the language
