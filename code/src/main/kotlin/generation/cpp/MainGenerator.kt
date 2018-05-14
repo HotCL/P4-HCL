@@ -28,7 +28,6 @@ class MainGenerator : IPrinter {
         return stringBuilder.toString()
     }
 
-
     private fun String.prefixSerialBegin() = "" +
         "\n#ifdef ARDUINO_AVR_UNO\n" +
         "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
