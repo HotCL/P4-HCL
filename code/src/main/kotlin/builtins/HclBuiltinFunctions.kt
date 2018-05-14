@@ -285,9 +285,9 @@ private fun buildToListFunction() = buildFunction(
     ),
     returnType = Type.List(Type.Number),
     body = "double array[(int)end - (int)start + 1];\n" +
-        "for(int i = 0; i <= end - start; i++){\n "+
-        "   array[i] = start + i;\n"+
-        "}\n"+
+        "for(int i = 0; i <= end - start; i++){\n " +
+        "   array[i] = start + i;\n" +
+        "}\n" +
         "return ConstList<double>::create_from_copy(array, end - start + 1);"
 )
 
@@ -460,8 +460,8 @@ private fun buildPrintFunctionText() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.Text)),
     returnType = Type.None,
-    body = ""+
-        "input.get()->data[input.get()->size] = '\\0';//ConstList<char>::concat(input, ConstList<char>::string((char*)\"\\0\"));\n"+
+    body = "" +
+        "input.get()->data[input.get()->size] = '\\0';//ConstList<char>::concat(input, ConstList<char>::string((char*)\"\\0\"));\n" +
         "#ifdef ARDUINO_AVR_UNO\n" +
         "Serial.print(input.get()->data);\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +

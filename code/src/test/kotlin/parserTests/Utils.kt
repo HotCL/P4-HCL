@@ -4,7 +4,7 @@ import com.natpryce.hamkrest.MatchResult
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import generation.SourceCodePrinter
-import lexer.*
+import lexer.* // ktlint-disable no-wildcard-imports
 import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
 import parser.AstNode
@@ -17,7 +17,7 @@ fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<Lis
                 val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence { yieldAll(actual) })).generateAbstractSyntaxTree()
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
-                else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n"+
+                else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n" +
                         "${SourceCodePrinter().generate(expectedAst)}\n" +
                         "But got this:\n$actualAst\n" +
                         "${SourceCodePrinter().generate(actualAst)}\n")

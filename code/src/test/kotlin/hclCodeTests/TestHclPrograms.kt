@@ -1,7 +1,5 @@
 package hclCodeTests
 
-import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.startsWith
 import exceptions.CompilationException
 import generation.FilePair
 import generation.cpp.ProgramGenerator
