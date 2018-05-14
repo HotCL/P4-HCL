@@ -5,11 +5,14 @@ import exceptions.ImplicitTypeNotAllowed
 import exceptions.UnexpectedTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
+import lexer.Lexer
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import parser.AstNode
+import parser.Parser
 import parser.ParserWithoutBuiltins
+import kotlin.test.assertTrue
 
 class MiscellaneousTests {
 
@@ -30,7 +33,18 @@ class MiscellaneousTests {
         })
         Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
+    @Test
+    fun canParseLoop() {
+        val ast = Parser(DummyLexer(buildTokenSequence {
+            `{`.text("HEY").identifier("print").`}`.identifier("loop").newLine
+        })).generateAbstractSyntaxTree()
 
+        val funcCall = ("loop" returning (none)).calledWith(lambda() andBody body(
+            "print" returning none calledWith txt("HEY")))
+        assertTrue { ast.children.any {
+            it == funcCall
+        } }
+    }
 
     @Test
     fun canParseBool() {
