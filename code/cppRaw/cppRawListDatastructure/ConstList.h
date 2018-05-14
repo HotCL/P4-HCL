@@ -57,7 +57,7 @@ public:
 
 
     static List string(char* txt){
-        return ConstList<char>::create(txt, strlen(txt));
+        return ConstList<char>::create(txt, strlen(txt)+1);
     }
 };
 

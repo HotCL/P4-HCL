@@ -313,8 +313,8 @@ private fun buildFilterFunction() = buildFunction(
     body = "T result[list.get()->size];\n" +
         "int index = 0;\n" +
         "for (int i = 0; i < list.get()->size; i++) {\n" +
-        "if (fun(list.get()->data[i]))\n" +
-        "result[index++] = list.get()->data[i];\n" +
+        "   if (fun(list.get()->data[i]))\n" +
+        "       result[index++] = list.get()->data[i];\n" +
         "}\n" +
         "return ConstList<T>::create(result, index);"
 )
@@ -329,11 +329,11 @@ private fun buildDelayMillisFunction() = buildFunction(
         "#endif //ARDUINO_AVR_UNO\n" +
         "#ifdef _WIN32 //If windows based PC\n" +
 
-        "Sleep((unsigned int)(millis/1000));//convert milliseconds microseconds\n" +
+        "Sleep((unsigned int)(millis));\n" +
 
         "#else //If unix based PC\n" +
 
-        "usleep(((unsigned int)millis));\n" +
+        "usleep(((unsigned int)millis*1000));//convert milliseconds to microseconds\n" +
 
         "#endif //_WIN32\n" +
         "return;"
@@ -419,8 +419,6 @@ private fun buildPrintFunctionList() = buildFunction(
         parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
         returnType = Type.None,
         body = "#ifdef ARDUINO_AVR_UNO\n" +
-                "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
-                "while(!Serial);     // Wait for Serial to initialize\n" +
                 "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
                 "Serial.end();\n" +
                 "#else // NOT ARDUINO_AVR_UNO\n" +
