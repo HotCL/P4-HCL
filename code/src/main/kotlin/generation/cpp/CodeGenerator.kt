@@ -53,7 +53,7 @@ class CodeGenerator : IPrinter {
         is AstNode.Type.Func -> "nullptr"
         is AstNode.Type.Tuple -> "${"create_struct".cppName}(${ this.elementTypes.joinToString { it.defaultValue } })"
 
-        else -> throw Exception("Unable to determine default value of type: $this")
+        else -> throw TypeHasNoDefaultValue()
     }
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDecl(decl: AstNode.Command.Declaration) =
@@ -99,9 +99,7 @@ class CodeGenerator : IPrinter {
                     ("}".indentedPreDec)
             is AstNode.Command.Expression.LambdaBody -> TODO()
             is AstNode.Command.Expression.FunctionCall ->
-                "${identifier.cppName}$genericTemplateArguments(${arguments.formatToList()})".also {
-                    arguments.forEach { print(it) }; print(identifier)
-                }
+                "${identifier.cppName}$genericTemplateArguments(${arguments.formatToList()})"
         }
 
     private val AstNode.Command.Expression.FunctionCall.genericTemplateArguments get(): String {

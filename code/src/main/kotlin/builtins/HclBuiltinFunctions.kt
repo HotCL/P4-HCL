@@ -51,11 +51,7 @@ object HclBuiltinFunctions {
             buildAtTextFunction(),
             buildSubtextText(),
             buildLengthText(),
-            *buildTwoParametersTextAsListFunctions(listOf(
-                Pair("+", Type.Text),
-                Pair("equals", Type.Bool),
-                Pair("notEquals", Type.Bool)
-            )),
+
             // Read/Write functions for arduino
             buildWriteDigPinFunction(),
             buildReadDigPinFunction(),
@@ -76,7 +72,11 @@ object HclBuiltinFunctions {
             buildPrintFunctionText(),
             buildPrintFunctionList(),
             buildPrintFunction()
-        )
+        )+ buildTwoParametersTextAsListFunctions(listOf(
+            Pair("+", Type.Text),
+            Pair("equals", Type.Bool),
+            Pair("notEquals", Type.Bool)
+        ))
 }
 
 // region buildOperator_functions
@@ -431,10 +431,7 @@ private fun buildPrintFunction() = buildFunction(
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
     returnType = Type.None,
     body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
-        "while(!Serial);     // Wait for Serial to initialize\n" +
         "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
-        "Serial.end();\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
         "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
         "#endif // ARDUINO_AVR_UNO\n" +

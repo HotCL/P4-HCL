@@ -55,15 +55,7 @@ class TypeGenerator : IPrinter {
                     }.joinToString("") +
                     "return output;"
             ),
-            *this.elementTypes.mapIndexed { index, type -> buildFunction(
-                identifier = "element$index",
-                parameters = listOf(
-                    Parameter("self", this)
-                ),
-                returnType = type,
-                body = "return self.element$index;"
 
-            ) }.toTypedArray(),
             buildFunction(
                 identifier = "create_struct",
                 parameters = this.elementTypes.mapIndexed { index, it -> Parameter("element$index", it) },
@@ -71,5 +63,13 @@ class TypeGenerator : IPrinter {
                 body = "${this.cppName} output = {${this.elementTypes.mapIndexed{
                     index, _ -> "element$index" }.joinToString()}};\nreturn output;"
             )
-        )))
+        )+this.elementTypes.mapIndexed { index, type -> buildFunction(
+            identifier = "element$index",
+            parameters = listOf(
+                Parameter("self", this)
+            ),
+            returnType = type,
+            body = "return self.element$index;"
+
+        ) }))
 }

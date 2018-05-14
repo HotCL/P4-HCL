@@ -11,22 +11,24 @@ fun String.runCommand(workingDir: File = File("./")): CommandResult {
     return try {
         val parts = this.split("\\s".toRegex())
         val proc = ProcessBuilder(*parts.toTypedArray())
-                .directory(workingDir)
-                .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
-                .start()
+            .directory(workingDir)
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .start()
 
         proc.waitFor(10, TimeUnit.SECONDS)
-        CommandResult(proc.inputStream.bufferedReader().readText() + proc.errorStream.bufferedReader().readText().let {
-            if (it.isNotBlank()) { "Error: $it" } else ""
-        }, proc.exitValue())
+        CommandResult(proc.inputStream.bufferedReader().readText() +
+            proc.errorStream.bufferedReader().readText().let {
+                if (it.isNotBlank()) { "Error: $it" } else ""
+            }, proc.exitValue())
     } catch (e: IOException) {
         e.printStackTrace()
         CommandResult("IO EXCEPTION!", -1)
     }
 }
 
-fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolean = false, outputFile: String = "program") {
+fun compileCpp(files: List<FilePair>, dir: String = "testDir",
+               keepFiles: Boolean = false, outputFile: String = "program") {
     File(dir).mkdir()
     try {
         val headerFiles = files.filter { it.fileName.endsWith(".h") }
@@ -43,8 +45,6 @@ fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolea
         }
         val program = File(dir).listFiles().first { it.nameWithoutExtension == outputFile }
         program.copyTo(File(program.name), true)
-    } catch (e: Exception) {
-        throw e
     } finally {
         if (!keepFiles) File(dir).deleteRecursively()
     }

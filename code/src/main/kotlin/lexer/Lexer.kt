@@ -13,14 +13,18 @@ class Lexer(private val inputContent: String) : ILexer {
 
     private val endOfLineRegex = "\\r\\n|\\n|\\r".toRegex()
 
+    private fun StringBuilder.isStartOfStringLiteral(char: Char) =
+        this.isNotEmpty() && this[0] in listOf('\'', '"') &&
+            (char !in listOf('\'', '"') || this.last() == '\\')
+
+
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
         val currentString = StringBuilder()
         inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->
             (line + '\n').forEachIndexed { indexNumber, char ->
                 // handle if we are reading string literal
                 if ((currentString.isEmpty() && char in listOf('\'', '"')) ||
-                    (currentString.isNotEmpty() && currentString[0] in listOf('\'', '"') &&
-                    (char !in listOf('\'', '"') || currentString.last() == '\\'))) {
+                    currentString.isStartOfStringLiteral(char)) {
                     if (char == '\n') {
                         throw StringDoesntEndError(lineNumber, indexNumber, currentString.toString())
                     }
