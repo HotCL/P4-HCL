@@ -52,9 +52,9 @@ object HclBuiltinFunctions {
             buildSubtextText(),
             buildLengthText(),
             *buildTwoParametersTextAsListFunctions(listOf(
-                Pair("+",Type.Text),
-                Pair("equals",Type.Bool),
-                Pair("notEquals",Type.Bool)
+                Pair("+", Type.Text),
+                Pair("equals", Type.Bool),
+                Pair("notEquals", Type.Bool)
             )),
             // Read/Write functions for arduino
             buildWriteDigPinFunction(),
@@ -216,10 +216,9 @@ private fun buildAtTextFunction() = buildFunction(
     ),
     returnType = Type.Text,
     body = "" +
-        "char charArr[2] = {ConstList<char>::at(list, (unsigned int)rightHand),'\\0'};\n"+
+        "char charArr[2] = {ConstList<char>::at(list, (unsigned int)rightHand),'\\0'};\n" +
         "return ConstList<char>::string(charArr);"
 )
-
 
 private fun buildListConcatFunction() = buildFunction(
     identifier = "+",
@@ -230,7 +229,7 @@ private fun buildListConcatFunction() = buildFunction(
     returnType = Type.List(Type.GenericType("T")),
     body = "return ConstList<T>::concat(leftHand, rightHand);"
 )
-private fun buildTwoParametersTextAsListFunctions(list: List<Pair<String,Type>>) =
+private fun buildTwoParametersTextAsListFunctions(list: List<Pair<String, Type>>) =
     list.map {
         buildFunction(
             identifier = it.first,

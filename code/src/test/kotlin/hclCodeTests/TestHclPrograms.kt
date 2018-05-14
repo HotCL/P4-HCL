@@ -9,7 +9,6 @@ import hclTestFramework.codegen.compileAndExecuteCpp
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
-import java.io.File
 import kotlin.system.exitProcess
 import kotlin.test.assertEquals
 

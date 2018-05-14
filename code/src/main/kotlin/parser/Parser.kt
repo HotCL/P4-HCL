@@ -23,10 +23,10 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             enterSymbol(it.identifier.name, it.expression!!.type)
         }
         enterSymbol("RETURN_CODE", AstNode.Type.Number)
-        //enterSymbol("print", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
+        // enterSymbol("print", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
         //    AstNode.Type.None))
 
-        //enterSymbol("toText", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
+        // enterSymbol("toText", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
         //    AstNode.Type.None))
 
         enterSymbol("+", AstNode.Type.Func(listOf(AstNode.Type.Text, AstNode.Type.Text),

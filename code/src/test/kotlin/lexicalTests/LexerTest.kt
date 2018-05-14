@@ -134,7 +134,6 @@ private fun lexerTestMultiWordString() =
 private fun lexerTestEmptyString() =
     TestData("\" \"", buildTokenSequence { text(" ").newLine }, listOf (listOf(0, 3)))
 
-
 private fun lexerTestmultiWordStringEscapedQuotes() =
         TestData("\"hej \\\"med\\\" dig\"", buildTokenSequence { text("hej \\\"med\\\" dig").newLine }, listOf (listOf(0, 17)))
 
