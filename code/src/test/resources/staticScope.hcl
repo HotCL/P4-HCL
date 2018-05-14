@@ -3,23 +3,23 @@
 var x = 0
 var y = 42
 
-var p = (): none {
+var foo = (): none {
     x = x + 3
 }
-var q = (): none {
-    p
+var bar = (): none {
+    foo
 }
-var  f = (): none{
+var fun = (): none{
     var x = 9
 
-    var p = (): none {
+    var foo = (): none {
         x = x + 1
     }
 
-    q
+    bar
 
     y = x
 }
 
-f
+fun
 y print
