@@ -248,6 +248,20 @@ private fun buildSubListFunction() = buildFunction(
     body = "return ConstList<T>::sublist(list, (unsigned int)startIndex, (unsigned int)length);"
 )
 
+private fun buildToListFunction() = buildFunction(
+        identifier = "to",
+        parameters = listOf(
+                Parameter("start", Type.Number),
+                Parameter("end", Type.Number)
+        ),
+        returnType = Type.List(Type.Number),
+        body = "double array[end - start + 1];\n" +
+                "for(int i = 0; i < end - start; i++){\n "+
+                "array[i] = start + i;\n"+
+                "}\n"+
+                "return ConstList<double>::create(array, end - start + 1);"
+)
+
 private fun buildWhileFunction() = buildFunction(
     identifier = "while",
     parameters = listOf(
