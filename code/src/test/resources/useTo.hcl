@@ -15,4 +15,4 @@ var first = (list[T] myList): T {
 var numbers = 1 toUneven 10
 
 
-print numbers last
+numbers last print
