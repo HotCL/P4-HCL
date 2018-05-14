@@ -166,7 +166,7 @@ object CodeGenerationTest : Spek({
             testDeclarationAssignmentDeclarationToAssignedVariable() shouldReturn 7,
             testGenericHighOrderFunction() shouldReturn 5,
             testGenericHighOrderFunctionAdvanced() shouldReturn 13,
-            testPrintList() shouldReturn "[1.00000, 2.00000]",
+            testPrintList() shouldReturn "[1, 2]",
             testMapFunction() shouldReturn 7,
             testFilterFunction() shouldReturn 5
         ).forEach { testCase ->
