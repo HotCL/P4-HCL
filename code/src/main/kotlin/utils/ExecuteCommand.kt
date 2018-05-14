@@ -26,7 +26,8 @@ fun String.runCommand(workingDir: File = File("./")): CommandResult {
     }
 }
 
-fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolean = false, outputFile: String = "program") {
+fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolean = false,
+               outputFile: String = "program", verbose:Boolean=false) {
     File(dir).mkdir()
     try {
         val headerFiles = files.filter { it.fileName.endsWith(".h") }
@@ -35,11 +36,13 @@ fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolea
         cppFiles.forEach {
             it.writeFile(dir)
             "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
-                println(runCommand(File(dir)))
+                val result = runCommand(File(dir))
+                if(verbose) println(result) // $COVERAGE-IGNORE$
             }
         }
         "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o $outputFile".apply {
-            println(runCommand(File(dir)))
+            val result = runCommand(File(dir))
+            if(verbose) println(result) // $COVERAGE-IGNORE$
         }
         val program = File("./$dir/$outputFile")
         program.copyTo(File(program.parentFile.parentFile.absolutePath + "/$outputFile"), true)

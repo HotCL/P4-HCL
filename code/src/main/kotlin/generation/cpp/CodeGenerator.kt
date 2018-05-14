@@ -99,9 +99,7 @@ class CodeGenerator : IPrinter {
                     ("}".indentedPreDec)
             is AstNode.Command.Expression.LambdaBody -> TODO()
             is AstNode.Command.Expression.FunctionCall ->
-                "${identifier.cppName}$genericTemplateArguments(${arguments.formatToList()})".also {
-                    arguments.forEach { print(it) }; print(identifier)
-                }
+                "${identifier.cppName}$genericTemplateArguments(${arguments.formatToList()})"
         }
 
     private val AstNode.Command.Expression.FunctionCall.genericTemplateArguments get(): String {
