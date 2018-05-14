@@ -388,7 +388,6 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             }.let { if (expression != it) parsePotentialFunctionCall(it) else expression!! }
 
     private fun isLambdaParameters() = peek().token is Token.Type ||
-            (peek().token is Token.Identifier && hasAhead(2) && lookAhead(2).token is Token.Identifier) ||
             peek().token == Token.SpecialChar.ParenthesesEnd
 
     private fun parseExpressionAtomic(): AstExpression =
