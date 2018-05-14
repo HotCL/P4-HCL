@@ -63,7 +63,7 @@ class TypeGenerator : IPrinter {
                 body = "${this.cppName} output = {${this.elementTypes.mapIndexed{
                     index, _ -> "element$index" }.joinToString()}};\nreturn output;"
             )
-        )+this.elementTypes.mapIndexed { index, type -> buildFunction(
+        ) + this.elementTypes.mapIndexed { index, type -> buildFunction(
             identifier = "element$index",
             parameters = listOf(
                 Parameter("self", this)

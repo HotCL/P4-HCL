@@ -17,7 +17,6 @@ class Lexer(private val inputContent: String) : ILexer {
         this.isNotEmpty() && this[0] in listOf('\'', '"') &&
             (char !in listOf('\'', '"') || this.last() == '\\')
 
-
     override fun getTokenSequence(): Sequence<PositionalToken> = buildSequence {
         val currentString = StringBuilder()
         inputContent.split(endOfLineRegex).forEachIndexed lineIterator@{ lineNumber, line ->

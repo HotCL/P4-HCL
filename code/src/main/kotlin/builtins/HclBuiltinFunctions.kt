@@ -72,7 +72,7 @@ object HclBuiltinFunctions {
             buildPrintFunctionText(),
             buildPrintFunctionList(),
             buildPrintFunction()
-        )+ buildTwoParametersTextAsListFunctions(listOf(
+        ) + buildTwoParametersTextAsListFunctions(listOf(
             Pair("+", Type.Text),
             Pair("equals", Type.Bool),
             Pair("notEquals", Type.Bool)
