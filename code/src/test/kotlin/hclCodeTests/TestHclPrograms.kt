@@ -27,10 +27,13 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val files = listOf(
-            // "HelloWorld.hcl",
-            // "HelloWorldAndReturn.hcl",
-            // "ReturnSimple.hcl",
-            "MapFilter.hcl"
+        "HelloWorld.hcl",
+        "HelloWorldAndReturn.hcl",
+        "ReturnSimple.hcl",
+        "MapFilter.hcl",
+        "stringConcat.hcl",
+        "stringAt.hcl",
+        "printTuple.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {

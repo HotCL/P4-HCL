@@ -23,6 +23,17 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             enterSymbol(it.identifier.name, it.expression!!.type)
         }
         enterSymbol("RETURN_CODE", AstNode.Type.Number)
+        // enterSymbol("print", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
+        //    AstNode.Type.None))
+
+        // enterSymbol("toText", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
+        //    AstNode.Type.None))
+
+        enterSymbol("+", AstNode.Type.Func(listOf(AstNode.Type.Text, AstNode.Type.Text),
+            AstNode.Type.Text))
+
+        enterSymbol("loop", AstNode.Type.Func(listOf(AstNode.Type.Func(listOf(), AstNode.Type.None)),
+            AstNode.Type.None))
 
         // Parse
         while (hasNext()) {
@@ -254,7 +265,8 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             commands.add(parseCommand())
         }
         val body = AstNode.Command.Expression.LambdaBody(
-                if (commands.size == 1 && commands[0] is AstNode.Command.Expression)
+                if (commands.size == 1 &&
+                    (commands[0] as? AstNode.Command.Expression)?.let { it.type != AstNode.Type.None } == true)
                     listOf(AstNode.Command.Return(commands[0] as AstNode.Command.Expression))
                 else
                     commands

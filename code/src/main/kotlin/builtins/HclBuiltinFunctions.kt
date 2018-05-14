@@ -48,11 +48,16 @@ object HclBuiltinFunctions {
             buildMapFunction(),
             buildFilterFunction(),
             buildDelayMillisFunction(),
+            buildAtTextFunction(),
+            buildSubtextText(),
+            buildLengthText(),
+
             // Read/Write functions for arduino
             buildWriteDigPinFunction(),
             buildReadDigPinFunction(),
             buildWriteAnaPinFunction(),
             buildReadAnaPinFunction(),
+
             // Print functions
             /* Kept incase we can't use generics
             buildPrintFunction<Type.Number>(),
@@ -67,7 +72,11 @@ object HclBuiltinFunctions {
             buildPrintFunctionText(),
             buildPrintFunctionList(),
             buildPrintFunction()
-        )
+        ) + buildTwoParametersTextAsListFunctions(listOf(
+            Pair("+", Type.Text),
+            Pair("equals", Type.Bool),
+            Pair("notEquals", Type.Bool)
+        ))
 }
 
 // region buildOperator_functions
@@ -105,45 +114,17 @@ private inline fun <reified V, reified H, reified R> buildOperator(
     body = "return leftHand $operator rightHand;"
 )
 private fun buildModuloOperator() = buildFunction(
-        identifier = "mod",
-        parameters = listOf(
-                Parameter("leftHand", Type.Number),
-                Parameter("rightHand", Type.Number)
-        ),
-        returnType = Type.Number,
-        body = "return (long)leftHand % (long)rightHand;"
+    identifier = "mod",
+    parameters = listOf(
+        Parameter("leftHand", Type.Number),
+        Parameter("rightHand", Type.Number)
+    ),
+    returnType = Type.Number,
+    body = "return (long)leftHand % (long)rightHand;"
 )
 // endregion buildOperator_functions
 
 // region builtInFunctions
-private fun buildNotFunction() = buildFunction(
-        identifier = "not",
-        parameters = listOf(
-                Parameter("b", Type.Bool)
-        ),
-        returnType = Type.Bool,
-        body = "return !b;"
-)
-
-private fun buildTextEqualsFunction() = buildFunction(
-        identifier = "equals",
-        parameters = listOf(
-                Parameter("leftHand", Type.Text),
-                Parameter("rightHand", Type.Text)
-        ),
-        returnType = Type.Bool,
-        body = "return strcmp(leftHand, rightHand) == 0;"
-)
-
-private fun buildTextNotEqualsFunction() = buildFunction(
-        identifier = "notEquals",
-        parameters = listOf(
-                Parameter("leftHand", Type.Text),
-                Parameter("rightHand", Type.Text)
-        ),
-        returnType = Type.Bool,
-        body = "return strcmp(leftHand, rightHand) != 0;"
-)
 
 private fun buildNumberToTextFunction() = buildFunction(
     identifier = "toText",
@@ -179,12 +160,12 @@ private fun buildListToTextFunction() = buildFunction(
 )
 
 private fun buildTextToTextFunction() = buildFunction(
-        identifier = "toText",
-        parameters = listOf(
-                Parameter("input", Type.Text)
-        ),
-        returnType = Type.Text,
-        body = "return input;"
+    identifier = "toText",
+    parameters = listOf(
+        Parameter("input", Type.Text)
+    ),
+    returnType = Type.Text,
+    body = "return input;"
 )
 
 private fun buildGetListLengthFunction() = buildFunction(
@@ -203,7 +184,7 @@ private fun buildListEqualsFunction() = buildFunction(
         Parameter("rightHand", Type.List(Type.GenericType("T")))
     ),
     returnType = Type.Bool,
-    body = "return length(leftHand) == length(rightHand) && " +
+    body = "return ${"length".cppName}(leftHand) == ${"length".cppName}(rightHand) && " +
         "memcmp(leftHand.get()->data, rightHand.get()->data, leftHand.get()->size * sizeof(T)) == 0;"
 )
 
@@ -214,7 +195,7 @@ private fun buildListNotEqualsFunction() = buildFunction(
         Parameter("rightHand", Type.List(Type.GenericType("T")))
     ),
     returnType = Type.Bool,
-    body = "return !equals(leftHand,rightHand);"
+    body = "return !${"equals".cppName}(leftHand,rightHand);"
 )
 
 private fun buildAtListFunction() = buildFunction(
@@ -227,6 +208,18 @@ private fun buildAtListFunction() = buildFunction(
     body = "return ConstList<T>::at(list, (unsigned int)rightHand);"
 )
 
+private fun buildAtTextFunction() = buildFunction(
+    identifier = "at",
+    parameters = listOf(
+        Parameter("list", Type.Text),
+        Parameter("rightHand", Type.Number)
+    ),
+    returnType = Type.Text,
+    body = "" +
+        "char charArr[2] = {ConstList<char>::at(list, (unsigned int)rightHand),'\\0'};\n" +
+        "return ConstList<char>::string(charArr);"
+)
+
 private fun buildListConcatFunction() = buildFunction(
     identifier = "+",
     parameters = listOf(
@@ -236,6 +229,40 @@ private fun buildListConcatFunction() = buildFunction(
     returnType = Type.List(Type.GenericType("T")),
     body = "return ConstList<T>::concat(leftHand, rightHand);"
 )
+private fun buildTwoParametersTextAsListFunctions(list: List<Pair<String, Type>>) =
+    list.map {
+        buildFunction(
+            identifier = it.first,
+            parameters = listOf(
+                Parameter("leftHand", Type.Text),
+                Parameter("rightHand", Type.Text)
+            ),
+            returnType = it.second,
+            body = "return ${it.first.cppName}<char>(leftHand, rightHand);"
+        )
+    }.toTypedArray()
+
+private fun buildLengthText() =
+        buildFunction(
+            identifier = "length",
+            parameters = listOf(
+                Parameter("leftHand", Type.Text)
+            ),
+            returnType = Type.Number,
+            body = "return ${"length".cppName}<char>(leftHand);"
+        )
+
+private fun buildSubtextText() =
+    buildFunction(
+        identifier = "subText",
+        parameters = listOf(
+            Parameter("leftHand", Type.Text),
+            Parameter("startIndex", Type.Number),
+            Parameter("length", Type.Number)
+        ),
+        returnType = Type.Text,
+        body = "return ${"subList".cppName}<char>(leftHand,startIndex,length);"
+    )
 
 private fun buildSubListFunction() = buildFunction(
     identifier = "subList",
@@ -349,7 +376,7 @@ private fun buildWriteDigPinFunction() = buildFunction(
         "digitalWrite((int)pin, value);\n" +
         "#else\n" +
         "std::cout << \"Set digital pin \" << (int)pin << \" to output \" << (value ? \"HIGH\" : \"LOW\") << " +
-            "std::endl;\n" +
+        "std::endl;\n" +
         "return;\n" +
         "#endif // ARDUINO_AVR_UNO" +
         "return;"
@@ -404,8 +431,18 @@ private fun buildPrintFunction() = buildFunction(
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
     returnType = Type.None,
     body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
-        "while(!Serial);     // Wait for Serial to initialize\n" +
+        "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
+        "#else // NOT ARDUINO_AVR_UNO\n" +
+        "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
+        "#endif // ARDUINO_AVR_UNO\n" +
+        "return;"
+)
+
+private fun buildPrintFunctionList() = buildFunction(
+    identifier = "print",
+    parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
+    returnType = Type.None,
+    body = "#ifdef ARDUINO_AVR_UNO\n" +
         "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
         "Serial.end();\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
@@ -414,50 +451,20 @@ private fun buildPrintFunction() = buildFunction(
         "return;"
 )
 
-private fun buildPrintFunctionList() = buildFunction(
-        identifier = "print",
-        parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
-        returnType = Type.None,
-        body = "#ifdef ARDUINO_AVR_UNO\n" +
-                "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
-                "Serial.end();\n" +
-                "#else // NOT ARDUINO_AVR_UNO\n" +
-                "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
-                "#endif // ARDUINO_AVR_UNO\n" +
-                "return;"
-)
-
 private fun buildPrintFunctionText() = buildFunction(
-        identifier = "print",
-        parameters = listOf(Parameter("input", Type.Text)),
-        returnType = Type.None,
-        body = "#ifdef ARDUINO_AVR_UNO\n" +
-                "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
-                "while(!Serial);     // Wait for Serial to initialize\n" +
-                "Serial.print(input.get()->data);\n" +
-                "Serial.end();\n" +
-                "#else // NOT ARDUINO_AVR_UNO\n" +
-                "std::cout << input.get()->data;\n" +
-                "#endif // ARDUINO_AVR_UNO\n" +
-                "return;"
+    identifier = "print",
+    parameters = listOf(Parameter("input", Type.Text)),
+    returnType = Type.None,
+    body = "#ifdef ARDUINO_AVR_UNO\n" +
+        "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
+        "while(!Serial);     // Wait for Serial to initialize\n" +
+        "Serial.print(input.get()->data);\n" +
+        "Serial.end();\n" +
+        "#else // NOT ARDUINO_AVR_UNO\n" +
+        "std::cout << input.get()->data;\n" +
+        "#endif // ARDUINO_AVR_UNO\n" +
+        "return;"
 )
-/* THESE SHOULDN*T BE NEEDED. generics should work
-private inline fun<reified T: Type> buildPrintFunction() = buildFunction(
-        identifier = "print",
-        parameters = listOf(Parameter("input", T::class.objectInstance!!)),
-        returnType = Type.None,
-        body = "print(toText(input));\n" +
-                "return;"
-)
-
-private inline fun<reified T: Type> buildPrintLineFunction() = buildFunction(
-        identifier = "printLine",
-        parameters = listOf(Parameter("input", T::class.objectInstance!!)),
-        returnType = Type.None,
-        body = "print_line(toText(input));\n" +
-                "return;"
-)
-*/
 
 // endregion PrintFunctions
 // endregion builtInFunctions
