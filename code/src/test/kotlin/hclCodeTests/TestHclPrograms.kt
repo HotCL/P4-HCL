@@ -31,7 +31,8 @@ object TestHclPrograms : Spek({
             "HelloWorld.hcl",
             "HelloWorldAndReturn.hcl",
             "ReturnSimple.hcl",
-            "MapFilter.hcl"
+            "MapFilter.hcl",
+            "printTuple.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
