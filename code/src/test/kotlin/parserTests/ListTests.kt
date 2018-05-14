@@ -63,12 +63,11 @@ class ListTests {
         )
     }
 
-
     @org.junit.jupiter.api.Test
     fun parseListWithOneWrongType() {
         val lexer = DummyLexer(buildTokenSequence {
-            list.squareStart.number.squareEnd.identifier("MyList").`=`.
-                squareStart.number(5.0).`,`.text("hej").squareEnd.newLine
+            list.squareStart.number.squareEnd.identifier("MyList").`=`
+                .squareStart.number(5.0).`,`.text("hej").squareEnd.newLine
         })
         Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }

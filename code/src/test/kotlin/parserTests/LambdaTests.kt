@@ -4,7 +4,6 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import exceptions.UndeclaredError
 import exceptions.UnexpectedReturnTypeError
-import hclTestFramework.lexer.buildTokenSequence
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 

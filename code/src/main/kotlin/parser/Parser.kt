@@ -1,7 +1,6 @@
 package parser
 
 import builtins.HclBuiltinFunctions
-import generation.cpp.getGeneric
 import parser.typechecker.ITypeChecker
 import parser.typechecker.TypeChecker
 import lexer.ILexer
@@ -302,8 +301,11 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         }, { scopeDepth == 0 && it.token !is Token.Identifier }, 1)
     }
 
-    private fun getLambdaParameter(func: List<AstNode.Type.Func>, index: Int,
-                                   params: List<AstNode.Type> = emptyList()) : AstExpression {
+    private fun getLambdaParameter(
+        func: List<AstNode.Type.Func>,
+        index: Int,
+        params: List<AstNode.Type> = emptyList()
+    ): AstExpression {
         val funcAcceptingLambda = func.firstOrNull {
             it.paramTypes[index] is AstNode.Type.Func
         } ?: error("No function found that takes a lambda at the current position")

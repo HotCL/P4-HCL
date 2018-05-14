@@ -17,8 +17,8 @@ class TypeChecker : ITypeChecker {
         }
     }
 
-    private fun AstNode.Type.fillGenerics(genericCouples: List<Pair<AstNode.Type, AstNode.Type>>): AstNode.Type
-            = when (this) {
+    private fun AstNode.Type.fillGenerics(genericCouples: List<Pair<AstNode.Type, AstNode.Type>>): AstNode.Type =
+            when (this) {
         is AstNode.Type.GenericType -> genericCouples.getTypeFromGenericType(name)
                 ?: error("Unable to infer generic type $name")
         is AstNode.Type.List -> AstNode.Type.List(elementType.fillGenerics(genericCouples))

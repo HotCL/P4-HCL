@@ -9,7 +9,6 @@ import hclTestFramework.codegen.compileAndExecuteCpp
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
-import java.io.File
 import kotlin.system.exitProcess
 import kotlin.test.assertEquals
 
@@ -28,9 +27,9 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val files = listOf(
-            //"HelloWorld.hcl",
-            //"HelloWorldAndReturn.hcl",
-            //"ReturnSimple.hcl",
+            // "HelloWorld.hcl",
+            // "HelloWorldAndReturn.hcl",
+            // "ReturnSimple.hcl",
             "MapFilter.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
