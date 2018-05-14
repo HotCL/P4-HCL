@@ -3,6 +3,8 @@ package generation.cpp
 import generation.IPrinter
 import parser.AbstractSyntaxTree
 import parser.AstNode
+import parser.Parameter
+import parser.buildFunction
 
 /**
  * Should generate a file with all header information. for instance every tuple used should be type-defined
@@ -11,7 +13,7 @@ class TypeGenerator : IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
         val tuples = ast.children.fetchTuples()
         // val lists = ast.children.fetchLists()
-        return tuples.joinToString("\n\n") { it.format() }
+        return tuples.joinToString("\n\n") { it.format() + "\n" + it.generateFunctions() }
     }
 
     private fun List<AstNode>.fetchTuples(): Set<AstNode.Type.Tuple> = flatMap { it.fetchTuple() }.toSet()
@@ -28,48 +30,46 @@ class TypeGenerator : IPrinter {
         else -> emptySet()
     }
     private fun AstNode.Type.Tuple.format(): String = "" +
-            "typedef struct {\n  " +
-            elementTypes.mapIndexed { i, it ->
-                "${it.cppName} element$i;" }.joinToString("\n  ") +
-            "\n} ${this.cppName};\n\n" // +generateFunctions()
+        "typedef struct {\n  " +
+        elementTypes.mapIndexed { i, it ->
+            "${it.cppName} element$i;" }.joinToString("\n  ") +
+        "\n} ${this.cppName};\n\n" // +generateFunctions()
 
-/*    private fun AstNode.Type.Tuple.generateFunctions() = CodeGenerator().generate(
-            AbstractSyntaxTree(listOf(buildFunction(
-                    identifier = "toText",
-                    parameters = listOf(
-                            Parameter("self", this)
-                    ),
-                    returnType = AstNode.Type.Text,
-                    body = "ConstList<char>::List" +
-                            " output = ConstList<char>::string((char*)\"\");\n" +
-                            elementTypes.mapIndexed {index, _ ->
-                                "output = ConstList<char>::concat(output, ${"toText".cppName}" +
-                                        "<char>(self.element$index));\n"+
-                                        if (index != this.elementTypes.count() - 1) {
-                                            "output = ConstList<char>::concat(output, " +
-                                                    "ConstList<char>::string((char*)\",\"));\n"
-                                        } else ""
+    private fun AstNode.Type.Tuple.generateFunctions() = CodeGenerator().generate(
+        AbstractSyntaxTree(listOf(
+            buildFunction(
+                identifier = "toText",
+                parameters = listOf(
+                    Parameter("self", this)
+                ),
+                returnType = AstNode.Type.Text,
+                body = "ConstList<char>::List" +
+                    " output = ConstList<char>::string((char*)\"\");\n" +
+                    elementTypes.mapIndexed { index, _ ->
+                        "output = ConstList<char>::concat(output, ${"toText".cppName}" +
+                            "(self.element$index));\n" +
+                            if (index != this.elementTypes.count() - 1) {
+                                "output = ConstList<char>::concat(output, " +
+                                    "ConstList<char>::string((char*)\",\"));\n"
+                            } else ""
+                    }.joinToString("") +
+                    "return output;"
+            ),
 
-                            }.joinToString("")+
-                            "return output;"
-            ),buildFunction(
-                    identifier = "at",
-                    parameters = listOf(
-                            Parameter("self", this),
-                            Parameter("index", AstNode.Type.Number)
-                    ),
-                    returnType = AstNode.Type.Text,
-                    body = "switch((int)index) { \n"+
-                            this.elementTypes.mapIndexed { index, _ ->
-                                "case $index: return self.element$index;"
-
-                            }.joinToString("\n")+"\n}"
-            ),buildFunction(
-                    identifier = "create_struct",
-                    parameters = this.elementTypes.mapIndexed{ index, it -> Parameter("element$index",it)},
-                    returnType = this,
-                    body = "${this.cppName} output = ${this.elementTypes.mapIndexed{
-                        index, _ -> "element$index" }.joinToString()};\nreturn output;"
+            buildFunction(
+                identifier = "create_struct",
+                parameters = this.elementTypes.mapIndexed { index, it -> Parameter("element$index", it) },
+                returnType = this,
+                body = "${this.cppName} output = {${this.elementTypes.mapIndexed{
+                    index, _ -> "element$index" }.joinToString()}};\nreturn output;"
             )
-            )))*/
+        ) + this.elementTypes.mapIndexed { index, type -> buildFunction(
+            identifier = "element$index",
+            parameters = listOf(
+                Parameter("self", this)
+            ),
+            returnType = type,
+            body = "return self.element$index;"
+
+        ) }))
 }

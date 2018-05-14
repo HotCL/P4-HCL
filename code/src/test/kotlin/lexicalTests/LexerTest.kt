@@ -131,6 +131,9 @@ private fun lexerTestIllegalIdentifiers() = TestData(
 private fun lexerTestMultiWordString() =
         TestData("\"hej med dig\"", buildTokenSequence { text("hej med dig").newLine }, listOf (listOf(0, 13)))
 
+private fun lexerTestEmptyString() =
+    TestData("\" \"", buildTokenSequence { text(" ").newLine }, listOf (listOf(0, 3)))
+
 private fun lexerTestmultiWordStringEscapedQuotes() =
         TestData("\"hej \\\"med\\\" dig\"", buildTokenSequence { text("hej \\\"med\\\" dig").newLine }, listOf (listOf(0, 17)))
 
@@ -151,6 +154,7 @@ object LexerTestInputYieldsOutput : Spek({
             lexerTestTabTest(),
             lexerTestIllegalIdentifiers(),
             lexerTestMultiWordString(),
+            lexerTestEmptyString(),
             lexerTestmultiWordStringEscapedQuotes()
         ).forEach { testData ->
             on(testData.string) {
