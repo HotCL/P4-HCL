@@ -154,10 +154,10 @@ private fun buildListToTextFunction() = buildFunction(
     body = "auto output = ConstList<char>::string((char*)\"[\");\n" +
         "for(int i = 0; i < input.get()->size; i++) {\n" +
         "   output = ConstList<char>::concat(output, ${"toText".cppName}(ConstList<T>::at(input, i)));\n" +
-        "   if (i != input.get()->size - 1)\n" +
+        "   if (i != input.get()->size-1)\n" +
         "       output = ConstList<char>::concat(output, ConstList<char>::string((char*)\", \"));" +
         "}\n" +
-        "return ConstList<char>::concat(output, ConstList<char>::string((char*)\"]\\0\"));"
+        "return ConstList<char>::concat(output, ConstList<char>::string((char*)\"]\"));"
 )
 
 private fun buildTextToTextFunction() = buildFunction(
@@ -166,7 +166,8 @@ private fun buildTextToTextFunction() = buildFunction(
         Parameter("input", Type.Text)
     ),
     returnType = Type.Text,
-    body = "return input;"
+    body = "auto quote = ConstList<char>::string((char *)\"\\\"\");\n" +
+        "return ConstList<char>::concat(quote, ConstList<char>::concat(input, quote));"
 )
 
 private fun buildGetListLengthFunction() = buildFunction(
@@ -244,14 +245,14 @@ private fun buildTwoParametersTextAsListFunctions(list: List<Pair<String, Type>>
     }.toTypedArray()
 
 private fun buildLengthText() =
-        buildFunction(
-            identifier = "length",
-            parameters = listOf(
-                Parameter("leftHand", Type.Text)
-            ),
-            returnType = Type.Number,
-            body = "return ${"length".cppName}<char>(leftHand);"
-        )
+    buildFunction(
+        identifier = "length",
+        parameters = listOf(
+            Parameter("leftHand", Type.Text)
+        ),
+        returnType = Type.Number,
+        body = "return ${"length".cppName}<char>(leftHand);"
+    )
 
 private fun buildSubtextText() =
     buildFunction(
@@ -277,17 +278,17 @@ private fun buildSubListFunction() = buildFunction(
 )
 
 private fun buildToListFunction() = buildFunction(
-        identifier = "to",
-        parameters = listOf(
-                Parameter("start", Type.Number),
-                Parameter("end", Type.Number)
-        ),
-        returnType = Type.List(Type.Number),
-        body = "double array[(int)end - (int)start + 1];\n" +
-                "for(int i = 0; i < end - start; i++){\n "+
-                "array[i] = start + i;\n"+
-                "}\n"+
-                "return ConstList<double>::create(array, end - start + 1);"
+    identifier = "to",
+    parameters = listOf(
+        Parameter("start", Type.Number),
+        Parameter("end", Type.Number)
+    ),
+    returnType = Type.List(Type.Number),
+    body = "double array[(int)end - (int)start + 1];\n" +
+        "for(int i = 0; i <= end - start; i++){\n "+
+        "   array[i] = start + i;\n"+
+        "}\n"+
+        "return ConstList<double>::create_from_copy(array, end - start + 1);"
 )
 
 private fun buildWhileFunction() = buildFunction(
@@ -337,7 +338,7 @@ private fun buildMapFunction() = buildFunction(
         "for (int i = 0; i < list.get()->size; i++) {\n" +
         "result[i] = fun(list.get()->data[i]);\n" +
         "}\n" +
-        "return ConstList<T2>::create(result, list.get()->size);"
+        "return ConstList<T2>::create_from_copy(result, list.get()->size);"
 )
 
 private fun buildFilterFunction() = buildFunction(
@@ -358,7 +359,7 @@ private fun buildFilterFunction() = buildFunction(
         "   if (fun(list.get()->data[i]))\n" +
         "       result[index++] = list.get()->data[i];\n" +
         "}\n" +
-        "return ConstList<T>::create(result, index);"
+        "return ConstList<T>::create_from_copy(result, index);"
 )
 
 private fun buildDelayMillisFunction() = buildFunction(
@@ -445,36 +446,24 @@ private fun buildPrintFunction() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.print((${"toText".cppName}(input)).get()->data);\n" +
-        "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << (${"toText".cppName}(input)).get()->data;\n" +
-        "#endif // ARDUINO_AVR_UNO\n" +
-        "return;"
+    body = "${"print".cppName}(${"toText".cppName}(input));\n"
 )
 
 private fun buildPrintFunctionList() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
-        "Serial.end();\n" +
-        "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
-        "#endif // ARDUINO_AVR_UNO\n" +
-        "return;"
+    body = "${"print".cppName}(${"toText".cppName}<T>(input));\n"
 )
 
 private fun buildPrintFunctionText() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.Text)),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
-        "while(!Serial);     // Wait for Serial to initialize\n" +
+    body = ""+
+        "input.get()->data[input.get()->size] = '\\0';//ConstList<char>::concat(input, ConstList<char>::string((char*)\"\\0\"));\n"+
+        "#ifdef ARDUINO_AVR_UNO\n" +
         "Serial.print(input.get()->data);\n" +
-        "Serial.end();\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
         "std::cout << input.get()->data;\n" +
         "#endif // ARDUINO_AVR_UNO\n" +

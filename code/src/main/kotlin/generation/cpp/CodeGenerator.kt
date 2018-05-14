@@ -49,7 +49,7 @@ class CodeGenerator : IPrinter {
         AstNode.Type.Number -> "0"
         AstNode.Type.Text -> "ConstList<char>::string((char *)\"\")"
         AstNode.Type.Bool -> "false"
-        is AstNode.Type.List -> "ConstList<${elementType.cppName}>::create(nullptr, 0)"
+        is AstNode.Type.List -> "ConstList<${elementType.cppName}>::create_from_copy(nullptr, 0)"
         is AstNode.Type.Func -> "nullptr"
         is AstNode.Type.Tuple -> "${"create_struct".cppName}(${ this.elementTypes.joinToString { it.defaultValue } })"
 
@@ -91,7 +91,7 @@ class CodeGenerator : IPrinter {
             is AstNode.Command.Expression.Value.Literal.Tuple ->
                 "${"create_struct".cppName}(${this.elements.formatToList()})"
             is AstNode.Command.Expression.Value.Literal.List ->
-                "ConstList<${(this.type as AstNode.Type.List).elementType.cppName}>::create(${this.cppName}, " +
+                "ConstList<${(this.type as AstNode.Type.List).elementType.cppName}>::create_from_copy(${this.cppName}, " +
                         "${this.elements.count()})"
             is AstNode.Command.Expression.LambdaExpression ->
                 "[&](${paramDeclarations.format(attributes.modifyParameterName)}) {\n".also { indents++ } +

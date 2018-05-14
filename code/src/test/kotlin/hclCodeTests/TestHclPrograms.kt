@@ -61,7 +61,7 @@ object TestHclPrograms : Spek({
                 assertEquals(expectedReturn, output.returnValue,
                     "expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
                         "full output:\n${output.string}")
-                assertThat(output.string, startsWith(expectedPrint))
+                assertEquals(expectedPrint, output.string)
             }
         }
     }

@@ -1,5 +1,4 @@
-#should print ["1","2","fizz","4","buzz","fizz","7","8","fizz","buzz","11","fizz","13","14","fizzbuzz"]
-
+#should print ["1", "2", "fizz", "4", "buzz", "fizz", "7", "8", "fizz", "buzz", "11", "fizz", "13", "14", "fizzbuzz"]
 
 var fizzbuzz = (num v): txt {
     txt toPrint
