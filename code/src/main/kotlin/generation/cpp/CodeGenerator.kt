@@ -47,13 +47,13 @@ class CodeGenerator : IPrinter {
 
     private val AstNode.Type.defaultValue get(): String = when (this) {
         AstNode.Type.Number -> "0"
-        AstNode.Type.Text -> "\"\""
+        AstNode.Type.Text -> "ConstList<char>::string((char *)\"\")"
         AstNode.Type.Bool -> "false"
         is AstNode.Type.List -> "ConstList<${elementType.cppName}>::create(nullptr, 0)"
         is AstNode.Type.Func -> "nullptr"
-        is AstNode.Type.Tuple -> "{${ this.elementTypes.joinToString { it.defaultValue } }}"
+        is AstNode.Type.Tuple -> "${"create_struct".cppName}(${ this.elementTypes.joinToString { it.defaultValue } })"
 
-        else -> throw Exception("Unable to determine default value of type: $this")
+        else -> throw TypeHasNoDefaultValue()
     }
 
     private fun AstNode.Command.Expression.LambdaExpression.formatAsDecl(decl: AstNode.Command.Declaration) =

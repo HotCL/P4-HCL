@@ -17,6 +17,11 @@ fun Parser.unexpectedTokenError(token: Token): Nothing {
     throw UnexpectedTokenError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber), token)
 }
 
+fun Parser.lackingParanthesis(): Nothing {
+    throw LackingParanthesisError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber),
+        current.token)
+}
+
 fun Parser.undeclaredError(str: String): Nothing {
     throw UndeclaredError(current.lineNumber, current.lineIndex, lexer.inputLine(current.lineNumber), str)
 }
