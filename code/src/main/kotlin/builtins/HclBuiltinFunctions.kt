@@ -51,6 +51,7 @@ object HclBuiltinFunctions {
             buildAtTextFunction(),
             buildSubtextText(),
             buildLengthText(),
+            buildToListFunction(),
 
             // Read/Write functions for arduino
             buildWriteDigPinFunction(),
@@ -141,7 +142,7 @@ private fun buildBoolToTextFunction() = buildFunction(
         Parameter("input", Type.Bool)
     ),
     returnType = Type.Text,
-    body = "return input ? ConstList<char>::string((char *)\"True\") : ConstList<char>::string((char *)\"False\");"
+    body = "return input ? ConstList<char>::string((char *)\"true\") : ConstList<char>::string((char *)\"false\");"
 )
 
 private fun buildListToTextFunction() = buildFunction(
@@ -282,7 +283,7 @@ private fun buildToListFunction() = buildFunction(
                 Parameter("end", Type.Number)
         ),
         returnType = Type.List(Type.Number),
-        body = "double array[end - start + 1];\n" +
+        body = "double array[(int)end - (int)start + 1];\n" +
                 "for(int i = 0; i < end - start; i++){\n "+
                 "array[i] = start + i;\n"+
                 "}\n"+
@@ -445,9 +446,9 @@ private fun buildPrintFunction() = buildFunction(
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
     returnType = Type.None,
     body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
+        "Serial.print((${"toText".cppName}(input)).get()->data);\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
+        "std::cout << (${"toText".cppName}(input)).get()->data;\n" +
         "#endif // ARDUINO_AVR_UNO\n" +
         "return;"
 )

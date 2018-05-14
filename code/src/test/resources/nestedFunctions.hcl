@@ -1,4 +1,5 @@
 #should print true
+#KEEP_FILES
 
 var g = 30
 var j = 40

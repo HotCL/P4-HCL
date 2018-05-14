@@ -1,7 +1,7 @@
 #should return 5
 
 
-var > = :biggerThan
+var > = :greaterThan
 
 var thenElse = (bool cond, func<T> trueBody, func<T> falseBody): T {
     T output

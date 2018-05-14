@@ -27,14 +27,25 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val files = listOf(
+        "ArduinoSOSBlink.hcl",
         "HelloWorld.hcl",
-        "HelloWorldAndReturn.hcl",
+        "nestedFunctions.hcl",
         "ReturnSimple.hcl",
-        "MapFilter.hcl",
         "stringConcat.hcl",
+        "thenElse.hcl",
+        "fizzBuzz.hcl",
+        "MapFilter.hcl",
+        "PrintFibonacci.hcl",
+        "staticScope.hcl",
+        "subText.hcl",
+        "toUneven.hcl",
+        "HelloWorldAndReturn.hcl",
+        "multiScope.hcl",
+        "printTuple.hcl",
         "stringAt.hcl",
-        "printTuple.hcl"
-    )
+        "Swap.hcl",
+        "useTo.hcl"
+        )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
             val fileContent = javaClass.classLoader.getResource(file).readText()

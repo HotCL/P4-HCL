@@ -28,7 +28,7 @@ fun String.runCommand(workingDir: File = File("./")): CommandResult {
 }
 
 fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolean = false,
-               outputFile: String = "program", verbose:Boolean=false) {
+               outputFile: String = "program", verbose:Boolean=true) {
     File(dir).mkdir()
     try {
         val headerFiles = files.filter { it.fileName.endsWith(".h") }
