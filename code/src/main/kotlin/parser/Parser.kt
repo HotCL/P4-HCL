@@ -45,8 +45,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             Token.SpecialChar.BlockStart,
             Token.SpecialChar.SquareBracketStart,
             Token.SpecialChar.Colon,
-            Token.SpecialChar.ParenthesesStart
-            -> parseExpression()
+            Token.SpecialChar.ParenthesesStart -> parseExpression()
             Token.Return -> parseReturnStatement()
             else -> unexpectedTokenError(current.token)
         }
