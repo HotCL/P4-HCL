@@ -5,8 +5,13 @@ package exceptions
  * @param expectedType The expected type for expression
  * @param actualType The actual type parsed
  */
-class UnexpectedTypeError(lineNumber: Int, lineIndex: Int, lineText: String,
-                expectedType: String, actualType: String)
+class UnexpectedTypeError(
+    lineNumber: Int,
+    lineIndex: Int,
+    lineText: String,
+    expectedType: String,
+    actualType: String
+)
     : ParserException(lineNumber, lineIndex, lineText) {
 
     override val errorMessage = "Cannot implicit cast type '$actualType' to type '$expectedType'."
