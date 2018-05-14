@@ -103,7 +103,7 @@ class CodeGenerator : IPrinter {
                     arguments.forEach { print(it) }; print(identifier)
                 }
         }
-    
+
     private val AstNode.Command.Expression.FunctionCall.genericTemplateArguments get(): String {
         val generics = expectedArgumentTypes.flatMap { it.getGenerics }.toSet()
         return if (generics.isEmpty()) "" else {
