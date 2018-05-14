@@ -42,7 +42,8 @@ object TestHclPrograms : Spek({
         "Swap.hcl",
         "useTo.hcl",
         "printTuple.hcl",
-        "OOP.hcl"
+        "OOP.hcl",
+        "OOP_V2.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
