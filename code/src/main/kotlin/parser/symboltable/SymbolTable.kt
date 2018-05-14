@@ -49,15 +49,7 @@ class SymbolTable : ISymbolTable {
         } else {
             val res = if (type is AstNode.Type.Func) checkFunctionIsAllowed(type, name)
             else EnterSymbolResult.Success
-            res.also {
-                if (it == EnterSymbolResult.Success) symbolTable.last[name] = mutableListOf(type)
-                if (type is AstNode.Type.Tuple) {
-                    type.elementTypes.forEachIndexed { index, element ->
-                        enterSymbol("element$index", AstNode.Type.Func(listOf(), element))
-                    }
-                    enterSymbol("toText", AstNode.Type.Func(listOf(type), AstNode.Type.Text))
-                }
-            }
+            res.also { if (it == EnterSymbolResult.Success) symbolTable.last[name] = mutableListOf(type) }
         }
     }
 

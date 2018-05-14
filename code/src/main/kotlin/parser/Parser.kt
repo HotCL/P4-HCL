@@ -9,6 +9,7 @@ import lexer.Token
 import parser.symboltable.EnterSymbolResult
 import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
+import parser.typechecker.ExprResult
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
 
@@ -23,17 +24,6 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             enterSymbol(it.identifier.name, it.expression!!.type)
         }
         enterSymbol("RETURN_CODE", AstNode.Type.Number)
-        // enterSymbol("print", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
-        //    AstNode.Type.None))
-
-        // enterSymbol("toText", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
-        //    AstNode.Type.None))
-
-        enterSymbol("+", AstNode.Type.Func(listOf(AstNode.Type.Text, AstNode.Type.Text),
-            AstNode.Type.Text))
-
-        enterSymbol("loop", AstNode.Type.Func(listOf(AstNode.Type.Func(listOf(), AstNode.Type.None)),
-            AstNode.Type.None))
 
         // Parse
         while (hasNext()) {
@@ -56,7 +46,8 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             Token.SpecialChar.BlockStart,
             Token.SpecialChar.SquareBracketStart,
             Token.SpecialChar.Colon,
-            Token.SpecialChar.ParenthesesStart -> parseExpression()
+            Token.SpecialChar.ParenthesesStart
+            -> parseExpression()
             Token.Return -> parseReturnStatement()
             else -> unexpectedTokenError(current.token)
         }
@@ -265,8 +256,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             commands.add(parseCommand())
         }
         val body = AstNode.Command.Expression.LambdaBody(
-                if (commands.size == 1 &&
-                    (commands[0] as? AstNode.Command.Expression)?.let { it.type != AstNode.Type.None } == true)
+                if (commands.size == 1 && commands[0] is AstNode.Command.Expression)
                     listOf(AstNode.Command.Return(commands[0] as AstNode.Command.Expression))
                 else
                     commands
@@ -443,7 +433,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                 else -> { }
             }
             null
-        }, { false }, 1)?.let { it } ?: lackingParanthesis()
+        }, { false }, 1)?.let { it } ?: error("Unclosed parentheses")
     }
 
     private fun parseTupleExpression() =
@@ -477,6 +467,14 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
     }
 
     // endregion ExpressionParsing
+
+    fun ExprResult.type() = when (this) {
+        is ExprResult.Success -> this.type
+        ExprResult.NoEmptyOverloading,
+        ExprResult.UndeclaredIdentifier,
+        ExprResult.NoFuncDeclarationForArgs -> undeclaredError((current.token as? Token.Identifier)?.value ?: "")
+        ExprResult.BodyWithMultiReturnTypes -> error("Lambda body with multiple return types")
+    }
 
     private fun AstNode.Type.containsGeneric(): Boolean = when (this) {
         is AstNode.Type.List -> this.elementType.containsGeneric()

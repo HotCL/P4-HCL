@@ -3,7 +3,6 @@ package parserTests
 import com.natpryce.hamkrest.assertion.assertThat
 import exceptions.ImplicitTypeNotAllowed
 import exceptions.UnexpectedTokenError
-import exceptions.UnexpectedTypeError
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
@@ -61,15 +60,6 @@ class ListTests {
                 "myList" declaredAs list(num) withValue list(("myFunc" returning num).called())
             )
         )
-    }
-
-    @org.junit.jupiter.api.Test
-    fun parseListWithOneWrongType() {
-        val lexer = DummyLexer(buildTokenSequence {
-            list.squareStart.number.squareEnd.identifier("MyList").`=`
-                .squareStart.number(5.0).`,`.text("hej").squareEnd.newLine
-        })
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
 
     @org.junit.jupiter.api.Test

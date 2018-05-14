@@ -84,7 +84,7 @@ jacoco {
 jacocoCoverage {
     // Set to 0.7 again!
     reportThreshold 0.65, COMPLEXITY
-    reportThreshold 0.6, BRANCH
+    reportThreshold 0.7, BRANCH
     reportThreshold 0.8
 }
 
@@ -92,7 +92,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/Main*', '**/AstNode*','**/ExprResult*','**/LambdaBodyWithType*',
-                                        '**/exceptions/*', '**/FilePair*','**/HCL*'])
+                                        '**/exceptions/*', '**/FilePair*'])
         })
     }
 }
