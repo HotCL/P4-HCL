@@ -3,6 +3,7 @@ package utils
 import generation.FilePair
 import java.io.File
 import java.io.IOException
+import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 
 data class CommandResult(val string: String, val returnValue: Int)
@@ -34,15 +35,15 @@ fun compileCpp(files: List<FilePair>, dir: String = "testDir", keepFiles: Boolea
         headerFiles.forEach { it.writeFile(dir) }
         cppFiles.forEach {
             it.writeFile(dir)
-            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
+            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++14".apply {
                 println(runCommand(File(dir)))
             }
         }
         "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o $outputFile".apply {
             println(runCommand(File(dir)))
         }
-        val program = File("./$dir/$outputFile")
-        program.copyTo(File(program.parentFile.parentFile.absolutePath + "/$outputFile"), true)
+        val program = File(dir).listFiles().first { it.name.startsWith(outputFile) }
+        program.copyTo(File(program.name), true)
     } catch (e: Exception) {
         throw e
     } finally {

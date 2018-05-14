@@ -9,8 +9,13 @@ import hclTestFramework.codegen.compileAndExecuteCpp
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
+import java.io.File
+import java.nio.file.Paths
 import kotlin.system.exitProcess
 import kotlin.test.assertEquals
+import sun.font.LayoutPathImpl.getPath
+
+
 
 fun generateFilesFromCode(code: String): List<FilePair> {
     val lexer = lexer.Lexer(code)
@@ -27,7 +32,11 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val resourceReader = ReadResources()
-    val files = resourceReader.getResourceFiles("./")
+    val files = if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        listOf("HelloWorld.hcl")
+    } else {
+        resourceReader.getResourceFiles("")
+    }
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
             val fileContent = javaClass.classLoader.getResource(file).readText()
