@@ -8,6 +8,7 @@ import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import parser.AstNode
 import parser.ParserWithoutBuiltins
 
 class MiscellaneousTests {
@@ -29,6 +30,7 @@ class MiscellaneousTests {
         })
         Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
+
 
     @Test
     fun canParseBool() {

@@ -3,7 +3,6 @@ package parserTests
 import com.natpryce.hamkrest.assertion.assertThat
 import exceptions.LackingParanthesisError
 import exceptions.UnexpectedTokenError
-import exceptions.UnexpectedTypeError
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
@@ -51,7 +50,6 @@ class TupleTests {
         })
         Assertions.assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
     }
-
 
     @org.junit.jupiter.api.Test
     fun failsOnLackingClosingParenthesis() {
