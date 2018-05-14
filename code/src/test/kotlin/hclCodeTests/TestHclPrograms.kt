@@ -27,7 +27,6 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val files = listOf(
-        "ArduinoSOSBlink.hcl",
         "HelloWorld.hcl",
         "nestedFunctions.hcl",
         "ReturnSimple.hcl",
@@ -58,7 +57,9 @@ object TestHclPrograms : Spek({
                 val outputFiles = generateFilesFromCode(fileContent)
                 val keepFiles = fileContent.contains("KEEP_FILES")
                 val output = compileAndExecuteCpp(outputFiles, file.split(".").first(), keepFiles)!!
-                assertEquals(expectedReturn, output.returnValue)
+                assertEquals(expectedReturn, output.returnValue,
+                    "expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
+                        "full output:\n${output.string}")
                 assertThat(output.string, startsWith(expectedPrint))
             }
         }

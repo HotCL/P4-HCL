@@ -1,25 +1,23 @@
-# should print 9
+# should return 9
 
-var x = 0
-var y = 42
+var x
+var y
 
-var xTimes3 = (): none {
-    x = x + 3
+var xPlus = (): none { x = x + 3
 }
-var callXTimes3 = (): none {
-    xTimes3
-}
+var call_xPlus = (): none { xPlus }
+
 var f = (): none{
     var x = 9
 
-    var p = (): none {
+    var xPlus = (): none {
         x = x + 1
     }
 
-    q
+    call_xPlus
 
     y = x
 }
 
 f
-y print
+RETURN_CODE = y

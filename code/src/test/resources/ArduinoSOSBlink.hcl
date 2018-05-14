@@ -8,6 +8,7 @@ func character = (num speed) : none {
     13 setDigital False
     300 delayMillis
 }
+
 {
     [1, 2, 3] each { s character }
     [1, 2, 3] each { o character }

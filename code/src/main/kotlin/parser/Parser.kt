@@ -416,7 +416,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                             {
                                 if (it.any { it.containsGeneric() })
                                     genericPassedFunctionException()
-                                AstIdentifier(token.value, it[0]) // TODO probably shouldn't be it[0]
+                                AstIdentifier(token.value, it[0].returnType) // TODO probably shouldn't be it[0]
                             },
                             { undeclaredError(token.value) },
                             { undeclaredError(token.value) }
