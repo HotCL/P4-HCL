@@ -40,5 +40,7 @@ var else = (tuple[bool,T] thenResult, func[T] body): T {
 }
 
 var thenElse = (bool condition, func[T] trueBody, func[T] falseBody): T {
+    T output
     condition then {output = trueBody} else { output = falseBody}
+    return output
 }
