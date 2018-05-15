@@ -19,10 +19,9 @@ class CodeGenerator : IPrinter {
     private fun List<AstNode.Command>.format() = joinToString("\n") {
         // generate lists if needed
         val literalLists = it.fetchList()
-
         (if (literalLists.count() > 0) // TODO MAYBE SHOULD BE CONSTANT?
-            literalLists.joinToString { "${it.innerType.cppName} ${it.cppName}[] = {${
-            it.elements.formatToList()}};\n"
+            literalLists.joinToString("\n") {
+                "${it.innerType.cppName} ${it.cppName}[] = {${it.elements.formatToList()}};\n"
             } else "") + it.format()
     }
 
@@ -119,7 +118,7 @@ class CodeGenerator : IPrinter {
         is AstNode.Command.Expression.FunctionCall -> arguments.fetchLists()
         is AstNode.Command.Assignment -> expression.fetchList()
         is AstNode.Command.Declaration -> type.fetchList() + (this.expression?.fetchList() ?: emptySet())
-
+        is AstNode.Command.Return -> expression.fetchList()
         is AstNode.Command.Expression.Value.Literal.List -> setOf(this)
         else -> emptySet()
     }

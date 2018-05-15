@@ -9,8 +9,8 @@ class TypeChecker : ITypeChecker {
         return this.firstOrNull {
             it.paramTypes.zip(types).all {
                 if (it.first == it.second) {
-                    if (it.first is AstNode.Type.GenericType)
-                        TODO("throw ambiguous type error")
+                    //if (it.first is AstNode.Type.GenericType)
+                    //    TODO("throw ambiguous type error")
                     true
                 } else it.matchGenerics(genericTypes)
             }

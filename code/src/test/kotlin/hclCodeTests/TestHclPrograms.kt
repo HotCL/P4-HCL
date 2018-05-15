@@ -27,23 +27,23 @@ object TestHclPrograms : Spek({
     val files = listOf(
         "HelloWorld.hcl",
         "ReturnSimple.hcl",
+        "HelloWorldAndReturn.hcl",
         "stringConcat.hcl",
         "thenElse.hcl",
+        "while.hcl",
+        "printTuple.hcl",
+        "stringAt.hcl",
         "fizzBuzz.hcl",
         "MapFilter.hcl",
-        "PrintFibonacci.hcl",
         "staticScope.hcl",
         "subText.hcl",
         "toUneven.hcl",
-        "HelloWorldAndReturn.hcl",
         "multiScope.hcl",
-        "printTuple.hcl",
-        "stringAt.hcl",
-        "Swap.hcl",
-        "printTuple.hcl",
         "OOP.hcl",
         "OOP_V2.hcl",
-            "Swap.hcl"
+        "PrintFibonacci.hcl",
+        "Swap.hcl",
+        "bubbleSort.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
