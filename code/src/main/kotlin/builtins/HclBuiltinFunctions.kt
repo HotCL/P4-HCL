@@ -26,7 +26,7 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
 
-            buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
+            buildNotFunction(),
             buildModuloOperator(),
 
             // Control structures
@@ -90,17 +90,6 @@ private fun buildOperatorNumNumToNum(functionName: String, operator: String = fu
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
     buildOperator<Type.Bool, Type.Bool, Type.Bool>(functionName, operator)
 
-// "Prefix" means it will be prefixed in C++, but postfixed in HCL
-private inline fun <reified P, reified R> buildPrefixOperator(functionName: String, operator: String = functionName)
-    where P : Type, R : Type = buildFunction(
-    identifier = functionName,
-    parameters = listOf(
-        Parameter("operand", P::class.objectInstance!!)
-    ),
-    returnType = R::class.objectInstance!!,
-    body = "return $operator operand;"
-)
-
 private inline fun <reified V, reified H, reified R> buildOperator(
     functionName: String,
     operator: String = functionName
@@ -122,6 +111,15 @@ private fun buildModuloOperator() = buildFunction(
     ),
     returnType = Type.Number,
     body = "return (long)leftHand % (long)rightHand;"
+)
+
+private fun buildNotFunction() = buildFunction(
+        identifier = "not",
+        parameters = listOf(
+                Parameter("input", Type.Bool)
+        ),
+        returnType = Type.Bool,
+        body = "return !input;"
 )
 // endregion buildOperator_functions
 
