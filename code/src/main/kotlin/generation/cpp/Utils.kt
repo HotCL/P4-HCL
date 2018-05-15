@@ -7,6 +7,18 @@ import parser.BuiltinLambdaAttributes
 fun AbstractSyntaxTree.genFromFilter(predicate: (AstNode.Command) -> Boolean) =
         CodeGenerator().generate(filter(predicate))
 
+fun AbstractSyntaxTree.genForLoop(): String {
+    val loop = children.firstOrNull {
+        (it as? AstNode.Command.Expression.FunctionCall)?.let { it.identifier.name == "loop" } ?: false
+    }
+    return if (loop != null) {
+        CodeGenerator().generate(AbstractSyntaxTree(
+                ((loop as AstNode.Command.Expression.FunctionCall).arguments.first()
+                        as AstNode.Command.Expression.LambdaExpression).body.commands)
+        )
+    } else ""
+}
+
 fun AbstractSyntaxTree.genFromFilterWithMap(
     predicate: (AstNode.Command) -> Boolean,
     mapFunc: (AstNode.Command) -> AstNode.Command
@@ -30,6 +42,7 @@ val AstNode.Command.Expression.Value.Literal.List.cppName get() = CppNameTransla
 
 val AstNode.Command.Expression.Value.Identifier.cppName get() = CppNameTranslator.getValidIdentifierName(this)
 
+val AstNode.Command.Expression.cppName get() = CppNameTranslator.getValidIdentifierName(this)
 val String.cppName get() =
     CppNameTranslator.getValidIdentifierName(parser.AstNode.Command.Expression.Value.Identifier(this, AstNode.Type.None))
 

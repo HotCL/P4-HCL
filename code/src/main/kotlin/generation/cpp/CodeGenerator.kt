@@ -19,10 +19,9 @@ class CodeGenerator : IPrinter {
     private fun List<AstNode.Command>.format() = joinToString("\n") {
         // generate lists if needed
         val literalLists = it.fetchList()
-
         (if (literalLists.count() > 0) // TODO MAYBE SHOULD BE CONSTANT?
-            literalLists.joinToString { "${(it.type as AstNode.Type.List).elementType.cppName} ${it.cppName}[] = {${
-            it.elements.formatToList()}};\n"
+            literalLists.joinToString("\n") {
+                "${it.innerType.cppName} ${it.cppName}[] = {${it.elements.formatToList()}};\n"
             } else "") + it.format()
     }
 
@@ -49,7 +48,7 @@ class CodeGenerator : IPrinter {
         AstNode.Type.Number -> "0"
         AstNode.Type.Text -> "ConstList<char>::string((char *)\"\")"
         AstNode.Type.Bool -> "false"
-        is AstNode.Type.List -> "ConstList<${elementType.cppName}>::create(nullptr, 0)"
+        is AstNode.Type.List -> "ConstList<${elementType.cppName}>::create_from_copy(nullptr, 0)"
         is AstNode.Type.Func -> "nullptr"
         is AstNode.Type.Tuple -> "${"create_struct".cppName}(${ this.elementTypes.joinToString { it.defaultValue } })"
 
@@ -91,7 +90,7 @@ class CodeGenerator : IPrinter {
             is AstNode.Command.Expression.Value.Literal.Tuple ->
                 "${"create_struct".cppName}(${this.elements.formatToList()})"
             is AstNode.Command.Expression.Value.Literal.List ->
-                "ConstList<${(this.type as AstNode.Type.List).elementType.cppName}>::create(${this.cppName}, " +
+                "ConstList<${(this.type as AstNode.Type.List).elementType.cppName}>::create_from_copy(${this.cppName}, " +
                         "${this.elements.count()})"
             is AstNode.Command.Expression.LambdaExpression ->
                 "[&](${paramDeclarations.format(attributes.modifyParameterName)}) {\n".also { indents++ } +
@@ -119,7 +118,7 @@ class CodeGenerator : IPrinter {
         is AstNode.Command.Expression.FunctionCall -> arguments.fetchLists()
         is AstNode.Command.Assignment -> expression.fetchList()
         is AstNode.Command.Declaration -> type.fetchList() + (this.expression?.fetchList() ?: emptySet())
-
+        is AstNode.Command.Return -> expression.fetchList()
         is AstNode.Command.Expression.Value.Literal.List -> setOf(this)
         else -> emptySet()
     }
