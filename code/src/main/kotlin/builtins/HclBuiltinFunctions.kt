@@ -461,11 +461,11 @@ private fun buildPrintFunctionText() = buildFunction(
     parameters = listOf(Parameter("input", Type.Text)),
     returnType = Type.None,
     body = "" +
-        "input.get()->data[input.get()->size] = '\\0';//ConstList<char>::concat(input, ConstList<char>::string((char*)\"\\0\"));\n" +
+        "auto val = ConstList<char>::concat(input, ConstList<char>::create((char *)\"\\0\", 2));\n"+
         "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.print(input.get()->data);\n" +
+        "Serial.print(val.get()->data);\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << input.get()->data;\n" +
+        "std::cout << val.get()->data;\n" +
         "#endif // ARDUINO_AVR_UNO\n" +
         "return;"
 )

@@ -1,5 +1,6 @@
 # It should print ("Rasmus", 6, "Aabybro")
-# KEEP_FILES
+
+
 # Person methods
 func createPerson = (txt name, num age, txt city): tuple[txt, num, txt] { (name, age, city) }
 func withName = (tuple[txt, num, txt] person, txt name): tuple[txt, num, txt] { (name, person element1, person element2) }

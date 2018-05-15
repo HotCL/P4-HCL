@@ -1,7 +1,7 @@
 # should print first=1 and last=9
 
 var toUneven = (num start, num stop): list[num] {
-    from to stop filter { value mod 2 equals 1 }
+    start to stop filter { value mod 2 equals 1 }
 }
 
 var last = (list[T] myList): T {
@@ -15,4 +15,4 @@ var first = (list[T] myList): T {
 var numbers = 1 toUneven 10
 
 
-"first="+(numbers first) + " and last=" + (numbers last) print
+"first=" + (numbers first toText) + " and last=" + (numbers last toText) print

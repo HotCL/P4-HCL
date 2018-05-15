@@ -8,7 +8,7 @@ object CppNameTranslator : IValidNameTranslator {
     override fun getValidIdentifierName(node: AstNode.Command.Expression) = node.getValidName()
     override fun getValidTypeName(node: AstNode.Type) = node.getValidName()
     override fun getValidtListLiteralName(node: AstNode.Command.Expression.Value.Literal.List) =
-            "LST_IT_0x${Integer.toHexString(this.hashCode())}"
+            "LST_IT_0x${node.getValidName()}"
 
     private fun AstNode.Type.getValidName(): String = when (this) {
         AstNode.Type.Number -> "double"
