@@ -25,6 +25,7 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Number>("notEquals", "!="),
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
+            buildNotFunction(),
             // Control structures
             buildThenFunction(),
             // buildElseTernaryFunction(),
@@ -106,6 +107,15 @@ private fun buildModuloOperator() = buildFunction(
     ),
     returnType = Type.Number,
     body = "return (long)leftHand % (long)rightHand;"
+)
+
+private fun buildNotFunction() = buildFunction(
+        identifier = "not",
+        parameters = listOf(
+                Parameter("input", Type.Bool)
+        ),
+        returnType = Type.Bool,
+        body = "return !input;"
 )
 // endregion buildOperator_functions
 
