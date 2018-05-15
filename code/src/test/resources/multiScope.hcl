@@ -1,4 +1,4 @@
-# It should print 20 ... But should it really though?
+# It should print 45
 
 var x = 10
 
