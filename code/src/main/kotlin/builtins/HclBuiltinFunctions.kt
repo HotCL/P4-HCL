@@ -13,10 +13,10 @@ object HclBuiltinFunctions {
             buildOperatorNumNumToNum("-"),
             buildOperatorNumNumToNum("*"),
             buildOperatorNumNumToNum("/"),
+            buildModuloOperator(),
 
             buildOperatorBoolBoolToBool("and", "&&"),
             buildOperatorBoolBoolToBool("or", "||"),
-
             buildOperatorToBool<Type.Number>("greaterThanEqual", ">="),
             buildOperatorToBool<Type.Number>("lessThanEqual", "<="),
             buildOperatorToBool<Type.Number>("greaterThan", ">"),
@@ -26,8 +26,7 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
 
-            buildPrefixOperator<Type.Bool, Type.Bool>("not", "!"),
-            buildModuloOperator(),
+            buildNotFunction(),
 
             // Control structures
             buildThenFunction(),
@@ -51,6 +50,7 @@ object HclBuiltinFunctions {
             buildAtTextFunction(),
             buildSubtextText(),
             buildLengthText(),
+            buildToListFunction(),
 
             // Read/Write functions for arduino
             buildWriteDigPinFunction(),
@@ -89,17 +89,6 @@ private fun buildOperatorNumNumToNum(functionName: String, operator: String = fu
 private fun buildOperatorBoolBoolToBool(functionName: String, operator: String = functionName) =
     buildOperator<Type.Bool, Type.Bool, Type.Bool>(functionName, operator)
 
-// "Prefix" means it will be prefixed in C++, but postfixed in HCL
-private inline fun <reified P, reified R> buildPrefixOperator(functionName: String, operator: String = functionName)
-    where P : Type, R : Type = buildFunction(
-    identifier = functionName,
-    parameters = listOf(
-        Parameter("operand", P::class.objectInstance!!)
-    ),
-    returnType = R::class.objectInstance!!,
-    body = "return $operator operand;"
-)
-
 private inline fun <reified V, reified H, reified R> buildOperator(
     functionName: String,
     operator: String = functionName
@@ -122,6 +111,15 @@ private fun buildModuloOperator() = buildFunction(
     returnType = Type.Number,
     body = "return (long)leftHand % (long)rightHand;"
 )
+
+private fun buildNotFunction() = buildFunction(
+        identifier = "not",
+        parameters = listOf(
+                Parameter("input", Type.Bool)
+        ),
+        returnType = Type.Bool,
+        body = "return !input;"
+)
 // endregion buildOperator_functions
 
 // region builtInFunctions
@@ -141,7 +139,7 @@ private fun buildBoolToTextFunction() = buildFunction(
         Parameter("input", Type.Bool)
     ),
     returnType = Type.Text,
-    body = "return input ? ConstList<char>::string((char *)\"True\") : ConstList<char>::string((char *)\"False\");"
+    body = "return input ? ConstList<char>::string((char *)\"true\") : ConstList<char>::string((char *)\"false\");"
 )
 
 private fun buildListToTextFunction() = buildFunction(
@@ -153,10 +151,10 @@ private fun buildListToTextFunction() = buildFunction(
     body = "auto output = ConstList<char>::string((char*)\"[\");\n" +
         "for(int i = 0; i < input.get()->size; i++) {\n" +
         "   output = ConstList<char>::concat(output, ${"toText".cppName}(ConstList<T>::at(input, i)));\n" +
-        "   if (i != input.get()->size - 1)\n" +
+        "   if (i != input.get()->size-1)\n" +
         "       output = ConstList<char>::concat(output, ConstList<char>::string((char*)\", \"));" +
         "}\n" +
-        "return ConstList<char>::concat(output, ConstList<char>::string((char*)\"]\\0\"));"
+        "return ConstList<char>::concat(output, ConstList<char>::string((char*)\"]\"));"
 )
 
 private fun buildTextToTextFunction() = buildFunction(
@@ -165,7 +163,8 @@ private fun buildTextToTextFunction() = buildFunction(
         Parameter("input", Type.Text)
     ),
     returnType = Type.Text,
-    body = "return input;"
+    body = "auto quote = ConstList<char>::string((char *)\"\\\"\");\n" +
+        "return ConstList<char>::concat(quote, ConstList<char>::concat(input, quote));"
 )
 
 private fun buildGetListLengthFunction() = buildFunction(
@@ -243,14 +242,14 @@ private fun buildTwoParametersTextAsListFunctions(list: List<Pair<String, Type>>
     }.toTypedArray()
 
 private fun buildLengthText() =
-        buildFunction(
-            identifier = "length",
-            parameters = listOf(
-                Parameter("leftHand", Type.Text)
-            ),
-            returnType = Type.Number,
-            body = "return ${"length".cppName}<char>(leftHand);"
-        )
+    buildFunction(
+        identifier = "length",
+        parameters = listOf(
+            Parameter("leftHand", Type.Text)
+        ),
+        returnType = Type.Number,
+        body = "return ${"length".cppName}<char>(leftHand);"
+    )
 
 private fun buildSubtextText() =
     buildFunction(
@@ -273,6 +272,20 @@ private fun buildSubListFunction() = buildFunction(
     ),
     returnType = Type.List(Type.GenericType("T")),
     body = "return ConstList<T>::sublist(list, (unsigned int)startIndex, (unsigned int)length);"
+)
+
+private fun buildToListFunction() = buildFunction(
+    identifier = "to",
+    parameters = listOf(
+        Parameter("start", Type.Number),
+        Parameter("end", Type.Number)
+    ),
+    returnType = Type.List(Type.Number),
+    body = "double array[(int)end - (int)start + 1];\n" +
+        "for(int i = 0; i <= end - start; i++){\n " +
+        "   array[i] = start + i;\n" +
+        "}\n" +
+        "return ConstList<double>::create_from_copy(array, end - start + 1);"
 )
 
 private fun buildWhileFunction() = buildFunction(
@@ -322,7 +335,7 @@ private fun buildMapFunction() = buildFunction(
         "for (int i = 0; i < list.get()->size; i++) {\n" +
         "result[i] = fun(list.get()->data[i]);\n" +
         "}\n" +
-        "return ConstList<T2>::create(result, list.get()->size);"
+        "return ConstList<T2>::create_from_copy(result, list.get()->size);"
 )
 
 private fun buildFilterFunction() = buildFunction(
@@ -343,26 +356,27 @@ private fun buildFilterFunction() = buildFunction(
         "   if (fun(list.get()->data[i]))\n" +
         "       result[index++] = list.get()->data[i];\n" +
         "}\n" +
-        "return ConstList<T>::create(result, index);"
+        "return ConstList<T>::create_from_copy(result, index);"
 )
 
 private fun buildDelayMillisFunction() = buildFunction(
     identifier = "delayMillis",
     parameters = listOf(Parameter("millis", Type.Number)),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "delay((int)millis);\n" +
 
-        "#endif //ARDUINO_AVR_UNO\n" +
+        "#else //ARDUINO_AVR_UNO\n" +
         "#ifdef _WIN32 //If windows based PC\n" +
 
         "Sleep((unsigned int)(millis));\n" +
 
-        "#else //If unix based PC\n" +
+        "#else // If unix based PC\n" +
 
-        "usleep(((unsigned int)millis*1000));//convert milliseconds to microseconds\n" +
+        "usleep(((unsigned int)millis*1000)); //convert milliseconds to microseconds\n" +
 
         "#endif //_WIN32\n" +
+        "#endif\n" +
         "return;"
 )
 
@@ -371,7 +385,7 @@ private fun buildWriteDigPinFunction() = buildFunction(
     identifier = "setDigitalPin",
     parameters = listOf(Parameter("pin", Type.Number), Parameter("value", Type.Bool)),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode((int)pin, 1);\n" +
         "digitalWrite((int)pin, value);\n" +
         "#else\n" +
@@ -386,7 +400,7 @@ private fun buildReadDigPinFunction() = buildFunction(
     identifier = "readDigitalPin",
     parameters = listOf(Parameter("pin", Type.Number)),
     returnType = Type.Number,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode((int)pin, 0);\n" +
         "return (double)digitalRead((int)pin);\n" +
         "#else\n" +
@@ -402,7 +416,7 @@ private fun buildWriteAnaPinFunction() = buildFunction(
         Parameter("value", Type.Number)
     ),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode(pin, 1);\n" +
         "analogWrite((int)pin, value);\n" +
         "#else\n" +
@@ -415,7 +429,7 @@ private fun buildReadAnaPinFunction() = buildFunction(
     identifier = "readAnalogPin",
     parameters = listOf(Parameter("pin", Type.Number)),
     returnType = Type.Number,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode((int)pin, 0);\n" +
         "return analogRead((int)pin);\n" +
         "#else\n" +
@@ -430,38 +444,26 @@ private fun buildPrintFunction() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.GenericType("T"))),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.print((${"toText".cppName}(input)).get()->data);\n" +
-        "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << (${"toText".cppName}(input)).get()->data;\n" +
-        "#endif // ARDUINO_AVR_UNO\n" +
-        "return;"
+    body = "${"print".cppName}(${"toText".cppName}(input));\n"
 )
 
 private fun buildPrintFunctionList() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.List(Type.GenericType("T")))),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.print((${"toText".cppName}<T>(input)).get()->data);\n" +
-        "Serial.end();\n" +
-        "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << (${"toText".cppName}<T>(input)).get()->data;\n" +
-        "#endif // ARDUINO_AVR_UNO\n" +
-        "return;"
+    body = "${"print".cppName}(${"toText".cppName}<T>(input));\n"
 )
 
 private fun buildPrintFunctionText() = buildFunction(
     identifier = "print",
     parameters = listOf(Parameter("input", Type.Text)),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
-        "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
-        "while(!Serial);     // Wait for Serial to initialize\n" +
-        "Serial.print(input.get()->data);\n" +
-        "Serial.end();\n" +
+    body = "" +
+        "auto val = ConstList<char>::concat(input, ConstList<char>::create((char *)\"\\0\", 2));\n" +
+        "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
+        "Serial.print(val.get()->data);\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
-        "std::cout << input.get()->data;\n" +
+        "std::cout << val.get()->data;\n" +
         "#endif // ARDUINO_AVR_UNO\n" +
         "return;"
 )

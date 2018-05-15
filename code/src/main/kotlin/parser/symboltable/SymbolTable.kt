@@ -29,7 +29,7 @@ class SymbolTable : ISymbolTable {
                     it.forEach {
                         if (it.paramTypes.size != func.paramTypes.size) {
                             return@handle EnterSymbolResult.OverloadDifferentParamNums
-                        } else if (it.paramTypes == func.paramTypes) {
+                        } else if (it.paramTypes == func.paramTypes && symbolTable.last.containsKey(name)) {
                             return@handle EnterSymbolResult.OverloadAlreadyDeclared
                         }
                     }

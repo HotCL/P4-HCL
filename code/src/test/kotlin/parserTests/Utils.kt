@@ -4,7 +4,7 @@ import com.natpryce.hamkrest.MatchResult
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import generation.SourceCodePrinter
-import lexer.*
+import lexer.* // ktlint-disable no-wildcard-imports
 import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
 import parser.AstNode
