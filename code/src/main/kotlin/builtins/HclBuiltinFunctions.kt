@@ -27,7 +27,6 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
 
             buildNotFunction(),
-            buildModuloOperator(),
 
             // Control structures
             buildThenFunction(),
