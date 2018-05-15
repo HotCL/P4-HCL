@@ -17,7 +17,7 @@ class MainGenerator : IPrinter {
                 AstNode.Command.Assignment(it.identifier, it.expression)
             else it
         })
-        val loop = ast.genFromFilter { it.isLoop }
+        val loop = ast.genForLoop()
         stringBuilder.appendln(declarations)
         stringBuilder.appendln(setup.wrapSetup())
         stringBuilder.appendln(loop.wrapLoop())
