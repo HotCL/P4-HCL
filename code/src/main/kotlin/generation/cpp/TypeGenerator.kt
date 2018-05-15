@@ -44,7 +44,7 @@ class TypeGenerator : IPrinter {
                 ),
                 returnType = AstNode.Type.Text,
                 body = "ConstList<char>::List" +
-                    " output = ConstList<char>::string((char*)\"\");\n" +
+                    " output = ConstList<char>::string((char*)\"(\");\n" +
                     elementTypes.mapIndexed { index, _ ->
                         "output = ConstList<char>::concat(output, ${"toText".cppName}" +
                             "(self.element$index));\n" +
@@ -53,6 +53,7 @@ class TypeGenerator : IPrinter {
                                     "ConstList<char>::string((char*)\", \"));\n"
                             } else ""
                     }.joinToString("") +
+                    "output = ConstList<char>::concat(output, ConstList<char>::string((char*)\")\"));\n" +
                     "return output;"
             ),
 

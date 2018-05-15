@@ -1,17 +1,19 @@
 #should return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# TEST_DISABLED
+#KEEP_FILES
 
-var swapAtIndex = (T lst, num firstIndex, num secondIndex): T{
+var swapAtIndex = (list[T] lst, num firstIndex, num secondIndex): list[T]{
     var tmpFirst = [(lst at firstIndex)]
     var tmpSecond = [(lst at secondIndex)]
 
     var firstSub = lst subList 0 (firstIndex - 1)
     var secondSub = lst subList (firstIndex + 1) (secondIndex - (firstIndex + 1))
-    var lastSub = lst subList (second + 1) ((lst length) - (second + 1))
+    var lastSub = lst subList (secondIndex + 1) ((lst length) - (secondIndex + 1))
 
     return firstSub + tmpSecond + secondSub + tmpFirst + lastSub
 }
 
-var bubbleSort = (T lst, num n): T{
+var bubbleSort = (list[T] lst, num n): list[T]{
     num i = 0
     num j = 0
 

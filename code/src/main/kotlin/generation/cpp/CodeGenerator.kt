@@ -21,7 +21,7 @@ class CodeGenerator : IPrinter {
         val literalLists = it.fetchList()
 
         (if (literalLists.count() > 0) // TODO MAYBE SHOULD BE CONSTANT?
-            literalLists.joinToString { "${(it.type as AstNode.Type.List).elementType.cppName} ${it.cppName}[] = {${
+            literalLists.joinToString { "${it.innerType.cppName} ${it.cppName}[] = {${
             it.elements.formatToList()}};\n"
             } else "") + it.format()
     }
