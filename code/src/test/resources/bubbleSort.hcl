@@ -1,7 +1,7 @@
 #should return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 # TEST_DISABLED
 #KEEP_FILES
->>>>>>> 5d4bf3ca1178d0dc02e8210f143f26c89930b0b8
+
 var swapAtIndex = (list[T] lst, num firstIndex, num secondIndex): list[T]{
     var tmpFirst = [(lst at firstIndex)]
     var tmpSecond = [(lst at secondIndex)]
