@@ -1,3 +1,4 @@
+% !TeX root = ../main.tex
 \section{HCL Built-In Functions}
 \label{builtinAppend}
 \textbf{Arithmetic Operations}\\
@@ -10,7 +11,7 @@ The functions are seen in table \ref{tbl:arith}.
 	\label{tbl:arith}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation      & Symbol & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}      & \textbf{Symbol} & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Addition       & +      & num, num         & num         \\ \hline
 		Subtraction    & -      & num, num         & num         \\ \hline
 		Division       & /      & num, num         & num         \\ \hline
@@ -29,7 +30,7 @@ These functions compare numeral, textual or boolean values and returns a boolean
 	\label{tbl:bool}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                       & Symbol         & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}                                                       & \textbf{Symbol}         & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Smaller Than                                                    & \textless{}    & num, num         & bool        \\ \hline
 		\begin{tabular}[c]{@{}c@{}}Smaller Than \\ Equals\end{tabular}  & lessThanEqual  & num, num         & bool        \\ \hline
 		Greater Than                                                    & \textgreater{} & num, num         & bool        \\ \hline
@@ -52,7 +53,7 @@ Functions used to manipulate text-objects or converts values to text, seen in ta
 	\label{tbl:text}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation          & Symbol  & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}          & \textbf{Symbol}  & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Concat Text        & +       & txt, txt         & txt         \\ \hline
 		Numeric To Text    & toText  & num              & txt         \\ \hline
 		Boolean To Text    & toText  & bool             & txt         \\ \hline
@@ -74,7 +75,7 @@ Functions used as control structures in HCL, seen in table \ref{tbl:control}
 	\label{tbl:control}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                 & Symbol & Input Parameters            & Return Type \\ \hline
+		\textbf{Operation}                                                 & \textbf{Symbol} & \textbf{Input Parameters}            & \textbf{Return Type} \\ \hline
 		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, func{[}none{]}        & bool        \\ \hline
 		While Loop                                                & while  & func{[}none{]}, bool        & bool        \\ \hline
 		Foreach Loop                                              & each   & list{[}T{]}, func{[}none{]} & none        \\ \hline
@@ -89,7 +90,7 @@ Functions used to manipulate or monitor lists, seen in table \ref{tbl:list}.
 	\label{tbl:list}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation     & Symbol  & Input Parameters            & Return Type \\ \hline
+		\textbf{Operation}     & \textbf{Symbol}  & \textbf{Input Parameters}            & \textbf{Return Type} \\ \hline
 		Get Lenght    & lenght  & list{[}T{]}                 & num         \\ \hline
 		At Index      & at      & list{[}T{]}, num            & T           \\ \hline
 		Concatenation & +       & list{[}T{]}, List{[}T{]}    & list{[}T{]} \\ \hline
@@ -109,7 +110,7 @@ Functions used to read and write from arduino's analogue and digital pins, seen 
 	\label{tbl:pins}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                      & Symbol         & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}                                                      & \textbf{Symbol}         & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Set Digital Pin                                                & setDigitalPin  & num, bool        & none        \\ \hline
 		Read Digital Pin                                               & readDigitalPin & num              & num         \\ \hline
 		Write Analog Pin                                               & setAnalogPin   & num, num         & none        \\ \hline
@@ -126,7 +127,7 @@ Functions used to print to output, seen in table \ref{tbl:print}.
 	\label{tbl:print}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation  & Symbol    & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}  & \textbf{Symbol}    & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Print      & print     & num/bool/txt     & none        \\ \hline
 		Print List & print     & list[T]          & none        \\ \hline
 	\end{tabular}
