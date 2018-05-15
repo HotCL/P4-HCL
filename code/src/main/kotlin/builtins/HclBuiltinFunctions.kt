@@ -462,7 +462,7 @@ private fun buildPrintFunctionText() = buildFunction(
     parameters = listOf(Parameter("input", Type.Text)),
     returnType = Type.None,
     body = "" +
-        "auto val = ConstList<char>::concat(input, ConstList<char>::create((char *)\"\\0\", 2));\n"+
+        "auto val = ConstList<char>::concat(input, ConstList<char>::create((char *)\"\\0\", 2));\n" +
         "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "Serial.print(val.get()->data);\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +

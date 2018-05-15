@@ -22,7 +22,7 @@ object CppNameTranslator : IValidNameTranslator {
         is AstNode.Type.Tuple -> "TPL_0x" + this.elementTypes.joinToString ("_") { it.getValidName() }.hashed
     }
 
-    private fun AstNode.Command.Expression.getValidName(): String = "EX_"+when (this) {
+    private fun AstNode.Command.Expression.getValidName(): String = "EX_" + when (this) {
 
         is AstNode.Command.Expression.Value.Identifier -> getValidName()
         is AstNode.Command.Expression.Value.Literal.Number -> value.toString().hashed
@@ -35,7 +35,7 @@ object CppNameTranslator : IValidNameTranslator {
         is AstNode.Command.Expression.LambdaExpression -> (body.getValidName() + returnType.getValidName()).hashed
         is AstNode.Command.Expression.LambdaBody -> commands.joinToString { it.toString() }.hashed
         is AstNode.Command.Expression.FunctionCall ->
-            identifier.getValidName()+"_"+arguments.joinToString("_") { it.getValidName() }.hashed
+            identifier.getValidName() + "_" + arguments.joinToString("_") { it.getValidName() }.hashed
     }
 
     private fun AstNode.Command.Expression.Value.Identifier.getValidName() = "IDT_0x" + name.hashed
