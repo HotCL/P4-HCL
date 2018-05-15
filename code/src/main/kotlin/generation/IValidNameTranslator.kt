@@ -21,4 +21,5 @@ interface IValidNameTranslator {
     fun getValidTypeName(node: AstNode.Type): String
 
     fun getValidtListLiteralName(node: AstNode.Command.Expression.Value.Literal.List): String?
+    fun getValidIdentifierName(node: AstNode.Command.Expression): String
 }

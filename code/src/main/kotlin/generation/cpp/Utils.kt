@@ -30,6 +30,7 @@ val AstNode.Command.Expression.Value.Literal.List.cppName get() = CppNameTransla
 
 val AstNode.Command.Expression.Value.Identifier.cppName get() = CppNameTranslator.getValidIdentifierName(this)
 
+val AstNode.Command.Expression.cppName get() = CppNameTranslator.getValidIdentifierName(this)
 val String.cppName get() =
     CppNameTranslator.getValidIdentifierName(parser.AstNode.Command.Expression.Value.Identifier(this, AstNode.Type.None))
 

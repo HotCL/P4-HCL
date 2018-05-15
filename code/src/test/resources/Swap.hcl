@@ -1,4 +1,6 @@
 # should print [7, 4, 5, 1, 4, 3, 2, 9]
+# TEST_DISABLED
+
 
 var swap = (list[T] lst, num firstIndex, num secondIndex): list[T]{
     var tmpFirst = [(lst at firstIndex)]

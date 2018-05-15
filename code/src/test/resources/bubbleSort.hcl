@@ -1,4 +1,5 @@
 #should return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+# TEST_DISABLED
 
 var swapAtIndex = (list[T] lst, num firstIndex, num secondIndex): list[T]{
     var tmpFirst = [(lst at firstIndex)]
