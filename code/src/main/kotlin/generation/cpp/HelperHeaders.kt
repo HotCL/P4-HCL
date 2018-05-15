@@ -118,10 +118,10 @@ List<char> ftoa(double d, int precision) {
 
             mantissa -= characteristic;
         }
-        while(*(endOfString-1) == '0'){
+        while (*(endOfString-1) == '0'){
             endOfString = endOfString - 1;
         }
-        while(*(endOfString-1) == '.'){
+        if (*(endOfString-1) == '.'){
             endOfString = endOfString - 1;
         }
 

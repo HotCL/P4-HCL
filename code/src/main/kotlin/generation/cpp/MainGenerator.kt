@@ -64,6 +64,7 @@ class MainGenerator : IPrinter {
 #endif //_WIN32
 
 #endif
+
 using namespace std;
 
 #include "builtin.h"
