@@ -26,7 +26,6 @@ object HclBuiltinFunctions {
             buildOperatorToBool<Type.Bool>("equals", "=="),
             buildOperatorToBool<Type.Bool>("notEquals", "!="),
             buildNotFunction(),
-                
             // Control structures
             buildThenFunction(),
             // buildElseTernaryFunction(),
