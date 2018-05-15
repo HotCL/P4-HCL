@@ -13,10 +13,10 @@ object HclBuiltinFunctions {
             buildOperatorNumNumToNum("-"),
             buildOperatorNumNumToNum("*"),
             buildOperatorNumNumToNum("/"),
+            buildModuloOperator(),
 
             buildOperatorBoolBoolToBool("and", "&&"),
             buildOperatorBoolBoolToBool("or", "||"),
-
             buildOperatorToBool<Type.Number>("greaterThanEqual", ">="),
             buildOperatorToBool<Type.Number>("lessThanEqual", "<="),
             buildOperatorToBool<Type.Number>("greaterThan", ">"),
