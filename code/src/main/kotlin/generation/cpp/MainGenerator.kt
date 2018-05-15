@@ -17,7 +17,7 @@ class MainGenerator : IPrinter {
                 AstNode.Command.Assignment(it.identifier, it.expression)
             else it
         })
-        val loop = ast.genFromFilter { it.isLoop }
+        val loop = ast.genForLoop()
         stringBuilder.appendln(declarations)
         stringBuilder.appendln(setup.wrapSetup())
         stringBuilder.appendln(loop.wrapLoop())
@@ -29,7 +29,7 @@ class MainGenerator : IPrinter {
     }
 
     private fun String.prefixSerialBegin() = "" +
-        "\n#ifdef ARDUINO_AVR_UNO\n" +
+        "\n#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "Serial.begin(9600); // 9600 is the baud rate - must be the same rate used for monitor\n" +
         "while(!Serial);     // Wait for Serial to initialize\n" +
         "#endif\n" + this
@@ -37,7 +37,7 @@ class MainGenerator : IPrinter {
     private fun String.wrapLoop() = "void loop() {\n${this.splitIndented}\n}"
     private fun String.wrapSetup() = "void setup() { \n${this.prefixSerialBegin().splitIndented}\n}"
     private fun String.wrapMain() = "" +
-        "#ifndef ARDUINO_AVR_UNO\n" +
+        "#if !defined(ARDUINO_AVR_UNO) || !defined(ESP8266)\n" +
         "int main() {\n${this.splitIndented}\n    return ${"RETURN_CODE".cppName};\n}\n" +
         "#endif"
 
@@ -53,12 +53,9 @@ class MainGenerator : IPrinter {
 #include "ConstList.h"
 #include "ftoa.h"
 
-#ifndef ARDUINO_AVR_UNO
+#if !defined(ARDUINO_AVR_UNO) && !defined(ESP8266)
 
 #include <iostream>
-#include <functional>
-
-#endif
 
 #ifdef _WIN32 //If windows based PC
     #include <windows.h>
@@ -66,7 +63,7 @@ class MainGenerator : IPrinter {
     #include <unistd.h>
 #endif //_WIN32
 
-
+#endif
 using namespace std;
 
 #include "builtin.h"

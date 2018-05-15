@@ -7,6 +7,18 @@ import parser.BuiltinLambdaAttributes
 fun AbstractSyntaxTree.genFromFilter(predicate: (AstNode.Command) -> Boolean) =
         CodeGenerator().generate(filter(predicate))
 
+fun AbstractSyntaxTree.genForLoop(): String {
+    val loop = children.firstOrNull {
+        (it as? AstNode.Command.Expression.FunctionCall)?.let { it.identifier.name == "loop" } ?: false
+    }
+    return if (loop != null) {
+        CodeGenerator().generate(AbstractSyntaxTree(
+                ((loop as AstNode.Command.Expression.FunctionCall).arguments.first()
+                        as AstNode.Command.Expression.LambdaExpression).body.commands)
+        )
+    } else ""
+}
+
 fun AbstractSyntaxTree.genFromFilterWithMap(
     predicate: (AstNode.Command) -> Boolean,
     mapFunc: (AstNode.Command) -> AstNode.Command
