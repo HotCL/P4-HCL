@@ -366,19 +366,20 @@ private fun buildDelayMillisFunction() = buildFunction(
     identifier = "delayMillis",
     parameters = listOf(Parameter("millis", Type.Number)),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "delay((int)millis);\n" +
 
-        "#endif //ARDUINO_AVR_UNO\n" +
+        "#else //ARDUINO_AVR_UNO\n" +
         "#ifdef _WIN32 //If windows based PC\n" +
 
         "Sleep((unsigned int)(millis));\n" +
 
-        "#else //If unix based PC\n" +
+        "#else // If unix based PC\n" +
 
-        "usleep(((unsigned int)millis*1000));//convert milliseconds to microseconds\n" +
+        "usleep(((unsigned int)millis*1000)); //convert milliseconds to microseconds\n" +
 
         "#endif //_WIN32\n" +
+        "#endif\n" +
         "return;"
 )
 
@@ -387,7 +388,7 @@ private fun buildWriteDigPinFunction() = buildFunction(
     identifier = "setDigitalPin",
     parameters = listOf(Parameter("pin", Type.Number), Parameter("value", Type.Bool)),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode((int)pin, 1);\n" +
         "digitalWrite((int)pin, value);\n" +
         "#else\n" +
@@ -402,7 +403,7 @@ private fun buildReadDigPinFunction() = buildFunction(
     identifier = "readDigitalPin",
     parameters = listOf(Parameter("pin", Type.Number)),
     returnType = Type.Number,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode((int)pin, 0);\n" +
         "return (double)digitalRead((int)pin);\n" +
         "#else\n" +
@@ -418,7 +419,7 @@ private fun buildWriteAnaPinFunction() = buildFunction(
         Parameter("value", Type.Number)
     ),
     returnType = Type.None,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode(pin, 1);\n" +
         "analogWrite((int)pin, value);\n" +
         "#else\n" +
@@ -431,7 +432,7 @@ private fun buildReadAnaPinFunction() = buildFunction(
     identifier = "readAnalogPin",
     parameters = listOf(Parameter("pin", Type.Number)),
     returnType = Type.Number,
-    body = "#ifdef ARDUINO_AVR_UNO\n" +
+    body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "pinMode((int)pin, 0);\n" +
         "return analogRead((int)pin);\n" +
         "#else\n" +
@@ -462,7 +463,7 @@ private fun buildPrintFunctionText() = buildFunction(
     returnType = Type.None,
     body = "" +
         "input.get()->data[input.get()->size] = '\\0';//ConstList<char>::concat(input, ConstList<char>::string((char*)\"\\0\"));\n" +
-        "#ifdef ARDUINO_AVR_UNO\n" +
+        "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +
         "Serial.print(input.get()->data);\n" +
         "#else // NOT ARDUINO_AVR_UNO\n" +
         "std::cout << input.get()->data;\n" +
