@@ -1,6 +1,6 @@
 # should print [7, 4, 5, 1, 4, 3, 2, 9]
 
-var swap = (T lst, num firstIndex, num secondIndex): T{
+var swap = (list[T] lst, num firstIndex, num secondIndex): list[T]{
     var tmpFirst = [(lst at firstIndex)]
     var tmpSecond = [(lst at secondIndex)]
 

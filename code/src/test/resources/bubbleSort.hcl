@@ -1,6 +1,6 @@
 #should return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-var swapAtIndex = (T lst, num firstIndex, num secondIndex): T{
+var swapAtIndex = (list[T] lst, num firstIndex, num secondIndex): list[T]{
     var tmpFirst = [(lst at firstIndex)]
     var tmpSecond = [(lst at secondIndex)]
 
@@ -11,7 +11,7 @@ var swapAtIndex = (T lst, num firstIndex, num secondIndex): T{
     return firstSub + tmpSecond + secondSub + tmpFirst + lastSub
 }
 
-var bubbleSort = (T lst, num n): T{
+var bubbleSort = (list[T] lst, num n): list[T]{
     num i = 0
     num j = 0
 
