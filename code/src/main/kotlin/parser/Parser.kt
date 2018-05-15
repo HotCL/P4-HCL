@@ -23,6 +23,17 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             enterSymbol(it.identifier.name, it.expression!!.type)
         }
         enterSymbol("RETURN_CODE", AstNode.Type.Number)
+        // enterSymbol("print", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
+        //    AstNode.Type.None))
+
+        // enterSymbol("toText", AstNode.Type.Func(listOf(AstNode.Type.GenericType("T")),
+        //    AstNode.Type.None))
+
+        enterSymbol("+", AstNode.Type.Func(listOf(AstNode.Type.Text, AstNode.Type.Text),
+            AstNode.Type.Text))
+
+        enterSymbol("loop", AstNode.Type.Func(listOf(AstNode.Type.Func(listOf(), AstNode.Type.None)),
+            AstNode.Type.None))
 
         // Parse
         while (hasNext()) {
@@ -254,7 +265,8 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             commands.add(parseCommand())
         }
         val body = AstNode.Command.Expression.LambdaBody(
-                if (commands.size == 1 && commands[0] is AstNode.Command.Expression)
+                if (commands.size == 1 &&
+                    (commands[0] as? AstNode.Command.Expression)?.let { it.type != AstNode.Type.None } == true)
                     listOf(AstNode.Command.Return(commands[0] as AstNode.Command.Expression))
                 else
                     commands
@@ -301,21 +313,26 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         }, { scopeDepth == 0 && it.token !is Token.Identifier }, 1)
     }
 
-    private fun getLambdaParameter(func: List<AstNode.Type.Func>, index: Int): AstExpression {
+    private fun getLambdaParameter(
+        func: List<AstNode.Type.Func>,
+        index: Int,
+        params: List<AstNode.Type> = emptyList()
+    ): AstExpression {
         val funcAcceptingLambda = func.firstOrNull {
             it.paramTypes[index] is AstNode.Type.Func
         } ?: error("No function found that takes a lambda at the current position")
         val lambdaFuncType = funcAcceptingLambda.paramTypes[index] as AstNode.Type.Func
         val lambdaParams = when (lambdaFuncType.paramTypes.size) {
             0 -> emptyList()
-            1 -> listOf(AstNode.ParameterDeclaration(lambdaFuncType.paramTypes[0],
-                    AstNode.Command.Expression.Value.Identifier("value", lambdaFuncType.paramTypes[0])))
             else -> {
+                val generics = funcAcceptingLambda.paramTypes.zip(params)
                 lambdaFuncType.paramTypes.mapIndexed { idx, type ->
-                    AstNode.ParameterDeclaration(type,
+                    val actualType = (type as? AstNode.Type.GenericType)?.let { getTypeFromTypePairs(generics, it.name) }
+                    ?: type
+                    AstNode.ParameterDeclaration(actualType,
                             AstNode.Command.Expression.Value.Identifier(
                                     "value${if (idx != 0) "${idx + 1}" else ""}",
-                                    lambdaFuncType.paramTypes[idx]
+                                    actualType
                             )
                     )
                 }
@@ -347,10 +364,14 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                     val symbol = retrieveSymbol(token.value)
                     if (symbol.isFunctions) {
                         val funcDecls = symbol.functions
-                        val secondaryArguments = funcDecls.first().paramTypes.drop(1).mapIndexed { index, _ ->
-                            if (current.token != Token.SpecialChar.BlockStart) parseExpressionAtomic() else {
-                                getLambdaParameter(funcDecls, index + 1)
-                            }
+                        val secondaryArguments = mutableListOf<AstNode.Command.Expression>()
+                        funcDecls.first().paramTypes.drop(1).forEachIndexed { index, _ ->
+                            secondaryArguments.add(if (current.token != Token.SpecialChar.BlockStart)
+                                parseExpressionAtomic()
+                            else {
+                                val params = secondaryArguments.map { it.type } + listOf(expression!!.type)
+                                getLambdaParameter(funcDecls, index + 1, params)
+                            })
                         }
                         val argTypes = listOf(expression!!.type) + secondaryArguments.map { it.type }
                         val declaration = funcDecls.getTypeDeclaration(argTypes)

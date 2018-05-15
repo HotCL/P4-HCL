@@ -1,0 +1,37 @@
+% !TeX root = ../main.tex
+\section{Type Rule Derivation Tree Example}
+\label{sec:typeRuleTree}
+This is an example of how to create a type derivation tree for a program written in HCL. It is based on the following code snippet.
+
+\begin{lstlisting}[language=HCL,label=lis:typeTreeCode]
+num x = 5
+bool b = x greaterThan 0
+b print
+\end{lstlisting}
+
+The program calls two functions, $greaterThan$ and $print$.
+They are declared with the following types:
+
+\begin{lstlisting}[language=HCL,label=lis:typeTreeCode]
+func[num, num, bool] greaterThan # Two number parameters, returns bool
+func[bool, none] print # overloaded to take a bool parameter, returns nothing
+\end{lstlisting}
+
+Following the type rules specified in section \ref{typerules}, this derivation tree will be produced:
+\begin{center}
+	\begin{math}
+		\cfrac
+		{\cfrac
+			{E\vdash 5 : num}
+			{E\vdash num\ x = 5 : \texttt{ok}}\quad \cfrac
+				{\cfrac
+					{\cfrac
+						{E(x) : num\quad E \vdash 0 : num}
+						{E\vdash x\ greaterThan\ 0: bool}}
+					{E\vdash bool\ b = x\ greaterThan\ 0 : \texttt{ok}}\quad \cfrac
+					{E\vdash b : bool}
+					{E\vdash b\ print : (none, \texttt{ok})}}
+				{E\vdash bool\ b = x\ greaterThan\ 0;\ b\ print : \texttt{ok}}}
+		{E \vdash num\ x = 5;\ bool\ b = x\ greaterThan\ 0;\ b\ print : \texttt{ok}}
+	\end{math}
+\end{center}
