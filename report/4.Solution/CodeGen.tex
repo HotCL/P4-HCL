@@ -1,1 +1,26 @@
 \section{Code Generation}
+This section describes the methodology and implementation of the code generation aspect of the compiler for HCL. 
+
+During generation the HCL code is translated into C++, which is subsequently compiled using a C++ compiler.
+If an Arduino board is connected to the computer, the compiler generated code that is specific to the Arduino language. 
+
+The overall code generation is done within the \texttt{ProgramGenerator} class.
+The class' responsibility is limited to calling the three predominant generators, namely \texttt{CodeGenerator}, \texttt{TypeGenerator} and \texttt{MainGenerator}.
+Other than calling the other classes, the \texttt{ProgramGenerator} class also adds return code to the AST to make sure that the program returns when terminated. 
+
+Snippet \ref{lis:programGen} shows the \textit{generate} function from \texttt{ProgramGenerator}.
+
+\begin{lstlisting}[language=Kotlin,label=lis:programGen,caption=The implementation of \textit{generate} in \texttt{ProgramGenerator}.]
+override fun generate(ast: AbstractSyntaxTree): List<FilePair> = 
+	listOf(
+		HelperHeaders.constList,
+		HelperHeaders.ftoa,
+		FilePair("builtin.h", CodeGenerator().generate(ast.builtins())),
+		FilePair("types.h", TypeGenerator().generate(ast)),
+		FilePair("main.cpp", MainGenerator().generate(ast.addReturnCode().notBuiltins()))
+)
+\end{lstlisting}
+
+The function first creates header files for the help-classes \textit{constList}(3) and \textit{ftoa}(4), which allows for the use of the list-type in C++, and for converting doubles to text. 
+The function then calls the generate functions for built-ins(5), tuple-types(6) and the main C++ code generator(7).  
+
