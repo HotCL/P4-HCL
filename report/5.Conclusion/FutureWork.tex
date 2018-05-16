@@ -1,2 +1,35 @@
 % !TeX root = ../main.tex
 \section{Future work}
+
+\subsection{User-tests}
+The HCL language has not been usability-tested as of the writing of this report.
+The target-group of HCL consists of two sub-groups, novices with no programming experience, and novices with limited programming experience.
+
+To conduct the usability-test, the sub-group with no programming experience, would have to be taught simple programming constructs in HCL and general programming paradigms.
+The sub-group with limited programming experience, would be asked to write simple programs in a language they know, and then write the equivalent programs in HCL.
+
+The first sub-group will be used to determine whether HCL is intuitive.
+The second sub-group will be used to evaluate whether HCL simplifies the programming paradigms enough.
+
+\subsection{Improvements to the language}
+While HCL is a complete language, there are still improvements that could be made.
+
+\textbf{Working Arduino}\\
+While the project group wanted HCL working on Arduino, this feature was not completed in time for the project hand-in.
+The Arduino does not allow lambdas, or the import of the library that is used in the C++ portion of the code.
+A solution could be to convert all lambdas to full functions and reference these instead.
+Another option could be to write a lambda type for the Arduino.
+
+\textbf{Object oriented features}\\
+The object oriented paradigm, as seen in Java and C\# are often taught to novices.
+To allow novices to easier transition to these languages, object oriented features could be beneficial for HCL
+
+\textbf{Interpreter}\\
+An interpreter for HCL could be beneficial, at it could allow novices to quickly try out syntax, using the command-line, instead of fully compiled programs.
+
+\textbf{Dictionaries}\\
+Dictionaries were deemed nice to have during the development process.
+It would benefit HCL to have a powerful data-structure, such as dictionaries.
+This would make it simpler to implement complex algorithms in HCL, for example sorting algorithms and numerical counting algorithms.
+It would also simplify the process of optimizing naive implementions, especially optimization by dynamic programming.
+
