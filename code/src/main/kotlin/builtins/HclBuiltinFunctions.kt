@@ -391,9 +391,7 @@ private fun buildWriteDigPinFunction() = buildFunction(
         "#else\n" +
         "std::cout << \"Set digital pin \" << (int)pin << \" to output \" << (value ? \"HIGH\" : \"LOW\") << " +
         "std::endl;\n" +
-        "return;\n" +
-        "#endif // ARDUINO_AVR_UNO" +
-        "return;"
+        "#endif // ARDUINO_AVR_UNO"
 )
 
 private fun buildReadDigPinFunction() = buildFunction(

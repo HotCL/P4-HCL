@@ -1,5 +1,6 @@
 # It should print Rasmus - Aabybro
-#
+
+
 # Person methods
 func getName = (tuple[txt, num, txt] person): txt { person element0 }
 func getAge = (tuple[txt, num, txt] person): num { person element1 }
