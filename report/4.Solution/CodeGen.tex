@@ -22,5 +22,12 @@ override fun generate(ast: AbstractSyntaxTree): List<FilePair> =
 \end{lstlisting}
 
 The function first creates header files for the help-classes \textit{constList}(3) and \textit{ftoa}(4), which allows for the use of the list-type in C++, and for converting doubles to text. 
-The function then calls the generate functions for built-ins(5), tuple-types(6) and the main C++ code generator(7).  
+The function then creates the header file for the built-in functions of the language(5).
+When the \textit{generate} function within the \texttt{CodeGenerator} class is called with the built-in functions from the language, it formats the functions to resemble valid C++ function declarations, whilst also adding descriptive comments of its functionality.
+The resulting text is written to a file that serves as a header-file for the final program. \\
+The next line of code (6) call the \textit{generate} function from the \texttt{TypeGenerator} class.
+This class is responsible for formatting tuples in the language by creating equivalent \textit{struct} declarations in C++.
+The function will fetch all tuples within the inputtet AST, format them, and write the result to a header file.
+Before returning, the function will also generate functions for each tuple found.
+These generated functions will allow the tuple to be printed using the \textit{toText} keyword, and will also allow the tuples to return a specific element from within themselves.\\
 
