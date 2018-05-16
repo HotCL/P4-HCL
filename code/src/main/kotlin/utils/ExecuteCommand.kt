@@ -50,7 +50,9 @@ fun compileCpp(
             if (result.string.isNotBlank()) println(result.string)
         }
         val program = File(dir).listFiles().first { it.nameWithoutExtension == outputFile }
-        program.copyTo(File(program.name), true)
+        val finalProgram = File(program.name)
+        program.copyTo(finalProgram, true)
+        finalProgram.setExecutable(true)
     } finally {
         if (!keepFiles) File(dir).deleteRecursively()
     }
