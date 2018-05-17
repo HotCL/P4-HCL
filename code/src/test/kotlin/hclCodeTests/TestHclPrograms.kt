@@ -25,6 +25,7 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val files = listOf(
+        "mapTuples.hcl",
         "HelloWorld.hcl",
         "ReturnSimple.hcl",
         "HelloWorldAndReturn.hcl",

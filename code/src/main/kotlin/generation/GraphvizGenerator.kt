@@ -28,7 +28,7 @@ class GraphvizGenerator : IPrinter {
 
     private fun AstNode.visit(parentId: Int): String {
         val id = getNextId()
-        return "# this is: $id - ${this}\n" + when (this) {
+        return "# this is: $id - ${this.toString().replace("\n",";").replace("\"","'")}\n" + when (this) {
             is Command.Assignment -> toLabel(id, this.identifier.name + "=") +
                     this.expression.visit(id)
 
