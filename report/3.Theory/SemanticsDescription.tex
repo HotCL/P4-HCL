@@ -527,7 +527,7 @@ This means that the transitions must be on the form.
 
 The transitions are shown below.
 
-\texttt{[$Ass_{BSS}$]}\\
+\texttt{[$Ass_{BSS}$]}
 \begin{center}
 	\begin{math}
 		{env_V, env_F \vdash \langle x = e, sto \rangle \rightarrow_{stm} (sto[l \mapsto v], env_V, env_F)}
@@ -537,7 +537,7 @@ The transitions are shown below.
 	\texttt{ and } $env_V\ x = l$
 \end{center}
 
-\texttt{[$Comp_{BSS}$]}\\
+\texttt{[$Comp_{BSS}$]}
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -546,7 +546,7 @@ The transitions are shown below.
 	\end{math}
 \end{center}
 
-\texttt{[$Then-True_{BSS}$]}\\
+\texttt{[$Then-True_{BSS}$]}
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -557,7 +557,7 @@ The transitions are shown below.
 	\texttt{ if } $env_V, sto \vdash b \rightarrow_b True$
 \end{center}
 
-\texttt{[$Then-False_{BSS}$]}\\
+\texttt{[$Then-False_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -568,7 +568,7 @@ The transitions are shown below.
 	\texttt{ if } $env_V, sto \vdash b \rightarrow_b False$
 \end{center}
 
-\texttt{[$While-True_{BSS}$]}\\
+\texttt{[$While-True_{BSS}$]}
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -581,7 +581,7 @@ The transitions are shown below.
 	\texttt{ where } $e \in F_{call} \cup L$
 \end{center}
 
-\texttt{[$While-False_{BSS}$]}\\
+\texttt{[$While-False_{BSS}$]}
 \begin{center}
 	\begin{math}
 	{env_V, env_F \vdash \langle L\ while\ e, sto \rangle \rightarrow_{stm} (sto, env_V, env_F)}
@@ -592,17 +592,17 @@ The transitions are shown below.
 	\texttt{ where } $e \in F_{call} \cup L$
 \end{center}
 
-\texttt{[$StmDlcV_{BSS}$]}\\
+\texttt{[$StmDlcV_{BSS}$]}
 \begin{center}
 	$\langle D_V, env_V, sto \rangle \rightarrow_{D_V} (env_V', env_F, sto')$
 \end{center}
 
-\texttt{[$StmDlcF_{BSS}$]}\\
+\texttt{[$StmDlcF_{BSS}$]}
 \begin{center}
 	$\langle D_V, env_F, sto \rangle \rightarrow_{D_V} (env_V, env_F', sto')$
 \end{center}
 
-\texttt{[$EmptyStm_{BSS}$]}\\
+\texttt{[$EmptyStm_{BSS}$]}
 \begin{center}
 	\begin{math}
 	{\langle \epsilon, env_V, env_F, sto \rangle \rightarrow_{stm} (sto, env_V, env_F)}
@@ -621,7 +621,7 @@ Which means that the transitions must be on the form.
 \end{center}
 The transitions are shown below.
 
-\texttt{[$FuncCall-NoParams_{BSS}$]}\\
+\texttt{[$FuncCall-NoParams_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -636,7 +636,7 @@ The transitions are shown below.
 The next transition rule, explains the semantics of a function call with one or more arguments.
 This means that for every argument, it is necessary to bind their values in the store.
 
-\texttt{[$FuncCall-Params_{BSS}$]}\\
+\texttt{[$FuncCall-Params_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -650,7 +650,7 @@ This means that for every argument, it is necessary to bind their values in the 
 	\texttt{ and for each x } $l_x = env_V\ next$ 
 \end{center}
 
-\texttt{[$EmptyStm_{BSS}$]}\\
+\texttt{[$EmptyStm_{BSS}$]}
 \begin{center}
 	\begin{math}
 		{env_V, env_F \vdash \langle \epsilon, sto \rangle \rightarrow_{stm} sto}
@@ -671,7 +671,7 @@ This means that the transitions must be on the form.
 
 The transitions are shown below.
 
-\textbf{[$Dcl_VAssExp_{BSS}$]}\\
+\textbf{[$Dcl_VAssExp_{BSS}$]}
 \begin{center}
 	\begin{math}
 		{env_F \vdash \langle T\ x = e,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V'[x \mapsto l][next \mapsto l'],\ sto[l \mapsto v])}
@@ -682,7 +682,7 @@ The transitions are shown below.
 	\texttt{ and } $l' = new\ l$
 \end{center}
 
-\textbf{[$Dcl_VNoAss_{BSS}$]}\\
+\textbf{[$Dcl_VNoAss_{BSS}$]}
 \begin{center}
 	\begin{math}
 		{\langle T\ x,\ env_V,\ sto \rangle \rightarrow_{D_V} (env_V'[x \mapsto l][next \mapsto l'],\ sto)}
@@ -714,7 +714,7 @@ In HCL a procedure is simple a function where the return value equals $none$.
 
 The transitions are shown below.
 
-\texttt{[$Dcl_FAss_{BSS}$]}\\
+\texttt{[$Dcl_FAss_{BSS}$]}
 \begin{center}
 	\begin{math}
 			{env_V \vdash \langle T\ f\ =\ ([T\ x]\sim):\ T\ L,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (L, x\sim, v, env_V, env_F)]}
@@ -723,14 +723,14 @@ The transitions are shown below.
 	\texttt{ where } $env_V, sto \vdash L \rightarrow_L v$
 \end{center}
 
-\texttt{[$Dcl_FNoAss_{BSS}$]}\\
+\texttt{[$Dcl_FNoAss_{BSS}$]}
 \begin{center}
 	\begin{math}
 	{env_V \vdash \langle T\ f,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (env_V, env_F)]}
 	\end{math}
 \end{center}
 
-\texttt{[$PreDcl_Ass_{BSS}$]}\\
+\texttt{[$PreDcl_Ass_{BSS}$]}
 \begin{center}
 	\begin{math}
 	{env_V \vdash \langle f\ =\ ([T\ x]\sim):\ T\ L,env_F \rangle \rightarrow_{D_F} env_F'[f \mapsto (L, x\sim, v, env_V, env_F)]}
