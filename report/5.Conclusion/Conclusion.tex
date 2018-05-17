@@ -10,21 +10,13 @@ HCL is a hybrid language of the functional and imperative paradigms, with dynami
 HCL has English-like syntax, that also implements high-order functionality.
 %However, as of the conclusion of this report, no user-tests have been conducted (This sentence is really fucking out of place. I have removed it.)
 
-The similarities with the English language is well exemplified in snippet \ref{lis:ConclusionWhile}.
-\begin{lstlisting}[language=hcl,label=lis:ConclusionWhile,caption=English-like syntax example]
-var j = 3
-func subtract = () : none { j = j - 1 }
-func jIsGreaterThan1 = () : bool { j greaterThan 1 }
-:subtract while :jIsGreaterThan1
-\end{lstlisting}
+The similarities with the English language is well exemplified in snippet \ref{lis:ConclusionNicolajEksempel}.
 %Decide and rewrite.
 \begin{lstlisting}[language=hcl,label=lis:ConclusionNicolajEksempel,caption=English-like syntax example]
-func squared = (num v) : num  { return v * v }
 1 to 5 map { value squared } print
 \end{lstlisting}
-
-In snippet \ref{lis:ConclusionWhile}, lines 1 to 3 consists of declarations, line 8 consists of the function-call to \textit{\textbf{while}}.
-The While function takes two Lambda expressions as arguments, in this case two function pointers.
+In snippet \ref{lis:ConclusionNicolajEksempel}, the values from 1 to 5 are mapped with the value squared and then printed.
+The code itself is pretty self-explanatory, and matches the english explanation a lot.
 Having the first parameter on the left-hand side of the function call, allows for writing code, that reads like english.
 
 Since user-tests have not been conducted, it cannot be verified whether the English-like syntax allows for novices to have an easier transition from English to HCL.
