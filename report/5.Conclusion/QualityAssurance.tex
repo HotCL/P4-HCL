@@ -10,10 +10,10 @@ To make sure that everyone was on top of development and changes, features were 
 
 To create an even higher level of transparency, weekly status meetings were held following release branches.
 These status meetings discussed the previous week, as well as the issues to be address in the coming week. 
-A monthly larger status meeting also took place, to look at process on a larger scale. 
+A large monthly status meeting also took place, to look at progress on a larger scale. 
 
 Jira\cite{Jira}, a project management system, was used to address issues and progress.
-Using git-integrations, made issues automatically update based on names or keywords in commit messages and branches.
+Using integrations for git, made issues automatically update based on names or keywords in commit messages and branches.
 
 The group tried to follow a preset milestone plan, however it was shifted a bit over the course of the development process.
 
@@ -28,7 +28,7 @@ When developing a new module of the compiler, unit tests was created in parallel
 Unit tests was created with the JUnit\cite{JUnit} framework, a Java Unit testing framework, and the Spek\cite{SpekFramework} framework, a specification testing framework. 
 The group heard of Spek halfway through the development process and it ended up being the preferred testing framework, however not all existing tests were not ported to Spek, as these work conjointly.
 
-Specification tests are based on the principle of writing, in english, what a test should do accompanied by code executing the relevant actions.
+Specification tests are based on the principle of writing, in English, what a test should do accompanied by code executing the relevant actions.
 This is shown in snippet \ref{lis:specExample}.
 
 
@@ -47,15 +47,18 @@ class SimpleTest : Spek({
 
 System tests, testing of the whole pipeline, was also valued highly.
 This was utilized as a way of making sure that a given snippet of HCL code should create a program that would print the correct text and/or return the correct number.
-To do this, a test was developed, that takes a list of files and checks whether the file has the expected output.
-this was done by having a comment in the file, that includes the expected output of the program, which the testing framework would then process. 
+To do this a test was developed that takes a list of files and checks whether the file has the expected output.
+This was done by having a comment in the file, that includes the expected output of the program, which the testing framework would then process. 
 
+
+Such a script can be seen in snippet \ref{lis:testHelloWorld}, where the first line is the comment that tells the testing framework that the program should in fact print "Hello World!", whereas the second line prints "Hello World!" in the HCL language.
 \begin{lstlisting}[language=HCL,label=lis:testHelloWorld,firstnumber=1,caption={A HCL test-script as part of the testing framework}]
 # This should print Hello World!
 "Hello World!" print
 \end{lstlisting}
-Such a script can be seen in snippet \ref{lis:testHelloWorld}, where the first line is the comment that tells the testing framework that the program should in fact print "Hello World!", whereas the second line prints "Hello World!" in the HCL language.
-The script above is then executed by the testing function which is, in a shortened version, explained in snippet \ref{lis:testHclPrograms}
+
+
+The script above is then executed by the testing function which is, in a shortened version, portrayed in snippet \ref{lis:testHclPrograms}
 \begin{lstlisting}[language=Kotlin,label={lis:testHclPrograms},caption={Shortened version of the test for system tests}]
 object TestHclPrograms : Spek({
 	val files = listOf(
