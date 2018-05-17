@@ -242,7 +242,8 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         } ?: listOf()
 
         val lambda = parseLambdaBody(parameters + recCall)
-        if (lambda.type != returnType) unexpectedReturnTypeError(returnType.toString(), lambda.type.toString())
+        if (lambda.type != returnType && returnType != AstNode.Type.None)
+            unexpectedReturnTypeError(returnType.toString(), lambda.type.toString())
         return AstNode.Command.Expression.LambdaExpression(parameters, returnType, lambda.lambdaBody)
     }
 

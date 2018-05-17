@@ -14,6 +14,7 @@ import logger.Logger
 import parser.AstNode
 import parser.BuiltinLambdaAttributes
 import parser.Parser
+import stdlib.Stdlib
 import utils.compileCpp
 import utils.runCommand
 import java.io.File
@@ -33,11 +34,14 @@ class HCL : CliktCommand() {
             help = "Whether to delete generated CPP code after compilation has ended")
             .flag(default = true)
 
-
-
     override fun run() {
         if (inputFile != null) {
-            val lexer = Lexer(inputFile!!.readText())
+            val lexer = Lexer(
+                    mapOf(
+                            Stdlib.getStdlibContent(),
+                            inputFile!!.nameWithoutExtension to inputFile!!.readText()
+                    )
+            )
             val hclParser = Parser(lexer)
             val logger = Logger()
             val ast = try {
@@ -67,7 +71,7 @@ class HCL : CliktCommand() {
             while (true) {
                 print(">>> ")
                 val inputLine = readLine()!!
-                val lexer = Lexer(content.toString() + "\n" + inputLine)
+                val lexer = Lexer(mapOf(Stdlib.getStdlibContent(), "CLI" to content.toString() + "\n" + inputLine))
                 val hclParser = Parser(lexer)
                 val logger = Logger()
                 val ast = try {
