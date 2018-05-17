@@ -1,8 +1,8 @@
 % !TeX root = ../main.tex
-\begin{landscape}
 \section{Extended Backus-Naur Form of HCL grammar}
 \label{AppendixEBNF}
-\begin{align*}
+\begin{sidewaysfigure}
+	\begin{align*}
 	\texttt{<Program>}\to & \texttt{ <Cmds> \$}\\
 	\texttt{<Cmds>}\to & \texttt{ \{<Cmd>\}}\\
 	\texttt{<Cmd>}\to & \texttt{ <VarDcl> linebreak}\\
@@ -24,8 +24,10 @@
 	\texttt{<TypeListGenerics>}\to & \texttt{ <TypeGenerics> [separator <TypeListGenerics>] }\\
 	\texttt{<TypeNoneAndGenerics>}\to & \texttt{<TypeGenerics>}\\
 	| & \texttt{ none}\\
-\end{align*} %pagebreak
-\begin{align*}
+	\end{align*} %pagebreak
+\end{sidewaysfigure}
+\begin{sidewaysfigure}
+	\begin{align*}
 	\texttt{<TypeListNoneAndGenerics>} \to & \texttt{ <TypeNoneAndGenerics> [separator <TypeListNoneAndGenerics>]}\\
 	\texttt{<TypeGenerics>}\to & \texttt{<Type>}\\
 	| & \texttt{ identifier}\\
@@ -47,8 +49,10 @@
 	\texttt{<Assign>}\to & \texttt{ identifier equals <DclValue>}\\
 	\texttt{<LambdaExpr>}\to & \texttt{ parenL [<FunDclParams>] parenR colon <TypeNoneAndGenerics> {linebreak} <LambdaBody>}\\
 	\texttt{<LambdaBody>}\to & \texttt{ curlyL <Cmds> curlyR}\\
-\end{align*} %pagebreak
-\begin{align*}
+	\end{align*} %pagebreak
+\end{sidewaysfigure}
+\begin{sidewaysfigure}
+	\begin{align*}
 	\texttt{<FunDclParams>}\to & \texttt{ <FunDclParam> [comma <FunDclParams>]}\\
 	\texttt{<FunDclParam>}\to & \texttt{ <TypeListGenerics> identifier}\\
 	\texttt{<FunctionCall>}\to & \texttt{ identifier}\\
@@ -59,6 +63,6 @@
 	| & \texttt{ <LambdaExpr>}\\
 	| & \texttt{ <LambdaBody>}\\
 	\texttt{<ReturnCmd>}\to & \texttt{ return <Expr>}
-\end{align*}
-\end{landscape}
+	\end{align*}
+\end{sidewaysfigure}
 \newpage
