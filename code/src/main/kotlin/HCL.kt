@@ -58,6 +58,7 @@ class HCL : CliktCommand() {
             File("$outputFile.gviz").writeText(graph)
             val pngData = "dot -Tpng $outputFile.gviz".runCommand().string
 
+
             File("$outputFile.png").writeBytes(pngData.toByteArray())
 
             val programFiles = ProgramGenerator().generate(ast)
