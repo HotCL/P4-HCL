@@ -1,0 +1,64 @@
+% !TeX root = ../main.tex
+\begin{landscape}
+\section{Extended Backus-Naur Form of HCL grammar}
+\label{AppendixEBNF}
+\begin{align*}
+	\texttt{<Program>}\to & \texttt{ <Cmds> \$}\\
+	\texttt{<Cmds>}\to & \texttt{ \{<Cmd>\}}\\
+	\texttt{<Cmd>}\to & \texttt{ <VarDcl> linebreak}\\
+	| & \texttt{ <Assign> linebreak}\\
+	| & \texttt{ <Expr> linebreak}\\
+	| & \texttt{ <ReturnCmd> linebreak}\\
+	\texttt{<Dcl>}\to & \texttt{ <ImplicitType> identifier [equals <DclValue>]}\\
+	\texttt{<ImplicitType>}\to & \texttt{ <Type>}\\
+	| & \texttt{ func}\\
+	| & \texttt{ var}\\
+	\texttt{<Type>}\to & \texttt{ number}\\
+	| & \texttt{ text}\\
+	| & \texttt{ tuple sqBracketL [<TypeList>] sqBracketR}\\
+	| & \texttt{ list sqBracketL [<Type>] sqBracketR}\\
+	| & \texttt{ bool}\\
+	| & \texttt{ func sqBracketL [<TypeListNoneAndGenerics>] sqBracketR}\\
+	| & \texttt{ none}\\
+	\texttt{<TypeList>}\to & \texttt{ <Type> [comma <TypeList>]}\\
+	\texttt{<TypeListGenerics>}\to & \texttt{ <TypeGenerics> [separator <TypeListGenerics>] }\\
+	\texttt{<TypeNoneAndGenerics>}\to & \texttt{<TypeGenerics>}\\
+	| & \texttt{ none}\\
+\end{align*} %pagebreak
+\begin{align*}
+	\texttt{<TypeListNoneAndGenerics>} \to & \texttt{ <TypeNoneAndGenerics> [separator <TypeListNoneAndGenerics>]}\\
+	\texttt{<TypeGenerics>}\to & \texttt{<Type>}\\
+	| & \texttt{ identifier}\\
+	\texttt{<Expr>}\to & \texttt{ <FunctionCall>}\\
+	| & \texttt{ <Value>}\\
+	| & \texttt{ parenL <Expr> parenR }\\
+	\texttt{<Value>}\to & \texttt{ <Literal>}\\
+	| & \texttt{ identifier}\\
+	\texttt{<Literal>}\to & \texttt{ literalNumber}\\
+	| & \texttt{ literalText}\\
+	| & \texttt{ literalBool}\\
+	| & \texttt{ <LiteralTuple>}\\
+	| & \texttt{ <LiteralList>}\\
+	\texttt{<Values>}\to & \texttt{ <Value> [comma <Values>]}\\
+	\texttt{<LiteralTuple>}\to & \texttt{ parenL <Values> parenR}\\
+	\texttt{<LiteralList>}\to & \texttt{ sqBracketL <Values> sqBracketR}\\
+	\texttt{<DclValue>}\to & \texttt{ <Expr>}\\
+	| & \texttt{ <LambdaExpr>}\\
+	\texttt{<Assign>}\to & \texttt{ identifier equals <DclValue>}\\
+	\texttt{<LambdaExpr>}\to & \texttt{ parenL [<FunDclParams>] parenR colon <TypeNoneAndGenerics> {linebreak} <LambdaBody>}\\
+	\texttt{<LambdaBody>}\to & \texttt{ curlyL <Cmds> curlyR}\\
+\end{align*} %pagebreak
+\begin{align*}
+	\texttt{<FunDclParams>}\to & \texttt{ <FunDclParam> [comma <FunDclParams>]}\\
+	\texttt{<FunDclParam>}\to & \texttt{ <TypeListGenerics> identifier}\\
+	\texttt{<FunctionCall>}\to & \texttt{ identifier}\\
+	| & \texttt{ <Arg> identifier [<Args>]}\\
+	\texttt{<Args>}\to & \texttt{ \{<Arg>\}+}\\
+	| & \texttt{ parenL \{<Arg>\}+ parenR}\\
+	\texttt{<Arg>}\to & \texttt{[colon]<Value>}\\
+	| & \texttt{ <LambdaExpr>}\\
+	| & \texttt{ <LambdaBody>}\\
+	\texttt{<ReturnCmd>}\to & \texttt{ return <Expr>}
+\end{align*}
+\end{landscape}
+\newpage
