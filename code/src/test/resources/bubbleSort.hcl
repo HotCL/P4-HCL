@@ -10,7 +10,7 @@ var swapAtIndex = (list[T] lst, num firstIndex, num secondIndex): list[T]{
 
 
 var bubbleSort = (list[num] lst): list[num] {
-    num i = 0
+    num i
     {
         num j
         {
@@ -20,7 +20,6 @@ var bubbleSort = (list[num] lst): list[num] {
 
             j = j + 1
         } while { j lessThan (lst length - 1) }
-
         i = i + 1
     } while { i lessThan  ((lst length) - 1) }
 
