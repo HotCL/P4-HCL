@@ -16,16 +16,12 @@ While HCL is a complete language, there are still improvements that could be mad
 
 \textbf{Working Arduino}\\
 While the project group wanted HCL to run on the Arduino platform, this feature was not completed in time for the project hand-in.
-The Arduino does not allow lambdas, or the import of the library that is used in the C++ portion of the code.
-A solution could be to convert all lambdas to full functions and reference these instead.
-Another option could be to write a lambda type for the Arduino.
-
-\textbf{Object oriented features}\\
-The object oriented paradigm, as seen in Java and C\# are often taught to novices.
-To allow novices to easier transition to these languages, object oriented features could be beneficial for HCL
+The Arduino does not allow for the import of the std:function type from the "functional" C++ standard library.
+The Arduino does support lambdas, but not the specific type used for HCL, the \textit{\textbf{std::function type}} from the "functional" C++ standard library.
+A solution could be to write a custom lambda type, specifically for the Arduino.
 
 \textbf{Interpreter}\\
-An interpreter for HCL could be beneficial, at it could allow novices to quickly try out syntax, using the command-line, instead of fully compiled programs.
+An interpreter for HCL could be beneficial, as it could allow novices to quickly try out syntax, using the command-line, instead of fully compiled programs.
 
 \textbf{Dictionaries}\\
 Dictionaries were deemed NTH during the development process.
