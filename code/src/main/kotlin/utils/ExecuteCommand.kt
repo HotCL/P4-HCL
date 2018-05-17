@@ -16,7 +16,7 @@ fun String.runCommand(workingDir: File = File("./")): CommandResult {
             .redirectError(ProcessBuilder.Redirect.PIPE)
             .start()
 
-        proc.waitFor(10, TimeUnit.SECONDS)
+        proc.waitFor(20, TimeUnit.SECONDS)
         CommandResult(proc.inputStream.bufferedReader().readText() +
             proc.errorStream.bufferedReader().readText().let {
                 if (it.isNotBlank()) { "Error: $it" } else ""
@@ -40,15 +40,19 @@ fun compileCpp(
         headerFiles.forEach { it.writeFile(dir) }
         cppFiles.forEach {
             it.writeFile(dir)
-            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++11".apply {
-                println(runCommand(File(dir)))
+            "g++ -c ${it.fileName} -o ${it.fileName.removeSuffix(".cpp")} -std=c++14".apply {
+                val result = runCommand(File(dir))
+                if (result.string.isNotBlank()) println(result.string)
             }
         }
         "g++ ${cppFiles.joinToString(" ") { it.fileName.removeSuffix(".cpp") }} -o $outputFile".apply {
-            println(runCommand(File(dir)))
+            val result = runCommand(File(dir))
+            if (result.string.isNotBlank()) println(result.string)
         }
         val program = File(dir).listFiles().first { it.nameWithoutExtension == outputFile }
-        program.copyTo(File(program.name), true)
+        val finalProgram = File(program.name)
+        program.copyTo(finalProgram, true)
+        finalProgram.setExecutable(true)
     } finally {
         if (!keepFiles) File(dir).deleteRecursively()
     }

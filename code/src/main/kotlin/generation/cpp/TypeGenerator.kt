@@ -19,8 +19,12 @@ class TypeGenerator : IPrinter {
     private fun List<AstNode>.fetchTuples(): Set<AstNode.Type.Tuple> = flatMap { it.fetchTuple() }.toSet()
 
     private fun AstNode.fetchTuple(): Set<AstNode.Type.Tuple> = when (this) {
-        is AstNode.Command.Expression.LambdaExpression -> body.fetchTuple()
-        is AstNode.Command.Expression.FunctionCall -> arguments.fetchTuples()
+        is AstNode.Command.Expression.LambdaExpression -> body.fetchTuple() + returnType.fetchTuple()
+        is AstNode.Command.Expression.FunctionCall ->
+            arguments.fetchTuples() + identifier.fetchTuple()
+        is AstNode.Command.Expression.Value.Literal.List -> elements.fetchTuples()
+        is AstNode.Command.Expression.Value.Literal.Tuple -> setOf(this.type as AstNode.Type.Tuple) + elements.fetchTuples()
+        is AstNode.Command.Expression.Value.Identifier -> type.fetchTuple()
         is AstNode.Command.Assignment -> expression.fetchTuple()
         is AstNode.Command.Declaration -> type.fetchTuple() + (this.expression?.fetchTuple() ?: emptySet())
     // types
@@ -44,15 +48,16 @@ class TypeGenerator : IPrinter {
                 ),
                 returnType = AstNode.Type.Text,
                 body = "ConstList<char>::List" +
-                    " output = ConstList<char>::string((char*)\"\");\n" +
+                    " output = ConstList<char>::string((char*)\"(\");\n" +
                     elementTypes.mapIndexed { index, _ ->
                         "output = ConstList<char>::concat(output, ${"toText".cppName}" +
                             "(self.element$index));\n" +
                             if (index != this.elementTypes.count() - 1) {
                                 "output = ConstList<char>::concat(output, " +
-                                    "ConstList<char>::string((char*)\",\"));\n"
+                                    "ConstList<char>::string((char*)\", \"));\n"
                             } else ""
                     }.joinToString("") +
+                    "output = ConstList<char>::concat(output, ConstList<char>::string((char*)\")\"));\n" +
                     "return output;"
             ),
 

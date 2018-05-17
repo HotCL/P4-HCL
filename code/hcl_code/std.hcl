@@ -18,7 +18,6 @@ var any (list[T] myList, func[T,bool] compareFunc):bool{
 
 var all (list[T] myList, func[T,bool] compareFunc):bool{
 	myList filter :compareFunc length equals myList length
-	
 }
 
 var in = (T element, list[T] myList):bool{
@@ -41,5 +40,7 @@ var else = (tuple[bool,T] thenResult, func[T] body): T {
 }
 
 var thenElse = (bool condition, func[T] trueBody, func[T] falseBody): T {
+    T output
     condition then {output = trueBody} else { output = falseBody}
+    return output
 }

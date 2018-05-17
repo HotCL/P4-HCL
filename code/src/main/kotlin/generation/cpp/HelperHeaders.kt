@@ -64,7 +64,7 @@ public:
 
 
     static List string(char* txt){
-        return ConstList<char>::create(txt, strlen(txt));
+        return ConstList<char>::create_from_copy(txt, strlen(txt));
     }
 };
 
@@ -91,6 +91,7 @@ using List = typename ConstList<T>::List;
  */
 List<char> ftoa(double d, int precision) {
     char buffer[MAX_STR_LEN];
+    char *endOfString = buffer;
     memset(buffer, 0, MAX_STR_LEN);
 
     // Add digits before decimal point to string
@@ -99,7 +100,6 @@ List<char> ftoa(double d, int precision) {
 
     // Add digits after decimal point, if needed
     if (precision > 0) {
-        char *endOfString = buffer;
 
         while (*endOfString != '\0') endOfString++;
         *endOfString++ = '.';
@@ -118,14 +118,18 @@ List<char> ftoa(double d, int precision) {
 
             mantissa -= characteristic;
         }
-        while(*(endOfString-1) == '0' || *(endOfString-1) == '.'){
+        while (*(endOfString-1) == '0'){
+            endOfString = endOfString - 1;
+        }
+        if (*(endOfString-1) == '.'){
             endOfString = endOfString - 1;
         }
 
         *endOfString = '\0';
-    }
 
+    }
     return ConstList<char>::string(buffer);
+    //return ConstList<char>::create(buffer,endOfString-buffer);
 }
 
 #endif //FTOA_H

@@ -1,7 +1,5 @@
 package hclCodeTests
 
-import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.startsWith
 import exceptions.CompilationException
 import generation.FilePair
 import generation.cpp.ProgramGenerator
@@ -27,14 +25,27 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val files = listOf(
+        "mapTuples.hcl",
         "HelloWorld.hcl",
-        "HelloWorldAndReturn.hcl",
         "ReturnSimple.hcl",
-        "MapFilter.hcl",
+        "HelloWorldAndReturn.hcl",
         "stringConcat.hcl",
+        "thenElse.hcl",
+        "while.hcl",
         "stringAt.hcl",
         "printTuple.hcl",
         "conclusionSnippet.hcl"
+        "fizzBuzz.hcl",
+        "MapFilter.hcl",
+        "staticScope.hcl",
+        "subText.hcl",
+        "toUneven.hcl",
+        "multiScope.hcl",
+        "OOP.hcl",
+        "OOP_V2.hcl",
+        "PrintFibonacci.hcl",
+        "Swap.hcl",
+        "bubbleSort.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
@@ -48,8 +59,10 @@ object TestHclPrograms : Spek({
                 val outputFiles = generateFilesFromCode(fileContent)
                 val keepFiles = fileContent.contains("KEEP_FILES")
                 val output = compileAndExecuteCpp(outputFiles, file.split(".").first(), keepFiles)!!
-                assertEquals(expectedReturn, output.returnValue)
-                assertThat(output.string, startsWith(expectedPrint))
+                assertEquals(expectedReturn, output.returnValue,
+                    "expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
+                        "full output:\n${output.string}")
+                assertEquals(expectedPrint, output.string)
             }
         }
     }
