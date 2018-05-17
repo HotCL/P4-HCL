@@ -40,11 +40,7 @@ In the rest of the section $t1, .
   tn$ with $t^*$ ($t^+$ in the non-empty case).
 
 The syntax categories and meta-variables used in the semantic can be seen in table \ref{tab:metaVar}. 
-\begin{center}
 	\begin{table}[H]
-		\centering
-		\caption{The syntax categories and meta-variables used in the operational semantics of HCL}
-		\label{tab:metaVar}
 		\begin{tabular}{ll}
 			\textbf{Metavariable} & \textbf{Name} \\
 			$a \in A_{exp}$ 	  & Arithmetic expression \\
@@ -68,10 +64,12 @@ The syntax categories and meta-variables used in the semantic can be seen in tab
 			$T \in Type$          & Types\\
 			$def \in DEF$		  & Default values
 		\end{tabular}
+			\centering
+			\caption{The syntax categories and meta-variables used in the operational semantics of HCL}
+			\label{tab:metaVar}
 	\end{table}
-\end{center}
-
 For the rest of this section, it will be assumed that functions exist with domains equal to the sets of literals associated with the various expressions' syntax categories, and with co-domains equal to the values extracted from those literals.
+
 The abstract syntax of HCL can be seen below.
 
 $a\ ::=\ n\ |\ x\ |\ a_1+a_2\ |\ a_1-a_2\ |\ a_1*a_2\ |\ a_1/a_2\ |\ (a)$\\
@@ -85,7 +83,7 @@ $F_{call}\ ::=\ f\ |\ e\ f\ e^*$\\
 $L\     ::= \{\ S\ \}\ |\ \{\ S\ return\ e\ \}\ |\ \{\ e\ \}$\\
 $S\     ::=\ x\ =\ e\ |\ S_1;S_2\ |\ b\ then\ L\ |\ L\ while\ e\ |\ F_{call} |\ D_V\ |\ D_F\ |\ \epsilon$\\
 $D_v\   ::=\ T\ x\ =\ e\ |\ T\ x\ $\\
-$D_f\   ::=\ T\ f\ =\ ([T\ x]\sim):\ T\ L\ |\ T\ f\ |\ f\ =\ ([T\ x]\sim):\ T\ L$
+$D_f\   ::=\ T\ f\ =\ ([T\ x]^\sim):\ T\ L\ |\ T\ f\ |\ f\ =\ ([T\ x]^\sim):\ T\ L$
 
 \textbf{\large{Conventions}} \\
 For each variable $x$, an arbitrary variable-environment $env_V$ describes which address $adr$, $x$ is bound to.
@@ -143,57 +141,24 @@ To avoid the possibility of cluttering the section, these rules are described be
 Arithmetic expressions returns a value $v$, where $v \in \mathbb{R}$.
 The transitions-system for $A_{exp}$ is $(A_{exp} \cup D, \rightarrow_a, D)$, 
 where $D = \mathbb{Z} \cup \mathbb{R}$.
+
+Since the transition rules for arithematic operations in HCL are almost identical, the rules for addition, substraction, multiplication and division are presented in the same rule. 
+The operators are represented as $\oplus$, where $\oplus \in Operators$, where $Operators$ is the set of the above mentioned operator symbols"
+
 The transitions can be seen below.
 
-\textbf{[$Add_{BSS}$]}\\
+\textbf{[$Add_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
 		{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
-		{env_V,\ sto \vdash a_1 + a_2 \rightarrow_a v}
+		{env_V,\ sto \vdash a_1 \: \oplus \; a_2 \rightarrow_a v}
 	\end{math}
-	
-	
-	\texttt{where} $v = v_1 + v_2$
+		
+	\texttt{where} $v = v_1 \: \oplus \; v_2$
 \end{center}
 
-\textbf{[$Minus_{BSS}$]}\\
-\begin{center}
-	\begin{math}
-	\cfrac
-		{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
-		{env_V,\ sto \vdash a_1 - a_2 \rightarrow_a v}
-	\end{math}
-	
-	
-	\texttt{where} $v = v_1 - v_2$
-\end{center}
-
-\textbf{[$Mult_{BSS}$]}\\
-\begin{center}
-	\begin{math}
-	\cfrac
-	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1 * a_2 \rightarrow_a v}
-	\end{math}
-	
-	
-	\texttt{where} $v = v_1 \cdot v_2$
-\end{center}
-
-\textbf{[$Div_{BSS}$]}\\
-\begin{center}
-	\begin{math}
-	\cfrac
-	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V, sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1 / a_2 \rightarrow_a v}
-	\end{math}
-	
-	
-	\texttt{where} $v = v_1 / v_2$
-\end{center}
-
-\textbf{[$Num_{BSS}$]}\\
+\textbf{[$Num_{BSS}$]}
 \begin{center}
 	\begin{math}
 		env_V,\ sto \vdash n \rightarrow_a v
@@ -202,13 +167,13 @@ The transitions can be seen below.
 \end{center}
 
 \textbf{\large{Boolean Expressions}}\\
-Boolean expressions returns a value $v$, where $v \in \{True, False\}$.
+Boolean expressions return a value $v$, where $v \in \{True, False\}$.
 The transition-system for $B_{exp}$ is $(B_{exp} \cup \{True, False\} \rightarrow_b, \{True, False\})$.
 
 Since HCL do not have any means of referencing an address, all comparisons will be done by comparing the values of the arguments.
 The transition can be seen below.
 
-\textbf{[$EqualTrue_{BSS}$]}\\
+\textbf{[$EqualTrue_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -219,7 +184,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 = v_2$
 \end{center}
 
-\textbf{[$EqualFalse_{BSS}$]}\\
+\textbf{[$EqualFalse_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -230,7 +195,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 \neq v_2$
 \end{center}
 
-\textbf{[$NotEqualTrue_{BSS}$]}\\
+\textbf{[$NotEqualTrue_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -241,7 +206,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 \neq v_2$
 \end{center}
 
-\textbf{[$NotEqualFalse_{BSS}$]}\\
+\textbf{[$NotEqualFalse_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -252,7 +217,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 = v_2$
 \end{center}
 
-\textbf{[$LessThanTrue_{BSS}$]}\\
+\textbf{[$LessThanTrue_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -263,7 +228,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 < v_2$
 \end{center}
 
-\textbf{[$LessThanFalse_{BSS}$]}\\
+\textbf{[$LessThanFalse_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -274,7 +239,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 >= v_2$
 \end{center}
 
-\textbf{[$GreaterThanTrue_{BSS}$]}\\
+\textbf{[$GreaterThanTrue_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -285,7 +250,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 > v_2$
 \end{center}
 
-\textbf{[$GreaterThanFalse_{BSS}$]}\\
+\textbf{[$GreaterThanFalse_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -296,7 +261,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 <= v_2$
 \end{center}
 
-\textbf{[$LessThanEqualTrue_{BSS}$]}\\
+\textbf{[$LessThanEqualTrue_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -304,10 +269,10 @@ The transition can be seen below.
 	{env_V,\ sto \vdash a_1\ lessThanEqual\ a_2 \rightarrow_b True}
 	\end{math}
 	
-	\texttt{ if } $v_1 <= v_2$
+	\texttt{ if } $v_1 \leq v_2$
 \end{center}
 
-\textbf{[$LessThanEqualFalse_{BSS}$]}\\
+\textbf{[$LessThanEqualFalse_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -318,7 +283,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 > v_2$
 \end{center}
 
-\textbf{[$GreaterThanEqualTrue_{BSS}$]}\\
+\textbf{[$GreaterThanEqualTrue_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -326,10 +291,10 @@ The transition can be seen below.
 	{env_V,\ sto \vdash a_1\ greaterThanEqual\ a_2 \rightarrow_b True}
 	\end{math}
 	
-	\texttt{ if } $v_1 >= v_2$
+	\texttt{ if } $v_1 \geq v_2$
 \end{center}
 
-\textbf{[$GreaterThanEqualFalse_{BSS}$]}\\
+\textbf{[$GreaterThanEqualFalse_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -340,7 +305,7 @@ The transition can be seen below.
 	\texttt{ if } $v_1 < v_2$
 \end{center}
 
-\textbf{[$AndTrue_{BSS}$]}\\
+\textbf{[$AndTrue_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -349,7 +314,7 @@ The transition can be seen below.
 	\end{math}
 \end{center}
 
-\textbf{[$AndFalseBoth_{BSS}$]}\\
+\textbf{[$AndFalseBoth_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -358,7 +323,7 @@ The transition can be seen below.
 	\end{math}
 \end{center}
 
-\textbf{[$AndFalseFirst_{BSS}$]}\\
+\textbf{[$AndFalseFirst_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -367,7 +332,7 @@ The transition can be seen below.
 	\end{math}
 \end{center}
 
-\textbf{[$AndFalseSecond_{BSS}$]}\\
+\textbf{[$AndFalseSecond_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -376,7 +341,7 @@ The transition can be seen below.
 	\end{math}
 \end{center}
 
-\textbf{[$Not_{BSS}$]}\\
+\textbf{[$Not_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -387,7 +352,7 @@ The transition can be seen below.
 	\texttt{ where } $v_1 \rightarrow_b \neg v_2$
 \end{center}
 
-\textbf{[$TFLit_{BSS}$]}\\
+\textbf{[$TFLit_{BSS}$]}
 \begin{center}
 	\begin{math}
 	env_V,\ sto \vdash tf \rightarrow_b v
@@ -402,7 +367,7 @@ In other words, $v$ is a string.
 The transition-system for $Txt_{exp}$ is $(Txt_{exp} \cup \{\Sigma^*\},\ \rightarrow_t, \{\Sigma^*\})$.
 Here $\Sigma$ is an arbitrary alphabet legal in the context.
 
-\texttt{[$ExpToText_{BSS}$]}\\
+\texttt{[$ExpToText_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -413,7 +378,7 @@ Here $\Sigma$ is an arbitrary alphabet legal in the context.
 	\texttt{ where } $v = "v'"$
 \end{center}
 
-\textbf{[$TextConc_{BSS}$]}\\
+\textbf{[$TextConc_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -424,7 +389,7 @@ Here $\Sigma$ is an arbitrary alphabet legal in the context.
 	\texttt{ where } $v = v_1\ \circ\ v_2$
 \end{center}
 
-\textbf{[$TextLit_{BSS}$]}\\
+\textbf{[$TextLit_{BSS}$]}
 \begin{center}
 	\begin{math}
 	env_V,\ sto \vdash t \rightarrow_b v
@@ -441,7 +406,7 @@ The transitions are shown below.
 The length transition returns a value $v$, where $v \in Z$.
 Even though this is an exception to the general description of a list expression, the transition has the same format as the rest of the transitions.
 
-\texttt{[$ListLength_{BSS}$]}\\
+\texttt{[$ListLength_{BSS}$]}
 \begin{center}
 	\begin{math}
 			{env_V, sto \vdash list\ length \rightarrow_{list} v}
@@ -450,7 +415,7 @@ Even though this is an exception to the general description of a list expression
 	\texttt{ where } $v = |list|$
 \end{center}
 
-\texttt{[$ListAt_{BSS}$]}\\
+\texttt{[$ListAtHit_{BSS}$]}
 \begin{center}
 	\begin{math}
 		\cfrac
@@ -461,7 +426,19 @@ Even though this is an exception to the general description of a list expression
 	\texttt{ where } $ls_v'\ is\ the\ v'th\ element\ of\ list$
 \end{center}
 
-\textbf{[$ListConc_{BSS}$]}\\
+\texttt{[$ListAtMiss_{BSS}$]}
+\begin{center}
+	\begin{math}
+	\cfrac
+	{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash ls_v' \rightarrow_e v}
+	{env_V, sto \vdash list\ at\ e \rightarrow_{list} v}
+	\end{math}
+	
+	\texttt{ where } $ls_v'\ is\ the\ v'th\ element\ of\ list$
+\end{center}
+
+
+\textbf{[$ListConc_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -472,7 +449,7 @@ Even though this is an exception to the general description of a list expression
 	\texttt{ where } $v = v_1\ \circ\ v_2$
 \end{center}
 
-\textbf{[$ListLit_{BSS}$]}\\
+\textbf{[$ListLit_{BSS}$]}
 \begin{center}
 	\begin{math}
 	env_V,\ sto \vdash lst \rightarrow_{list} v
@@ -517,7 +494,7 @@ Given the variable bindings $env_V$ and the function bindings $env_F$, the execu
 result in $sto$ changing to $sto'$.
 the formal parameters for the function calls in the transitions below, are denoted with $x$.
 
-This means that the transitions must be on the form.
+This means that the transitions must be of the form.
 
 \begin{center}
 	\begin{math}
@@ -615,7 +592,7 @@ Since the parameters of a function, can be both expression and lambdas, it is ne
 Since these two pair of rules would be almost identical, the formal parameters in the transitions below are denoted with $x$.
 The transition-system for $F_{Call}$ is ($Fnames\ \Cross\ Dcl_F\ \Cross Sto\ \cup Sto, \rightarrow_{stm}, Lit \cup Sto$).
 
-Which means that the transitions must be on the form.
+Which means that the transitions must be of the form.
 \begin{center}
 	$env_V, env_F, sto \vdash f \rightarrow_{stm} (v, sto')$
 \end{center}
@@ -696,7 +673,7 @@ The transitions are shown below.
 Function declarations $Dcl_F$ can change the function environment $Env_F$ by declaring new functions in $Fnames$.
 
 The transition-system for $Dcl_F$ is ($Fnames \rightharpoonup Lambda\ \Cross\ Var\ \Cross\ Exp\ \Cross\ Env_V\ \Cross\ Env_F$).
-This means that the transitions must be on the form.
+This means that the transitions must be of the form.
 
 \begin{center}
 	$\langle D_F, env_V, env_F \rangle \rightarrow_{D_F} (env_F)$
