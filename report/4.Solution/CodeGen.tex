@@ -5,6 +5,10 @@ This section describes the methodology and implementation of the code generation
 During generation the HCL code is translated into \texttt{C++}, which is subsequently compiled using a \texttt{C++} compiler.
 The \texttt{C++} code contains preprocessor directives to make sure it works cross-platform on Arduino, Windows, and Linux.
 
+\input{4.Solution/BuiltInFunctions.tex}
+
+\subsection{Generator Classes}
+
 The overall code generation is done within the \texttt{ProgramGenerator} class.
 The class' responsibility is limited to calling the three predominant generators, namely \texttt{CodeGenerator}, \texttt{TypeGenerator} and \texttt{MainGenerator}.
 In addition to calling the other classes, the \texttt{ProgramGenerator} class also adds return code to the AST to make sure that the program returns when terminated. 
@@ -69,4 +73,7 @@ override fun generate(ast: AbstractSyntaxTree): String {
 (16) Wrap \textbf{main} function and add call to \textbf{setup} function.\\
 if \textbf{loop} function is not empty, a call to it is also added to the \textbf{main} function.\\
 (19) Source code is generated and returned from function. 
+
+Once all files has been created the code generation is completed.
+The resulting files are translated in full into \texttt{C++}, and can be used together with a native \texttt{C++} compiler or run through the Arduino editor.
 
