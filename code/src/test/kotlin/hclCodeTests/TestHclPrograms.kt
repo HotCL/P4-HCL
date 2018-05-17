@@ -34,7 +34,7 @@ object TestHclPrograms : Spek({
         "while.hcl",
         "stringAt.hcl",
         "printTuple.hcl",
-        "conclusionSnippet.hcl"
+        "conclusionSnippet.hcl",
         "fizzBuzz.hcl",
         "MapFilter.hcl",
         "staticScope.hcl",
