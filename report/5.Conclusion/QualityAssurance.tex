@@ -22,7 +22,8 @@ The group tried to follow a preset milestone plan, however it was shifted a bit 
 As a compiler generates other programs, it is important to make sure that the compiler, and the programs generated with it, works exactly as expected.
 Therefore unit tests and integration tests was deemed quite important, and a high coverage, both of lines as well as branches, was deemed even more important than previous projects done by the group. 
 
-When developing a new module of the compiler, unit tests was created in parallel, testing each subset of features to make sure that they work in isolation. Which made debugging easier as development progressed.
+When developing a new module of the compiler, unit tests was created in parallel, testing each subset of features to make sure that they work in isolation. 
+Which made debugging easier as development progressed.
 
 
 Unit tests was created with the JUnit\cite{JUnit} framework, a Java Unit testing framework, and the Spek\cite{SpekFramework} framework, a specification testing framework. 
@@ -76,7 +77,7 @@ object TestHclPrograms : Spek({
 			val outputFiles = generateFilesFromCode(fileContent)
 			val output = compileAndExecuteCpp(outputFiles, file.split(".").first(), keepFiles)!!
 			assertEquals(expectedReturn, output.returnValue,
-			"expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
+			"expected RETURN_CODE=$expectedReturn, was ${output.returnValue}\n" +
 			"full output:\n${output.string}")
 			assertEquals(expectedPrint, output.string)	
 		}
