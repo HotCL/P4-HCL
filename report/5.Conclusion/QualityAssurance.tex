@@ -1,0 +1,92 @@
+\section{Quality Assurance}
+During the development of the HCL compiler, quality gates played a large part.
+
+The project was developed with everything, including the report, hosted on the git\cite{GitProtocol} version control system, utilizing the free Github implementation of it.
+The group used branching for features, and used CI\footnote{Continuous Integration; automatically running tests upon updates} to make sure that new features didn't break unit tests nor code standards. This was also done by not allowing the merging of branches into the master branch, without having a high enough code coverage of unit tests and that all tests succeed.
+
+On top of CI, the group also had manual review of report and code, to make sure both was of adequate quality. 
+Each feature needing a review by at least one other person in the group before entering a release branch.
+To make sure that everyone was on top of development and changes, features were merged into a weekly release branch, which was then reviewed by everyone in the group at the end of the week and then merged into the master branch.
+
+To create an even higher level of transparency, weekly status meetings were held following release branches.
+These status meetings discussed the previous week, as well as the issues to be address in the coming week. 
+A large monthly status meeting also took place, to look at progress on a larger scale. 
+
+Jira\cite{Jira}, a project management system, was used to address issues and progress.
+Using integrations for git, made issues automatically update based on names or keywords in commit messages and branches.
+
+The group tried to follow a preset milestone plan, however it was shifted a bit over the course of the development process.
+
+\subsection{Automatic tests}
+
+As a compiler generates other programs, it is important to make sure that the compiler, and the programs generated with it, works exactly as expected.
+Therefore unit tests and integration tests was deemed quite important, and a high coverage, both of lines as well as branches, was deemed even more important than previous projects done by the group. 
+
+When developing a new module of the compiler, unit tests was created in parallel, testing each subset of features to make sure that they work in isolation. Which made debugging easier as development progressed.
+
+
+Unit tests was created with the JUnit\cite{JUnit} framework, a Java Unit testing framework, and the Spek\cite{SpekFramework} framework, a specification testing framework. 
+The group heard of Spek halfway through the development process and it ended up being the preferred testing framework, however not all existing tests were not ported to Spek, as these work conjointly.
+
+Specification tests are based on the principle of writing, in English, what a test should do accompanied by code executing the relevant actions.
+This is shown in snippet \ref{lis:specExample}.
+
+
+\begin{lstlisting}[language=Kotlin,label={lis:specExample},caption={An sample unit tests with spec}]
+class SimpleTest : Spek({
+	describe("a calculator") {
+		val calculator = SampleCalculator()
+		
+		it("should return the result of adding the first number to the second number") {
+			val sum = calculator.sum(2, 4)
+			assertEquals(6, sum)
+		}
+	}
+})
+\end{lstlisting}
+
+System tests, testing of the whole pipeline, was also valued highly.
+This was utilized as a way of making sure that a given snippet of HCL code should create a program that would print the correct text and/or return the correct number.
+To do this a test was developed that takes a list of files and checks whether the file has the expected output.
+This was done by having a comment in the file, that includes the expected output of the program, which the testing framework would then process. 
+
+
+Such a script can be seen in snippet \ref{lis:testHelloWorld}, where the first line is the comment that tells the testing framework that the program should in fact print "Hello World!", whereas the second line prints "Hello World!" in the HCL language.
+\begin{lstlisting}[language=HCL,label=lis:testHelloWorld,firstnumber=1,caption={A HCL test-script as part of the testing framework}]
+# This should print Hello World!
+"Hello World!" print
+\end{lstlisting}
+
+
+The script above is then executed by the testing function which is, in a shortened version, portrayed in snippet \ref{lis:testHclPrograms}
+\begin{lstlisting}[language=Kotlin,label={lis:testHclPrograms},caption={Shortened version of the test for system tests}]
+object TestHclPrograms : Spek({
+	val files = listOf(
+		"HelloWorld.hcl",
+		...
+		"while.hcl",
+	)
+	files.filter { it.endsWith(".hcl") }.forEach { file ->
+		given(file) {
+			val fileContent = javaClass.classLoader.getResource(file).readText()
+			val constraints = fileContent.split("\n").first().split("should 		").drop(1).map { it.split(" ") }
+			val expectedReturn = constraints.firstOrNull { it.first() == "return" }?.get(1)?.toInt() ?: 0
+			val expectedPrint = constraints.firstOrNull { it.first() == "print" }?.drop(1)?.joinToString(" ") ?: " "
+			
+			val outputFiles = generateFilesFromCode(fileContent)
+			val output = compileAndExecuteCpp(outputFiles, file.split(".").first(), keepFiles)!!
+			assertEquals(expectedReturn, output.returnValue,
+			"expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
+			"full output:\n${output.string}")
+			assertEquals(expectedPrint, output.string)	
+		}
+	}
+})
+\end{lstlisting}
+
+Line 3 to 5, in snippet \ref{lis:testHclPrograms}, is the list of all the scripts, currently 10 in the non shortened version. 
+Line 9 to 12 handles processing of the expected outcome, whereas line 14 and 15 are compilation of the program, and the remaining lines are for checking the result of the test
+
+\subsection{Quality Assurance retrospect}
+
+These different software solutions and principles, combined with a sprint-based SCRUM-like development process, created a nice and streamlined development process which helped make a lot of the features possible within the time frames of this project.

@@ -33,8 +33,6 @@ class HCL : CliktCommand() {
             help = "Whether to delete generated CPP code after compilation has ended")
             .flag(default = true)
 
-
-
     override fun run() {
         if (inputFile != null) {
             val lexer = Lexer(inputFile!!.readText())
