@@ -33,7 +33,8 @@ object TestHclPrograms : Spek({
         "MapFilter.hcl",
         "stringConcat.hcl",
         "stringAt.hcl",
-        "printTuple.hcl"
+        "printTuple.hcl",
+        "conclusionSnippet.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {

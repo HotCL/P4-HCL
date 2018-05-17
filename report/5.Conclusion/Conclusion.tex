@@ -1,17 +1,21 @@
 % !TeX root = ../main.tex
 \chapter{Conclusion}
-The goal of this project was to create a compiler for a programming language of the groups own design.
-The resulting solution is the programming language HCL and the HCL compile.
+\section{Conclusion}
+The goal of this project was to create a compiler for a programming language.
+The resulting solution is the programming language HCL and the HCL compiler.
+
+\subsection{Conclusion of the problem-statement}
 HCL is designed with novices in mind, while also implementing high-order functionality, with intuitive syntax and semantics.
-HCL is a functional language, with dynamic binding of values.
-HCL has English-like syntax, that also implements high-order functionality, however, as of of the conclusion of this report, no user-tests have been conducted.
+HCL is a hybrid language of the functional and imperative paradigms, with dynamic binding of values.
+HCL has English-like syntax, that also implements high-order functionality.
+%However, as of the conclusion of this report, no user-tests have been conducted (This sentence is really fucking out of place. I have removed it.)
 
 The similarities with the English language is well exemplified in snippet \ref{lis:ConclusionWhile}.
 \begin{lstlisting}[language=hcl,label=lis:ConclusionWhile,caption=English-like syntax example]
 var j = 3
 func subtract = () : none { j = j - 1 }
 func jIsGreaterThan1 = () : bool { 1 lessThan j }
-:subtract while :jIsGreaterThan1
+subtract while jIsGreaterThan1
 \end{lstlisting}
 In snippet \ref{lis:ConclusionWhile}, lines 1 to 3 consists of declarations, line 8 consists of the function-call to While.
 The While function takes two Lambda expressions as arguments, in this case, two function-calls.
@@ -28,7 +32,8 @@ Snippet \ref{lis:ConclusionMapFilter} shows an example of how the passing of a l
 [2, 4, 6, 8] map { value * 2 } filter { value greaterThan 10 } print
 \end{lstlisting}
 
-Since user-tests have not been conducted, it cannot be verified whether the high-order functionality of HCL would be considered intuitive by novices.
+As mentioned, user-tests have not been conducted.
+Therefore, it cannot be verified whether the high-order functionality of HCL would be considered intuitive by novices.
 
 The programming paradigms have been simplified in HCL.
 Every operator in HCL is a function, which results in the syntax being uniform in every aspect of the language.
@@ -47,26 +52,24 @@ The two function calls on lines 3 and 5 both evaluates to the same value and wit
 
 This finishes the conclusion of the problem-statement.
 
+\subsection{Conclusion on the solution} %Shit rhymes
 HCL is a fully fledged, Turing complete language.
-Every part of the syntax has an equivalent semantic context, and the compiler is capable of compiling any HCL valid syntactical construct to C++.
+Every part of the syntax has an equivalent semantic context. 
+The compiler is capable of compiling most syntactical constructs that are valid in HCL to C++, barring any bugs and faults in the compiler as of the writing of this report.
 
 The HCL compiler is an LL(K), recursive decent, single parse, compiler.
 All parts of the HCL compiler is written by hand.
 A unique aspect of the HCL compiler is that the type-checking is done in the parser, so that the symbol table does not need to be saved for the code-generator.
 This makes the HCL compiler a bit more efficient.
 
-Since the Arduino does not include a default lambda type, the HCL language can not run on the Arduino platform as of this conclusion.
+Since the Arduino Uno does not include a default lambda type, the HCL language can not run on the Arduino platform as of this conclusion.
+It does however work on the ESP8266, which is a microcomputer with equivalent specs to the Arduino Uno.
+To get HCL to work on the Arduino UNO, a custom lampda data structure could be implemented.
+This will be discussed further in section \ref{sec:futureWorks}.
 
 While the language has not been tested with the target group, both the compiler and the language has been well tested by the project group.
 The lexer, parser and code generator are all tested, with good coverage, the compiler as a whole is also well tested with valid HCL source code.
 The HCL language and the HCL compiler are both ready for usability-testing with the target group.
 
-%The development of a language, and a compiler for that language, is a complex exercise, and HCL is not different.
-%From the project supervisor a complete language, being a language that is actually usable\footnote{Complete programs can be written} and is turing complete, was not required.
-%It was decided by the project group that HCL would be a complete language. 
-
-%During development a "test-driven" method was employed.
-%This meant that the entirety of the compiler, from the lexer to the code generation, with complete integration tests is completely tested.
-%This means that the individual parts of the compiler
 
 
