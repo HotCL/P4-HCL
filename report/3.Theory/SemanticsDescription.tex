@@ -615,16 +615,18 @@ This means that for every argument, it is necessary to bind their values in the 
 
 \texttt{[$FuncCall-Params_{BSS}$]}
 \begin{center}
+	\Large
 	\begin{math}
-	\cfrac
+	\frac
 	{env_V'[x \mapsto l]^*[next \mapsto new\ l_x]^*, env_F'[f \mapsto (L, x\sim, e, env_V', env_F')] \vdash \langle L, sto[l_x \mapsto v_x]^* \rangle \rightarrow_{stm} (v, sto')}
 	{env_V, sto \vdash e_x\ f\ e_x^* \rightarrow_{stm} (v, sto')}
 	\end{math}
-	
-	\texttt{ where } $env_F\ f = (L, e, env_V', env_F')$\\
-	\texttt{ and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
-	\texttt{ and for each $e_x$ } $env_V', sto \vdash e_x \rightarrow_{e} v_x$ \\
-	\texttt{ and for each x } $l_x = env_V\ next$ 
+\end{center}
+\begin{center}
+	\texttt{where } $env_F\ f = (L, e, env_V', env_F')$\\
+	\texttt{and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
+	\texttt{and for each $e_x$ } $env_V', sto \vdash e_x \rightarrow_{e} v_x$ \\
+	\texttt{and for each x } $l_x = env_V\ next$ 
 \end{center}
 
 \texttt{[$EmptyStm_{BSS}$]}
