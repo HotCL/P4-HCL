@@ -35,7 +35,7 @@ class HCL : CliktCommand() {
             .flag("-k", "--keepCpp", default = true)
 
     private val generateGraphviz by option("--genGviz",
-            help = "Whether to delete generated CPP code after compilation has ended")
+            help = "Whether to generated graphviz images for the AST")
             .flag(default = false)
 
     override fun run() {
