@@ -1,50 +1,16 @@
 package generationTests.cpp
 
 import builtins.HclBuiltinFunctions
-import exceptions.CompilationException
-import generation.cpp.ProgramGenerator
 import hclTestFramework.codegen.* // ktlint-disable no-wildcard-imports
 import hclTestFramework.parser.* // ktlint-disable no-wildcard-imports
-import lexer.Lexer
-import logger.Logger
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import org.jetbrains.spek.api.dsl.on
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
 import parser.AstNode
-import parser.Parser
-import kotlin.system.exitProcess
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-
-class CodeGenTests {
-    @Disabled
-    @Test
-    fun tempCoverageTest() {
-        val code = "tuple[num, txt] t\n" +
-            "tuple[list[num], func[none]] y\n" +
-            "var myList = [1, 2, 3]"
-        "var myVar = 5\n" +
-            "var plus5 = (num x): num { x + myVar }\n" +
-            "var shouldBe10 = myVar plus5"
-
-        val lexer = Lexer(code)
-        val parser = Parser(lexer)
-        val logger = Logger()
-        val ast = try {
-            parser.generateAbstractSyntaxTree()
-        } catch (exception: CompilationException) {
-            logger.logCompilationError(exception)
-            exitProcess(-1)
-        }
-
-        val programFiles = ProgramGenerator().generate(ast)
-        compileAndExecuteCpp(programFiles, "testDir")
-    }
-}
 
 fun testReturnNoExplicitReturn() = listOf<AstNode.Command>()
 fun testExplicitReturn5() = setRet(num(5))
