@@ -1,6 +1,6 @@
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.optional
+import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
@@ -24,23 +24,28 @@ class HCL : CliktCommand() {
     init {
         versionOption("Version 0.19")
     }
-    private val inputFile by argument("input_file", help = "HCL input file to be compiled")
-            .file(exists = true, folderOkay = false).optional()
+    private val inputFiles by argument("input_file", help = "HCL input file to be compiled")
+            .file(exists = true, folderOkay = false).multiple(false)
 
     private val outputFile by option("-o", "--outputFile", help = "Name of compiled program")
-            .file(folderOkay = false).default(File(inputFile?.nameWithoutExtension ?: "program"))
+            .file(folderOkay = false)
 
     private val deleteCpp by option("-d", "--deleteCpp",
             help = "Whether to delete generated CPP code after compilation has ended")
-            .flag(default = true)
+            .flag("-k", "--keepCpp", default = true)
+
+    private val generateGraphviz by option("--genGviz",
+            help = "Whether to delete generated CPP code after compilation has ended")
+            .flag(default = false)
 
     override fun run() {
-        if (inputFile != null) {
+        if (inputFiles.isNotEmpty()) {
+            val actualOutputFile = outputFile?.name ?: inputFiles.last().nameWithoutExtension
+
             val lexer = Lexer(
                     mapOf(
-                            Stdlib.getStdlibContent(),
-                            inputFile!!.nameWithoutExtension to inputFile!!.readText()
-                    )
+                            Stdlib.getStdlibContent()
+                    ) + inputFiles.map { it.nameWithoutExtension to it.readText() }
             )
             val hclParser = Parser(lexer)
             val logger = Logger()
@@ -51,21 +56,22 @@ class HCL : CliktCommand() {
                 exitProcess(-1)
             }
 
-            val graph = GraphvizGenerator().generate(ast.filter {
-                val decl = it as? AstNode.Command.Declaration ?: return@filter true
+            if (generateGraphviz) {
+                val graph = GraphvizGenerator().generate(ast.filter {
+                    val decl = it as? AstNode.Command.Declaration ?: return@filter true
 
-                val lmbdExpr = decl.expression as?
-                    AstNode.Command.Expression.LambdaExpression ?: return@filter true
+                    val lmbdExpr = decl.expression as?
+                            AstNode.Command.Expression.LambdaExpression ?: return@filter true
 
-                lmbdExpr.attributes != BuiltinLambdaAttributes
-            })
-            File("$outputFile.gviz").writeText(graph)
-            val pngData = "dot -Tpng $outputFile.gviz".runCommand().string
-
-            File("$outputFile.png").writeBytes(pngData.toByteArray())
+                    lmbdExpr.attributes != BuiltinLambdaAttributes
+                })
+                File("$actualOutputFile.gviz").writeText(graph)
+                val pngData = "dot -Tpng $actualOutputFile.gviz".runCommand().string
+                File("$actualOutputFile.png").writeBytes(pngData.toByteArray())
+            }
 
             val programFiles = ProgramGenerator().generate(ast)
-            compileCpp(programFiles, "compiled${inputFile!!.nameWithoutExtension}", deleteCpp, outputFile!!.name)
+            compileCpp(programFiles, "compiled${inputFiles.last().nameWithoutExtension}", deleteCpp, actualOutputFile)
         } else {
             val content = StringBuilder()
             while (true) {
