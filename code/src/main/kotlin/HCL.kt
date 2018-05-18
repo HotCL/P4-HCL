@@ -24,7 +24,7 @@ class HCL : CliktCommand() {
     init {
         versionOption("Version 0.19")
     }
-    private val inputFiles by argument("input_file", help = "HCL input file to be compiled")
+    private val inputFiles by argument("input_files", help = "HCL input files to be compiled")
             .file(exists = true, folderOkay = false).multiple(false)
 
     private val outputFile by option("-o", "--outputFile", help = "Name of compiled program")
