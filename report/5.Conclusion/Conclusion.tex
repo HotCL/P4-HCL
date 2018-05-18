@@ -34,8 +34,8 @@ As mentioned, user-tests have not been conducted.
 Therefore, it cannot be verified whether the high-order functionality of HCL would be considered intuitive by novices.
 
 The programming paradigms have been simplified in HCL.
-Every operator in HCL is a function, which results in the syntax being uniform in every aspect of the language.
-This simplification removes ambiguity in the syntax when dealing with built-in and user defined functions in the same context.
+Every operator in HCL is a function, and every function call looks like an operator operation in most other languages (2 + 2, 2 * 2).
+Since function calls behave in the same way as operators, and accept input parameters in the same manner, the syntax is uniform, and without ambiguity when dealing with built-in and user defined functions.
 Snippet \ref{lis:ConclusionSimplified} shows an example of how this concept is handled in HCL.
 
 \begin{lstlisting}[language=hcl,label=lis:ConclusionSimplified,caption=Built-in and user defined function]
