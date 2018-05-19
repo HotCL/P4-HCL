@@ -16,7 +16,7 @@ fun String.runCommand(workingDir: File = File("./")): CommandResult {
             .redirectError(ProcessBuilder.Redirect.PIPE)
             .start()
 
-        proc.waitFor(10, TimeUnit.SECONDS)
+        proc.waitFor(20, TimeUnit.SECONDS)
         CommandResult(proc.inputStream.bufferedReader().readText() +
             proc.errorStream.bufferedReader().readText().let {
                 if (it.isNotBlank()) { "Error: $it" } else ""
