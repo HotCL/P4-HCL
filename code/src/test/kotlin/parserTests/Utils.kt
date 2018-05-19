@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.MatchResult
 import com.natpryce.hamkrest.Matcher
 import com.natpryce.hamkrest.assertion.assertThat
 import generation.SourceCodePrinter
+import hclTestFramework.lexer.asLexerInput
 import lexer.* // ktlint-disable no-wildcard-imports
 import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
@@ -29,7 +30,7 @@ fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<Lis
 fun matchesAstWithActualLexer(expected: String): Matcher<String> =
         object : Matcher<String> {
             override fun invoke(actual: String): MatchResult {
-                val actualAst = ParserWithoutBuiltins(Lexer(actual)).generateAbstractSyntaxTree()
+                val actualAst = ParserWithoutBuiltins(Lexer(actual.asLexerInput())).generateAbstractSyntaxTree()
                 val actualAstString = SourceCodePrinter().generate(actualAst)
                 return if (actualAstString == expected) MatchResult.Match
                 else MatchResult.Mismatch("Expected AST equal to this:\n$expected\n" +
@@ -42,16 +43,16 @@ fun matchesAstWithActualLexer(expected: String): Matcher<String> =
 class DummyLexer(private val tokens: Sequence<Token>) : ILexer {
     override fun getTokenSequence() = buildSequence {
         tokens.forEach {
-            yield(PositionalToken(it, -1, -1)) }
+            yield(PositionalToken(it, -1, -1, "")) }
     }
 
     constructor(tokens: List<Token>) : this(buildSequence { yieldAll(tokens) })
 
-    override fun inputLine(lineNumber: Int) = "Dummy lexer does not implement input line"
+    override fun inputLine(lineNumber: Int, file: String) = "Dummy lexer does not implement input line"
 }
 
 infix fun String.becomes(expectedPrettyPrint: String) = assertThat(this, matchesAstWithActualLexer(expectedPrettyPrint))
 
 fun parseExpectException(content: String) = Assertions.assertThrows(Exception::class.java) {
-    ParserWithoutBuiltins(Lexer(content)).generateAbstractSyntaxTree()
+    ParserWithoutBuiltins(Lexer(content.asLexerInput())).generateAbstractSyntaxTree()
 }

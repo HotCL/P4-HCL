@@ -13,5 +13,5 @@ interface ILexer {
      * Gets a line from the input text that is being analyzed.
      * @param lineNumber line number from the source code file
      */
-    fun inputLine(lineNumber: Int): String
+    fun inputLine(lineNumber: Int, file: String): String
 }
