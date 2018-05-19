@@ -1,7 +1,7 @@
 % !TeX root = ../main.tex
 
 \subsection{Traversing the AST}
-The code generation phase of the compiler traverses the AST and generates code on according to the nodes in the AST.
+The code generation phase of the compiler traverses the AST and generates code according to the nodes in the AST.
 Usually, traversal of the tree is done in a depth first manner, and code is generated based on visited nodes.
 Traditionally, the AST is traversed by utilizing the visitor pattern. 
 However, more modern languages, especially functional oriented languages, have introduced the concept of pattern matching.
