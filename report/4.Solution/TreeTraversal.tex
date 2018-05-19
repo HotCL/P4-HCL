@@ -1,16 +1,17 @@
 % !TeX root = ../main.tex
 
 \subsection{Traversing the AST}
-Essentially the code generation part of the compiler is all about traversing the AST and generating code on behalf of the content in the AST.
-Usually you want to traverse the tree in a depth first manner, and generate some code based on the visited nodes.
-Traditionally the common way of traversing the AST is by utilizing the visitor pattern. 
-However, modern languages, and especially functional oriented languages have introduced the concept of pattern matching.
+The code generation phase of the compiler traverses the AST and generates code on according to the nodes in the AST.
+Usually, traversal of the tree is done in a depth first manner, and code is generated based on visited nodes.
+Traditionally, the AST is traversed by utilizing the visitor pattern. 
+However, more modern languages, especially functional oriented languages, have introduced the concept of pattern matching.
 Pattern matching allows for a short and concise way of traversing the tree.
 
-When possible, the pattern matching is often preferred over the traditional visitor pattern. 
-In order to understand why, consider an AST for the following code:
+When possible, the pattern matching method is often preferred over the traditional visitor pattern. 
+
+Consider an AST for the following code:
 $$x = 5 + 7$$
-Along with a simple traversal using visitor pattern in listing \ref{lis:visitorPattern} and pattern matching in listing \ref{lis:patternMatching}. Both examples are written in kotlin.
+As well as a simple traversal using visitor pattern, shown in listing \ref{lis:visitorPattern}, and pattern matching, shown in listing \ref{lis:patternMatching}.
 
 \begin{lstlisting}[language=Kotlin,label=lis:visitorPattern,caption=Tree traversal using the visitor pattern.]
 interface IAstNodes {
@@ -117,9 +118,9 @@ fun main(args: Array<String>) {
 }
 \end{lstlisting}
 
-The pattern matching version is significantly shorter, and the difference only gets bigger, the more AST nodes that need to be handled.
+The pattern matching version is significantly shorter, and the difference in size only increases, as more AST nodes need to be handled.
 
-Since kotlin allows for pattern matching, it was deemed the ideal way to implement the tree traversal in the HCL compiler.
+Since Kotlin allows for pattern matching, it is deemed the ideal way to implement the traversal of the AST in the HCL compiler.
 
-Although both the code to be generated and the AST nodes are a lot different in the actual HCL compiler, the general tree traversal method is identical to the method shown in \ref{lis:patternMatching}.
+Though both the code to be generated and the AST nodes are different in the actual HCL compiler, the general tree traversal method is identical to the method shown in \ref{lis:patternMatching}.
 
