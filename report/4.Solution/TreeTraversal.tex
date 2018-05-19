@@ -1,0 +1,125 @@
+% !TeX root = ../main.tex
+
+\subsection{Traversing the AST}
+Essentially the code generation part of the compiler is all about traversing the AST and generating code on behalf of the content in the AST.
+Usually you want to traverse the tree in a depth first manner, and generate some code based on the visited nodes.
+Traditionally the common way of traversing the AST is by utilizing the visitor pattern. 
+However, modern languages, and especially functional oriented languages have introduced the concept of pattern matching.
+Pattern matching allows for a short and concise way of traversing the tree.
+
+When possible, the pattern matching is often preferred over the traditional visitor pattern. 
+In order to understand why, consider an AST for the following code:
+$$x = 5 + 7$$
+Along with a simple traversal using visitor pattern in listing \ref{lis:visitorPattern} and pattern matching in listing \ref{lis:patternMatching}. Both examples are written in kotlin.
+
+\begin{lstlisting}[language=Kotlin,label=lis:visitorPattern,caption=Tree traversal using the visitor pattern.]
+interface IAstNodes {
+	fun accept(visitor: IVisitor)
+}
+
+sealed class AstNodes {
+	data class Identifier(val id: String): AstNodes(), IAstNodes {
+		override fun accept(visitor: IVisitor) {
+			visitor.visit(this)
+		}
+	}
+	sealed class Expression: IAstNodes {
+		data class Number(val number: Int): Expression(), IAstNodes {
+			override fun accept(visitor: IVisitor) {
+				visitor.visit(this)
+			}
+		}
+		data class Addition(val left: Expression, val right: Expression) : Expression(), IAstNodes {
+			override fun accept(visitor: IVisitor) {
+				visitor.visit(this)
+			}
+		}
+	}
+	data class Assignment(val identifier: Identifier, val expression: Expression): AstNodes(), IAstNodes {
+		override fun accept(visitor: IVisitor) {
+			visitor.visit(this)
+		}
+	}
+}
+
+interface IVisitor {
+	fun visit(identifier: AstNodes.Identifier)
+	fun visit(number: AstNodes.Expression.Number)
+	fun visit(addition: AstNodes.Expression.Addition)
+	fun visit(assignment: AstNodes.Assignment)
+}
+
+class PrintVisitor(private val sb: StringBuilder): IVisitor {
+	override fun visit(identifier: AstNodes.Identifier) {
+		sb.append(identifier.id)
+	}
+
+	override fun visit(number: AstNodes.Expression.Number) {
+		sb.append("${number.number}")
+	}
+
+	override fun visit(addition: AstNodes.Expression.Addition) {
+		addition.left.accept(this)
+		sb.append(" + ")
+		addition.right.accept(this)
+	}
+
+	override fun visit(assignment: AstNodes.Assignment) {
+		assignment.identifier.accept(this)
+		sb.append(" = ")
+		assignment.expression.accept(this)
+	}
+}
+
+fun main(args: Array<String>) {
+	val node =
+		Assignment(
+			Identifier("x"),
+			Expression.Addition(
+				Expression.Number(5),
+				Expression.Number(7)
+			)
+		)
+	val output = StringBuilder()
+	val visitor = PrintVisitor(output)
+	node.accept(visitor)
+	println(output.toString())
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Kotlin,label=lis:patternMatching,caption=Tree traversal using pattern matching.]
+sealed class AstNodes {
+	data class Identifier(val id: String) : AstNodes()
+	sealed class Expression : AstNodes() {
+		data class Number(val number: Int) : Expression()
+		data class Addition(val left: Expression, val right: Expression) : Expression()
+	}
+	data class Assignment(val identifier: Identifier, val expression: Expression) : AstNodes()
+}
+
+fun AstNodes.format(): String = when (this) {
+	is AstNodes.Assignment -> "${identifier.format()} = ${expression.format()}"
+	is AstNodes.Identifier -> id
+	is AstNodes.Expression.Number -> "${number}"
+	is AstNodes.Expression.Addition -> "${left.format()} + ${right.format()}"
+}
+
+fun main(args: Array<String>) {
+	val node =
+		AstNodes.Assignment(
+			AstNodes.Identifier("x"),
+			AstNodes.Expression.Addition(
+				AstNodes.Expression.Number(5),
+				AstNodes.Expression.Number(7)
+			)
+		)
+	println(node.format())
+}
+\end{lstlisting}
+
+The pattern matching version is significantly shorter, and the difference only gets bigger, the more AST nodes that need to be handled.
+
+Since kotlin allows for pattern matching, it was deemed the ideal way to implement the tree traversal in the HCL compiler.
+
+Although both the code to be generated and the AST nodes are a lot different in the actual HCL compiler, the general tree traversal method is identical to the method shown in \ref{lis:patternMatching}.
+
