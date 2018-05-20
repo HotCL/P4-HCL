@@ -1,0 +1,87 @@
+% !TeX root = ../main.tex
+
+\subsection{Generated C++ code}
+
+While the previous section primarily focused on the code generation from an abstract point of view, this section will go into depth about the generated C++ code.
+Since C++ is the output language of the HCL compiler, all the language concepts of HCL has to somehow be represented in valid C++ code.
+
+\textbf{Primitives}
+
+The primitives of HCL includes numbers, text and booleans. 
+Booleans are straightforward, as HCL's boolean behaves exactly like the C++ boolean type.
+This means that the regular boolean type can be used for output type of booleans.
+
+As HCL aims for simplicity, only one number type was introduced. 
+However this type should also be able to store non-integers. 
+Therefore the simple solution was to turn all HCL numbers into C++'s double type.
+The solution with doubles is not ideal, but it will fulfill the requirements of the number type in HCL.
+
+C++ does have an implementation of a string type in its standard library.
+However, the Arduino does not include this implementation.
+The Arduino uses its own string implementation that varies from the standard implementation.
+Along with this, the string type shares a lot of functionality with that of lists.
+Therefore the representation of strings in the generated C++ code, is based on the ConstList that is explained it the list section below.
+
+\textbf{Lists}
+
+As for lists, C++ includes a list type in its standard library call vector. 
+However, this vector type is yet again not available in the default libraries provided by the Arduino.
+Furthermore the vector implementation is mutable.
+Since the lists in HCL is immutable, a simple implementation of a constant list was implemented.
+
+One thing to be aware of, when using lists, is that the size cannot always be determined at compile time.
+This means that lists will usually do heap allocation. 
+With heap allocation comes the need to do proper memory handling, eg.
+clean up allocated memory in order to avoid memory leaks.
+
+This is done by utilizing the C++ concept of RAII\footnote{Resource acquisition is initialization} along with C++ smart pointers.
+All this really means, is that a pointer is implemented that keeps a count of the references to the memory pointed to.
+If the counter goes to zero, this means that there are no more references to memory, and the memory may be deallocated safely.
+
+It should be noted, that the current HCL compiler uses the std::shared\_ptr, which is not available in the Arduino standard library.
+The implementation should however be easily ported to the Arduino when needed.
+
+\textbf{Tuples}
+
+Tuples are represented as type defined structures in C++.
+However, HCL has a theoretical infinite amount of tuples, so obviously not all tuples can be generated.
+As mentioned in the previous section, the type generator will traverse the AST in order to find all the tuples used within the program to be compiled.
+For each defined tuple a couple of helper methods are also generated.
+This is the toText function along with accessing methods for each element in the tuple.
+
+\textbf{Functions}
+
+Functions is one of the most interesting and advanced parts of the code generation.
+This is due to the fact, that closures per their nature are advanced concepts.
+They have to store information about the content of their body along with scope information and potentially be able to expand the life time of scoped variables if referenced from within the body of the closure.
+Fortunately, the C++ standard library includes a std::function data type that can store the closures that is part of the C++ language.
+However, once again this is not part of the Arduino standard library.
+
+Because of time constraints, the current HCL compiler is only implemented using the std::function data type, and not a custom lambda type, that is compatible with the Arduino.
+This means that the generated code is not actually compatible with the Arduino at this point in time.
+
+There is one limitation to the std::function combined with the closures in c++.
+This is the problem known as dangling references.
+The problem occurs when a closure is returned, and executed after a referenced variable has gone out of scope.
+The reference now points to some unallocated garbage memory, which leaves undefined behavior in the program.
+
+Although this feature would be nice to have in HCL, it also has to be deemed as undefined behavior for HCL when the target language is C++ and the closures are implemented using the method above.
+
+\textbf{Generics}
+
+As for generic types both used in functions and lists, C++ has a language concept known as templates.
+Templates are C++'s version of generics, and basically works by figuring out all the template variants used and then creating functions based this.
+Templates are not as powerful as modern generics known from for instance C\#, but thew will be enough for HCL, as HCL's generics are also not that powerful.
+One lacking feature of both, is the ability to create an instance of type T.
+
+\textbf{Naming of outputted types and variables}
+
+Aside from storing the types appropriately, a couple of other issues arose when doing the code generation.
+An interesting thing to mention is the naming changes from HCL to C++.
+In HCL a lot of special chars are allowed for variable naming. 
+This includes for instance "+" and "-" that is not allowed to use in C++, and even have a completely different meaning to the language.
+This was solved by hashing the name and prefixing it with for instance "IDT" for identifiers or "TPL" for tuples.
+
+Of course this solution leaves us vulnerable to hash code collisions.
+We use a 32bit hash code, a long with the prefixes of types like "IDT" and "TPL", so it was accepted as a valid solution for now.
+However, there may exist more sophisticated ways of solving this issues, that could be a potential improvement for future versions of the HCL compiler. 
