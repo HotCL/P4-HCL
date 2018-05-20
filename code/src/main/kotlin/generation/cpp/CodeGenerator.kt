@@ -31,17 +31,21 @@ class CodeGenerator : IPrinter {
             when (this) {
                 is AstNode.Command.Declaration -> format()
                 is AstNode.Command.Assignment -> format()
-                is AstNode.Command.Expression -> format() + ";"
+                is AstNode.Command.Expression -> (format() + ";\n").indented
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
                 is AstNode.Command.RawCpp ->
                     content.split("\n").joinToString("") { (it + "\n").indented }
             }
 
-    private fun AstNode.Command.Assignment.format() = "${identifier.cppName} = ${expression.format()};".indented
+    private fun AstNode.Command.Assignment.format() =
+            " // Assignment for ${identifier.name}\n".indented +
+            "${identifier.cppName} = ${expression.format()};\n".indented
 
     private fun AstNode.Command.Declaration.format(): String = when (expression) {
         is AstNode.Command.Expression.LambdaExpression -> expression.formatAsDecl(this)
-        else -> "${type.cppName} ${identifier.cppName} = " + (expression?.format() ?: type.defaultValue) + ";"
+        else ->
+            "// Declaration for ${identifier.name}\n".indented +
+            ("${type.cppName} ${identifier.cppName} = " + (expression?.format() ?: type.defaultValue) + ";").indented
     }
 
     private val AstNode.Type.defaultValue get(): String = when (this) {
@@ -105,9 +109,14 @@ class CodeGenerator : IPrinter {
         val generics = expectedArgumentTypes.flatMap { it.getGenerics }.toSet()
         return if (generics.isEmpty()) "" else {
             val pairedGenerics = expectedArgumentTypes.zip(arguments.map { it.type })
-            "<" + generics.joinToString {
-                TypeChecker().getTypeFromTypePairs(pairedGenerics, it.name)!!.cppName
-            } + ">"
+            val filteredGenerics = pairedGenerics.filter {
+                !(it.first is AstNode.Type.GenericType && it.first == it.second)
+            }
+            if (filteredGenerics.isNotEmpty()) {
+                "<" + generics.joinToString {
+                    TypeChecker().getTypeFromTypePairs(filteredGenerics, it.name)!!.cppName
+                } + ">"
+            } else ""
         }
     }
 

@@ -1,6 +1,7 @@
 package lexicalTests
 
 import exceptions.StringDoesntEndError
+import hclTestFramework.lexer.asLexerInput
 import hclTestFramework.lexer.buildTokenSequence
 import lexer.Lexer
 import lexer.PositionalToken
@@ -15,16 +16,16 @@ import org.junit.jupiter.api.Assertions.assertThrows
 class LexerTestMisc {
     @org.junit.jupiter.api.Test
     fun lexerUnfinishedStringFails() {
-        assertThrows(StringDoesntEndError::class.java, { Lexer("\"hej").getTokenSequence().toList() })
-        assertThrows(StringDoesntEndError::class.java, { Lexer("'hej").getTokenSequence().toList() })
+        assertThrows(StringDoesntEndError::class.java, { Lexer("\"hej".asLexerInput()).getTokenSequence().toList() })
+        assertThrows(StringDoesntEndError::class.java, { Lexer("'hej".asLexerInput()).getTokenSequence().toList() })
     }
 
     @org.junit.jupiter.api.Test
     fun lexerTestGetLine() {
-        val lexer = Lexer("Hej\nMed\nDig!")
-        assertEquals("Hej\n", lexer.inputLine(0))
-        assertEquals("Med\n", lexer.inputLine(1))
-        assertEquals("Dig!\n", lexer.inputLine(2))
+        val lexer = Lexer("Hej\nMed\nDig!".asLexerInput())
+        assertEquals("Hej\n", lexer.inputLine(0, ""))
+        assertEquals("Med\n", lexer.inputLine(1, ""))
+        assertEquals("Dig!\n", lexer.inputLine(2, ""))
     }
 }
 
@@ -163,9 +164,9 @@ object LexerTestInputYieldsOutput : Spek({
                     }
                 }.flatten()
                 val positionalTokens = testData.tokenList.zip(positions).map {
-                    PositionalToken(it.first, it.second.second, it.second.first)
+                    PositionalToken(it.first, it.second.second, it.second.first, "")
                 }
-                val actualResult = Lexer(testData.string).getTokenSequence().toList()
+                val actualResult = Lexer(testData.string.asLexerInput()).getTokenSequence().toList()
                 val expectedWithResult = positionalTokens.zip(actualResult)
                 expectedWithResult.forEach { res ->
                     it("should yield the token ${res.first.token} at idx ${res.first.lineIndex} line ${res.first.lineNumber}") {
