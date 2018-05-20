@@ -1,2 +1,30 @@
 % !TeX root = ../main.tex
 \section{Future work}
+
+\subsection{User-tests}
+As per the conclusion of this report, the HCL language has not been usability-tested.
+The target-group of HCL consists of two sub-groups, novices with no programming experience, and novices with limited programming experience.
+
+To conduct the usability-test, the sub-group with no programming experience, would have to be taught simple programming constructs in HCL and general programming paradigms.
+The sub-group with limited programming experience, would be asked to write simple programs in a language they know, and then write the equivalent programs in HCL.
+
+The first sub-group would be used to determine whether HCL is intuitive.
+The second sub-group would be used to evaluate whether HCL simplifies the programming paradigms enough.
+
+\subsection{Improvements to the language}
+While HCL is a complete language, there are still improvements that could be made.
+
+\textbf{Working Arduino}\\
+While the project group wanted HCL to run on the Arduino platform, this feature was not completed in time for the project hand-in.
+The Arduino does support lambdas, but not the specific type used for HCL, the \textit{\textbf{std::function type}} from the "functional" C++ standard library.
+A solution could be to write a custom lambda type, specifically for the Arduino.
+
+\textbf{Interpreter}\\
+An interpreter for HCL could be beneficial, as it could allow novices to quickly try out syntax, using the command-line, instead of fully compiled programs.
+
+\textbf{Dictionaries}\\
+Dictionaries were deemed NTH during the development process.
+It would benefit HCL to have a powerful data-structure, such as dictionaries.
+This would make it simpler to implement complex algorithms in HCL, for example sorting algorithms and numerical counting algorithms.
+It would also simplify the process of optimizing naive implementions, especially optimization by dynamic programming.
+
