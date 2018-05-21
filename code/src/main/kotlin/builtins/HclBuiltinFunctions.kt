@@ -294,7 +294,7 @@ private fun buildWhileFunction() = buildFunction(
         Parameter("body", Type.Func(listOf(), Type.None)),
         Parameter("condition", Type.Func(listOf(), Type.Bool))
     ),
-    returnType = Type.Bool,
+    returnType = Type.None,
     body = "while (condition()) body();"
 )
 
