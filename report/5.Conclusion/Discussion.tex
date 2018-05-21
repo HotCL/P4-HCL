@@ -1,4 +1,62 @@
-% !TeX root = ../main.tex
+% !TeX root = ../main.tex
 \chapter{Discussion}
+\section{Discussion}
+In this chapter, the project is reflected upon.
+This will include the choices made in regards to the developed solution and report, as well as how the group delegated work to the individual group members and assured the quality of said work.
+Furthermore the major choices, not already touched upon are discussed in this chapter.
+
+The goal of HCL is to develop an "english-like" language.
+The choice of an english-like language, instead of a danish-like language, is to easier introduce programming concepts to the target-group.
+By being an english-like language, HCL expressions are designed to naturally resemble english written sentences.
+If proper naming conventions are followed, the written code becomes more intuitive.
+As an example snippet \ref{lis:discussionintuitive} shows why this is the case.
+
+\begin{lstlisting}[language=HCL,label=lis:discussionintuitive,firstnumber=1,caption=Example of the intuitive nature of HCL]
+func doSomething = () : none { Some Code that does stuff }
+func thisIsTrue = () : bool { Some code that returns a bool }
+
+:doSomething while :thisIsTrue
+\end{lstlisting}
+
+As discussed in the problem analysis, the majority of the target group have no understanding of operators.
+Users of HCL do not need to know the basics of logic operations as presented in discrete mathematics.
+This is because the implicit understanding of logical constructs, is natural in HCL, as the built-in operators have english names, instead of just being a character.
+As is evident by the statements made by the gymnasium students, novices would not be able to understand the logic operation shown below.
+\begin{center}
+	$(P \wedge Q) \vee R$
+\end{center}
+Naturally, because they would not be familiar with the precedence or association of the logical operators.
+In HCL this becomes much simpler, since all function calls are left associative and no operators exists.
+The snippet \ref{lis:discussionoperatorIntuitiveness} shows the equivalent HCL code.
+\begin{lstlisting}[language=HCL,label=lis:discussionoperatorIntuitiveness,firstnumber=1,caption=Example of the intuitive nature of HCL]
+(P and Q) or R
+\end{lstlisting}
+Types in HCL are immutable.
+This is because in algebra, when x is assigned the value 4, x simply holds the value of 4, with x being treated as a constant.
+This same concept is applied to the types of HCL, as the novices know algebra, but not programming.
+
+As an example, consider a list.
+When a list is created, it is an empty list.
+When a value is then appended to the list, it is not the same list as previously, but instead a new list containing a value.
+When yet another value is appended to the list, it is again a new, different, list containing both of the appended values.
+
+\subsection{Handwritten lexer/parser}
+The group made the decision early on in the project, to write the entire compiler by hand.
+The choice to do this was founded on the belief, that by writing the entire compiler by hand, and not use a lexer/parser generator tool, the group would be more knowledgeable regarding the developed solution.
+
+While this is most likely true, the disadvantage of this approach, was that the lexer and parser were written in tandem with the semantics.
+By using a generator tool, the project group would have been forced to fully define the semantics before beginning on the lexer and parser.
+This would have meant that some issues that were only spotted late in the project pipeline, would have been spotted earlier.
+However, the group still believe that the correct choice was to write the whole compiler by hand, as some problems have been solved with unique solutions.
+
+\subsection{Mini-computers}
+The project has been, primarily, developed with mini-computers in mind.
+In particular, the Arduino platform has been targeted.
+This is because the Arduino Uno is often used in education, and it makes sense to develop for platforms that are already readily available and in use.
+
+However, as the project group found out, the Arduino platform does not allow for import of standard \textbf{C++} library functions.
+This means that the group ended up instead focusing on getting HCL to run on desktop.
+As mentioned in section \ref{sec:cplusplusfunctions}, a custom implementation of lambda's are required, for HCL to be usable on the Arduino platform.
+This is saved for future work.
 
 \input{5.Conclusion/QualityAssurance.tex}
