@@ -36,8 +36,5 @@ One solution would be to only do hashing on individual illegal characters, thus 
 
 Another solution could be to implement a list of valid names for illegal characters.
 This would mean that \textbf{+} would become \textbf{plus}, \textbf{-} would become minus, and so forth.
-
-\textbf{Generating only the used built-ins}\\
-Currently the HCL compiler generates the entire suite of built-in functions, for every compiled program.
-An optimization, mostly in terms of used disk-space however little, would be to only generate built-ins, if they appeared in the HCL code.
+The issue here, would be if the user created a function with those names.
 
