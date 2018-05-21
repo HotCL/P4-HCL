@@ -2,6 +2,7 @@
 #define FTOA_H
 
 #include <cstdlib>
+#include <cstdio>
 #define MAX_STR_LEN 16
 
 /*
