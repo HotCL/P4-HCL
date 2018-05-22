@@ -1,8 +1,7 @@
-% !TeX root = ../main.tex
+% !TeX root = ../main.tex
 \chapter{Discussion}
 \section{Discussion}
-In this chapter, the project is reflected upon.
-This will include the choices made in regards to the developed solution and report, as well as how the group delegated work to the individual group members and assured the quality of said work.
+This chapter reflects upon the choices made in regards to the developed solution and report, as well as how the group delegated work to the individual group members and assured the quality of said work.
 Furthermore the major choices, not already touched upon are discussed in this chapter.
 
 The goal of HCL is to develop an "english-like" language.
@@ -31,14 +30,16 @@ The snippet \ref{lis:discussionoperatorIntuitiveness} shows the equivalent HCL c
 \begin{lstlisting}[language=HCL,label=lis:discussionoperatorIntuitiveness,firstnumber=1,caption=Example of the intuitive nature of HCL]
 (P and Q) or R
 \end{lstlisting}
-Types in HCL are immutable.
-This is because in algebra, when x is assigned the value 4, x simply holds the value of 4, with x being treated as a constant.
-This same concept is applied to the types of HCL, as the novices know algebra, but not programming.
+Types in HCL are immutable, while variables are mutable.
+
+This forces novices to think upon their naming, and further consider what variables are already in use.
 
 As an example, consider a list.
 When a list is created, it is an empty list.
-When a value is then appended to the list, it is not the same list as previously, but instead a new list containing a value.
+When a value is then appended to the list, it is not the same list as previously, but instead a new list containing the new value.
 When yet another value is appended to the list, it is again a new, different, list containing both of the appended values.
+
+The variable the list is assigned to, cannot be reassigned to another type, say a string.
 
 \subsection{Handwritten lexer/parser}
 The group made the decision early on in the project, to write the entire compiler by hand.
@@ -58,5 +59,8 @@ However, as the project group found out, the Arduino platform does not allow for
 This means that the group ended up instead focusing on getting HCL to run on desktop.
 As mentioned in section \ref{sec:cplusplusfunctions}, a custom implementation of lambda's are required, for HCL to be usable on the Arduino platform.
 This is saved for future work.
+
+HCL does however work on the NodeMCU, which is an Arduino clone with a more powerful processor, the tensilica core.
+The NodeMCU allows for import of \textbf{C++} libraries, which allows desktop programs to be ported over in a rather straightforward manner.
 
 \input{5.Conclusion/QualityAssurance.tex}
