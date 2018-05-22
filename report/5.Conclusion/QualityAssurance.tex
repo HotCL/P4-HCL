@@ -32,7 +32,7 @@ The group heard of Spek halfway through the development process and it ended up 
 Specification tests are based on the principle of writing, in English, what a test should do accompanied by code executing the relevant actions.
 This is shown in snippet \ref{lis:specExample}.
 
-\begin{lstlisting}[language=Kotlin,label={lis:specExample},caption={An sample unit tests with spec}]
+\begin{lstlisting}[language=Kotlin,label={lis:specExample},caption={Example of a unit test with spec}]
 class SimpleTest : Spek({
 	describe("a calculator") {
 		val calculator = SampleCalculator()
@@ -56,7 +56,7 @@ Such a script can be seen in snippet \ref{lis:testHelloWorld}, where the first l
 "Hello World!" print
 \end{lstlisting}
 
-The script above is then executed by the testing function which is, in a shortened version, portrayed in snippet \ref{lis:testHclPrograms}
+The script above is then executed by the testing function which is, in a shortened version, shown in snippet \ref{lis:testHclPrograms}
 \begin{lstlisting}[language=Kotlin,label={lis:testHclPrograms},caption={Shortened version of the test for system tests}]
 object TestHclPrograms : Spek({
 	val files = listOf(
