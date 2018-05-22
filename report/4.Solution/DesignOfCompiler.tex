@@ -17,11 +17,6 @@ The abstract syntax tree is then processed by the code generator, which outputs 
 
 Some compilers are built with an isolated type checker.
 However, as the HCL language only allows predefined types and has a relatively simple structure, the type checking happens as part of the parser.
-%Tobias' forslag til en mere detaljeret forklaring af sætningen på linje 19:
-%However, in the HCL compiler type checking happens within the parser.
-%This is because of two reasons.
-%Firstly, because the language only allows predefined types.
-%Secondly, because it is impossible to determine which arguments should be grouped with which function calls without prior knowledge of the function declaration.
 
 Checking the validity of identifiers also happens in the parser.
 This means that the parser is the largest part of the compiler.

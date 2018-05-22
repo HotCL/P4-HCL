@@ -17,7 +17,7 @@ override fun generate(ast: AbstractSyntaxTree): List<FilePair> =
 )
 \end{lstlisting}
 
-The function first creates header files for the helper classes \textit{constList}(3) and \textit{ftoa}(4), which allow the use of the list-type in \texttt{C++}, and for converting doubles to text. 
+The function first creates header files for the helper class \textit{ConstList}(3) and and the helper function \textit{ftoa}(4), which allow the use of the list-type in \texttt{C++}, and for converting doubles to text. 
 The function then creates the header file for the built-in functions of the language(5).
 
 When the \textit{generate} function within the \texttt{CodeGenerator} class is called with the built-in functions from the language, it formats the functions to resemble valid \texttt{C++} function declarations, whilst also adding descriptive comments of its functionality.
