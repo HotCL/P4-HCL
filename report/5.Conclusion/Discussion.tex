@@ -17,7 +17,7 @@ func thisIsTrue = () : bool { Some code that returns a bool }
 :doSomething while :thisIsTrue
 \end{lstlisting}
 
-As discussed in the problem analysis, the majority of the target group have no understanding of operators.
+As discussed in the problem analysis, the majority of the target group has no understanding of operators.
 Users of HCL do not need to know the basics of logic operations as presented in discrete mathematics.
 This is because the implicit understanding of logical constructs, is natural in HCL, as the built-in operators have english names, instead of just being a character.
 As is evident by the statements made by the gymnasium students, novices would not be able to understand the logic operation shown below.
@@ -43,7 +43,7 @@ The variable the list is assigned to, cannot be reassigned to another type, say 
 
 \subsection{Handwritten lexer/parser}
 The group made the decision early on in the project, to write the entire compiler by hand.
-The choice to do this was founded on the belief, that by writing the entire compiler by hand, and not use a lexer/parser generator tool, the group would be more knowledgeable regarding the developed solution.
+The choice to do this was founded on the belief, that by writing the entire compiler by hand, and not using a lexer/parser generator tool, the group would be more knowledgeable regarding the developed solution.
 
 While this is most likely true, the disadvantage of this approach, was that the lexer and parser were written in tandem with the semantics.
 By using a generator tool, the project group would have been forced to fully define the semantics before beginning on the lexer and parser.
@@ -57,7 +57,7 @@ This is because the Arduino Uno is often used in education, and it makes sense t
 
 However, as the project group found out, the Arduino platform does not allow for import of standard \textbf{C++} library functions.
 This means that the group ended up instead focusing on getting HCL to run on desktop.
-As mentioned in section \ref{sec:cplusplusfunctions}, a custom implementation of lambda's are required, for HCL to be usable on the Arduino platform.
+As mentioned in section \ref{sec:cplusplusfunctions}, a custom implementation of lambdas is required, for HCL to be usable on the Arduino platform.
 This is saved for future work.
 
 HCL does however work on the NodeMCU, which is an Arduino clone with a more powerful processor, the tensilica core.
