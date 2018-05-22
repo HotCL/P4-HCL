@@ -117,6 +117,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
             parameters.add(parseSingleParameter())
             if (!tryAccept<Token.SpecialChar.ListSeparator>()) break
         }
+
         accept<Token.SpecialChar.ParenthesesEnd>()
         return parameters
     }
@@ -241,7 +242,8 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         } ?: listOf()
 
         val lambda = parseLambdaBody(parameters + recCall)
-        if (lambda.type != returnType) unexpectedReturnTypeError(returnType.toString(), lambda.type.toString())
+        if (lambda.type != returnType && returnType != AstNode.Type.None)
+            unexpectedReturnTypeError(returnType.toString(), lambda.type.toString())
         return AstNode.Command.Expression.LambdaExpression(parameters, returnType, lambda.lambdaBody)
     }
 
@@ -313,21 +315,26 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         }, { scopeDepth == 0 && it.token !is Token.Identifier }, 1)
     }
 
-    private fun getLambdaParameter(func: List<AstNode.Type.Func>, index: Int): AstExpression {
+    private fun getLambdaParameter(
+        func: List<AstNode.Type.Func>,
+        index: Int,
+        params: List<AstNode.Type> = emptyList()
+    ): AstExpression {
         val funcAcceptingLambda = func.firstOrNull {
             it.paramTypes[index] is AstNode.Type.Func
         } ?: error("No function found that takes a lambda at the current position")
         val lambdaFuncType = funcAcceptingLambda.paramTypes[index] as AstNode.Type.Func
         val lambdaParams = when (lambdaFuncType.paramTypes.size) {
             0 -> emptyList()
-            1 -> listOf(AstNode.ParameterDeclaration(lambdaFuncType.paramTypes[0],
-                    AstNode.Command.Expression.Value.Identifier("value", lambdaFuncType.paramTypes[0])))
             else -> {
+                val generics = funcAcceptingLambda.paramTypes.zip(params)
                 lambdaFuncType.paramTypes.mapIndexed { idx, type ->
-                    AstNode.ParameterDeclaration(type,
+                    val actualType = (type as? AstNode.Type.GenericType)?.let { getTypeFromTypePairs(generics, it.name) }
+                    ?: type
+                    AstNode.ParameterDeclaration(actualType,
                             AstNode.Command.Expression.Value.Identifier(
                                     "value${if (idx != 0) "${idx + 1}" else ""}",
-                                    lambdaFuncType.paramTypes[idx]
+                                    actualType
                             )
                     )
                 }
@@ -359,10 +366,14 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                     val symbol = retrieveSymbol(token.value)
                     if (symbol.isFunctions) {
                         val funcDecls = symbol.functions
-                        val secondaryArguments = funcDecls.first().paramTypes.drop(1).mapIndexed { index, _ ->
-                            if (current.token != Token.SpecialChar.BlockStart) parseExpressionAtomic() else {
-                                getLambdaParameter(funcDecls, index + 1)
-                            }
+                        val secondaryArguments = mutableListOf<AstNode.Command.Expression>()
+                        funcDecls.first().paramTypes.drop(1).forEachIndexed { index, _ ->
+                            secondaryArguments.add(if (current.token != Token.SpecialChar.BlockStart)
+                                parseExpressionAtomic()
+                            else {
+                                val params = secondaryArguments.map { it.type } + listOf(expression!!.type)
+                                getLambdaParameter(funcDecls, index + 1, params)
+                            })
                         }
                         val argTypes = listOf(expression!!.type) + secondaryArguments.map { it.type }
                         val declaration = funcDecls.getTypeDeclaration(argTypes)
@@ -378,8 +389,9 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                 else -> expression
             }.let { if (expression != it) parsePotentialFunctionCall(it) else expression!! }
 
+    /* Doesn't work with generics */
     private fun isLambdaParameters() = peek().token is Token.Type ||
-            (peek().token is Token.Identifier && hasAhead(2) && lookAhead(2).token is Token.Identifier) ||
+            (peek().token as? Token.Identifier)?.let { retrieveSymbol(it.value).undeclared } ?: false ||
             peek().token == Token.SpecialChar.ParenthesesEnd
 
     private fun parseExpressionAtomic(): AstExpression =

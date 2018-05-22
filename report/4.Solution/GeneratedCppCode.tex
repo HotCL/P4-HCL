@@ -1,0 +1,86 @@
+% !TeX root = ../main.tex
+
+\subsection{Generated C++ code}
+\label{sec:gencplusplus}
+While the previous section is primarily focused on the code generation from an abstract point of view, this section focuses on the generated \texttt{C++} code.
+Since \texttt{C++} is the output language of the HCL compiler, all the language concepts of HCL have to be represented in valid \texttt{C++} code.
+
+\textbf{Primitive types}
+The primitive types of HCL includes numbers, text and booleans. 
+Booleans are straightforward, as HCL's boolean behaves exactly like the \texttt{C++} boolean type.
+This means that the regular \texttt{C++} boolean type can be used as the output type of HCL booleans.
+
+As HCL aims for simplicity, only one number type is introduced. 
+This type needs to be able to store both integers and non-integers. 
+The simple solution is to convert all HCL numbers into \texttt{C++}'s double type.
+The solution with doubles is not ideal, but it will fulfill the requirements of the number type in HCL.
+
+\texttt{C++} does have an implementation of a string type in its standard library.
+However, the Arduino does not include this implementation, but rather uses its own.
+
+As the string type shares a lot of functionality with that of lists, the representation of strings in the generated \texttt{C++} code, is based on the ConstList.
+
+\textbf{Lists}
+
+For lists, \texttt{C++} includes a list type in its standard library called vector. 
+This vector type is, like the string type, not available in the libraries provided by the Arduino.
+Furthermore, since the vector implementation is mutable and the lists in HCL are immutable, a simple implementation of a constant list is implemented instead.
+
+One thing to be aware of when using lists, is that the size of the list cannot always be determined at compile time.
+This means that lists will usually do heap allocation. 
+With heap allocation comes the need to do proper memory handling, eg.
+clean up allocated memory in order to avoid memory leaks.
+
+Memory handling is done by utilizing the \texttt{C++} concept of RAII\footnote{Resource acquisition is initialization} along with \texttt{C++} smart pointers.
+This means that a pointer is implemented, which keeps a count of the references to the memory pointed to.
+If the counter goes to zero, this means that there are no more references to memory, and the memory may be deallocated safely.
+
+It should be noted, that the current HCL compiler uses the std::shared\_ptr, which is not available in the Arduino standard library.
+The implementation should however be easily ported to the Arduino when needed by implementing a similar smart pointer ourself.
+
+\textbf{Tuples}
+
+Tuples are represented as type defined structures in \texttt{C++}.
+HCL has a theoretically infinite amount of tuples, so obviously not all tuples can be generated.
+As mentioned in the previous section, the type generator will traverse the AST in order to find all the tuples used within the program to be compiled.
+For each defined tuple a few helper methods are also generated.
+This is the \textit{\textbf{toText}} function, along with accessing methods for each element in the tuple.
+
+\textbf{Functions}
+\label{sec:cplusplusfunctions}
+Functions are one of the most interesting and advanced parts of the code generation.
+This is because closures, per their nature, are advanced concepts.
+They have to store information about the content of their body along with scope information.
+They also have to potentially be able to expand the life time of scoped variables, if the variables are referenced from within the body of the closure.
+Fortunately, the \texttt{C++} standard library includes a std::function data type, which can store the closures that is part of the \texttt{C++} language.
+However, once again, this is not a part of the Arduino standard library.
+
+Because of time constraints, the current HCL compiler is only implemented using the std::function data type, and not a custom lambda type that is compatible with the Arduino.
+This means that the generated code is not actually compatible with the Arduino at this point in time.
+
+There is one limitation to the std::function combined with the closures in \texttt{C++}.
+This is the problem known as dangling references.
+The problem occurs when a closure is returned, and executed after a referenced variable has gone out of scope.
+The reference now points to some unallocated garbage memory, which leaves undefined behavior in the program.
+
+Although this feature would be nice to have in HCL, it also has to be deemed as undefined behavior for HCL when the target language is \texttt{C++} and the closures are implemented using the method mentioned above.
+
+\textbf{Generics}
+
+As for generic types, which is used in functions and lists, \texttt{C++} has a language concept known as templates.
+Templates are \texttt{C++}'s version of generics, and works by determining all the template variants used and then creating functions according to these variants.
+Templates are not as powerful as modern generics, for example C\#'s generics, but they are enough for HCL, as HCL's generics are also not that powerful.
+One lacking feature of both, is the ability to create an instance of type T.
+
+\textbf{Naming of outputted types and variables}
+
+Aside from storing the types appropriately, there are a few other issues when generating code for \texttt{C++}
+An interesting thing to mention is the translation of names from HCL to \texttt{C++}.
+In HCL a lot of special characters are allowed for identifiers. 
+This includes "+" and "-", both of which are reserved keywords in \texttt{C++}.
+The chosen solution for this problem is hashing of all the names HCL and prefixing the hash with, for instance with "IDT" for identifiers or "TPL" for tuples.
+
+This solution leaves HCL vulnerable to hash code collisions.
+HCL uses a 32bit hash code, along with the prefixes.
+Therefore hashing is a valid solution for now.
+However, there may exist more sophisticated ways of solving this issues, that could be a potential improvement for future versions of the HCL compiler. 

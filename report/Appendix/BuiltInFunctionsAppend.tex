@@ -1,16 +1,17 @@
+% !TeX root = ../main.tex
 \section{HCL Built-In Functions}
 \label{builtinAppend}
 \textbf{Arithmetic Operations}\\
 HCL includes five standard arithmetic functions for use on numerical values.
 The functions are seen in table \ref{tbl:arith}.
 
-\begin{table}[h]
+\begin{table}[ht]
 	\centering
 	\caption{Arithmetic Functions}
 	\label{tbl:arith}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation      & Symbol & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}      & \textbf{Symbol} & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Addition       & +      & num, num         & num         \\ \hline
 		Subtraction    & -      & num, num         & num         \\ \hline
 		Division       & /      & num, num         & num         \\ \hline
@@ -21,7 +22,7 @@ The functions are seen in table \ref{tbl:arith}.
 
 \textbf{Boolean Operations}\\
 Functions for boolean operations are listed in table \ref{tbl:bool}.
-These functions compare numeral, textual or boolean values and returns a boolean value.
+These functions compare numeral, textual or boolean values and return a boolean value.
 
 \begin{table}[h!]
 	\centering
@@ -29,8 +30,9 @@ These functions compare numeral, textual or boolean values and returns a boolean
 	\label{tbl:bool}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                       & Symbol         & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}                                                       & \textbf{Symbol}         & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Smaller Than                                                    & \textless{}    & num, num         & bool        \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Smaller Than \\ Equals\end{tabular}  & lessThanEqual  & num, num         & bool        \\ \hline
 		Greater Than                                                    & \textgreater{} & num, num         & bool        \\ \hline
 		Numerical Equals                                                & equals         & num, num         & bool        \\ \hline
 		\begin{tabular}[c]{@{}c@{}}Numerical Not \\ Equals\end{tabular} & notEquals      & num, num         & bool        \\ \hline
@@ -41,22 +43,29 @@ These functions compare numeral, textual or boolean values and returns a boolean
 		Not                                                             & not            & bool             & bool        \\ \hline
 	\end{tabular}
 \end{table}
+\newpage
 
 \textbf{Text Manipulation}\\
-Functions used to manipulate text-objects or converts values to text, seen in table \ref{tbl:text}.
+Functions used to manipulate text-objects or convert values to text, seen in table \ref{tbl:text}.
 \begin{table}[h!]
 	\centering
 	\caption{Textual Functions}
 	\label{tbl:text}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation       & Symbol & Input Parameters & Return Type \\ \hline
-		Concat Text     & +      & txt, txt         & txt         \\ \hline
-		Numeric To Text & toText & num              & txt         \\ \hline
-		Boolean To Text & toText & bool             & txt         \\ \hline
-		Textual To Text & toText & txt              & txt         \\ \hline
+		\textbf{Operation}          & \textbf{Symbol}  & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
+		Concat Text        & +       & txt, txt         & txt         \\ \hline
+		Numeric To Text    & toText  & num              & txt         \\ \hline
+		Boolean To Text    & toText  & bool             & txt         \\ \hline
+		Textual To Text    & toText  & txt              & txt         \\ \hline
+		List To Text       & toText  & list{[}T{]}      & txt         \\ \hline
+		At index           & at      & txt, num         & txt         \\ \hline
+		Text Concatenation & +       & txt, txt         & txt         \\ \hline
+		Sub Text           & subText & txt, num, num    & txt         \\ \hline
+		Text Length        & lenght  & txt              & num         \\ \hline
 	\end{tabular}
 \end{table}
+
 
 \textbf{Control Structures}\\
 Functions used as control structures in HCL, seen in table \ref{tbl:control}
@@ -66,10 +75,10 @@ Functions used as control structures in HCL, seen in table \ref{tbl:control}
 	\label{tbl:control}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                 & Symbol & Input Parameters            & Return Type \\ \hline
+		\textbf{Operation}                                                 & \textbf{Symbol} & \textbf{Input Parameters}            & \textbf{Return Type} \\ \hline
 		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, func{[}none{]}        & bool        \\ \hline
 		While Loop                                                & while  & func{[}none{]}, bool        & bool        \\ \hline
-		Foreach Loop                                              & each   & List{[}T{]}, func{[}none{]} & none        \\ \hline
+		Foreach Loop                                              & each   & list{[}T{]}, func{[}none{]} & none        \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -81,15 +90,17 @@ Functions used to manipulate or monitor lists, seen in table \ref{tbl:list}.
 	\label{tbl:list}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation     & Symbol  & Input Parameters            & Return Type \\ \hline
+		\textbf{Operation}     & \textbf{Symbol}  & \textbf{Input Parameters}            & \textbf{Return Type} \\ \hline
 		Get Lenght    & lenght  & list{[}T{]}                 & num         \\ \hline
 		At Index      & at      & list{[}T{]}, num            & T           \\ \hline
 		Concatenation & +       & list{[}T{]}, List{[}T{]}    & list{[}T{]} \\ \hline
 		Get Sublist   & subList & list{[}T{]}, num, num       & list{[}T{]} \\ \hline
 		Map           & map     & list{[}T{]}, func[T, T]     & list{[}T{]} \\ \hline
 		Filter List   & filter  & list{[}T{]}, func[T, bool]  & list{[}T{]} \\ \hline
+		To List       & to      & num, num                    & list[num]   \\ \hline
 	\end{tabular}
 \end{table}
+\newpage
 
 \textbf{Pin-Functions}\\
 Functions used to read and write from arduino's analogue and digital pins, seen in table \ref{tbl:pins}.
@@ -99,13 +110,12 @@ Functions used to read and write from arduino's analogue and digital pins, seen 
 	\label{tbl:pins}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation                                                      & Symbol      & Input Parameters & Return Type \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Set Digital Pin\\ HIGH\end{tabular} & HIGH        & num              & none        \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Set Digital Pin \\ LOW\end{tabular} & LOW         & num              & none        \\ \hline
-		Read Digital Pin                                               & readDigital & num              & num         \\ \hline
-		Write Analog Pin                                               & writeAnalog & num, num         & none        \\ \hline
-		Read Analog Pin                                                & readAnalog  & num              & num         \\ \hline
-		Delay                                                          & delayMillis & num              & none        \\ \hline
+		\textbf{Operation}                                                      & \textbf{Symbol}         & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
+		Set Digital Pin                                                & setDigitalPin  & num, bool        & none        \\ \hline
+		Read Digital Pin                                               & readDigitalPin & num              & num         \\ \hline
+		Write Analog Pin                                               & setAnalogPin   & num, num         & none        \\ \hline
+		Read Analog Pin                                                & readAnalogPin  & num              & num         \\ \hline
+		Delay                                                          & delayMillis    & num              & none        \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -117,8 +127,9 @@ Functions used to print to output, seen in table \ref{tbl:print}.
 	\label{tbl:print}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
-		Operation  & Symbol    & Input Parameters & Return Type \\ \hline
+		\textbf{Operation}  & \textbf{Symbol}    & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
 		Print      & print     & num/bool/txt     & none        \\ \hline
-		Print Line & printLine & num/bool/txt     & none        \\ \hline
+		Print List & print     & list[T]          & none        \\ \hline
 	\end{tabular}
 \end{table}
+\newpage

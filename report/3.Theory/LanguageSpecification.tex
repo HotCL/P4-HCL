@@ -72,7 +72,7 @@ HCL uses static typing, meaning that type-checking is done at compile time.
 
 \subsection{Operators}
 All arithmetic operators are defined as built-in functions in HCL.
-This means that all arithmetic operators are infix-functions, which has expressions as parameters. 
+This means that all arithmetic operators are infix-functions, which have expressions as parameters. 
 The only operators that remain operators are the assign-operator and the encapsulation-operators, namely parenthesis, square-brackets and curly-brackets.
 
 Not having operators for arithmetic operations also means that there is no native operator precedence in HCL.
@@ -183,7 +183,7 @@ As mentioned in section \ref{subsec:hofhcl}, HCL includes high-order functionali
 To declare that a function will accept other functions, the developer should simply declare a parameter of type \textit{func} with the expected input and output types explicitly stated from the function.
 
 Both predeclared functions and anonymous in-line functions can be passed as parameters. 
-However, when using a predeclared function, the identifier should be prefixed with a colon to indicate that the function should be passed and not invoked. 
+However, when using a predeclared function, the identifier should be prefixed with a "colon" (\textit{\textbf{:}}) to indicate that the function should be passed and not invoked. 
 Since lambdas should not be prefixed with a colon, it makes it impossible for a lambda to be invoked in-line. 
 Therefore lambdas may only be passed as parameters, and never invoked by themselves.
 Below is an example of how high-order functionality is used in HCL.
@@ -215,7 +215,7 @@ Functions can only be overloaded to return different types, if the types of the 
 Furthermore, overloading with different amounts of parameters is not possible in HCL.
 This is because of multiple reasons, one being simplicity for the user, not accidentally adding an unexpected parameter to a function call. 
 Another being simplicity in the parsing of the function parameters. 
-Since the ability to overload with different amount of parameters brings next to nothing to HCL, it is deemed not worth the effort to implement.
+Since the ability to overload with different amount of parameters brings next to nothing to HCL, it will not be implemented.
 Should it be necessary to overload functions with varying lengths of input-parameters, it can be done utilizing tuples or lists.
 
 Function overloading requires nothing special of the user, simply declare two functions with the same amount of parameters, but with different types. 
@@ -234,8 +234,7 @@ var isAwesome = (num number): bool {
 \end{lstlisting}
 
 The main reasoning for including function overloading is simplicity for the user.
-For instance, printing; 
-The print function should be able to print all basic types, so that the user does not have to worry about the type of what he is about to print.
+For instance, printing; the print function should be able to print all basic types, so that the user does not have to worry about the type of what he is about to print.
 
 \subsection{Arduino functions}
 Since HCL is supposed to be used on the Arduino platform, it is necessary to take the Arduino's \textbf{\textit{setup}} and \textbf{\textit{loop}} functions into account. 
@@ -253,9 +252,9 @@ led1 LedSetup OUTPUT
 "Hello" print
 
 {
-	led1 SetLEDPower True;
+	led1 SetDigitalPin True
 	1000 delay
-	led1 SetLEDPower False
+	led1 SetDigitalPin False
 	1000 delay
 } loop
 

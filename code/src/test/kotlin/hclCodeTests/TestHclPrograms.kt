@@ -1,7 +1,5 @@
 package hclCodeTests
 
-import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.startsWith
 import exceptions.CompilationException
 import generation.FilePair
 import generation.cpp.ProgramGenerator
@@ -9,11 +7,12 @@ import hclTestFramework.codegen.compileAndExecuteCpp
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
+import stdlib.Stdlib
 import kotlin.system.exitProcess
 import kotlin.test.assertEquals
 
-fun generateFilesFromCode(code: String): List<FilePair> {
-    val lexer = lexer.Lexer(code)
+fun generateFilesFromCode(fileName: String, code: String): List<FilePair> {
+    val lexer = lexer.Lexer(mapOf(Stdlib.getStdlibContent(), fileName to code))
     val parser = parser.Parser(lexer)
     val logger = logger.Logger()
     val ast = try {
@@ -27,13 +26,28 @@ fun generateFilesFromCode(code: String): List<FilePair> {
 
 object TestHclPrograms : Spek({
     val files = listOf(
+        "mapTuples.hcl",
         "HelloWorld.hcl",
-        "HelloWorldAndReturn.hcl",
         "ReturnSimple.hcl",
-        "MapFilter.hcl",
+        "HelloWorldAndReturn.hcl",
         "stringConcat.hcl",
+        "thenElse.hcl",
+        "while.hcl",
         "stringAt.hcl",
-        "printTuple.hcl"
+        "printTuple.hcl",
+        "conclusionSnippet.hcl",
+        "fizzBuzz.hcl",
+        "MapFilter.hcl",
+        "staticScope.hcl",
+        "subText.hcl",
+        "toUneven.hcl",
+        "multiScope.hcl",
+        "OOP.hcl",
+        "OOP_V2.hcl",
+        "PrintFibonacci.hcl",
+        "Swap.hcl",
+        "bubbleSort.hcl",
+        "testFirstIndexWhereStdlib.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
@@ -44,11 +58,13 @@ object TestHclPrograms : Spek({
             if (fileContent.contains("TEST_DISABLED")) {
                 it("should not be executed") {}
             } else it("should return $expectedReturn and print \"$expectedPrint\"") {
-                val outputFiles = generateFilesFromCode(fileContent)
+                val outputFiles = generateFilesFromCode(file, fileContent)
                 val keepFiles = fileContent.contains("KEEP_FILES")
                 val output = compileAndExecuteCpp(outputFiles, file.split(".").first(), keepFiles)!!
-                assertEquals(expectedReturn, output.returnValue)
-                assertThat(output.string, startsWith(expectedPrint))
+                assertEquals(expectedReturn, output.returnValue,
+                    "expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
+                        "full output:\n${output.string}")
+                assertEquals(expectedPrint, output.string)
             }
         }
     }

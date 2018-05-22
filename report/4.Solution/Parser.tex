@@ -34,7 +34,7 @@ An example AST can be seen on figure \ref{fig:ast}.
 \end{figure}
 
 The AST from figure \ref{fig:ast} was generated from the following HCL sourcecode:
-\begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
+\begin{lstlisting}[language=HCL,label=lis:parser:AST,firstnumber=1]
 a = x * (4 + 5) * (6 + 12)
 \end{lstlisting}
 
@@ -84,6 +84,7 @@ Because of this, bottom-up parsers are only rarely handmade.
 They will usually be implemented using the shift-reduce strategy.
 
 \subsection{Parser tools}
+\label{subsec:parsertools}
 Just as with lexers, a vast amount of tools exist in order to ease the parsing part of the compiler. 
 The complexity of the parser depends a lot on the type of the language. 
 As mentioned, a LL(1) recursive decent parser is fairly simple to develop, whereas a LALR parser is quite tedious to develop. 

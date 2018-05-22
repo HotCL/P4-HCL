@@ -1,0 +1,72 @@
+% !TeX root = ../main.tex
+\subsection{Generator Classes}
+The overall code generation is done within the \texttt{ProgramGenerator} class.
+The class' responsibility is limited to calling the three predominant generators, namely \texttt{CodeGenerator}, \texttt{TypeGenerator} and \texttt{MainGenerator}.
+In addition to calling the other classes, the \texttt{ProgramGenerator} class also adds return code to the AST to make sure that the program returns when terminated.
+
+Snippet \ref{lis:programGen} shows the \textit{generate} function from \texttt{ProgramGenerator}.
+
+\begin{lstlisting}[language=Kotlin,label=lis:programGen,caption=The implementation of \textit{generate} in \texttt{ProgramGenerator}.]
+override fun generate(ast: AbstractSyntaxTree): List<FilePair> = 
+	listOf(
+		HelperHeaders.constList,
+		HelperHeaders.ftoa,
+		FilePair("builtin.h", CodeGenerator().generate(ast.builtins())),
+		FilePair("types.h", TypeGenerator().generate(ast)),
+		FilePair("main.cpp", MainGenerator().generate(ast.addReturnCode().notBuiltins()))
+)
+\end{lstlisting}
+
+The function first creates header files for the helper class \textit{ConstList}(3) and and the helper function \textit{ftoa}(4), which allow the use of the list-type in \texttt{C++}, and for converting doubles to text. 
+The function then creates the header file for the built-in functions of the language(5).
+
+When the \textit{generate} function within the \texttt{CodeGenerator} class is called with the built-in functions from the language, it formats the functions to resemble valid \texttt{C++} function declarations, whilst also adding descriptive comments of its functionality.
+The resulting text is written to a file that serves as a header-file for the final program.
+
+The next line of code (6) calls the \textit{generate} function from the \texttt{TypeGenerator} class.
+This class is responsible for formatting tuples in the language by creating equivalent \textit{struct} declarations in \texttt{C++}.
+The functions fetch all tuples within the inputted AST, formats them, and writes the result of the formatting to a header file.
+Before returning, the function also generates functions for each tuple found.
+These generated functions allow the tuples to be printed using the \textit{toText} function, and also allow the tuples to return a specific element from within themselves.
+
+The last function that is called is the \texttt{MainGenerator} class' \textit{generate} function (7). 
+This last \textit{generate} function is responsible for wrapping and setting up Arduino's \texttt{main}, \texttt{setup} and \texttt{loop} functions.
+Before generation, a return code is added to the AST, to ensure that the program has a final return.
+Built-in functions are not added to generation, as these have already been handled. 
+
+The \texttt{MainGenerator}'s \textit{generate} function is described in detail in snippet \ref{lis:mainGen}.
+\begin{lstlisting}[language=Kotlin,label=lis:mainGen,caption=The implementation of \textit{generate} in \texttt{MainGenerator}.]
+override fun generate(ast: AbstractSyntaxTree): String {
+	val stringBuilder = StringBuilder(mainHeader)
+	val declarations = ast.genFromFilterWithMap ({ it.isDecl }, 
+	{
+		// Find all declarations	
+	})
+	val setup = ast.genFromFilterWithMap ({ !it.isLoop && !it.isDecl }, 
+	{
+	    // Assign all declarations
+	})
+	val loop = ast.genForLoop()
+	stringBuilder.appendln(declarations)
+	stringBuilder.appendln(setup.wrapSetup())
+	stringBuilder.appendln(loop.wrapLoop())
+
+	stringBuilder.appendln(("setup();\n" +
+	(if (loop.isNotBlank()) "while(1) { loop(); }\n" else "")).wrapMain()
+	)
+		return stringBuilder.toString()
+	}
+\end{lstlisting}
+(2) Add all header files and namespaces.\\ 
+(3) Find all declarations in source code.\\
+(7) Find all commands in source code that are not declarations or associated with the \textbf{loop} function.\\
+(11) Find all commands that are associated with the \textbf{loop} function.\\
+(12) Add all declarations to output file.\\
+(13) Wrap and add \textbf{setup} function to file.\\
+(14) Wrap and add \textbf{loop} function to file.\\
+(16) Wrap \textbf{main} function and add call to \textbf{setup} function.\\
+If the \textbf{loop} function is not empty, a call to it is also added to the \textbf{main} function.\\
+(19) Source code is generated and returned from function. 
+
+Once all the files have been generated, the code generation is complete.
+The resulting files can be compiled with a native \texttt{C++} compiler or with the Arduino editor.

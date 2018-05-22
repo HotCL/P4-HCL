@@ -1,2 +1,2 @@
 # should print hello
-"hello world" subText 0 6
+"hello world" subText 0 5 print

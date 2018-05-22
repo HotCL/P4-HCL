@@ -27,8 +27,8 @@ class TokenTest {
     @org.junit.jupiter.api.Test
     fun testTokens() {
         val tokens = listOf("Identifier", "\"Text\"", "5", "true", "var", "num", "bool", "text", "func",
-                                       "tuple", "list", "{", "}", "\n", "[", "]", "(", ")", ",", ":", "=",
-                                       "return").mapIndexed { index, lexeme ->
+                "tuple", "list", "{", "}", "\n", "[", "]", "(", ")", ",", ":", "=",
+                "return").mapIndexed { index, lexeme ->
             when (lexeme) {
                 "Identifier" -> Token.Identifier(lexeme)
                 "\"Text\"" -> Token.Literal.Text(lexeme.drop(1).dropLast(1))
@@ -55,7 +55,7 @@ class TokenTest {
                 "=" -> Token.SpecialChar.Equals
                 else -> throw Exception("Unexpected lexeme '$lexeme' in token test")
             }.let {
-                PositionalToken(it, index, 0)
+                PositionalToken(it, index, 0, "")
             }
         }
         tokens.map { it.token }.forEach {
