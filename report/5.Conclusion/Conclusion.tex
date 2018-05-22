@@ -53,12 +53,12 @@ This finishes the conclusion of the problem-statement.
 \subsection{Conclusion on the solution} %Shit rhymes
 HCL is a fully fledged, Turing complete, language.
 Every part of the syntax has an equivalent semantic context. 
-The compiler is capable of compiling most syntactical constructs that are valid in HCL to C++, barring any bugs and faults in the compiler as of the writing of this report.
+The compiler is capable of compiling most syntactical constructs that are valid in HCL to \texttt{C++}, barring any bugs and faults in the compiler as of the writing of this report.
 
 The HCL compiler is comprised of three modules, each equivalent to a stage in the compilation process.
 First, a lexer, which converts text to a stream of tokens
 Second, an LL(K), recursive decent, single pass parse with typechecking, which builds an AST.
-Third, a codegenerator which traverses the AST and generates C++ code.
+Third, a codegenerator which traverses the AST and generates \texttt{C++} code.
 
 All parts of the HCL compiler is written by hand.
 A unique aspect of the HCL compiler is that the type-checking is done in the parser, so that the symbol table does not need to be saved for the code-generator.
