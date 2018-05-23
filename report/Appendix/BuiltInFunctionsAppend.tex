@@ -31,16 +31,19 @@ These functions compare numeral, textual or boolean values and return a boolean 
 	\begin{tabular}{|c|c|c|c|}
 		\hline
 		\textbf{Operation}                                                       & \textbf{Symbol}         & \textbf{Input Parameters} & \textbf{Return Type} \\ \hline
-		Smaller Than                                                    & \textless{}    & num, num         & bool        \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Smaller Than \\ Equals\end{tabular}  & lessThanEqual  & num, num         & bool        \\ \hline
-		Greater Than                                                    & \textgreater{} & num, num         & bool        \\ \hline
-		Numerical Equals                                                & equals         & num, num         & bool        \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Numerical Not \\ Equals\end{tabular} & notEquals      & num, num         & bool        \\ \hline
-		And                                                             & and            & bool, bool       & bool        \\ \hline
-		Or                                                              & or             & bool, bool       & bool        \\ \hline
-		Textual Equals                                                  & equals         & txt, txt         & bool        \\ \hline
-		\begin{tabular}[c]{@{}c@{}}Textual Not \\ Equals\end{tabular}   & notEquals      & txt, txt         & bool        \\ \hline
-		Not                                                             & not            & bool             & bool        \\ \hline
+		Smaller Than                                                    & lessThan          & num, num         & bool        \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Smaller Than \\ Equals\end{tabular}  & lessThanEqual     & num, num         & bool        \\ \hline
+		Greater Than                                                    & greaterThan       & num, num         & bool        \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Greater Than \\ Equals\end{tabular}  & greaterThanEqual  & num, num         & bool        \\ \hline
+		Numerical Equals                                                & equals            & num, num         & bool        \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Numerical Not \\ Equals\end{tabular} & notEquals         & num, num         & bool        \\ \hline
+		And                                                             & and               & bool, bool       & bool        \\ \hline
+		Or                                                              & or                & bool, bool       & bool        \\ \hline
+		Boolean Equals                                                  & equals            & bool, bool       & bool        \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Boolean Not \\ Equals\end{tabular}   & notEquals         & bool, bool       & bool        \\ \hline
+		Not                                                             & not               & bool             & bool        \\ \hline
+		Textual Equals                                                  & equals            & txt, txt         & bool        \\ \hline
+		\begin{tabular}[c]{@{}c@{}}Textual Not \\ Equals\end{tabular}   & notEquals         & txt, txt         & bool        \\ \hline
 	\end{tabular}
 \end{table}
 \newpage
@@ -61,7 +64,7 @@ Functions used to manipulate text-objects or convert values to text, seen in tab
 		List To Text       & toText  & list{[}T{]}      & txt         \\ \hline
 		At index           & at      & txt, num         & txt         \\ \hline
 		Text Concatenation & +       & txt, txt         & txt         \\ \hline
-		Sub Text           & subText & txt, num, num    & txt         \\ \hline
+		Sub Text           & splitAt & txt, num, num    & txt         \\ \hline
 		Text Length        & lenght  & txt              & num         \\ \hline
 	\end{tabular}
 \end{table}
@@ -78,7 +81,7 @@ Functions used as control structures in HCL, seen in table \ref{tbl:control}
 		\textbf{Operation}                                                 & \textbf{Symbol} & \textbf{Input Parameters}            & \textbf{Return Type} \\ \hline
 		\begin{tabular}[c]{@{}c@{}}Then \\ Statement\end{tabular} & then   & bool, func{[}none{]}        & bool        \\ \hline
 		While Loop                                                & while  & func{[}none{]}, bool        & bool        \\ \hline
-		Foreach Loop                                              & each   & list{[}T{]}, func{[}none{]} & none        \\ \hline
+		Foreach Loop                                              & forEach   & list{[}T{]}, func{[}none{]} & none        \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -91,13 +94,15 @@ Functions used to manipulate or monitor lists, seen in table \ref{tbl:list}.
 	\begin{tabular}{|c|c|c|c|}
 		\hline
 		\textbf{Operation}     & \textbf{Symbol}  & \textbf{Input Parameters}            & \textbf{Return Type} \\ \hline
-		Get Lenght    & lenght  & list{[}T{]}                 & num         \\ \hline
-		At Index      & at      & list{[}T{]}, num            & T           \\ \hline
-		Concatenation & +       & list{[}T{]}, List{[}T{]}    & list{[}T{]} \\ \hline
-		Get Sublist   & subList & list{[}T{]}, num, num       & list{[}T{]} \\ \hline
-		Map           & map     & list{[}T{]}, func[T, T]     & list{[}T{]} \\ \hline
-		Filter List   & filter  & list{[}T{]}, func[T, bool]  & list{[}T{]} \\ \hline
-		To List       & to      & num, num                    & list[num]   \\ \hline
+		Get Lenght    & lenght    & list{[}T{]}                 & num         \\ \hline
+		At Index      & at        & list{[}T{]}, num            & T           \\ \hline
+		Concatenation & +         & list{[}T{]}, List{[}T{]}    & list{[}T{]} \\ \hline
+		Get Sublist   & splitAt   & list{[}T{]}, num, num       & list{[}T{]} \\ \hline
+		Map           & map       & list{[}T{]}, func[T, T]     & list{[}T{]} \\ \hline
+		Filter List   & where     & list{[}T{]}, func[T, bool]  & list{[}T{]} \\ \hline
+		To List       & to        & num, num                    & list[num]   \\ \hline
+		Equals        & equals    & list{[}T{]}, list{[}T{]}    & bool        \\ \hline
+		Not Equals    & notEquals & list{[}T{]}, list{[}T{]}    & bool        \\ \hline
 	\end{tabular}
 \end{table}
 \newpage
@@ -115,7 +120,7 @@ Functions used to read and write from arduino's analogue and digital pins, seen 
 		Read Digital Pin                                               & readDigitalPin & num              & num         \\ \hline
 		Write Analog Pin                                               & setAnalogPin   & num, num         & none        \\ \hline
 		Read Analog Pin                                                & readAnalogPin  & num              & num         \\ \hline
-		Delay                                                          & delayMillis    & num              & none        \\ \hline
+		Delay                                                          & delay          & num              & none        \\ \hline
 	\end{tabular}
 \end{table}
 

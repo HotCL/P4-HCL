@@ -16,7 +16,7 @@ The following is a run-down of the features and conventions of HCL's syntax.
 \subsection{Types}
 HCL includes only three primitive types, numbers (\textbf{\textit{num}}), strings (\textbf{\textit{txt}}) and the boolean type (\textbf{\textit{bool}}).\\
 Numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
-Booleans are represented using \textbf{True} or \textbf{False}.
+Booleans are represented using \textbft{true} or \textbf{false}.
 
 The collection types of HCL are \textbf{\textit{tuples}} and \textbf{\textit{lists}} where, 
 \textbf{\textit{tuples}} are structures composed of multiple types and \textbf{\textit{lists}} are collections of a single type.
@@ -51,7 +51,7 @@ Declaration of the different types are done in the following way:
 \begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
 num x = 10
 txt y = "string"
-bool z = True
+bool z = true
 list[num] w = [0,1,1.2]
 tuple[txt,num] v = ("hello",2)
 func[txt] u = ():txt { "hello" }
@@ -229,8 +229,8 @@ var isAwesome = (num number): bool {
 	number equals 42 thenElse {true} {false}
 }
 
-42 isAwesome # True
-"Java" isAwesome # False
+42 isAwesome # true
+"Java" isAwesome # false
 \end{lstlisting}
 
 The main reasoning for including function overloading is simplicity for the user.
@@ -252,9 +252,9 @@ led1 LedSetup OUTPUT
 "Hello" print
 
 {
-	led1 SetDigitalPin True
+	led1 setDigitalPin true
 	1000 delay
-	led1 SetDigitalPin False
+	led1 setDigitalPin false
 	1000 delay
 } loop
 
