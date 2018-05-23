@@ -60,16 +60,16 @@ fun Parser.overloadWithDifferentAmountOfArgumentsException(): Nothing {
 
 fun Parser.error(msg: String, helpText: String = ""): Nothing {
     throw GenericParserException(setLineNumber(), setLineIndex(0),
-            setInputLine(), msg, helpText)
+         setInputLine(), msg, helpText)
 }
 
-fun Parser.setLineNumber(shifts: Int = 0): Int{
+fun Parser.setLineNumber(shifts: Int = 0): Int {
     return lookBehind(shifts).lineNumber
 }
-fun Parser.setLineIndex(shifts: Int = 0): Int{
+fun Parser.setLineIndex(shifts: Int = 0): Int {
     return lookBehind(shifts).lineIndex
 }
-fun Parser.setInputLine(shifts: Int = 0): String{
+fun Parser.setInputLine(shifts: Int = 0): String {
     return lexer.inputLine(lookBehind(shifts).lineNumber,
-           lookBehind(shifts).fileName)
+        lookBehind(shifts).fileName)
 }
