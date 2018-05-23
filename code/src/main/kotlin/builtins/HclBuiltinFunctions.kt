@@ -260,7 +260,7 @@ private fun buildSubtextText() =
             Parameter("length", Type.Number)
         ),
         returnType = Type.Text,
-        body = "return ${"subList".cppName}<char>(leftHand,startIndex,length);"
+        body = "return ${"splitAt".cppName}<char>(leftHand,startIndex,length);"
     )
 
 private fun buildSubListFunction() = buildFunction(
