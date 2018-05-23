@@ -60,7 +60,7 @@ fun Parser.overloadWithDifferentAmountOfArgumentsException(): Nothing {
 
 fun Parser.error(msg: String, helpText: String = ""): Nothing {
     throw GenericParserException(setLineNumber(), setLineIndex(0),
-         setInputLine(), msg, helpText)
+        setInputLine(), msg, helpText)
 }
 
 fun Parser.setLineNumber(shifts: Int = 0): Int {
