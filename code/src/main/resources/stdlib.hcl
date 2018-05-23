@@ -1,11 +1,11 @@
 var @ = (list[T] lst, num idx): T { lst at idx }
 
 var any = (list[T] myList, func[T, bool] compareFunc): bool{
-	myList filter { value compareFunc } length greaterThan 0
+	myList where { value compareFunc } length greaterThan 0
 }
 
 var all = (list[T] myList, func[T, bool] compareFunc): bool{
-	myList filter { value compareFunc } length equals (myList length)
+	myList where { value compareFunc } length equals (myList length)
 }
 
 func firstIndexWhere = (list[T] lst, func[T, bool] predicate): num {
