@@ -11,7 +11,7 @@ var all = (list[T] myList, func[T, bool] compareFunc): bool{
 func firstIndexWhere = (list[T] lst, func[T, bool] predicate): num {
     var ret = -1
     var idx = 0
-    lst each {
+    lst forEach {
         value predicate and (ret equals -1) then { ret = idx }
         idx = idx + 1
     }
