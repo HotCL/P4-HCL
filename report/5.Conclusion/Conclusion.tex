@@ -48,14 +48,12 @@ var res2 = 2 plus 3
 
 The two function calls on lines 3 and 5 both evaluate to the same value and with no ambiguity in the syntax.
 
-This finishes the conclusion of the problem-statement.
-
-\subsection{Conclusion on the solution} %Shit rhymes
+\subsection{Conclusion on the solution}
 HCL is a fully fledged, Turing complete, language.
-Every part of the syntax has an equivalent semantic context. 
+Every part of the syntax has been semantically defined. 
 The compiler is capable of compiling most syntactical constructs that are valid in HCL to \texttt{C++}, barring any bugs and faults in the compiler as of the writing of this report.
 
-The HCL compiler is comprised of three modules, each equivalent to a stage in the compilation process.
+The HCL compiler is comprises of three modules, each equivalent to a stage in the compilation process.
 First, a lexer, which converts text to a stream of tokens
 Second, an LL(K), recursive decent, single pass parse with typechecking, which builds an AST.
 Third, a codegenerator which traverses the AST and generates \texttt{C++} code.
