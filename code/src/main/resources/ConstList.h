@@ -52,6 +52,7 @@ public:
     }
 
     static T at(List l, unsigned int idx) {
+        if (l.get()->size <= idx) exit(137);
         return l.get()->data[idx];
     }
 
