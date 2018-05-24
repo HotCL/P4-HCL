@@ -47,7 +47,8 @@ object TestHclPrograms : Spek({
         "PrintFibonacci.hcl",
         "Swap.hcl",
         "bubbleSort.hcl",
-        "testFirstIndexWhereStdlib.hcl"
+        "testFirstIndexWhereStdlib.hcl",
+        "ListOutOfBounds.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
