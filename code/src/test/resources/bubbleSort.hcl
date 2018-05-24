@@ -2,9 +2,9 @@
 
 var swapAtIndex = (list[T] lst, num firstIndex, num secondIndex): list[T]{
 
-    var firstSub = lst subList 0 (firstIndex)
-    var secondSub = lst subList (firstIndex + 1) (secondIndex - (firstIndex + 1))
-    var lastSub = lst subList (secondIndex + 1) ((lst length) - (secondIndex + 1))
+    var firstSub = lst splitAt 0 (firstIndex)
+    var secondSub = lst splitAt (firstIndex + 1) (secondIndex - (firstIndex + 1))
+    var lastSub = lst splitAt (secondIndex + 1) ((lst length) - (secondIndex + 1))
     return firstSub + [(lst at secondIndex)] + secondSub + [(lst at firstIndex)] + lastSub
 }
 

@@ -16,7 +16,7 @@ The following is a run-down of the features and conventions of HCL's syntax.
 \subsection{Types}
 HCL includes only three primitive types, numbers (\textbf{\textit{num}}), strings (\textbf{\textit{txt}}) and the boolean type (\textbf{\textit{bool}}).\\
 Numbers are represented using double-precision floating-point format, also known as the \textbf{\textit{double}} type.
-Booleans are represented using \textbf{True} or \textbf{False}.
+Booleans are represented using \textbf{true} or \textbf{false}.
 
 The collection types of HCL are \textbf{\textit{tuples}} and \textbf{\textit{lists}} where, 
 \textbf{\textit{tuples}} are structures composed of multiple types and \textbf{\textit{lists}} are collections of a single type.
@@ -25,7 +25,7 @@ While dictionaries are a staple in modern languages, they are not deemed necessa
 HCL also includes the type \textbf{\textit{func}} which in some languages, particularly C\#, is known as the \textbf{\textit{lambda}} type.
 Also included is the type \textbf{\textit{none}} which in some languages, particularly C\# and Java, is known as the \textbf{\textit{void}} type. 
 
-Table \ref{tbl:types} lists all types in HCL and their C++ equivalent.
+Table \ref{tbl:types} lists all types in HCL and their \texttt{C++} equivalent.
 \begin{table}[H]
 	\centering
 	\caption{Types in HCL}
@@ -51,7 +51,7 @@ Declaration of the different types are done in the following way:
 \begin{lstlisting}[language=HCL,label=lis:typedcls,firstnumber=1]
 num x = 10
 txt y = "string"
-bool z = True
+bool z = true
 list[num] w = [0,1,1.2]
 tuple[txt,num] v = ("hello",2)
 func[txt] u = ():txt { "hello" }
@@ -82,7 +82,6 @@ This workaround is shown below.
 \begin{lstlisting}[language=HCL,firstnumber=1]
 num x = 10 + 5 * 10 #Equals 150 in HCL
 num y = 10 + (5 * 10) #Equals 60 in HCL, which corresponds with algebra.
-}
 \end{lstlisting}
 
 \subsection{Functions}
@@ -229,8 +228,8 @@ var isAwesome = (num number): bool {
 	number equals 42 thenElse {true} {false}
 }
 
-42 isAwesome # True
-"Java" isAwesome # False
+42 isAwesome # true
+"Java" isAwesome # false
 \end{lstlisting}
 
 The main reasoning for including function overloading is simplicity for the user.
@@ -252,9 +251,9 @@ led1 LedSetup OUTPUT
 "Hello" print
 
 {
-	led1 SetDigitalPin True
+	led1 setDigitalPin true
 	1000 delay
-	led1 SetDigitalPin False
+	led1 setDigitalPin false
 	1000 delay
 } loop
 

@@ -27,7 +27,7 @@ This was accomplished by syntactically treating any lambda expression as an anon
 Snippet \ref{lis:ConclusionMapFilter} shows an example of how the passing of a lambda expression look in HCL.
 
 \begin{lstlisting}[language=hcl,label=lis:ConclusionMapFilter,caption=High-order functionality in HCL]
-[2, 4, 6, 8] map { value * 2 } filter { value greaterThan 10 } print
+[2, 4, 6, 8] map { value * 2 } where { value greaterThan 10 } print
 \end{lstlisting}
 
 As mentioned, user-tests have not been conducted.

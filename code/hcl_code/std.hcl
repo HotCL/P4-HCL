@@ -13,11 +13,11 @@ var to (num from, num to):list[num] {
 }
 
 var any (list[T] myList, func[T,bool] compareFunc):bool{
-	myList filter :compareFunc length greaterThan 0
+	myList where :compareFunc length greaterThan 0
 }
 
 var all (list[T] myList, func[T,bool] compareFunc):bool{
-	myList filter :compareFunc length equals myList length
+	myList where :compareFunc length equals myList length
 }
 
 var in = (T element, list[T] myList):bool{
