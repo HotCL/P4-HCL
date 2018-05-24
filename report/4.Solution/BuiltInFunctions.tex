@@ -1,5 +1,5 @@
 \subsection{Built-in Functions}
-HCL includes several built-in functions that map the languages functionality directly to its C++ equivalent. 
+HCL includes several built-in functions that map the languages functionality directly to its \texttt{C++} equivalent. 
 These functions are considered to be the most basic functionality of the language, and their use is often required in order to specify more complex functions. 
 This section describes the built-in functions of HCL, their implementation and their functionality.
 
@@ -19,7 +19,7 @@ private fun buildFunction(identifier: String, parameters: List<Parameter>, retur
         )
     )
 \end{lstlisting}
-The function returns a function-declaration with specified identifier, return-type and lambda-body, where the lambda-body is composed of raw C++ code. 
+The function returns a function-declaration with specified identifier, return-type and lambda-body, where the lambda-body is composed of raw \texttt{C++} code. 
 Using the implementation to build functions is then simply a manner of passing in the required arguments, as seen in snippet \ref{lis:thenFunction}.
 
 \begin{lstlisting}[language=Kotlin,label=lis:thenFunction,caption=built-in 'then' function implemented using \texttt{buildFunction}.]
@@ -35,7 +35,7 @@ private fun buildThenFunction() = buildFunction(
 \end{lstlisting}
 The above snippet shows how the built-in function \texttt{then} is declared using the \texttt{buildFunction} implementation. 
 The arguments provided specify the identifier for the function (2), the parameters for the function (3), namely a condition of type \texttt{bool} and a body of type \texttt{ExplicitFunc} without a return-type.
-It also specifies that the return-type of the function itself is a \texttt{bool}(7) and then presents the body of the function in raw c++ code (8). 
+It also specifies that the return-type of the function itself is a \texttt{bool}(7) and then presents the body of the function in raw \texttt{C++} code (8). 
 
 In order to follow the DRY\footnote{Don't repeat yourself (DRY) is a principle aimed at reducing code repetition in software development.
 } principles of coding, a helper-function for implementing simple arithmetic functions is provided in snippet \ref{lis:buildOperator}.
