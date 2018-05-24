@@ -53,7 +53,7 @@ HCL is a fully fledged, Turing complete, language.
 Every part of the syntax has been semantically defined. 
 The compiler is capable of compiling most syntactical constructs that are valid in HCL to \texttt{C++}, barring any bugs and faults in the compiler as of the writing of this report.
 
-The HCL compiler comprises of three modules, each equivalent to a stage in the compilation process.
+The HCL compiler comprises three modules, each equivalent to a stage in the compilation process.
 First, a lexer, which converts text to a stream of tokens
 Second, an LL(K), recursive decent, single pass parse with typechecking, which builds an AST.
 Third, a codegenerator which traverses the AST and generates \texttt{C++} code.
