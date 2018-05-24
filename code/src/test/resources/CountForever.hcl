@@ -4,5 +4,5 @@ var x = 0
 {
     x = x + 1
     x print
-    1000 delayMillis
+    1000 delay
 } loop
