@@ -469,7 +469,7 @@ The transitions are shown below.
 	\begin{math}
 	\cfrac
 	{env_V, sto \vdash e \rightarrow_{e} v' \quad env_V, sto \vdash tpl_v' \rightarrow_e v}
-	{env_V, sto \vdash tuple\ elemente \rightarrow_{tuple} v}
+	{env_V, sto \vdash tuple\ element e \rightarrow_{tuple} v}
 	\end{math}
 	
 	\texttt{ where } $tpl_v'\ is\ the\ (v' + 1)th\ element\ of\ tuple$
@@ -480,7 +480,7 @@ The transitions are shown below.
 	\begin{math}
 	\cfrac
 	{env_V, sto \vdash e \rightarrow_{e} v}
-	{env_V, sto \vdash tuple\ elemente \rightarrow_{tuple} Program\ Crash}
+	{env_V, sto \vdash tuple\ element e \rightarrow_{tuple} Program\ Crash}
 	\end{math}
 	
 	\texttt{ where } $|tuple| - 1 < v$
