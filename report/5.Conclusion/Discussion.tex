@@ -4,7 +4,7 @@
 This chapter reflects upon the choices made in regards to the developed solution and report, as well as how the group delegated work to the individual group members and assured the quality of said work.
 Furthermore, the major choices, not already touched upon, are discussed in this chapter.
 
-The goal of HCL is to develop an "English-like" language.
+One of the goals of HCL is to use "English-like" syntax.
 The choice of an English-like language, instead of a Danish-like language, is to easier introduce programming concepts to the target-group.
 By being an English-like language, HCL expressions are designed to naturally resemble English written sentences.
 If proper naming conventions are followed, the written code becomes more intuitive.
@@ -31,15 +31,12 @@ The snippet \ref{lis:discussionoperatorIntuitiveness} shows the equivalent HCL c
 (P and Q) or R
 \end{lstlisting}
 Types in HCL are immutable, while variables are mutable.
+This forces novices to think about their naming, and further consider what variables are already in use.
 
-This forces novices to think upon their naming, and further consider what variables are already in use.
-
-As an example, consider a list.
+As an example of this immutability, consider a list.
 When a list is created, it is an empty list.
 When a value is then appended to the list, it is not the same list as previously, but instead a new list containing the new value.
 When yet another value is appended to the list, it is again a new list containing both of the appended values.
-
-The variable the list is assigned to, cannot be reassigned to another type, say a string.
 
 \subsection{Handwritten lexer/parser}
 The group made the decision early on in the project, to write the entire compiler by hand.
