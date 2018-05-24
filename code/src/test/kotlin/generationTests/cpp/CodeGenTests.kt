@@ -106,7 +106,7 @@ fun testMapFunction() = listOf(
 )
 
 fun testFilterFunction() = listOf(
-        "newList" declaredAs list(num) withValue ("filter" returning list(num) calledWith listOf(
+        "newList" declaredAs list(num) withValue ("where" returning list(num) calledWith listOf(
                 list(num(1), num(2), num(3)), lambda() returning num withArgument ("num" asType num) andBody
                 ret("greaterThan" returning num calledWith listOf("num".asIdentifier(num), num(1)))
         ) expectedArgumentTypes listOf(list(generic("T")), func(bool, generic("T")))),

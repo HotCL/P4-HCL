@@ -8,7 +8,7 @@ Snippet \ref{lis:st-any}, returns true if any element in a list upholds the pred
 Returns false if no element in list upholds compare predicate.
 \begin{lstlisting}[language=Kotlin,label=lis:st-any,caption=\texttt{any} function.]
 var any (list[T] myList, func[T,bool] compareFunc):bool{
-	myList filter :compareFunc length greaterThan 0
+	myList where :compareFunc length greaterThan 0
 }
 \end{lstlisting}
 
@@ -16,7 +16,7 @@ Snippet \ref{lis:st-all} returns true if all elements in a list upholds the pred
 Returns false if any element does not uphold compare predicate.
 \begin{lstlisting}[language=Kotlin,label=lis:st-all,caption=\texttt{all} function.]
 var all (list[T] myList, func[T,bool] compareFunc):bool{
-	myList filter :compareFunc length equals myList length
+	myList where :compareFunc length equals myList length
 }
 \end{lstlisting}
 
