@@ -415,29 +415,29 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                     val token = accept<Token.Identifier>()
 
                     retrieveSymbol(token.value).handle(
-                            {
-                                if (it.any { it.containsGeneric() })
-                                    genericPassedFunctionException()
-                                AstIdentifier(token.value, it[0]) // TODO probably shouldn't be it[0]
-                            },
-                            { undeclaredError(token.value) },
-                            { undeclaredError(token.value) }
+                        {
+                            if (it.any { it.containsGeneric() })
+                                genericPassedFunctionException()
+                            AstIdentifier(token.value, it.first()) // TODO probably shouldn't always be first
+                        },
+                        { undeclaredError(token.value) },
+                        { undeclaredError(token.value) }
                     )
                 }
                 is Token.Identifier -> {
                     val token = accept<Token.Identifier>()
                     retrieveSymbol(token.value).handle(
-                            {
-                                if (it.first().paramTypes.isEmpty()) {
-                                    AstNode.Command.Expression.FunctionCall(
-                                            AstIdentifier(token.value, it.first().returnType),
-                                            listOf(),
-                                            listOf()
-                                    )
-                                } else error("Function ${token.value} can not be invoked with 0 arguments")
-                            },
-                            { AstIdentifier(token.value, it) },
-                            { undeclaredError(token.value) }
+                        {
+                            if (it.first().paramTypes.isEmpty()) {
+                                AstNode.Command.Expression.FunctionCall(
+                                    AstIdentifier(token.value, it.first().returnType),
+                                    listOf(),
+                                    listOf()
+                                )
+                            } else error("Function ${token.value} can not be invoked with 0 arguments")
+                        },
+                        { AstIdentifier(token.value, it) },
+                        { undeclaredError(token.value) }
                     )
                 }
                 else -> unexpectedTokenError(current.token)
