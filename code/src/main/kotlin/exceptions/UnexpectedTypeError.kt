@@ -14,6 +14,6 @@ class UnexpectedTypeError(
 )
     : ParserException(lineNumber, lineIndex, lineText) {
 
-    override val errorMessage = "Cannot implicit cast type '$actualType' to type '$expectedType'."
+    override val errorMessage = "Cannot implicitly cast type '$actualType' to type '$expectedType'."
     override val helpText = "Try casting your types to match eachother."
 }

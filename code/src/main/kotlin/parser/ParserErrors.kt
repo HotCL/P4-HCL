@@ -3,6 +3,26 @@ package parser
 import exceptions.* // ktlint-disable no-wildcard-imports
 import lexer.Token
 
+fun Parser.functionInvokedWithoutArgumentsError(nameOfFunc: String): Nothing {
+    throw FunctionInvokedWithoutArgumentsError(setLineNumber(), setLineIndex(1), setInputLine(), nameOfFunc)
+}
+
+fun Parser.identifierIsNotFunctionError(nameOfId: String): Nothing {
+    throw IdentifierIsNotFunctionError(setLineNumber(), setLineIndex(1), setInputLine(), nameOfId)
+}
+
+fun Parser.lambdaArgumentNotAcceptedError(): Nothing {
+    throw LambdaArgumentNotAcceptedError(setLineNumber(), setLineIndex(4), setInputLine())
+}
+
+fun Parser.funcDeclaredWithoutBodyError(nameOfFunc: String): Nothing {
+    throw FuncDeclaredWithoutBodyError(setLineNumber(), setLineIndex(1), setInputLine(), nameOfFunc)
+}
+
+fun Parser.uninitializedImplicitTypeError(nameOfVar: String): Nothing {
+    throw UninitializedImplicitTypeError(setLineNumber(), setLineIndex(1), setInputLine(), nameOfVar)
+}
+
 fun Parser.unexpectedTypeError(expectedType: String, actualType: String): Nothing {
     throw UnexpectedTypeError(setLineNumber(), setLineIndex(1),
             setInputLine(), expectedType, actualType)
@@ -14,18 +34,20 @@ fun Parser.unexpectedReturnTypeError(expectedType: String, actualType: String): 
 }
 
 fun Parser.unexpectedTokenError(token: Token): Nothing {
-    throw UnexpectedTokenError(setLineNumber(), setLineIndex(1),
+    throw UnexpectedTokenError(setLineNumber(), setLineIndex(),
             setInputLine(), token)
 }
 
-fun Parser.lackingParanthesis(): Nothing {
+fun Parser.lackingParenthesis(): Nothing {
     throw LackingParanthesisError(setLineNumber(), setLineIndex(),
             setInputLine(), current.token)
 }
 
-fun Parser.undeclaredError(str: String): Nothing {
-    throw UndeclaredError(setLineNumber(), setLineIndex(1), setInputLine(),
-            str)
+fun Parser.undeclaredError(token: Token.Identifier): Nothing {
+    var lineIndex = 0
+    while (lookBehind(lineIndex).token != token) lineIndex++
+    throw UndeclaredError(setLineNumber(), setLineIndex(lineIndex), setInputLine(),
+            token.value)
 }
 
 fun Parser.implicitTypeNotAllowedError(): Nothing {
