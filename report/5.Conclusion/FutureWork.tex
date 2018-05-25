@@ -17,7 +17,7 @@ While HCL is a complete language, there are still improvements that could be mad
 
 \textbf{Working Arduino}\\
 While the project group wanted HCL to run on the Arduino platform, this feature was not completed in time for the project hand-in.
-The Arduino does support lambdas, but not the specific type used for HCL, the \textit{\textbf{std::function type}} from the "functional" C++ standard library.
+The Arduino does support lambdas, but not the specific type used for HCL, the \textit{\textbf{std::function type}} from the "functional" \texttt{C++} standard library.
 A solution could be to write a custom lambda type, specifically for the Arduino.
 
 \textbf{Interpreter}\\
@@ -30,7 +30,7 @@ This would make it simpler to implement complex algorithms in HCL, for example s
 It would also simplify the process of optimizing naive implementions, especially optimization by dynamic programming.
 
 \textbf{Hash collisions}\\
-As mentioned in section \ref{sec:gencplusplus}, \textbf{generated C++ code}, HCL can potentially generate hash code collisions, when naming types and variables in \textbf{C++}.
+As mentioned in section \ref{sec:gencplusplus}, \textit{generated \texttt{C++} code}, HCL can potentially generate hash code collisions, when naming types and variables in \texttt{C++}.
 
 There are a couple of potential solutions to this problem.
 One solution would be to only do hashing on individual illegal characters, thus retaining some of the names defined in HCL.
@@ -39,5 +39,5 @@ Another solution could be to implement a list of valid names for illegal charact
 This would mean that \textbf{+} would become \textbf{plus}, \textbf{-} would become minus, and so forth.
 The issue here, would be if the user created a function with those names.
 
-Yet another possible solutionm is to map all characters to the coresponding UTF-8 character code value and join them to an identifier (the down side to this solution, is that it will render large identifier sizes in the generated \textbf{C++} code).
+Yet another possible solutionm is to map all characters to the coresponding UTF-8 character code value and join them to an identifier (the down side to this solution, is that it will render large identifier sizes in the generated \texttt{C++} code).
 

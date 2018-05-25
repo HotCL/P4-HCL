@@ -240,7 +240,7 @@ Since HCL is supposed to be used on the Arduino platform, it is necessary to tak
 These are explained in section \ref{arduinoC}.
 In order to follow this convention, a function called \textbf{\textit{loop}}, which takes a function body as a parameter, is therefore defined in HCL.
 The \textbf{\textit{loop}} function iterates consecutively.
-Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the C++ global scope, if it is a declaration.
+Everything outside of the loop function, expressed as the "outer scope", is subsequently mapped to the \texttt{C++} global scope, if it is a declaration.
 Otherwise it is mapped to the Arduino's \textbf{\texttt{Setup}} function.
 
 This can be seen through the following example in HCL:

@@ -52,12 +52,12 @@ The project has been, primarily, developed with mini-computers in mind.
 In particular, the Arduino platform has been targeted.
 This is because the Arduino Uno is often used in education, and it makes sense to develop for platforms that are already readily available and in use.
 
-However, as the project group found out, the Arduino platform does not allow for import of standard \textbf{C++} library functions.
+However, as the project group found out, the Arduino platform does not allow for import of standard \texttt{C++} library functions.
 This means that the group ended up instead focusing on getting HCL to run on desktop.
 As mentioned in section \ref{sec:cplusplusfunctions}, a custom implementation of lambdas is required, for HCL to be usable on the Arduino platform.
 This is saved for future work.
 
 HCL does however work on the NodeMCU, which is an Arduino clone with a more powerful processor, the tensilica core.
-The NodeMCU allows for import of \textbf{C++} libraries, due to the xtensa-toolchain\footnote{https://github.com/noduino/xtensa-toolchain}, which allows desktop programs to be ported over in a rather straightforward manner.
+The NodeMCU allows for import of \texttt{C++} libraries, due to the xtensa-toolchain\footnote{https://github.com/noduino/xtensa-toolchain}, which allows desktop programs to be ported over in a rather straightforward manner.
 
 \input{5.Conclusion/QualityAssurance.tex}
