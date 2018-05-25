@@ -34,7 +34,10 @@ This last \textit{generate} function is responsible for wrapping and setting up 
 Before generation, a return code is added to the AST, to ensure that the program has a final return.
 Built-in functions are not added to generation, as these have already been handled. 
 
-The \texttt{MainGenerator}'s \textit{generate} function is described in detail in snippet \ref{lis:mainGen}.
+As seen in snippet \ref{lis:mainGen}, the \textit{generate} function formats the code by locating and appending the specific parts of the AST that is used to build the \texttt{C++} code for Arduino.
+The \texttt{setup} and \texttt{loop} functions are wrapped to function correctly on the Arduino platform, and calls to the functions are automatically added to the file's \texttt{main} function. 
+The result returned from this method, is the main \texttt{C++} code translated from HCL. 
+
 \begin{lstlisting}[language=Kotlin,label=lis:mainGen,caption=The implementation of \textit{generate} in \texttt{MainGenerator}.]
 override fun generate(ast: AbstractSyntaxTree): String {
 	val stringBuilder = StringBuilder(mainHeader)
@@ -54,19 +57,9 @@ override fun generate(ast: AbstractSyntaxTree): String {
 	stringBuilder.appendln(("setup();\n" +
 	(if (loop.isNotBlank()) "while(1) { loop(); }\n" else "")).wrapMain()
 	)
-		return stringBuilder.toString()
+	return stringBuilder.toString()
 	}
 \end{lstlisting}
-(2) Add all header files and namespaces.\\ 
-(3) Find all declarations in source code.\\
-(7) Find all commands in source code that are not declarations or associated with the \textbf{loop} function.\\
-(11) Find all commands that are associated with the \textbf{loop} function.\\
-(12) Add all declarations to output file.\\
-(13) Wrap and add \textbf{setup} function to file.\\
-(14) Wrap and add \textbf{loop} function to file.\\
-(16) Wrap \textbf{main} function and add call to \textbf{setup} function.\\
-If the \textbf{loop} function is not empty, a call to it is also added to the \textbf{main} function.\\
-(19) Source code is generated and returned from function. 
 
 Once all the files have been generated, the code generation is complete.
 The resulting files can be compiled with a native \texttt{C++} compiler or with the Arduino editor.
