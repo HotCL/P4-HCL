@@ -4,6 +4,9 @@ import generation.IPrinter
 import parser.AbstractSyntaxTree
 import parser.AstNode
 
+/**
+ * Generates the main function in C++ with all necessary header inclusions and calls to setup() and loop()
+ */
 class MainGenerator : IPrinter {
     override fun generate(ast: AbstractSyntaxTree): String {
         val stringBuilder = StringBuilder(mainHeader)

@@ -1,7 +1,7 @@
 package lexer
 
 /**
- * Lexical getTokenSequence emitted by the lexer
+ * Tree structure of lexical tokens emitted by Lexer, used for pattern-matching in Parser
  */
 sealed class Token {
     data class Identifier(val value: String) : Token()

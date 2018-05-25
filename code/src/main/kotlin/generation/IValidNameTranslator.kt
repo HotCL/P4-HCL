@@ -9,8 +9,8 @@ interface IValidNameTranslator {
 
     /**
      * Get a valid, in context of output language identifier name from the given identifier.
-     * The source language accepts anything, but output might not accept emojies for-instance.
-     * Also important if scopes are problems
+     * The source language accepts anything, but output might not accept emojis for-instance.
+     * Also important if scopes are a problem
      */
     fun getValidIdentifierName(node: AstNode.Command.Expression.Value.Identifier): String
 
@@ -20,6 +20,6 @@ interface IValidNameTranslator {
      */
     fun getValidTypeName(node: AstNode.Type): String
 
-    fun getValidtListLiteralName(node: AstNode.Command.Expression.Value.Literal.List): String?
+    fun getValidListLiteralName(node: AstNode.Command.Expression.Value.Literal.List): String?
     fun getValidIdentifierName(node: AstNode.Command.Expression): String
 }
