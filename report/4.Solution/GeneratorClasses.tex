@@ -34,7 +34,6 @@ This last \textit{generate} function is responsible for wrapping and setting up 
 Before generation, a return code is added to the AST, to ensure that the program has a final return.
 Built-in functions are not added to generation, as these have already been handled. 
 
-
 \begin{lstlisting}[language=Kotlin,label=lis:mainGen,caption=The implementation of \textit{generate} in \texttt{MainGenerator}.]
 override fun generate(ast: AbstractSyntaxTree): String {
 	val stringBuilder = StringBuilder(mainHeader)
