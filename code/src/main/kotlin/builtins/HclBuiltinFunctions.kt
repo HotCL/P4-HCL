@@ -5,6 +5,11 @@ import parser.AstNode.Type
 import parser.Parameter
 import parser.buildFunction
 
+/**
+ * This object is responsible for adding all built-in function declarations to the AST
+ * Only essential functions that cannot be defined in pure HCL, or that will have too
+ * much overhead in HCL are defined here
+ */
 object HclBuiltinFunctions {
     val functions =
     // Operators

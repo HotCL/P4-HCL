@@ -7,6 +7,10 @@ import java.util.concurrent.TimeUnit
 
 data class CommandResult(val string: String, val returnValue: Int)
 
+/**
+ * Used to run commands in terminal
+ * @param workingDir The directory to run the command from
+ */
 fun String.runCommand(workingDir: File = File("./")): CommandResult {
     return try {
         val parts = this.split("\\s".toRegex())

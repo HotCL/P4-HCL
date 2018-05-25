@@ -2,6 +2,10 @@ package parser.symboltable
 
 import parser.AstNode
 
+/**
+ * Class of symbols for symbol table.
+ * Allows for different ways to handle symbols in certain situations
+ */
 class Symbol(private val types: List<AstNode.Type>) {
     val undeclared get() = types.isEmpty()
     val isFunctions get() = types.firstOrNull() is AstNode.Type.Func

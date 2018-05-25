@@ -1,5 +1,8 @@
 package parser
 
+/**
+ * Tree structure of nodes used to build AST
+ */
 sealed class AstNode {
     sealed class Command : AstNode() {
 

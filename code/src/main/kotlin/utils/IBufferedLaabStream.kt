@@ -1,5 +1,8 @@
 package utils
 
+/**
+ * Generic interface for Buffered Look Ahead And Behind Stream
+ */
 interface IBufferedLaabStream<out T> {
     val current: T
 

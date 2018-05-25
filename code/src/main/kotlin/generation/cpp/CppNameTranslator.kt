@@ -3,11 +3,14 @@ package generation.cpp
 import generation.IValidNameTranslator
 import parser.AstNode
 
+/**
+ * This object translates any identifier/keyword into valid C++ names
+ */
 object CppNameTranslator : IValidNameTranslator {
     override fun getValidIdentifierName(node: AstNode.Command.Expression.Value.Identifier) = node.getValidName()
     override fun getValidIdentifierName(node: AstNode.Command.Expression) = node.getValidName()
     override fun getValidTypeName(node: AstNode.Type) = node.getValidName()
-    override fun getValidtListLiteralName(node: AstNode.Command.Expression.Value.Literal.List) =
+    override fun getValidListLiteralName(node: AstNode.Command.Expression.Value.Literal.List) =
             "LST_IT_0x${node.getValidName()}"
 
     private fun AstNode.Type.getValidName(): String = when (this) {

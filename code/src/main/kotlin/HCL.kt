@@ -20,6 +20,9 @@ import utils.runCommand
 import java.io.File
 import kotlin.system.exitProcess
 
+/**
+ * Main class responsible for overall compilation of HCL
+ */
 class HCL : CliktCommand() {
     init {
         versionOption("Version 0.19")
