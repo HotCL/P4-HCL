@@ -435,9 +435,9 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                         {
                             if (it.first().paramTypes.isEmpty()) {
                                 AstNode.Command.Expression.FunctionCall(
-                                        AstIdentifier(token.value, it.first().returnType),
-                                        listOf(),
-                                        listOf()
+                                    AstIdentifier(token.value, it.first().returnType),
+                                    listOf(),
+                                    listOf()
                                 )
                             } else functionInvokedWithoutArgumentsError(token.value)
                         },
