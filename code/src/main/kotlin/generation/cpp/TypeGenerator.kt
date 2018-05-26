@@ -23,7 +23,8 @@ class TypeGenerator : IPrinter {
         is AstNode.Command.Expression.FunctionCall ->
             arguments.fetchTuples() + identifier.fetchTuple()
         is AstNode.Command.Expression.Value.Literal.List -> elements.fetchTuples()
-        is AstNode.Command.Expression.Value.Literal.Tuple -> setOf(this.type as AstNode.Type.Tuple) + elements.fetchTuples()
+        is AstNode.Command.Expression.Value.Literal.Tuple -> setOf(this.type as AstNode.Type.Tuple) +
+                elements.fetchTuples()
         is AstNode.Command.Expression.Value.Identifier -> type.fetchTuple()
         is AstNode.Command.Assignment -> expression.fetchTuple()
         is AstNode.Command.Declaration -> type.fetchTuple() + (this.expression?.fetchTuple() ?: emptySet())
