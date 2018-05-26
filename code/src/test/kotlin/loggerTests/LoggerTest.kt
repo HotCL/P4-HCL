@@ -135,7 +135,7 @@ class TokenTest {
     @org.junit.jupiter.api.Test
     fun testUnexpectedTypeError() {
         val error = UnexpectedTypeError(50, 8, "num x = \"five\"", "num",
-                              "txt")
+                "txt")
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(

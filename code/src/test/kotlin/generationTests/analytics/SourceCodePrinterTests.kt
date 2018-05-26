@@ -1,7 +1,7 @@
 package generationTests.analytics
 
 import generation.SourceCodePrinter
-import hclTestFramework.parser.*
+import hclTestFramework.parser.* // ktlint-disable no-wildcard-imports
 import org.junit.jupiter.api.Test
 import parser.AbstractSyntaxTree
 import parser.AstNode
