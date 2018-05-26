@@ -11,5 +11,5 @@ package exceptions
 class GenericPassedFunctionException(lineNumber: Int, lineIndex: Int, lineText: String)
     : ParserException(lineNumber, lineIndex, lineText) {
     override val errorMessage = "You cannot pass a function with generic types into another function."
-    override val helpText = "Change your shitcode tbh."
+    override val helpText = "Make sure that any function passed into another function isn't generic."
 }

@@ -46,8 +46,9 @@ object TestAllBuiltinsExist : Spek({
             it("should contain the function \"$expectedBuiltinFunction\"") {
                 assertTrue {
                     ast.children.any {
-                        (it as? AstNode.Command.Declaration)?.let { it.identifier.name == expectedBuiltinFunction }
-                                                                 ?: false
+                        (it as? AstNode.Command.Declaration)
+                                ?.let { it.identifier.name == expectedBuiltinFunction }
+                                ?: false
                     }
                 }
             }
