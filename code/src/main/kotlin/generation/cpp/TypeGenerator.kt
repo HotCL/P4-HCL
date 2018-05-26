@@ -20,6 +20,7 @@ class TypeGenerator : IPrinter {
 
     private fun AstNode.fetchTuple(): Set<AstNode.Type.Tuple> = when (this) {
         is AstNode.Command.Expression.LambdaExpression -> body.fetchTuple() + returnType.fetchTuple()
+        is AstNode.Command.Expression.LambdaBody -> commands.fetchTuples()
         is AstNode.Command.Expression.FunctionCall ->
             arguments.fetchTuples() + identifier.fetchTuple()
         is AstNode.Command.Expression.Value.Literal.List -> elements.fetchTuples()
