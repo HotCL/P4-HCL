@@ -39,5 +39,37 @@ Another solution could be to implement a list of valid names for illegal charact
 This would mean that \textbf{+} would become \textbf{plus}, \textbf{-} would become minus, and so forth.
 The issue here, would be if the user created a function with those names.
 
-Yet another possible solutionm is to map all characters to the coresponding UTF-8 character code value and join them to an identifier (the down side to this solution, is that it will render large identifier sizes in the generated \texttt{C++} code).
+Yet another possible solution is to map all characters to the corresponding UTF-8 character code value and join them to an identifier (the down side to this solution, is that it will render large identifier sizes in the generated \texttt{C++} code).
+
+\subsection{Bugs in Compiler}
+There are a few known bugs currently found in the compiler at the time of writing this report. 
+The following is a run-down of the known bugs and their potential complications in the program. 
+
+\textbf{Overloading in High-Order Functions}\\
+Although both overloading and high-order functionality works separately, once both techniques are used together the compiler faults in determining the correct result.
+The problem potentially occurs, when an overloaded function is passed as an argument for another function. 
+If the first function the compiler recognizes does not use the correct input-parameters, the compiler throws an exception.
+However, if the first function found happens to be the correct one, the compiler sees no faults and works expectantly.
+The problem is shown in snippet \ref{lis:highover}, where the first overloaded function declared is of wrong parameter-type, and therefore causes a compiler exception. 
+\begin{lstlisting}[language=Kotlin,label=lis:highover,caption=Overloading in high-order functions problem.]
+var f = (func[num, num] n) : num { 2 n }
+var p = (txt i): txt { "hello" }
+var p = (num i): num { 5 * i }
+:p f 	#should print 10, but fails. 
+\end{lstlisting}
+
+\textbf{None Returns}\\
+The following is more of an oversight than a bug. 
+The problem occurs when a function, that is signified to not return anything, contains a return statement. 
+The compiler does not recognize the return statement, and will thus not throw an exception. 
+However, the oversight might lead to confusion or prolonged debugging-time. 
+The problem is shown in snippet \ref{lis:nonereturn}.
+\begin{lstlisting}[language=Kotlin,label=lis:nonereturn,caption=Returning from a none-function.]
+func f = (): none { 
+"something to print" print
+return 5 
+} 
+#Causes no problems, but should.
+\end{lstlisting}
+
 
