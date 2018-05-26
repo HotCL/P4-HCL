@@ -47,7 +47,7 @@ The following is a run-down of the known bugs and their potential complications 
 
 \textbf{Overloading in High-Order Functions}\\
 Although both overloading and high-order functionality works separately, once both techniques are used together the compiler faults in determining the correct result.
-The problem could potentially arises when an overloaded function is passed as an argument for another function. 
+The problem potentially occurs, when an overloaded function is passed as an argument for another function. 
 If the first function the compiler recognizes does not use the correct input-parameters, the compiler throws an exception.
 However, if the first function found happens to be the correct one, the compiler sees no faults and works expectantly.
 The problem is shown in snippet \ref{lis:highover}, where the first overloaded function declared is of wrong parameter-type, and therefore causes a compiler exception. 
