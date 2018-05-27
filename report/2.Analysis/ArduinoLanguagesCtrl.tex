@@ -7,7 +7,7 @@ There is a variety of languages to choose from when programming for the Arduino 
 Some of these are:
 
 \begin{itemize}
-	\item Arduino C++ (the official Arduino language)
+	\item Arduino \texttt{C++} (the official Arduino language)
 	\item Occam-pi
 	\item NanoVM
 	\item Juniper
@@ -16,11 +16,11 @@ Some of these are:
 
 % Source: arduino.cc
 \label{arduinoC}
-\textbf{Arduino C++} is a subset of the C++ language with its own libraries, designed specifically for the Arduino platform.
-Because of this, it is compatible with the C and C++ languages.
-There are a few changes made to the language, but the basic functionality and syntax of C and C++ are still present, meaning users are able to use both the imperative- and the object-oriented paradigms, respectively, to program the Arduino.
+\textbf{Arduino \texttt{C++}} is a subset of the \texttt{C++} language with its own libraries, designed specifically for the Arduino platform.
+Because of this, it is compatible with the C and \texttt{C++} languages.
+There are a few changes made to the language, but the basic functionality and syntax of C and \texttt{C++} are still present, meaning users are able to use both the imperative- and the object-oriented paradigms, respectively, to program the Arduino.
 
-The following is a brief overview of the basic syntax of Arduino C++.
+The following is a brief overview of the basic syntax of Arduino \texttt{C++}.
 Snippets \ref{lis:arduinoExample} and \ref{lis:arduinoHeader} showcases the syntax.
 All information is taken from the official Arduino reference\cite{ArduinoReference}.
 
@@ -150,11 +150,11 @@ In Java all variables and functions must be declared inside a class.
 
 Also, each separate file can only contain one public class, which must have the same name as the file itself. 
 
-\textit{Class fields} and methods are declared identically to how variables are declared in Arduino C++, except each field variable is prefixed with an optional access modifier (snippet \ref{lis:javaExample}, lines 3, 5).
+\textit{Class fields} and methods are declared identically to how variables are declared in Arduino \texttt{C++}, except each field variable is prefixed with an optional access modifier (snippet \ref{lis:javaExample}, lines 3, 5).
 Variables can be made into class variables (called so because the variables belong to the class instead of instances of the class) with the \texttt{static} keyword before the name in the declaration.
 The same can be done to methods.
 
-\textit{Comments} are written exactly like in C and C++.
+\textit{Comments} are written exactly like in C and \texttt{C++}.
 
 \begin{lstlisting}[language=Java,label=lis:javaExample,caption=An example program written in Java.,firstnumber=1]
 public class HelloWorld {
@@ -176,11 +176,11 @@ public class Printer {
 }
 \end{lstlisting}
 
-The downsides of using NanoVM instead of Arduino C++, as stated on the official website of NanoVM\footnote{http://www.harbaum.org/till/nanovm/index.shtml}, is that the VM's interpreter does not perform as well as C compiled to AVR code, and it reserves some of the RAM used for applications to run the VM.
+The downsides of using NanoVM instead of Arduino \texttt{C++}, as stated on the official website of NanoVM\footnote{http://www.harbaum.org/till/nanovm/index.shtml}, is that the VM's interpreter does not perform as well as C compiled to AVR code, and it reserves some of the RAM used for applications to run the VM.
 NanoVM also has to be installed on the CPU's flash memory, which will overwrite the bootloader.
 
 \textbf{Juniper} is a functional programming language designed specifically for the Arduino.
-The intention behind creating Juniper was to provide a higher level language than Arduino C++, which at the same time was more suited for programming electronic devices\cite{JuniperTutorial}.
+The intention behind creating Juniper was to provide a higher level language than Arduino \texttt{C++}, which at the same time was more suited for programming electronic devices\cite{JuniperTutorial}.
 
 The following is a description of the basic syntax of Juniper. 
 Figure \ref{lis:juniperExample} showcases the syntax.
@@ -193,7 +193,7 @@ Variables are by default immutable, but they can be made mutable by inserting th
 \textit{Modules} have the same purpose and functionality as they do in Occam-pi - to provide predefined functions to the programmer.
 
 \textit{Comments} in Juniper can be written in two different ways.
-End-of-line comments are prefixed with two slashes (just like C++ and Java).
+End-of-line comments are prefixed with two slashes (just like \texttt{C++}and Java).
 Multi-line comments are prefixed with a start parenthesis followed by an asterisk (\texttt{"(*"}), and post fixed with an asterisk followed by an end parenthesis (\texttt{"*)"}).
 
 \begin{lstlisting}[,label=lis:juniperExample,caption=Example program\, taken from the tutorial on Juniper's website.,firstnumber=1]

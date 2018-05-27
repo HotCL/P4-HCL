@@ -47,7 +47,10 @@ object TestHclPrograms : Spek({
         "PrintFibonacci.hcl",
         "Swap.hcl",
         "bubbleSort.hcl",
-        "testFirstIndexWhereStdlib.hcl"
+        "testFirstIndexWhereStdlib.hcl",
+        "conclusionExampleNicolaj.hcl",
+        "ListOutOfBounds.hcl",
+        "aTupleInFunction.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {
@@ -64,7 +67,8 @@ object TestHclPrograms : Spek({
                 assertEquals(expectedReturn, output.returnValue,
                     "expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
                         "full output:\n${output.string}")
-                assertEquals(expectedPrint, output.string)
+                assertEquals(expectedPrint, output.string,
+                    "Expected PRINT=${expectedPrint}. was ${output.string}.\n")
             }
         }
     }

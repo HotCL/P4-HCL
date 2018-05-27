@@ -25,8 +25,6 @@ class CodeGenerator : IPrinter {
             } else "") + it.format()
     }
 
-    // private fun Iterable<AstNode.Command.Expression>.format() = joinToString(",") { it.format() }
-
     private fun AstNode.Command.format(): String =
             when (this) {
                 is AstNode.Command.Declaration -> format()
@@ -38,7 +36,7 @@ class CodeGenerator : IPrinter {
             }
 
     private fun AstNode.Command.Assignment.format() =
-            " // Assignment for ${identifier.name}\n".indented +
+            "// Assignment for ${identifier.name}\n".indented +
             "${identifier.cppName} = ${expression.format()};\n".indented
 
     private fun AstNode.Command.Declaration.format(): String = when (expression) {

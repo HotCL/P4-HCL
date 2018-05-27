@@ -5,6 +5,11 @@ import parser.AstNode.Type
 import parser.Parameter
 import parser.buildFunction
 
+/**
+ * This object is responsible for adding all built-in function declarations to the AST
+ * Only essential functions that cannot be defined in pure HCL, or that will have too
+ * much overhead in HCL are defined here
+ */
 object HclBuiltinFunctions {
     val functions =
     // Operators
@@ -253,18 +258,18 @@ private fun buildLengthText() =
 
 private fun buildSubtextText() =
     buildFunction(
-        identifier = "subText",
+        identifier = "splitAt",
         parameters = listOf(
             Parameter("leftHand", Type.Text),
             Parameter("startIndex", Type.Number),
             Parameter("length", Type.Number)
         ),
         returnType = Type.Text,
-        body = "return ${"subList".cppName}<char>(leftHand,startIndex,length);"
+        body = "return ${"splitAt".cppName}<char>(leftHand,startIndex,length);"
     )
 
 private fun buildSubListFunction() = buildFunction(
-    identifier = "subList",
+    identifier = "splitAt",
     parameters = listOf(
         Parameter("list", Type.List(Type.GenericType("T"))),
         Parameter("startIndex", Type.Number),
@@ -309,7 +314,7 @@ private fun buildThenFunction() = buildFunction(
 )
 
 private fun buildEachFunction() = buildFunction(
-    identifier = "each",
+    identifier = "forEach",
     parameters = listOf(
         Parameter("list", Type.List(Type.GenericType("T"))),
         Parameter("body", Type.Func(listOf(Type.GenericType("T")), Type.None))
@@ -339,7 +344,7 @@ private fun buildMapFunction() = buildFunction(
 )
 
 private fun buildFilterFunction() = buildFunction(
-    identifier = "filter",
+    identifier = "where",
     parameters = listOf(
         Parameter("list", Type.List(Type.GenericType("T"))),
         Parameter("fun",
@@ -360,7 +365,7 @@ private fun buildFilterFunction() = buildFunction(
 )
 
 private fun buildDelayMillisFunction() = buildFunction(
-    identifier = "delayMillis",
+    identifier = "delay",
     parameters = listOf(Parameter("millis", Type.Number)),
     returnType = Type.None,
     body = "#if defined(ARDUINO_AVR_UNO) || defined(ESP8266)\n" +

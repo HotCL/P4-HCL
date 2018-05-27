@@ -1,17 +1,22 @@
+# Alternative to function "@"
 var @ = (list[T] lst, num idx): T { lst at idx }
 
+# Returns whether a predicate applies to any element in list
 var any = (list[T] myList, func[T, bool] compareFunc): bool{
-	myList filter { value compareFunc } length greaterThan 0
+	myList where { value compareFunc } length greaterThan 0
 }
 
+# Returns whether a predicate applies to all elements in list
 var all = (list[T] myList, func[T, bool] compareFunc): bool{
-	myList filter { value compareFunc } length equals (myList length)
+	myList where { value compareFunc } length equals (myList length)
 }
 
+# Get first index where predicate applies
+# Returns -1 if it doesn't apply to any element
 func firstIndexWhere = (list[T] lst, func[T, bool] predicate): num {
     var ret = -1
     var idx = 0
-    lst each {
+    lst forEach {
         value predicate and (ret equals -1) then { ret = idx }
         idx = idx + 1
     }

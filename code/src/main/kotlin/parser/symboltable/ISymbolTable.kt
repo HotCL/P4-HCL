@@ -35,9 +35,23 @@ interface ISymbolTable {
      */
     fun retrieveSymbol(name: String): Symbol
 
+    /**
+     * Enters a generic type in symbol table
+     * @param type The generic type
+     */
     fun enterType(type: AstNode.Type.GenericType)
 
+    /**
+     * Checks if a generic type has been entered in currect scope
+     * @param type The generic type that is checked for
+     * @return Whether the type has been entered
+     */
     fun genericTypeInScope(type: AstNode.Type.GenericType): Boolean
 
+    /**
+     * Checks if a generic type has been entered in currect scope
+     * @param typeName The name of the generic type that is checked for
+     * @return Whether the type has been entered
+     */
     fun genericTypeInScope(typeName: String): Boolean
 }

@@ -1,7 +1,7 @@
 # should print first=1 and last=9
 
 var toUneven = (num start, num stop): list[num] {
-    start to stop filter { value mod 2 equals 1 }
+    start to stop where { value mod 2 equals 1 }
 }
 
 var last = (list[T] myList): T {

@@ -1,5 +1,9 @@
 package utils
 
+/**
+ * Implementation of IBufferedLaabStream
+ * Allows parser to move through, peek, look ahead, and look behind in token sequence
+ */
 class BufferedLaabStream<out T>(sequence: Sequence<T>) : IBufferedLaabStream<T> {
     private val buffer = sequence.toList()
     private var index = 0

@@ -419,22 +419,22 @@ Even though this is an exception to the general description of a list expression
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash ls_v' \rightarrow_e v}
+			{env_V, sto \vdash e \rightarrow_{e} v' \quad env_V, sto \vdash ls_v' \rightarrow_e v}
 			{env_V, sto \vdash list\ at\ e \rightarrow_{list} v}
 	\end{math}
 	
-	\texttt{ where } $ls_v'\ is\ the\ v'th\ element\ of\ list$
+	\texttt{ where } $ls_v'\ is\ the\ (v' + 1)th\ element\ of\ list$
 \end{center}
 
 \texttt{[$ListAtMiss_{BSS}$]}
 \begin{center}
 	\begin{math}
-	\cfrac
-	{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash ls_v' \rightarrow_e v}
-	{env_V, sto \vdash list\ at\ e \rightarrow_{list} v}
+		\cfrac
+			{env_V, sto \vdash e \rightarrow_{e} v}
+			{env_V, sto \vdash list\ at\ e \rightarrow_{list} Program\ Crash}
 	\end{math}
 	
-	\texttt{ where } $ls_v'\ is\ the\ v'th\ element\ of\ list$
+	\texttt{ where } $|list| - 1 < v$
 \end{center}
 
 
@@ -464,15 +464,27 @@ The set of which it is an element of is denoted $Tuple$.
 The transition-system for $tuple_{exp}$ is $(tuple_{tuple_exp} \cup Tuple, \rightarrow_{tuple}, Tuple)$.
 The transitions are shown below.
 
-\texttt{[$TplAt_{BSS}$]}\\
+\texttt{[$TupleElementAtIndexHit_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
-	{env_V, sto \vdash a \rightarrow_{a} v' \quad env_V, sto \vdash tp_v' \rightarrow_e v}
-	{env_V, sto \vdash tuple\ at\ a \rightarrow_{tuple} v}
+	{env_V, sto \vdash tpl_i \rightarrow_e v}
+	{env_V, sto \vdash tuple\ element i \rightarrow_{tuple} v}
 	\end{math}
 	
-	\texttt{ where } $tp_v'\ is\ the\ v'th\ element\ of\ tuple$
+	\texttt{ where } $tpl_i\ is\ the\ (i + 1)th\ element\ of\ tuple$\\
+	\texttt{ and } $i \in \mathbf{Z}$
+\end{center}
+
+\texttt{[$TupleElementAtIndexMiss_{BSS}$]}
+\begin{center}
+	\begin{math}
+	{env_V, sto \vdash tuple\ element i \rightarrow_{tuple} Program\ Crash}
+	\end{math}
+	
+	\texttt{ where } $|tuple| - 1 < i$\\
+	\texttt{ or } $|tuple| - 1 > i$\\
+	\texttt{ and where } $i \in \mathbf{Z}$
 \end{center}
 
 \textbf{[$TupleLit_{BSS}$]}\\

@@ -11,11 +11,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: TypeError found at line 4 index 10:\n" +
+                "\n- ERROR: TypeError found at line 4 index 10:\n" +
                         " | var b = 4 < \"5\"\n" +
                         " |           ^--\n" +
                         " | Function '<' not defined for types: 'num', 'txt' and 'bool'.\n" +
-                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+                        " | -->help: Try casting your types to match eachother.\n\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testTypeErrorSingleType() {
@@ -23,11 +23,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: TypeError found at line 6 index 12:\n" +
+                "\n- ERROR: TypeError found at line 6 index 12:\n" +
                         " | \"notText\" print\n" +
                         " |             ^--\n" +
                         " | Function 'print' not defined for types: 'num'.\n" +
-                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+                        " | -->help: Try casting your types to match eachother.\n\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testTypeErrorNoTypes() {
@@ -35,11 +35,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: TypeError found at line 6 index 0:\n" +
+                "\n- ERROR: TypeError found at line 6 index 0:\n" +
                         " | print\n" +
                         " | ^--\n" +
                         " | Function 'print' not defined for types: No type.\n" +
-                        " | -->help: Try casting your types to match eachother.\n", logger.buffer.toString())
+                        " | -->help: Try casting your types to match eachother.\n\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -48,11 +48,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: UndeclaredError found at line 12 index 8:\n" +
+                "\n- ERROR: UndeclaredError found at line 12 index 8:\n" +
                         " | txt s = textString\n" +
                         " |         ^--\n" +
                         " | Undeclared identifier 'textString' found.\n" +
-                        " | -->help: Declare identifier before use.\n", logger.buffer.toString())
+                        " | -->help: Declare identifier before use.\n\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -61,11 +61,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: UninitializedError found at line 12 index 4:\n" +
+                "\n- ERROR: UninitializedError found at line 12 index 4:\n" +
                         " | x = someUninitializedVariable + 10\n" +
                         " |     ^--\n" +
                         " | Use of uninitialized variable 'someUninitializedVariable' found.\n" +
-                        " | -->help: Try initializing variable before use.\n", logger.buffer.toString())
+                        " | -->help: Try initializing variable before use.\n\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -74,11 +74,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: ZeroDivisionError found at line 7 index 6:\n" +
+                "\n- ERROR: ZeroDivisionError found at line 7 index 6:\n" +
                         " | x = 42/0\n" +
                         " |       ^--\n" +
                         " | Division by 0 found\n" +
-                        " | -->help: Check your variables\n", logger.buffer.toString())
+                        " | -->help: Check your variables\n\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testMissingArgumentError() {
@@ -86,11 +86,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: MissingArgumentError found at line 11 index 2:\n" +
+                "\n- ERROR: MissingArgumentError found at line 11 index 2:\n" +
                         " | 2 someFunction\n" +
                         " |   ^--\n" +
                         " | Missing argument for function 'someFunction'.\n" +
-                        " | -->help: Have you included all arguments for function?\n", logger.buffer.toString())
+                        " | -->help: Have you included all arguments for function?\n\n", logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testMissingEncapsulation() {
@@ -98,11 +98,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: MissingEncapsulationError found at line 30 index 0:\n" +
+                "\n- ERROR: MissingEncapsulationError found at line 30 index 0:\n" +
                         " | ({()}\n" +
                         " | ^--\n" +
                         " | Missing closing character for '('\n" +
-                        " | -->help: Remember to always close encapsulations.\n", logger.buffer.toString())
+                        " | -->help: Remember to always close encapsulations.\n\n", logger.buffer.toString())
     }
 
     @org.junit.jupiter.api.Test
@@ -111,11 +111,11 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: InitializedFunctionParameterError found at line 0 index 15:\n" +
+                "\n- ERROR: InitializedFunctionParameterError found at line 0 index 15:\n" +
                         " | var x = (num z = 5): none {}\n" +
                         " |                ^--\n" +
                         " | Cannot initialize function arguments in declaration.\n" +
-                        " | -->help: Function arguments are initialized when the function is called.\n",
+                        " | -->help: Function arguments are initialized when the function is called.\n\n",
                 logger.buffer.toString())
     }
 
@@ -125,25 +125,25 @@ class TokenTest {
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: NoneAsInputError found at line 0 index 9:\n" +
+                "\n- ERROR: NoneAsInputError found at line 0 index 9:\n" +
                         " | var x = (none z): none {}\n" +
                         " |          ^--\n" +
                         " | Functions can not have input-parameter of type 'none'.\n" +
-                        " | -->help: 'none' can only be used as a functions return-type.\n",
+                        " | -->help: 'none' can only be used as a functions return-type.\n\n",
                 logger.buffer.toString())
     }
     @org.junit.jupiter.api.Test
     fun testUnexpectedTypeError() {
         val error = UnexpectedTypeError(50, 8, "num x = \"five\"", "num",
-                              "txt")
+                "txt")
         val logger = TestLogger()
         logger.logCompilationError(error)
         assertEquals(
-                "- ERROR: UnexpectedTypeError found at line 50 index 8:\n" +
+                "\n- ERROR: UnexpectedTypeError found at line 50 index 8:\n" +
                         " | num x = \"five\"\n" +
                         " |         ^--\n" +
-                        " | Cannot implicit cast type 'txt' to type 'num'.\n" +
-                        " | -->help: Try casting your types to match eachother.\n",
+                        " | Cannot implicitly cast type 'txt' to type 'num'.\n" +
+                        " | -->help: Try casting your types to match eachother.\n\n",
                 logger.buffer.toString())
     }
 }

@@ -32,15 +32,6 @@ class TypeChecker : ITypeChecker {
         val generics = decl.paramTypes.zip(arguments)
         return decl.returnType.fillGenerics(generics)
     }
-    /*
-            if (decl.returnType is AstNode.Type.GenericType)
-            decl.paramTypes.zip(arguments).getTypeFromGenericType(decl.returnType.name) ?: TODO()
-    else decl.returnType
-*/
-    /**
-     * Pair = declaredType and argumentType
-     * It is certain that argumentType doesn't contain any generics. This is a rule of the language
-     */
 
     private fun List<Pair<AstNode.Type, AstNode.Type>>.getTypeFromGenericType(typeName: String): AstNode.Type? =
             map { it.getTypeFromGenericType(typeName) }.firstOrNull { it != null }

@@ -28,7 +28,7 @@ class TupleTests {
                         .`,`.text("someText").`)`.newLine
             },
             matchesAstChildren("myTuple" declaredAs tpl(num, txt) withValue tpl(num(5),
-                               txt("someText")))
+                    txt("someText")))
         )
     }
 
