@@ -7,7 +7,7 @@ import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import parser.ParserWithoutBuiltins
+import parser.Parser
 
 class FunctionDeclarationTests {
 
@@ -32,7 +32,7 @@ class FunctionDeclarationTests {
             func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.text.identifier("myParam1").`)`
             .colon.text.`{`.text("thomas").`}`.newLine
         })
-        assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -41,7 +41,7 @@ class FunctionDeclarationTests {
             func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`)`
             .colon.number.`{`.number(3.0).`}`.newLine
         })
-        assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -49,7 +49,7 @@ class FunctionDeclarationTests {
         val lexer = DummyLexer(buildTokenSequence {
             func.squareStart.number.`,`.text.squareEnd.identifier("myFunc").`=`.number(5.0).newLine
         })
-        assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -57,7 +57,7 @@ class FunctionDeclarationTests {
         val lexer = DummyLexer(buildTokenSequence {
             func.squareStart.number.`,`.text.squareEnd.identifier("toString").newLine
         })
-        assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(Exception::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @org.junit.jupiter.api.Test
@@ -65,7 +65,7 @@ class FunctionDeclarationTests {
         val lexer = DummyLexer(buildTokenSequence {
             func.squareStart.number.text.squareEnd.identifier("myFunc").newLine
         })
-        assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @org.junit.jupiter.api.Test
@@ -74,7 +74,7 @@ class FunctionDeclarationTests {
                 func.squareStart.squareEnd.identifier("myFunc")
                 // should fail before this token
         })
-        assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @org.junit.jupiter.api.Test
@@ -104,7 +104,7 @@ class FunctionDeclarationTests {
         val lexer = DummyLexer(buildTokenSequence {
             func.squareStart.number.`,`.`,`.text.squareEnd.identifier("myFunc").newLine
         })
-        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).commandSequence().toList() }
     }
     // endregion FuncTypeDcl
 
@@ -143,7 +143,7 @@ class FunctionDeclarationTests {
             func.identifier("myFunc").`=`.`(`.number.identifier("myParam1").`=`.number(5.0).`)`.colon.none.newLine
         })
         Assertions.assertThrows(InitializedFunctionParameterError::class.java,
-                { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
+                { Parser(lexer).commandSequence().toList() })
     }
 
     @Test
@@ -170,7 +170,7 @@ class FunctionDeclarationTests {
         })
 
         Assertions.assertThrows(OverloadWithDifferentAmountOfArgumentsException::class.java,
-                { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
+                { Parser(lexer).commandSequence().toList() })
     }
 
     @Test
@@ -182,7 +182,7 @@ class FunctionDeclarationTests {
         })
 
         Assertions.assertThrows(AlreadyDeclaredException::class.java,
-                { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() })
+                { Parser(lexer).commandSequence().toList() })
     }
 
     @org.junit.jupiter.api.Test

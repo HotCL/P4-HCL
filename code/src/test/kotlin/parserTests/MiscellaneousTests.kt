@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import parser.Parser
-import parser.ParserWithoutBuiltins
+import parser.cpp.CppParser
 import kotlin.test.assertTrue
 
 class MiscellaneousTests {
@@ -29,13 +29,13 @@ class MiscellaneousTests {
         val lexer = DummyLexer(buildTokenSequence {
             bool.identifier("myId").`=`.number(5.0).newLine
         })
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
     @Test
     fun canParseLoop() {
-        val ast = Parser(DummyLexer(buildTokenSequence {
+        val ast = CppParser(DummyLexer(buildTokenSequence {
             `{`.text("HEY").identifier("print").`}`.identifier("loop").newLine
-        })).generateAbstractSyntaxTree()
+        })).cppAst()
 
         val funcCall = ("loop" returning (none)).calledWith(lambda() andBody body(
             "print" returning none calledWith txt("HEY")))
@@ -119,7 +119,7 @@ class MiscellaneousTests {
         val lexer = DummyLexer(buildTokenSequence {
             list.squareStart.func.squareEnd.identifier("myFunc").newLine
         })
-        assertThrows(ImplicitTypeNotAllowed::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(ImplicitTypeNotAllowed::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -127,6 +127,6 @@ class MiscellaneousTests {
         val lexer = DummyLexer(buildTokenSequence {
             `=`.newLine
         })
-        assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(Exception::class.java) { Parser(lexer).commandSequence().toList() }
     }
 }

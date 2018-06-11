@@ -1,6 +1,5 @@
 package parser
 
-import builtins.HclBuiltinFunctions
 import parser.typechecker.ITypeChecker
 import parser.typechecker.TypeChecker
 import lexer.ILexer
@@ -11,6 +10,7 @@ import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
+import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Implementation of IParser interface
@@ -21,29 +21,16 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     // Used for recursive calls
     private var currentFunctionName: String? = null
-    override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
-        // Add builtin functions
-        HclBuiltinFunctions.functions.forEach {
-            children.add(it)
-            enterSymbol(it.identifier.name, it.expression!!.type)
-        }
-        enterSymbol("RETURN_CODE", AstNode.Type.Number)
-
-        enterSymbol("+", AstNode.Type.Func(listOf(AstNode.Type.Text, AstNode.Type.Text),
-            AstNode.Type.Text))
-
-        enterSymbol("loop", AstNode.Type.Func(listOf(AstNode.Type.Func(listOf(), AstNode.Type.None)),
-            AstNode.Type.None))
-
+    override fun commandSequence() = buildSequence {
         // Parse
         while (hasNext()) {
             if (current.token != Token.SpecialChar.EndOfLine) {
-                children.add(parseCommand())
+                yield(parseCommand())
             } else moveNext()
         }
     }
 
-    protected fun parseCommand(): AstNode.Command {
+    private fun parseCommand(): AstNode.Command {
         flushNewLine(false)
         val command = when (current.token) {
             is Token.Type -> parseDeclaration()

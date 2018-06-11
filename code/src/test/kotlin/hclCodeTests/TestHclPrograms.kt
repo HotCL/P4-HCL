@@ -7,16 +7,17 @@ import hclTestFramework.codegen.compileAndExecuteCpp
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
+import parser.cpp.CppParser
 import stdlib.Stdlib
 import kotlin.system.exitProcess
 import kotlin.test.assertEquals
 
 fun generateFilesFromCode(fileName: String, code: String): List<FilePair> {
     val lexer = lexer.Lexer(mapOf(Stdlib.getStdlibContent(), fileName to code))
-    val parser = parser.Parser(lexer)
+    val parser = CppParser(lexer)
     val logger = logger.Logger()
     val ast = try {
-        parser.generateAbstractSyntaxTree()
+        parser.cppAst()
     } catch (exception: CompilationException) {
         logger.logCompilationError(exception)
         exitProcess(-1)
@@ -68,7 +69,7 @@ object TestHclPrograms : Spek({
                     "expected RETURN_CODE=$expectedReturn. was ${output.returnValue}.\n" +
                         "full output:\n${output.string}")
                 assertEquals(expectedPrint, output.string,
-                    "Expected PRINT=${expectedPrint}. was ${output.string}.\n")
+                    "Expected PRINT=$expectedPrint. was ${output.string}.\n")
             }
         }
     }

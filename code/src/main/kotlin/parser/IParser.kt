@@ -1,5 +1,5 @@
 package parser
 
 interface IParser {
-    fun generateAbstractSyntaxTree(): AbstractSyntaxTree
+    fun commandSequence(): Sequence<AstNode.Command>
 }

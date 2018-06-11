@@ -6,7 +6,7 @@ import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import parser.ParserWithoutBuiltins
+import parser.Parser
 
 class PrimitiveTypeTests {
     @Test
@@ -88,6 +88,6 @@ class PrimitiveTypeTests {
         val lexer = DummyLexer(buildTokenSequence {
             bool.identifier("myId").`=`.number(5.0).newLine
         })
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 }

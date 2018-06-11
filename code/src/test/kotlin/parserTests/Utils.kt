@@ -9,13 +9,13 @@ import lexer.* // ktlint-disable no-wildcard-imports
 import org.junit.jupiter.api.Assertions
 import parser.AbstractSyntaxTree
 import parser.AstNode
-import parser.ParserWithoutBuiltins
+import parser.Parser
 import kotlin.coroutines.experimental.buildSequence
 
 fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<List<Token>> =
         object : Matcher<List<Token>> {
             override fun invoke(actual: List<Token>): MatchResult {
-                val actualAst = ParserWithoutBuiltins(DummyLexer(buildSequence { yieldAll(actual) })).generateAbstractSyntaxTree()
+                val actualAst = AbstractSyntaxTree(Parser(DummyLexer(buildSequence { yieldAll(actual) })).commandSequence().toList())
                 val expectedAst = AbstractSyntaxTree(expectedAstChildren.toMutableList())
                 return if (actualAst == expectedAst) MatchResult.Match
                 else MatchResult.Mismatch("Expected AST equal to this:\n$expectedAst\n" +
@@ -30,7 +30,7 @@ fun matchesAstChildren(vararg expectedAstChildren: AstNode.Command): Matcher<Lis
 fun matchesAstWithActualLexer(expected: String): Matcher<String> =
         object : Matcher<String> {
             override fun invoke(actual: String): MatchResult {
-                val actualAst = ParserWithoutBuiltins(Lexer(actual.asLexerInput())).generateAbstractSyntaxTree()
+                val actualAst = AbstractSyntaxTree(Parser(Lexer(actual.asLexerInput())).commandSequence().toList())
                 val actualAstString = SourceCodePrinter().generate(actualAst)
                 return if (actualAstString == expected) MatchResult.Match
                 else MatchResult.Mismatch("Expected AST equal to this:\n$expected\n" +
@@ -54,5 +54,5 @@ class DummyLexer(private val tokens: Sequence<Token>) : ILexer {
 infix fun String.becomes(expectedPrettyPrint: String) = assertThat(this, matchesAstWithActualLexer(expectedPrettyPrint))
 
 fun parseExpectException(content: String) = Assertions.assertThrows(Exception::class.java) {
-    ParserWithoutBuiltins(Lexer(content.asLexerInput())).generateAbstractSyntaxTree()
+    Parser(Lexer(content.asLexerInput())).commandSequence().toList()
 }

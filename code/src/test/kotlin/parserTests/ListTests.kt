@@ -9,7 +9,7 @@ import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import parser.ParserWithoutBuiltins
+import parser.Parser
 
 class ListTests {
 
@@ -69,7 +69,7 @@ class ListTests {
             list.squareStart.number.squareEnd.identifier("MyList").`=`
                 .squareStart.number(5.0).`,`.text("hej").squareEnd.newLine
         })
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @org.junit.jupiter.api.Test
@@ -77,7 +77,7 @@ class ListTests {
         val lexer = DummyLexer(buildTokenSequence {
             list.squareStart.number.squareEnd.identifier("MyList").`=`.squareStart.number(5.0).number(10.0).squareEnd.newLine
         })
-        Assertions.assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @org.junit.jupiter.api.Test
@@ -85,7 +85,7 @@ class ListTests {
         val lexer = DummyLexer(buildTokenSequence {
             list.squareStart.number.squareEnd.identifier("MyList").`=`.squareStart.number(5.0).`,`.`,`.number(10.0).squareEnd.newLine
         })
-        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -103,6 +103,6 @@ class ListTests {
         val lexer = DummyLexer(buildTokenSequence {
             list.squareStart.func.squareEnd.identifier("myFunc").newLine
         })
-        Assertions.assertThrows(ImplicitTypeNotAllowed::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(ImplicitTypeNotAllowed::class.java) { Parser(lexer).commandSequence().toList() }
     }
 }

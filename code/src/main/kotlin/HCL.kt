@@ -1,7 +1,6 @@
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
-import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.versionOption
@@ -13,7 +12,7 @@ import lexer.Lexer
 import logger.Logger
 import parser.AstNode
 import parser.BuiltinLambdaAttributes
-import parser.Parser
+import parser.cpp.CppParser
 import stdlib.Stdlib
 import utils.compileCpp
 import utils.runCommand
@@ -50,10 +49,10 @@ class HCL : CliktCommand() {
                             Stdlib.getStdlibContent()
                     ) + inputFiles.map { it.nameWithoutExtension to it.readText() }
             )
-            val hclParser = Parser(lexer)
+            val hclParser = CppParser(lexer)
             val logger = Logger()
             val ast = try {
-                hclParser.generateAbstractSyntaxTree()
+                hclParser.cppAst()
             } catch (exception: CompilationException) {
                 logger.logCompilationError(exception)
                 exitProcess(-1)
@@ -81,10 +80,10 @@ class HCL : CliktCommand() {
                 print(">>> ")
                 val inputLine = readLine()!!
                 val lexer = Lexer(mapOf(Stdlib.getStdlibContent(), "CLI" to content.toString() + "\n" + inputLine))
-                val hclParser = Parser(lexer)
+                val hclParser = CppParser(lexer)
                 val logger = Logger()
                 val ast = try {
-                    hclParser.generateAbstractSyntaxTree()
+                    hclParser.cppAst()
                 } catch (exception: CompilationException) {
                     logger.logCompilationError(exception)
                     continue

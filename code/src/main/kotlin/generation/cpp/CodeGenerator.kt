@@ -33,6 +33,7 @@ class CodeGenerator : IPrinter {
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
                 is AstNode.Command.RawCpp ->
                     content.split("\n").joinToString("") { (it + "\n").indented }
+                is AstNode.Command.KotlinFunction -> throw Exception("Kotlin call not possible in CPP generation!")
             }
 
     private fun AstNode.Command.Assignment.format() =

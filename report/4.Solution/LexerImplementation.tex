@@ -13,15 +13,9 @@ A sealed class in Kotlin, simply specifies that a value can have one specific ty
 It is essentially an extended enum.
 \begin{lstlisting}[language=Kotlin,label=lis:tokenClass,caption=A snippet from the token class .,firstnumber=9]
 sealed class Literal : Token() {
-	class Text(val value: String) : Literal() {
-	override fun toString() = super.toString() + "[$value]"
-	}
-	class Number(strValue: String, val value: Double = strValue.toDouble()) : Literal() {
-	override fun toString() = super.toString() + "[$value]"
-	}
-	class Bool(val value: Boolean) : Literal() {
-	override fun toString() = super.toString() + "[$value]"
-	}
+	data class Text(val value: String) : Literal()
+	data class Number(val value: Double) : Literal()
+	data class Bool(val value: Boolean) : Literal()
 }
 \end{lstlisting}
 

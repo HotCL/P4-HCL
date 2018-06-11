@@ -1,6 +1,6 @@
 package generationTests.cpp
 
-import builtins.HclBuiltinFunctions
+import builtins.CppBuiltinFunctions
 import hclTestFramework.codegen.* // ktlint-disable no-wildcard-imports
 import hclTestFramework.parser.* // ktlint-disable no-wildcard-imports
 import org.jetbrains.spek.api.Spek
@@ -143,7 +143,7 @@ object CodeGenerationTest : Spek({
                     is TextAndReturn -> "print: ${testCase.expectedResult.string} and return: ${testCase.expectedResult.value}"
                 }
                 it("should $expectedResult") {
-                    val result = compileAndExecuteForAst(HclBuiltinFunctions.functions + testCase.astNodes)
+                    val result = compileAndExecuteForAst(CppBuiltinFunctions.functions + testCase.astNodes)
                     assertNotNull(result)
                     when (testCase.expectedResult) {
                         is TextOutput -> assertTrue(result!!.string.startsWith(testCase.expectedResult.string))

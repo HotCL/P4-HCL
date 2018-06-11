@@ -10,7 +10,7 @@ import parser.buildFunction
  * Only essential functions that cannot be defined in pure HCL, or that will have too
  * much overhead in HCL are defined here
  */
-object HclBuiltinFunctions {
+object CppBuiltinFunctions {
     val functions =
     // Operators
         listOf(
