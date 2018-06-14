@@ -1,7 +1,11 @@
 # HCL Compiled Language
+
+
 <a href="http://hcl.codes/teamcity/viewType.html?buildTypeId=P4hcl_Build&guest=1">
 <img src="http://hcl.codes/teamcity/app/rest/builds/buildType:(id:P4hcl_Build)/statusIcon"/>
 </a>
+
+
 HCL, HCL Compiled Language, is the new super cool imperative programming language, build on functional principles. The language uses simple principles to make a language that has a very nice learning curve. This is done by making everything english-like, in terms of syntax and structure.
 
 The language was developed by 6 students during their 4th semester of the Software Engineering bachelor at Aalborg University. Development started in Feburary 2018, and version 1.0, which was the project hand-in version, was finished on May 28th 2018.
