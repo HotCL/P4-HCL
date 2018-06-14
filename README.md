@@ -10,6 +10,9 @@ HCL, HCL Compiled Language, is the new super cool imperative programming languag
 
 The language was developed by 6 students during their 4th semester of the Software Engineering bachelor at Aalborg University. Development started in Feburary 2018, and version 1.0, which was the project hand-in version, was finished on May 28th 2018.
 
+[report](http://hcl.codes/teamcity/guestAuth/repository/download/P4hcl_Build/.lastSuccessful/code/build/javadoc/-h-c-l/index.html?branch=master)
+[compiler documentation](http://hcl.codes/teamcity/guestAuth/repository/download/P4hcl_Build/.lastSuccessful/code/build/javadoc/-h-c-l/index.html?branch=master)
+
 ### Principles:
 1. Everything is a function (Even operators)
 2. Everything is a variable (Even functions)
@@ -19,6 +22,7 @@ This might seem odd if you are used to other programming languages, but followin
 
 Endlines in HCL doesn't matter. You do need spaces between declarations and individual statements and expressions, though, so be sure to remember those!
 # HYPER COOL LEARNING OF HCL 
+Here is how to get started with the HCL language, for both novices to programming as well as experienced programmers that are coming from other languages. 
 ## Hello World
 To print “Hello World!” in HCL, simply write “Hello world” followed by the print function:
 ``"Hello World!" print``
