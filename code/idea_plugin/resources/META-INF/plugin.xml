@@ -1,0 +1,33 @@
+<idea-plugin>
+  <id>codes.hcl.hcl.idea.plugin</id>
+  <name>HCL Run configuration</name>
+  <version>1.0</version>
+  <vendor email="support@yourcompany.com" url="http://www.hcl.codes">HCL</vendor>
+
+  <description><![CDATA[
+      Enables the execution of HCL from Intellij IDEA.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Initial release
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+    <configurationType implementation="codes.hcl.execution.configurations.RunConfigurationType"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>
