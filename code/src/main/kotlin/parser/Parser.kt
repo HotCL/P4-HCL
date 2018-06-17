@@ -24,7 +24,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
     override fun commandSequence() = buildSequence {
         // Parse
         while (hasNext()) {
-            if (current.token != Token.SpecialChar.EndOfLine) {
+            if (current.token !in listOf(Token.SpecialChar.EndOfLine, Token.SpecialChar.EndOfFile)) {
                 yield(parseCommand())
             } else moveNext()
         }
@@ -71,8 +71,9 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
 
     private fun flushNewLine(requireNewLine: Boolean = true) {
         if (hasNext() && requireNewLine) accept<Token.SpecialChar.EndOfLine>()
-        while (current.token == Token.SpecialChar.EndOfLine && hasNext())
+        while (current.token == Token.SpecialChar.EndOfLine && hasNext()) {
             accept<Token.SpecialChar.EndOfLine>()
+        }
     }
 
     private fun acceptIdentifier(type: AstNode.Type) =
@@ -447,7 +448,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                 else -> { }
             }
             null
-        }, { false }, 1)?.let { it } ?: lackingParenthesis()
+        }, { it.token == Token.SpecialChar.EndOfLine }, 1)?.let { it } ?: lackingParenthesis()
     }
 
     private fun parseTupleExpression() =

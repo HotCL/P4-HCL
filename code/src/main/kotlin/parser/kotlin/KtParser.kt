@@ -19,6 +19,6 @@ class KtParser(lexer: ILexer) : Parser(lexer) {
                 AstNode.Command.Expression.Value.Literal.Number(0.0)
                 ))
         enterSymbol("RETURN_CODE", AstNode.Type.Number)
-        yieldAll(super.commandSequence())
+        super.commandSequence().forEach { yield(it) }
     }
 }

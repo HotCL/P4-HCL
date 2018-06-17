@@ -24,6 +24,7 @@ sealed class Token {
         object ParenthesesStart : SpecialChar()
         object ParenthesesEnd : SpecialChar()
         object EndOfLine : SpecialChar()
+        object EndOfFile : SpecialChar()
         object ListSeparator : SpecialChar()
         object Equals : SpecialChar()
         object Colon : SpecialChar()

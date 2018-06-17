@@ -4,6 +4,7 @@ import parser.AstNode
 import parser.kotlin.KtParser
 
 class KtInterpreter(val parser: KtParser) {
+    var printExpression: Boolean = false
     fun run(): Int {
         val memory = Memory()
         parser.commandSequence().forEach { it.handle(memory) }
@@ -131,7 +132,10 @@ class KtInterpreter(val parser: KtParser) {
 
     private fun AstNode.Command.Expression.handle(memory: Memory) {
         when (this) {
-            is AstNode.Command.Expression.FunctionCall -> asKotlinExpression(memory).evaluate(memory)
+            is AstNode.Command.Expression.FunctionCall -> {
+                val expression = asKotlinExpression(memory).evaluate(memory)
+                if (printExpression) println(expression)
+            }
         }
     }
 

@@ -8,15 +8,18 @@ import com.github.ajalt.clikt.parameters.types.file
 import exceptions.CompilationException
 import generation.GraphvizGenerator
 import generation.cpp.ProgramGenerator
+import interpreter.kotlin.KtInterpreter
 import lexer.Lexer
 import logger.Logger
 import parser.AstNode
 import parser.BuiltinLambdaAttributes
 import parser.cpp.CppParser
+import parser.kotlin.KtParser
 import stdlib.Stdlib
 import utils.compileCpp
 import utils.runCommand
 import java.io.File
+import kotlin.coroutines.experimental.buildSequence
 import kotlin.system.exitProcess
 
 /**
@@ -49,65 +52,49 @@ class HCL : CliktCommand() {
                             Stdlib.getStdlibContent()
                     ) + inputFiles.map { it.nameWithoutExtension to it.readText() }
             )
-            val hclParser = CppParser(lexer)
+            val parser = if (outputFile != null) CppParser(lexer) else KtParser(lexer)
             val logger = Logger()
-            val ast = try {
-                hclParser.cppAst()
+
+            try {
+                when (parser) {
+                    is KtParser -> exitProcess(KtInterpreter(parser).run())
+                    is CppParser -> parser.cppAst().let { ast ->
+                        if (generateGraphviz) {
+                            val graph = GraphvizGenerator().generate(ast.filter {
+                                val decl = it as? AstNode.Command.Declaration ?: return@filter true
+
+                                val lmbdExpr = decl.expression as?
+                                        AstNode.Command.Expression.LambdaExpression ?: return@filter true
+
+                                lmbdExpr.attributes != BuiltinLambdaAttributes
+                            })
+                            File("$actualOutputFile.gviz").writeText(graph)
+                            val pngData = "dot -Tpng $actualOutputFile.gviz".runCommand().string
+                            File("$actualOutputFile.png").writeBytes(pngData.toByteArray())
+                        }
+
+                        val programFiles = ProgramGenerator().generate(ast)
+                        compileCpp(programFiles, "compiled${inputFiles.last().nameWithoutExtension}", deleteCpp, actualOutputFile)
+                    }
+                }
             } catch (exception: CompilationException) {
                 logger.logCompilationError(exception)
                 exitProcess(-1)
             }
-
-            if (generateGraphviz) {
-                val graph = GraphvizGenerator().generate(ast.filter {
-                    val decl = it as? AstNode.Command.Declaration ?: return@filter true
-
-                    val lmbdExpr = decl.expression as?
-                            AstNode.Command.Expression.LambdaExpression ?: return@filter true
-
-                    lmbdExpr.attributes != BuiltinLambdaAttributes
-                })
-                File("$actualOutputFile.gviz").writeText(graph)
-                val pngData = "dot -Tpng $actualOutputFile.gviz".runCommand().string
-                File("$actualOutputFile.png").writeBytes(pngData.toByteArray())
-            }
-
-            val programFiles = ProgramGenerator().generate(ast)
-            compileCpp(programFiles, "compiled${inputFiles.last().nameWithoutExtension}", deleteCpp, actualOutputFile)
         } else {
-            val content = StringBuilder()
-            while (true) {
-                print(">>> ")
-                val inputLine = readLine()!!
-                val lexer = Lexer(mapOf(Stdlib.getStdlibContent(), "CLI" to content.toString() + "\n" + inputLine))
-                val hclParser = CppParser(lexer)
-                val logger = Logger()
-                val ast = try {
-                    hclParser.cppAst()
-                } catch (exception: CompilationException) {
-                    logger.logCompilationError(exception)
-                    continue
+            val logger = Logger()
+            val inputSequence = buildSequence {
+                while (true) {
+                    print(">>> ")
+                    yield(readLine()!!)
                 }
-
-                val lastElement = ast.children.last()
-                if (lastElement is AstNode.Command.Expression) {
-                    ast.children[ast.children.size - 1] = AstNode.Command.Expression.FunctionCall(
-                            AstNode.Command.Expression.Value.Identifier("print", AstNode.Type.None),
-                            listOf(lastElement),
-                            listOf(lastElement.type)
-                    )
-                }
-
-                try {
-                    val programFiles = ProgramGenerator().generate(ast)
-                    val name = "repl"
-                    compileCpp(programFiles, "compiled_$name", deleteCpp, name)
-                    File(name).setExecutable(true)
-                    println("./$name".runCommand().string)
-                    content.appendln(inputLine)
-                } catch (exception: Exception) {
-                    println(exception)
-                }
+            }
+            val lexer = Lexer(mapOf(Stdlib.getStdlibContent()), inputSequence)
+            val parser = KtParser(lexer)
+            try {
+                KtInterpreter(parser).apply { printExpression = true }.run()
+            } catch (exception: CompilationException) {
+                logger.logCompilationError(exception)
             }
         }
     }
