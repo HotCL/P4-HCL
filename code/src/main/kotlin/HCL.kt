@@ -29,6 +29,7 @@ class HCL : CliktCommand() {
     init {
         versionOption("Version 0.19")
     }
+
     private val inputFiles by argument("input_files", help = "HCL input files to be compiled")
             .file(exists = true, folderOkay = false).multiple(false)
 
@@ -83,19 +84,29 @@ class HCL : CliktCommand() {
                 exitProcess(-1)
             }
         } else {
-            val logger = Logger()
-            val inputSequence = buildSequence {
-                while (true) {
-                    print(">>> ")
-                    yield(readLine()!!)
+            val previousContent = mutableListOf<String>()
+            while (true) {
+                try {
+                    val logger = Logger()
+                    val inputSequence = buildSequence {
+                        while (true) {
+                            print(">>> ")
+                            val readLine = readLine()!!
+                            yield(readLine)
+                            previousContent.add(readLine)
+                        }
+                    }
+                    val lexer = Lexer(mapOf(Stdlib.getStdlibContent()), previousContent.asSequence() + inputSequence)
+                    val parser = KtParser(lexer)
+                    try {
+                        KtInterpreter(parser).apply { printExpression = true }.run()
+                    } catch (exception: CompilationException) {
+                        logger.logCompilationError(exception)
+                    }
+                } catch (exception: Exception) {
+                    println(exception)
+                    continue
                 }
-            }
-            val lexer = Lexer(mapOf(Stdlib.getStdlibContent()), inputSequence)
-            val parser = KtParser(lexer)
-            try {
-                KtInterpreter(parser).apply { printExpression = true }.run()
-            } catch (exception: CompilationException) {
-                logger.logCompilationError(exception)
             }
         }
     }

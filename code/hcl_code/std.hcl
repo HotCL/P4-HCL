@@ -2,7 +2,7 @@
 var @ = :at
 var is = :equals
 
-var to (num from, num to):list[num] {
+var to (num from, num to): list[num] {
 	num i = from
 	list[num] output
 	{
@@ -12,11 +12,11 @@ var to (num from, num to):list[num] {
 
 }
 
-var any (list[T] myList, func[T,bool] compareFunc):bool{
+var any (list[T] myList, func[T, bool] compareFunc):bool{
 	myList where :compareFunc length greaterThan 0
 }
 
-var all (list[T] myList, func[T,bool] compareFunc):bool{
+var all (list[T] myList, func[T, bool] compareFunc):bool{
 	myList where :compareFunc length equals myList length
 }
 
