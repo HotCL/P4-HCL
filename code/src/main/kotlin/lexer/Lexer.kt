@@ -39,8 +39,8 @@ class Lexer(
             val lineTokens = try {
                 lexLine(line + "\n", currentString)
             } catch (stringNotEndError: StringDoesntEndError) {
-                stringNotEndError.run {
-                    throw StringDoesntEndError(lineNumber, lineIndex, lineText)
+                stringNotEndError.let {
+                    throw StringDoesntEndError(lineNumber, fileName, it.lineIndex, it.lineText)
                 }
             }
             lineTokens.map { PositionalToken(it.token, lineNumber, it.lineIndex, fileName) }
@@ -53,7 +53,7 @@ class Lexer(
             if ((currentString.isEmpty() && char in listOf('\'', '"')) ||
                     currentString.isStartOfStringLiteral(char)) {
                 if (char == '\n') {
-                    throw StringDoesntEndError(0, indexNumber, currentString.toString())
+                    throw StringDoesntEndError(0, "", indexNumber, currentString.toString())
                 }
                 currentString.append(char)
                 return@forEachIndexed

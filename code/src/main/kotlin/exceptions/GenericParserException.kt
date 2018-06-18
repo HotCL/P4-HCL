@@ -4,9 +4,10 @@ package exceptions
  */
 class GenericParserException(
     lineNumber: Int,
+    fileName: String,
     lineIndex: Int,
     lineText: String,
     override val errorMessage: String,
     override val helpText: String = ""
 )
-    : ParserException(lineNumber, lineIndex, lineText)
+    : ParserException(lineNumber, fileName, lineIndex, lineText)

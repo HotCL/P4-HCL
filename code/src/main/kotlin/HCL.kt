@@ -74,7 +74,8 @@ class HCL : CliktCommand() {
                         }
 
                         val programFiles = ProgramGenerator().generate(ast)
-                        compileCpp(programFiles, "compiled${inputFiles.last().nameWithoutExtension}", deleteCpp, actualOutputFile)
+                        compileCpp(programFiles,
+                                "compiled${inputFiles.last().nameWithoutExtension}", deleteCpp, actualOutputFile)
                     }
                 }
             } catch (exception: CompilationException) {

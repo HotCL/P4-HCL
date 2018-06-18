@@ -1,5 +1,5 @@
 package interpreter
 
 interface IInterpreter {
-    fun run()
+    fun run(): Int
 }

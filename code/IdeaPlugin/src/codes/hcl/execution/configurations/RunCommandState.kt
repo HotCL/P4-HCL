@@ -6,18 +6,15 @@ import com.intellij.execution.process.ProcessHandler
 import com.intellij.execution.runners.ExecutionEnvironment
 import com.intellij.execution.process.OSProcessHandler
 
-
-
-class RunCommandState(executionEnvironment: ExecutionEnvironment,
-                      private val hclCompiler: String,
-                      private val hclFile: String):
+class RunCommandState(executionEnvironment: ExecutionEnvironment):
 CommandLineState(executionEnvironment) {
     override fun startProcess(): ProcessHandler {
         val line = GeneralCommandLine()
         line.isRedirectErrorStream = true
         line.exePath = "java"
-        line.addParameters("-jar", hclCompiler, hclFile)
+        line.addParameters("-jar", RunState.hclCompiler, RunState.hclFile)
         val process = line.createProcess()
         return OSProcessHandler(process, line.commandLineString)
+
     }
 }

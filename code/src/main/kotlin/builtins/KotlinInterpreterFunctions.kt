@@ -461,7 +461,9 @@ fun buildKotlinFunction(
         AstNode.Command.Declaration(returnType, AstNode.Command.Expression.Value.Identifier(identifier, returnType),
                 AstNode.Command.Expression.LambdaExpression(
                         paramDeclarations = parameters.map {
-                            AstNode.ParameterDeclaration(it.type, AstNode.Command.Expression.Value.Identifier(it.identifier, returnType))
+                            AstNode.ParameterDeclaration(
+                                    it.type,
+                                    AstNode.Command.Expression.Value.Identifier(it.identifier, returnType))
                         },
                         returnType = returnType,
                         attributes = attributes,

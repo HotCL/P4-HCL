@@ -8,6 +8,7 @@ import org.jetbrains.spek.api.dsl.it
 import parser.kotlin.KtParser
 import stdlib.Stdlib
 import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 import kotlin.test.assertEquals
 
 object TestHclPrograms : Spek({
@@ -51,9 +52,9 @@ object TestHclPrograms : Spek({
                 val parser = KtParser(lexer)
                 val interpreter = KtInterpreter(parser)
                 val outputStream = ByteArrayOutputStream()
-                // System.setOut(PrintStream(outputStream))
+                System.setOut(PrintStream(outputStream))
                 val returnCode = interpreter.run()
-                // System.setOut(System.out)
+                System.setOut(System.out)
                 assertEquals(expectedReturn, returnCode,
                         "expected RETURN_CODE=$expectedReturn. was $returnCode.\n" +
                                 "full output:\n$returnCode")

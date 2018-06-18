@@ -9,7 +9,8 @@ open class Logger : ILogger {
      * Function used to log all compilation errors from the compiler.
      */
     override fun logCompilationError(error: CompilationException) {
-        writeLine("\n- ERROR: ${error.errorType} found at line ${error.lineNumber} index ${error.lineIndex}:")
+        writeLine("\n- ERROR: ${error.errorType} found at ${error.fileName}" +
+                " line ${error.lineNumber} index ${error.lineIndex}:")
         writeLine(" | ${error.lineText.trimEnd()}")
         writeLine(" |" + " " * error.lineIndex + "^--")
         writeLine(" | ${error.errorMessage}")

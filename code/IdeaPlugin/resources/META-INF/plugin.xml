@@ -24,6 +24,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <configurationType implementation="codes.hcl.execution.configurations.RunConfigurationType"/>
+    <projectService serviceInterface="codes.hcl.execution.configurations.RunState" serviceImplementation="codes.hcl.execution.configurations.RunState"/>
   </extensions>
 
   <actions>

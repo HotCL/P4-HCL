@@ -5,6 +5,7 @@ package exceptions
  */
 abstract class ParserException(
     lineNumber: Int,
+    fileName: String,
     lineIndex: Int,
     lineText: String
-) : CompilationException(lineNumber, lineIndex, lineText)
+) : CompilationException(lineNumber, fileName, lineIndex, lineText)

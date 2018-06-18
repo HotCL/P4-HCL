@@ -1,11 +1,12 @@
 package interpreter.kotlin
 
+import interpreter.IInterpreter
 import parser.AstNode
 import parser.kotlin.KtParser
 
-class KtInterpreter(val parser: KtParser) {
+class KtInterpreter(val parser: KtParser) : IInterpreter {
     var printExpression: Boolean = false
-    fun run(): Int {
+    override fun run(): Int {
         val memory = Memory()
         parser.commandSequence().forEach { it.handle(memory) }
         return (memory["RETURN_CODE"]!!.evaluate(memory) as KotlinNumber).value.toInt()
