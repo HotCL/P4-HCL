@@ -4,7 +4,7 @@ import lexer.Lexer
 import lexer.PositionalToken
 import lexer.Token
 import logger.Logger
-import org.jline.reader.*
+import org.jline.reader.* // ktlint-disable no-wildcard-imports
 import org.jline.reader.impl.completer.StringsCompleter
 import parser.kotlin.KtParser
 import stdlib.Stdlib
