@@ -135,8 +135,10 @@ class KtInterpreter(val parser: KtParser) : IInterpreter {
         when (this) {
             is AstNode.Command.Expression.FunctionCall -> {
                 val expression = asKotlinExpression(memory).evaluate(memory)
-                if (printExpression) println(expression)
+                if (printExpression && expression != KotlinUnit) println(expression)
             }
+            is AstNode.Command.Expression.Value ->
+                if (printExpression) println(asKotlinExpression(memory).evaluate(memory))
         }
     }
 

@@ -11,6 +11,14 @@ var all = (list[T] myList, func[T, bool] compareFunc): bool{
 	myList where { value compareFunc } length equals (myList length)
 }
 
+var in = (T element, list[T] myList): bool {
+	myList any { value equals element }
+}
+
+var notIn = (T element, list[T] myList):bool{
+	element in myList not
+}
+
 # Get first index where predicate applies
 # Returns -1 if it doesn't apply to any element
 func firstIndexWhere = (list[T] lst, func[T, bool] predicate): num {

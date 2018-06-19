@@ -57,6 +57,10 @@ object KotlinInterpreterFunctions {
                     buildPrintFunctionList(),
                     buildPrintFunction(),
 
+                    buildGenericsEquals(),
+                    buildThenElseFunction(),
+                    buildThenElseFunction2(),
+
                     buildTextConcat(),
                     buildTextEquals(),
                     buildTextNotEquals()
@@ -206,6 +210,19 @@ private fun buildTextEquals() = buildKotlinFunction(
         returnType = AstNode.Type.Bool,
         body = {
             val (l, h) = it.map { it as KotlinText }
+            KotlinBoolean(l == h)
+        }
+)
+
+private fun buildGenericsEquals() = buildKotlinFunction(
+        identifier = "equals",
+        parameters = listOf(
+                Parameter("KT_leftHand", AstNode.Type.GenericType("T")),
+                Parameter("KT_rightHand", AstNode.Type.GenericType("T"))
+        ),
+        returnType = AstNode.Type.Bool,
+        body = {
+            val (l, h) = it
             KotlinBoolean(l == h)
         }
 )
@@ -367,6 +384,39 @@ private fun buildThenFunction() = buildKotlinFunction(
             val body = it[1] as KotlinLambdaExpression
             if (condition.value) body.invoke(listOf())
             condition
+        }
+)
+
+private fun buildThenElseFunction() = buildKotlinFunction(
+        identifier = "thenElse",
+        parameters = listOf(
+                Parameter("KT_condition", AstNode.Type.Bool),
+                Parameter("KT_body1", AstNode.Type.Func(listOf(), AstNode.Type.GenericType("T"))),
+                Parameter("KT_body2", AstNode.Type.Func(listOf(), AstNode.Type.GenericType("T")))
+        ),
+        returnType = AstNode.Type.Bool,
+        body = {
+            val condition = it[0] as KotlinBoolean
+            val body1 = it[1] as KotlinLambdaExpression
+            val body2 = it[2] as KotlinLambdaExpression
+            if (condition.value) body1.invoke(listOf()) else body2.invoke(listOf())
+        }
+)
+
+private fun buildThenElseFunction2() = buildKotlinFunction(
+        identifier = "thenElse",
+        parameters = listOf(
+                Parameter("KT_condition", AstNode.Type.Bool),
+                Parameter("KT_body1", AstNode.Type.Func(listOf(), AstNode.Type.None)),
+                Parameter("KT_body2", AstNode.Type.Func(listOf(), AstNode.Type.None))
+        ),
+        returnType = AstNode.Type.Bool,
+        body = {
+            val condition = it[0] as KotlinBoolean
+            val body1 = it[1] as KotlinLambdaExpression
+            val body2 = it[2] as KotlinLambdaExpression
+            if (condition.value) body1.invoke(listOf()) else body2.invoke(listOf())
+            KotlinUnit
         }
 )
 

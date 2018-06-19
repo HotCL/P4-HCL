@@ -104,7 +104,7 @@ class HCL : CliktCommand() {
                         logger.logCompilationError(exception)
                     }
                 } catch (exception: Exception) {
-                    println(exception)
+                    exception.printStackTrace()
                     continue
                 }
             }

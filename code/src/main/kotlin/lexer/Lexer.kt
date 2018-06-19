@@ -111,7 +111,11 @@ class Lexer(
         } || line[nextCharIndex].isWhitespace() || line[nextCharIndex] == '#'
     }
 
-    override fun inputLine(lineNumber: Int, file: String) = inputFiles[file]!!.split(endOfLineRegex)[lineNumber] + '\n'
+    override fun inputLine(lineNumber: Int, file: String) = try {
+        inputFiles[file]!!.split(endOfLineRegex)[lineNumber] + '\n'
+    } catch (_: Exception) {
+        ""
+    }
 
     private fun Char.isSpecialChar() = specialChars.any { it == this }
 
