@@ -5,7 +5,7 @@ package utils
  * Allows parser to move through, peek, look ahead, and look behind in token sequence
  */
 class BufferedLaabStream<out T>(sequence: Sequence<T>) : IBufferedLaabStream<T> {
-    class Buffer<T>(sequence: Sequence<T>) {
+    class Buffer<out T>(sequence: Sequence<T>) {
         private val buffer = mutableListOf<T>()
         private val iterator = sequence.iterator()
         operator fun get(index: Int): T {

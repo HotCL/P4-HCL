@@ -1,4 +1,5 @@
-import exceptions.CompilationException
+import exceptions.LexerException
+import exceptions.ParserException
 import interpreter.kotlin.KtInterpreter
 import lexer.Lexer
 import lexer.PositionalToken
@@ -51,7 +52,7 @@ class REPL {
                 val parser = KtParser(lexer)
                 try {
                     KtInterpreter(parser).apply { printExpression = true }.run()
-                } catch (exception: CompilationException) {
+                } catch (exception: ParserException) {
                     logger.logCompilationError(exception)
                 }
             } catch (exception: Exception) {
@@ -65,7 +66,11 @@ class REPL {
 class DefaultHighlighter2 : Highlighter {
     override fun highlight(reader: LineReader, buffer: String): AttributedString {
         val lexer = Lexer(mapOf("line" to buffer))
-        val tokens = lexer.getTokenSequence().toList()
+        val tokens = try {
+            lexer.getTokenSequence().toList()
+        } catch (lexerException: LexerException) {
+            listOf<PositionalToken>()
+        }
 
         val sb = AttributedStringBuilder()
         (0 until buffer.length).forEach {
