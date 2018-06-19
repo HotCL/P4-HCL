@@ -92,7 +92,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/Main*', '**/AstNode*','**/ExprResult*','**/LambdaBodyWithType*',
-                                        '**/exceptions/*', '**/FilePair*','**/HCL*'])
+                                        '**/exceptions/*', '**/FilePair*','**/HCL*', '**/REPL*'])
         })
     }
 }
