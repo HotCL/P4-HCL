@@ -147,7 +147,7 @@ The operators are represented as $\oplus$, where $\oplus \in Operators$, where $
 
 The transitions can be seen below.
 
-\textbf{[$Add_{BSS}$]}
+\textbf{[$Arithmetic_{BSS}$]}
 \begin{center}
 	\begin{math}
 	\cfrac
@@ -211,7 +211,7 @@ The transition can be seen below.
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash e_1 \rightarrow_e v_1 \quad env_V,\ sto \vdash e_2 \rightarrow_e v_2}
-	{env_V,\ sto \vdash e_1\ equals\ e_2 \rightarrow_b False}
+	{env_V,\ sto \vdash e_1\ notEquals\ e_2 \rightarrow_b False}
 	\end{math}
 	
 	\texttt{ if } $v_1 = v_2$
@@ -222,7 +222,7 @@ The transition can be seen below.
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1 < a_2 \rightarrow_b True}
+	{env_V,\ sto \vdash a_1\ lessThan\ a_2 \rightarrow_b True}
 	\end{math}
 	
 	\texttt{ if } $v_1 < v_2$
@@ -233,7 +233,7 @@ The transition can be seen below.
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1 < a_2 \rightarrow_b False}
+	{env_V,\ sto \vdash a_1\ lessThan\ a_2 \rightarrow_b False}
 	\end{math}
 	
 	\texttt{ if } $v_1 >= v_2$
@@ -244,7 +244,7 @@ The transition can be seen below.
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1 > a_2 \rightarrow_b True}
+	{env_V,\ sto \vdash a_1\ greaterThan\ a_2 \rightarrow_b True}
 	\end{math}
 	
 	\texttt{ if } $v_1 > v_2$
@@ -255,7 +255,7 @@ The transition can be seen below.
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash a_1 \rightarrow_a v_1 \quad env_V,\ sto \vdash a_2 \rightarrow_a v_2}
-	{env_V,\ sto \vdash a_1 > a_2 \rightarrow_b False}
+	{env_V,\ sto \vdash a_1\ greaterThan\ a_2 \rightarrow_b False}
 	\end{math}
 	
 	\texttt{ if } $v_1 <= v_2$
@@ -392,7 +392,7 @@ Here $\Sigma$ is an arbitrary alphabet legal in the context.
 \textbf{[$TextLit_{BSS}$]}
 \begin{center}
 	\begin{math}
-	env_V,\ sto \vdash t \rightarrow_b v
+	env_V,\ sto \vdash t \rightarrow_t v
 	\end{math}
 	\texttt{ if } $\mathbb{T}[t] = "v"$
 \end{center}
@@ -443,7 +443,7 @@ Even though this is an exception to the general description of a list expression
 	\begin{math}
 	\cfrac
 	{env_V,\ sto \vdash list_1 \rightarrow_t v_1 \quad env_V,\ sto \vdash list_2 \rightarrow_t v_2}
-	{env_V,\ sto \vdash list_1 + list_2 \rightarrow_t v}
+	{env_V,\ sto \vdash list_1 + list_2 \rightarrow_{list} v}
 	\end{math}
 	
 	\texttt{ where } $v = v_1\ \circ\ v_2$
@@ -483,7 +483,7 @@ The transitions are shown below.
 	\end{math}
 	
 	\texttt{ where } $|tuple| - 1 < i$\\
-	\texttt{ or } $|tuple| - 1 > i$\\
+	\texttt{ or } $0 > i$\\
 	\texttt{ and where } $i \in \mathbf{Z}$
 \end{center}
 
@@ -583,12 +583,12 @@ The transitions are shown below.
 
 \texttt{[$StmDlcV_{BSS}$]}
 \begin{center}
-	$\langle D_V, env_V, sto \rangle \rightarrow_{D_V} (env_V', env_F, sto')$
+	$\langle D_V, env_V, sto \rangle \rightarrow_{stm} (env_V', env_F, sto')$
 \end{center}
 
 \texttt{[$StmDlcF_{BSS}$]}
 \begin{center}
-	$\langle D_V, env_F, sto \rangle \rightarrow_{D_V} (env_V, env_F', sto')$
+	$\langle D_V, env_F, sto \rangle \rightarrow_{stm} (env_V, env_F', sto')$
 \end{center}
 
 \texttt{[$EmptyStm_{BSS}$]}
@@ -639,13 +639,6 @@ This means that for every argument, it is necessary to bind their values in the 
 	\texttt{and } $ env_V', sto \vdash e \rightarrow_{e} v$\\
 	\texttt{and for each $e_x$ } $env_V', sto \vdash e_x \rightarrow_{e} v_x$ \\
 	\texttt{and for each x } $l_x = env_V\ next$ 
-\end{center}
-
-\texttt{[$EmptyStm_{BSS}$]}
-\begin{center}
-	\begin{math}
-		{env_V, env_F \vdash \langle \epsilon, sto \rangle \rightarrow_{stm} sto}
-	\end{math}
 \end{center}
 
 \subsection{Big-Step Semantic for Variable Declarations}
