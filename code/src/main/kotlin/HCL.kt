@@ -11,6 +11,8 @@ import generation.cpp.ProgramGenerator
 import interpreter.kotlin.KtInterpreter
 import lexer.Lexer
 import logger.Logger
+import org.jline.reader.LineReaderBuilder
+import org.jline.reader.UserInterruptException
 import parser.AstNode
 import parser.BuiltinLambdaAttributes
 import parser.cpp.CppParser
@@ -84,30 +86,7 @@ class HCL : CliktCommand() {
                 exitProcess(-1)
             }
         } else {
-            val previousContent = mutableListOf<String>()
-            while (true) {
-                try {
-                    val logger = Logger()
-                    val inputSequence = buildSequence {
-                        while (true) {
-                            print(">>> ")
-                            val readLine = readLine()!!
-                            yield(readLine)
-                            previousContent.add(readLine)
-                        }
-                    }
-                    val lexer = Lexer(mapOf(Stdlib.getStdlibContent()), previousContent.asSequence() + inputSequence)
-                    val parser = KtParser(lexer)
-                    try {
-                        KtInterpreter(parser).apply { printExpression = true }.run()
-                    } catch (exception: CompilationException) {
-                        logger.logCompilationError(exception)
-                    }
-                } catch (exception: Exception) {
-                    exception.printStackTrace()
-                    continue
-                }
-            }
+            REPL().start()
         }
     }
 }
