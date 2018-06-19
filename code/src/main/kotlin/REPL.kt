@@ -15,7 +15,6 @@ import org.jline.utils.AttributedStringBuilder
 import org.jline.reader.LineReader
 import org.jline.utils.AttributedString
 
-
 class REPL {
     private val completions = listOf(
             "var", "map", "where", "equals", "value", "at", "element0", "element1", "mod", "toText", "length",
@@ -63,7 +62,7 @@ class REPL {
     }
 }
 
-class DefaultHighlighter2: Highlighter {
+class DefaultHighlighter2 : Highlighter {
     override fun highlight(reader: LineReader, buffer: String): AttributedString {
         val lexer = Lexer(mapOf("line" to buffer))
         val tokens = lexer.getTokenSequence().toList()

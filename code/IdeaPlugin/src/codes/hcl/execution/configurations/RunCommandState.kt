@@ -15,6 +15,5 @@ CommandLineState(executionEnvironment) {
         line.addParameters("-jar", RunState.hclCompiler, RunState.hclFile)
         val process = line.createProcess()
         return OSProcessHandler(process, line.commandLineString)
-
     }
 }
