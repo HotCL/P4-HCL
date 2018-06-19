@@ -19,7 +19,7 @@ class BufferedLaabStream<out T>(sequence: Sequence<T>) : IBufferedLaabStream<T> 
         fun hasAhead(index: Int, n: Int) = try {
             this[index + n]
             true
-        } catch (exception: Exception) {
+        } catch (exception: NoSuchElementException) {
             false
         }
     }

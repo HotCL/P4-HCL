@@ -11,6 +11,7 @@ import generation.cpp.ProgramGenerator
 import interpreter.kotlin.KtInterpreter
 import lexer.Lexer
 import logger.Logger
+import parser.AbstractSyntaxTree
 import parser.AstNode
 import parser.BuiltinLambdaAttributes
 import parser.cpp.CppParser
@@ -59,20 +60,7 @@ class HCL : CliktCommand() {
                 when (parser) {
                     is KtParser -> exitProcess(KtInterpreter(parser).run())
                     is CppParser -> parser.cppAst().let { ast ->
-                        if (generateGraphviz) {
-                            val graph = GraphvizGenerator().generate(ast.filter {
-                                val decl = it as? AstNode.Command.Declaration ?: return@filter true
-
-                                val lmbdExpr = decl.expression as?
-                                        AstNode.Command.Expression.LambdaExpression ?: return@filter true
-
-                                lmbdExpr.attributes != BuiltinLambdaAttributes
-                            })
-                            File("$actualOutputFile.gviz").writeText(graph)
-                            val pngData = "dot -Tpng $actualOutputFile.gviz".runCommand().string
-                            File("$actualOutputFile.png").writeBytes(pngData.toByteArray())
-                        }
-
+                        generateGraphviz(ast, actualOutputFile)
                         val programFiles = ProgramGenerator().generate(ast)
                         compileCpp(programFiles,
                                 "compiled${inputFiles.last().nameWithoutExtension}", deleteCpp, actualOutputFile)
@@ -84,6 +72,20 @@ class HCL : CliktCommand() {
             }
         } else {
             REPL().start()
+        }
+    }
+
+    private fun generateGraphviz(ast: AbstractSyntaxTree, outputFile: String) {
+        if (generateGraphviz) {
+            val graph = GraphvizGenerator().generate(ast.filter {
+                val decl = it as? AstNode.Command.Declaration ?: return@filter true
+                val lmbdExpr = decl.expression as?
+                        AstNode.Command.Expression.LambdaExpression ?: return@filter true
+                lmbdExpr.attributes != BuiltinLambdaAttributes
+            })
+            File("$outputFile.gviz").writeText(graph)
+            val pngData = "dot -Tpng $outputFile.gviz".runCommand().string
+            File("$outputFile.png").writeBytes(pngData.toByteArray())
         }
     }
 }

@@ -113,7 +113,7 @@ class Lexer(
 
     override fun inputLine(lineNumber: Int, file: String) = try {
         inputFiles[file]!!.split(endOfLineRegex)[lineNumber] + '\n'
-    } catch (_: Exception) {
+    } catch (_: KotlinNullPointerException) {
         ""
     }
 
