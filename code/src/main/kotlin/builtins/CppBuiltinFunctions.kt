@@ -1,6 +1,7 @@
 package builtins
 
 import generation.cpp.cppName
+import parser.AstNode
 import parser.AstNode.Type
 import parser.Parameter
 import parser.buildFunction
@@ -74,6 +75,10 @@ object CppBuiltinFunctions {
             buildPrintLineFunction<Type.Text>(),
             buildPrintLineFunction<Type.List>()
             */
+
+            buildThenElseFunction(),
+            buildThenElseFunction2(),
+
             buildPrintFunctionText(),
             buildPrintFunctionList(),
             buildPrintFunction()
@@ -81,7 +86,7 @@ object CppBuiltinFunctions {
             Pair("+", Type.Text),
             Pair("equals", Type.Bool),
             Pair("notEquals", Type.Bool)
-        ))
+        )) + buildGenericEqualsFunction()
 }
 
 // region buildOperator_functions
@@ -190,6 +195,38 @@ private fun buildListEqualsFunction() = buildFunction(
     returnType = Type.Bool,
     body = "return ${"length".cppName}(leftHand) == ${"length".cppName}(rightHand) && " +
         "memcmp(leftHand.get()->data, rightHand.get()->data, leftHand.get()->size * sizeof(T)) == 0;"
+)
+
+private fun buildGenericEqualsFunction() = buildFunction(
+        identifier = "equals",
+        parameters = listOf(
+                Parameter("leftHand", Type.GenericType("T")),
+                Parameter("rightHand", Type.GenericType("T"))
+        ),
+        returnType = Type.Bool,
+        body = "return leftHand == rightHand;"
+)
+
+private fun buildThenElseFunction() = buildFunction(
+        identifier = "thenElse",
+        parameters = listOf(
+                Parameter("condition", AstNode.Type.Bool),
+                Parameter("body1", AstNode.Type.Func(listOf(), AstNode.Type.GenericType("T"))),
+                Parameter("body2", AstNode.Type.Func(listOf(), AstNode.Type.GenericType("T")))
+        ),
+        returnType = Type.GenericType("T"),
+        body = "if (condition) return body1(); else return body2();"
+)
+
+private fun buildThenElseFunction2() = buildFunction(
+        identifier = "thenElse",
+        parameters = listOf(
+                Parameter("condition", AstNode.Type.Bool),
+                Parameter("body1", AstNode.Type.Func(listOf(), AstNode.Type.None)),
+                Parameter("body2", AstNode.Type.Func(listOf(), AstNode.Type.None))
+        ),
+        returnType = Type.None,
+        body = "if (condition) body1(); else body2();"
 )
 
 private fun buildListNotEqualsFunction() = buildFunction(

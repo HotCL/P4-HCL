@@ -394,7 +394,7 @@ private fun buildThenElseFunction() = buildKotlinFunction(
                 Parameter("KT_body1", AstNode.Type.Func(listOf(), AstNode.Type.GenericType("T"))),
                 Parameter("KT_body2", AstNode.Type.Func(listOf(), AstNode.Type.GenericType("T")))
         ),
-        returnType = AstNode.Type.Bool,
+        returnType = AstNode.Type.GenericType("T"),
         body = {
             val condition = it[0] as KotlinBoolean
             val body1 = it[1] as KotlinLambdaExpression
@@ -410,7 +410,7 @@ private fun buildThenElseFunction2() = buildKotlinFunction(
                 Parameter("KT_body1", AstNode.Type.Func(listOf(), AstNode.Type.None)),
                 Parameter("KT_body2", AstNode.Type.Func(listOf(), AstNode.Type.None))
         ),
-        returnType = AstNode.Type.Bool,
+        returnType = AstNode.Type.None,
         body = {
             val condition = it[0] as KotlinBoolean
             val body1 = it[1] as KotlinLambdaExpression
