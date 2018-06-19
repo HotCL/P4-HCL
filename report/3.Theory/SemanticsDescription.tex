@@ -745,7 +745,7 @@ The transitions are shown below.
 \begin{center}
 	\begin{math}
 		\cfrac
-			{env_V, env_F \vdash \langle S, sto \rangle \rightarrow_L sto' \quad env_V, sto' \vdash e \rightarrow_e v}
+			{\langle S, sto, env_V, env_F \rangle \rightarrow_L (sto', env_V', env_F') \quad env_V', env_F', sto' \vdash e \rightarrow_e v}
 			{env_V, env_F \vdash \langle \{\ S;return\ e \}, sto \rangle \rightarrow_L sto', v}
 	\end{math}
 \end{center}
