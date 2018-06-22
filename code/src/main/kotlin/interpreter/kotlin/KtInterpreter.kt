@@ -74,7 +74,12 @@ class KtInterpreter(val parser: KtParser) : IInterpreter {
     private fun KotlinFunctionCall.invoke(memory: Memory): KotlinHclExpression {
 
         val lambdas = try {
-            memory[identifier.value] as KotlinLambdaCollection
+            val lam = memory[identifier.value]
+            when (lam) {
+                is KotlinLambdaCollection -> lam
+                is KotlinLambdaExpression -> KotlinLambdaCollection(mutableListOf(lam))
+                else -> throw Exception("Unable to invoke $lam")
+            }
         } catch (exception: TypeCastException) {
             if (identifier.value.contains("element")) {
                 val index = identifier.value.removePrefix("element").toInt()
