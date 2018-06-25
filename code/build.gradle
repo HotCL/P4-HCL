@@ -92,7 +92,10 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/Main*', '**/AstNode*','**/ExprResult*','**/LambdaBodyWithType*',
-                                        '**/exceptions/*', '**/FilePair*','**/HCL*', '**/REPL*'])
+                                        '**/exceptions/*', '**/FilePair*','**/HCL*', '**/REPL*',
+                                        '**/KotlinLambdaExpression*', '**/KotlinFunctionCall*', '**/KotlinIdentifier*',
+                                        '**/KotlinLambdaCollection*', '**/KotlinLambdaBody*', '**/KotlinBoolean*',
+                                        '**/KotlinList*', '**/KotlinTuple*', '**/KotlinText*'])
         })
     }
 }

@@ -36,7 +36,9 @@ object TestHclPrograms : Spek({
             "bubbleSort.hcl",
             "testFirstIndexWhereStdlib.hcl",
             "conclusionExampleNicolaj.hcl",
-            "aTupleInFunction.hcl"
+            "aTupleInFunction.hcl",
+            "InterpreterType.hcl",
+            "DefaultValues.hcl"
     )
     files.filter { it.endsWith(".hcl") }.forEach { file ->
         given(file) {

@@ -11,7 +11,7 @@ data class KotlinNumber(val value: Double) : KotlinHclExpression() {
     override fun toString() = value.toString().removeSuffix(".0")
 }
 data class KotlinText(val value: String) : KotlinHclExpression() {
-    override fun toString() = value
+    override fun toString() = "\"$value\""
 }
 data class KotlinBoolean(val value: Boolean) : KotlinHclExpression() {
     override fun toString() = value.toString()

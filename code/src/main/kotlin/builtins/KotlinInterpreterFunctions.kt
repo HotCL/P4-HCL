@@ -63,7 +63,11 @@ object KotlinInterpreterFunctions {
 
                     buildTextConcat(),
                     buildTextEquals(),
-                    buildTextNotEquals()
+                    buildTextNotEquals(),
+
+                    buildInputFunction(),
+                    buildTextToNumberFunction(),
+                    buildToTypeFunction()
             )
 }
 
@@ -384,6 +388,59 @@ private fun buildThenFunction() = buildKotlinFunction(
             val body = it[1] as KotlinLambdaExpression
             if (condition.value) body.invoke(listOf())
             condition
+        }
+)
+
+private fun buildInputFunction() = buildKotlinFunction(
+        identifier = "input",
+        parameters = listOf(),
+        returnType = AstNode.Type.Text,
+        body = {
+            val value = readLine()!!
+            KotlinText(value)
+        }
+)
+
+private fun buildTextToNumberFunction() = buildKotlinFunction(
+        identifier = "toNum",
+        parameters = listOf(Parameter("KT_TXT", AstNode.Type.Text)),
+        returnType = AstNode.Type.Number,
+        body = {
+            KotlinNumber((it[0] as KotlinText).value.toDouble())
+        }
+)
+
+val AstNode.Type.typeName get(): String = when (this) {
+    AstNode.Type.Number -> "Number"
+    AstNode.Type.Text -> "Text"
+    AstNode.Type.Bool -> "Boolean"
+    AstNode.Type.None -> "Unit"
+    is AstNode.Type.GenericType -> name
+    is AstNode.Type.List -> "List[$elementType]"
+    is AstNode.Type.Func -> "Function(${paramTypes.joinToString { it.typeName }}): $returnType"
+    is AstNode.Type.Tuple -> "Tuple(${elementTypes.joinToString { it.typeName }})"
+}
+
+val KotlinHclExpression.typeName get(): String = when (this) {
+    is KotlinIdentifier -> "Identifier"
+    is KotlinList -> "List[" + value.firstOrNull()?.typeName + "]"
+    is KotlinNumber -> "Number"
+    is KotlinText -> "Text"
+    is KotlinBoolean -> "Boolean"
+    is KotlinTuple -> "Tuple(" + value.joinToString { it.typeName } + ")"
+    is KotlinLambdaExpression -> "Function(${args.joinToString { it.type.typeName }}): ${returnType.typeName}"
+    is KotlinLambdaCollection -> lambdas.joinToString { "lambda(${it.typeName})" }
+    is KotlinLambdaBody -> "Lambda"
+    is KotlinFunctionCall -> "FunctionCall"
+    KotlinUnit -> "KotlinUnit"
+}
+
+private fun buildToTypeFunction() = buildKotlinFunction(
+        identifier = "type",
+        parameters = listOf(Parameter("KT_TYPE", AstNode.Type.GenericType("T"))),
+        returnType = AstNode.Type.Text,
+        body = {
+            KotlinText(it[0].typeName)
         }
 )
 

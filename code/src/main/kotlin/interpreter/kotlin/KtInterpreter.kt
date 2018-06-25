@@ -107,11 +107,9 @@ class KtInterpreter(val parser: KtParser) : IInterpreter {
         AstNode.Type.Number -> KotlinNumber(0.0)
         AstNode.Type.Text -> KotlinText("")
         AstNode.Type.Bool -> KotlinBoolean(false)
-        AstNode.Type.None -> KotlinUnit
-        is AstNode.Type.GenericType -> KotlinUnit
         is AstNode.Type.List -> KotlinList(listOf())
-        is AstNode.Type.Func -> KotlinUnit
         is AstNode.Type.Tuple -> KotlinTuple(elementTypes.map { it.defaultValue() })
+        else -> KotlinUnit
     }
 
     private fun AstNode.Command.Declaration.handle(memory: Memory) {
@@ -123,7 +121,7 @@ class KtInterpreter(val parser: KtParser) : IInterpreter {
             val expression = expression?.asKotlinExpression(memory)?.let {
                 (it as? KotlinLambdaExpression)?.let { KotlinLambdaCollection(mutableListOf(it)) } ?: it
             } ?: type.defaultValue()
-            memory[identifier.name] = expression
+            memory[identifier.name] = (expression as? KotlinFunctionCall)?.evaluate(memory) ?: expression
         }
     }
 
