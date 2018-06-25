@@ -78,7 +78,7 @@ class KtInterpreter(val parser: KtParser) : IInterpreter {
             when (lam) {
                 is KotlinLambdaCollection -> lam
                 is KotlinLambdaExpression -> KotlinLambdaCollection(mutableListOf(lam))
-                else -> throw Exception("Unable to invoke $lam")
+                else -> throw TypeCastException("Unable to invoke $lam from ${identifier.value}")
             }
         } catch (exception: TypeCastException) {
             if (identifier.value.contains("element")) {
