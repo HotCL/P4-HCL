@@ -21,7 +21,7 @@ class REPL {
             "var", "map", "where", "equals", "value", "at", "element0", "element1", "mod", "toText", "length",
             "and", "or", "then", "thenElse", "greaterThan", "lessThan", "notEquals", "greaterThanEqual", "lessThanEqual",
             "print", "splitAt", "to", "while", "in", "all", "any", "forEach", "firstIndexWhere", "notIn",
-            "num", "txt", "bool", "list", "tpl"
+            "num", "txt", "bool", "list", "tpl", "input", "toNum", "type"
     )
     private val reader = LineReaderBuilder.builder()
             .completer(StringsCompleter(completions))
