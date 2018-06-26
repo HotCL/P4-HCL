@@ -1,4 +1,4 @@
-var foo = (txt t, num n, txt ending) : txt {
+var foo = (txt t, num n, txt ending): txt {
     var output = ""
     1 to n forEach {
         output = output + t

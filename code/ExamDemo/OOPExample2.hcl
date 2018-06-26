@@ -10,8 +10,10 @@ func withName = (tuple[txt, num, txt] person, txt name): tuple[txt, num, txt] { 
 func movedTo = (tuple[txt, num, txt] person, txt city): tuple[txt, num, txt] { (person element0, person element1, city) }
 func turned = (tuple[txt, num, txt] person, num age): tuple[txt, num, txt] { (person element0, age, person element2)}
 
-var toTextTuple = (tuple[txt,num,txt] value) : txt {
-    return "Person called: " + (value element0) + " who is " + (value element1 toText) + " years old and lives in " + (value element2)
+var toTextTuple = (tuple[txt,num,txt] value): txt {
+    "Person called: " + (value element0) + \
+    " who is " + (value element1 toText) + \
+    " years old and lives in " + (value element2)
 }
 
 # Create person
