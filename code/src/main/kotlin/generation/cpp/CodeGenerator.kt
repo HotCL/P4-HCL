@@ -112,9 +112,14 @@ class CodeGenerator : IPrinter {
                 !(it.first is AstNode.Type.GenericType && it.first == it.second)
             }
             if (filteredGenerics.isNotEmpty()) {
-                "<" + generics.joinToString {
-                    TypeChecker().getTypeFromTypePairs(filteredGenerics, it.name)!!.cppName
-                } + ">"
+                try {
+                    "<" + generics.joinToString {
+                        TypeChecker().getTypeFromTypePairs(filteredGenerics, it.name)!!.cppName
+                    } + ">"
+                } catch (exception: KotlinNullPointerException) {
+                    // This is really bad. We just hope CPP compiler can infer the generics. Otherwise we are screwed.
+                    ""
+                }
             } else ""
         }
     }

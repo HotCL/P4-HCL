@@ -1,10 +1,7 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.GenericPassedFunctionException
-import exceptions.UndeclaredError
-import exceptions.UnexpectedTokenError
-import exceptions.UnexpectedTypeError
+import exceptions.*
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
@@ -157,7 +154,7 @@ class GenericsTests {
 
                     .number.identifier("x").`=`.number(1.0).identifier("myFunc").bool(true).newLine
         })
-        Assertions.assertThrows(UndeclaredError::class.java) { Parser(lexer).commandSequence().toList() }
+        Assertions.assertThrows(UnknownFunctionOverload::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test

@@ -50,6 +50,13 @@ fun Parser.undeclaredError(token: Token.Identifier): Nothing {
             token.value)
 }
 
+fun Parser.unknownFunctionOverload(token: Token.Identifier, args: List<AstNode.Type>): Nothing {
+    var lineIndex = 0
+    while (lookBehind(lineIndex).token != token) lineIndex++
+    throw UnknownFunctionOverload(setLineNumber(), fileName, setLineIndex(lineIndex), setInputLine(),
+            token.value, args)
+}
+
 fun Parser.implicitTypeNotAllowedError(): Nothing {
     throw ImplicitTypeNotAllowed(setLineNumber(), fileName, setLineIndex(1),
             setInputLine())

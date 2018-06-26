@@ -1,5 +1,6 @@
 package interpreter.kotlin
 
+import builtins.typeName
 import interpreter.IInterpreter
 import parser.AstNode
 import parser.kotlin.KtParser
@@ -92,7 +93,9 @@ class KtInterpreter(val parser: KtParser) : IInterpreter {
 
         val actualFunction = lambdas.lambdas.lastOrNull { lambda ->
             lambda.args.map { it.type }.matchesArgs(evaluatedArguments)
-        } ?: throw Exception("No function call found that matches.. No good")
+        } ?: throw Exception("No function call found that matches expected args " +
+                "(${evaluatedArguments.joinToString { it.typeName }}) of ${identifier.value} .. " +
+                "Possible declarations: ${lambdas.lambdas.joinToString { it.typeName }}")
 
         return actualFunction.invoke(evaluatedArguments)
     }
@@ -126,7 +129,7 @@ class KtInterpreter(val parser: KtParser) : IInterpreter {
             val expression = expression?.asKotlinExpression(memory)?.let {
                 (it as? KotlinLambdaExpression)?.let { KotlinLambdaCollection(mutableListOf(it)) } ?: it
             } ?: type.defaultValue()
-            memory[identifier.name] = (expression as? KotlinFunctionCall)?.evaluate(memory) ?: expression
+            memory[identifier.name] = expression as? KotlinLambdaCollection ?: expression.evaluate(memory)
         }
     }
 

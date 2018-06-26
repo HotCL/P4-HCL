@@ -43,12 +43,12 @@ object KotlinInterpreterFunctions {
                     buildGetListLengthFunction(),
                     buildListEqualsFunction(),
                     buildListNotEqualsFunction(),
+                    buildAtTextFunction(),
                     buildAtListFunction(),
                     buildSubListFunction(),
                     buildListConcatFunction(),
                     buildMapFunction(),
                     buildFilterFunction(),
-                    buildAtTextFunction(),
                     buildSubtextText(),
                     buildLengthText(),
                     buildToListFunction(),
@@ -60,6 +60,8 @@ object KotlinInterpreterFunctions {
                     buildGenericsEquals(),
                     buildThenElseFunction(),
                     buildThenElseFunction2(),
+
+                    buildToCharFunction(),
 
                     buildTextConcat(),
                     buildTextEquals(),
@@ -113,6 +115,17 @@ private fun buildNotFunction() = buildKotlinFunction(
         body = {
             val value = it.first() as KotlinBoolean
             KotlinBoolean(!value.value)
+        }
+)
+
+private fun buildToCharFunction() = buildKotlinFunction(
+        identifier = "toChar",
+        parameters = listOf(
+                Parameter("KT_input", AstNode.Type.Number)
+        ),
+        returnType = AstNode.Type.Text,
+        body = {
+            KotlinText("${(it.first() as KotlinNumber).value.toChar()}")
         }
 )
 // endregion buildOperator_functions
@@ -409,17 +422,6 @@ private fun buildTextToNumberFunction() = buildKotlinFunction(
             KotlinNumber((it[0] as KotlinText).value.toDouble())
         }
 )
-
-val AstNode.Type.typeName get(): String = when (this) {
-    AstNode.Type.Number -> "Number"
-    AstNode.Type.Text -> "Text"
-    AstNode.Type.Bool -> "Boolean"
-    AstNode.Type.None -> "Unit"
-    is AstNode.Type.GenericType -> name
-    is AstNode.Type.List -> "List[$elementType]"
-    is AstNode.Type.Func -> "Function(${paramTypes.joinToString { it.typeName }}): $returnType"
-    is AstNode.Type.Tuple -> "Tuple(${elementTypes.joinToString { it.typeName }})"
-}
 
 val KotlinHclExpression.typeName get(): String = when (this) {
     is KotlinIdentifier -> "Identifier"

@@ -368,7 +368,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                         }
                         val argTypes = listOf(expression!!.type) + secondaryArguments.map { it.type }
                         val declaration = funcDecls.getTypeDeclaration(argTypes)
-                        if (declaration == null) undeclaredError(token)
+                        if (declaration == null) unknownFunctionOverload(token, argTypes)
                         else AstNode.Command.Expression.FunctionCall(
                                 AstNode.Command.Expression.Value.Identifier(token.value,
                                         getTypeOnFuncCall(declaration, argTypes)),

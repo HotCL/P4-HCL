@@ -1,7 +1,7 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.UndeclaredError
+import exceptions.UnknownFunctionOverload
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
@@ -95,7 +95,7 @@ class FunctionCallTests {
 
             .colon.identifier("myTextFunc").identifier("myFunc").newLine
         })
-        assertThrows(UndeclaredError::class.java) { Parser(lexer).commandSequence().toList() }
+        assertThrows(UnknownFunctionOverload::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
