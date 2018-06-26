@@ -8,9 +8,9 @@ func livingIn = (tuple[txt, num] person, txt city): tuple[txt, num, txt] { (pers
 
 func withName = (tuple[txt, num, txt] person, txt name): tuple[txt, num, txt] { (name, person element1, person element2) }
 func movedTo = (tuple[txt, num, txt] person, txt city): tuple[txt, num, txt] { (person element0, person element1, city) }
-func turned = (tuple[txt, num, txt] person, num age): tuple[txt, num, txt] { (person element0, age, person element2)}
+func turned = (tuple[txt, num, txt] person, num age): tuple[txt, num, txt] { (person element0, age, person element2) }
 
-var toTextTuple = (tuple[txt,num,txt] value): txt {
+var toTextTuple = (tuple[txt, num, txt] value): txt {
     "Person called: " + (value element0) + \
     " who is " + (value element1 toText) + \
     " years old and lives in " + (value element2)
