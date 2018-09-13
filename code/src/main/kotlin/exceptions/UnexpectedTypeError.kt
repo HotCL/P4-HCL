@@ -7,12 +7,13 @@ package exceptions
  */
 class UnexpectedTypeError(
     lineNumber: Int,
+    fileName: String,
     lineIndex: Int,
     lineText: String,
     expectedType: String,
     actualType: String
 )
-    : ParserException(lineNumber, lineIndex, lineText) {
+    : ParserException(lineNumber, fileName, lineIndex, lineText) {
 
     override val errorMessage = "Cannot implicitly cast type '$actualType' to type '$expectedType'."
     override val helpText = "Try casting your types to match eachother."

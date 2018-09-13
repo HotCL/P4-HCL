@@ -1,5 +1,8 @@
 package parser
 
+import interpreter.kotlin.KotlinHclExpression
+import interpreter.kotlin.KtInterpreter
+
 /**
  * Tree structure of nodes used to build AST
  */
@@ -62,6 +65,7 @@ sealed class AstNode {
         }
         data class Return(val expression: Expression) : Command()
         data class RawCpp(val content: String) : Command()
+        data class KotlinFunction(val func: KtInterpreter.(List<KotlinHclExpression>) -> KotlinHclExpression) : Command()
     }
     sealed class Type : AstNode() {
         object Number : Type()
@@ -81,3 +85,14 @@ sealed class TypeWithImplicit
 object VarDeclaration : TypeWithImplicit()
 object ImplicitFuncDeclaration : TypeWithImplicit()
 data class AstNodeType(val type: AstNode.Type) : TypeWithImplicit()
+
+val AstNode.Type.typeName get(): String = when (this) {
+    AstNode.Type.Number -> "Number"
+    AstNode.Type.Text -> "Text"
+    AstNode.Type.Bool -> "Boolean"
+    AstNode.Type.None -> "Unit"
+    is AstNode.Type.GenericType -> name
+    is AstNode.Type.List -> "List[${elementType.typeName}]"
+    is AstNode.Type.Func -> "Function(${paramTypes.joinToString { it.typeName }}): ${returnType.typeName}"
+    is AstNode.Type.Tuple -> "Tuple(${elementTypes.joinToString { it.typeName }})"
+}

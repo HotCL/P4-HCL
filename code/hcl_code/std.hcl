@@ -1,41 +1,11 @@
-
-var @ = :at
-var is = :equals
-
-var to (num from, num to):list[num] {
-	num i = from
-	list[num] output
-	{
-		output = output + [i]
-		i = i + 1
-	} while { i < to }
-
-}
-
-var any (list[T] myList, func[T,bool] compareFunc):bool{
-	myList where :compareFunc length greaterThan 0
-}
-
-var all (list[T] myList, func[T,bool] compareFunc):bool{
-	myList where :compareFunc length equals myList length
-}
-
-var in = (T element, list[T] myList):bool{
-	myList any { value is element }
-}
-
-var notIn = (T element, list[T] myList):bool{
-	element in myList not
-}
-
 var then = (bool condition, func[T] body): tuple[bool,T] {
-	return (condition,body)
+	return (condition, body)
 }
 
-var else = (tuple[bool,T] thenResult, func[T] body): T {
+var else = (tuple[bool, T] thenResult, func[T] body): T {
 	T output
-	thenResult at 0 then { output = thenResult at 1 }
-	thenResult at 0 not then { output = body }
+	thenResult element0 then { output = thenResult element1 }
+	thenResult element0 not then { output = body }
 	return output
 }
 

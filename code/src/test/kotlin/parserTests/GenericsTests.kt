@@ -1,16 +1,12 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.GenericPassedFunctionException
-import exceptions.UndeclaredError
-import exceptions.UnexpectedTokenError
-import exceptions.UnexpectedTypeError
+import exceptions.*
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-
-import parser.ParserWithoutBuiltins
+import parser.Parser
 
 class GenericsTests {
 
@@ -130,7 +126,7 @@ class GenericsTests {
                     .identifier("myParam").`)`.colon.identifier("T").`{`.identifier("myParam").`}`.newLine
                     .bool.identifier("x").`=`.number(1.0).identifier("myFunc").newLine
         })
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -145,7 +141,7 @@ class GenericsTests {
         })
 
         Assertions.assertThrows(GenericPassedFunctionException::class.java) {
-            ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree()
+            Parser(lexer).commandSequence().toList()
         }
     }
 
@@ -158,7 +154,7 @@ class GenericsTests {
 
                     .number.identifier("x").`=`.number(1.0).identifier("myFunc").bool(true).newLine
         })
-        Assertions.assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnknownFunctionOverload::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -168,7 +164,7 @@ class GenericsTests {
                     .identifier("myParam1").`)`.colon.text.`{`.text("haha").`}`.newLine
         })
 
-        Assertions.assertThrows(UnexpectedTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -199,7 +195,7 @@ class GenericsTests {
             list.squareStart.identifier("T").squareEnd.identifier("x").newLine
         })
 
-        Assertions.assertThrows(UnexpectedTokenError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UnexpectedTokenError::class.java) { Parser(lexer).commandSequence().toList() }
     }
     @org.junit.jupiter.api.Test
     fun failGenericAsPlainType() {
@@ -207,6 +203,6 @@ class GenericsTests {
             identifier("T").identifier("x").newLine
         })
 
-        Assertions.assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        Assertions.assertThrows(UndeclaredError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 }

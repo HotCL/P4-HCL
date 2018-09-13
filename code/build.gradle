@@ -92,7 +92,10 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/Main*', '**/AstNode*','**/ExprResult*','**/LambdaBodyWithType*',
-                                        '**/exceptions/*', '**/FilePair*','**/HCL*'])
+                                        '**/exceptions/*', '**/FilePair*','**/HCL*', '**/REPL*',
+                                        '**/KotlinLambdaExpression*', '**/KotlinFunctionCall*', '**/KotlinIdentifier*',
+                                        '**/KotlinLambdaCollection*', '**/KotlinLambdaBody*', '**/KotlinBoolean*',
+                                        '**/KotlinList*', '**/KotlinTuple*', '**/KotlinText*'])
         })
     }
 }
@@ -140,6 +143,8 @@ sourceSets {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.21"
+    compile "org.jline:jline:3.7.0"
     compile 'com.natpryce:hamkrest:1.4.2.2'
     compile 'com.github.ajalt:clikt:1.2.0'
 

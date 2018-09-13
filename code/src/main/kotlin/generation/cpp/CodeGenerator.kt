@@ -33,6 +33,7 @@ class CodeGenerator : IPrinter {
                 is AstNode.Command.Return -> "return ${this.expression.format()};\n".indented
                 is AstNode.Command.RawCpp ->
                     content.split("\n").joinToString("") { (it + "\n").indented }
+                is AstNode.Command.KotlinFunction -> throw Exception("Kotlin call not possible in CPP generation!")
             }
 
     private fun AstNode.Command.Assignment.format() =
@@ -111,9 +112,14 @@ class CodeGenerator : IPrinter {
                 !(it.first is AstNode.Type.GenericType && it.first == it.second)
             }
             if (filteredGenerics.isNotEmpty()) {
-                "<" + generics.joinToString {
-                    TypeChecker().getTypeFromTypePairs(filteredGenerics, it.name)!!.cppName
-                } + ">"
+                try {
+                    "<" + generics.joinToString {
+                        TypeChecker().getTypeFromTypePairs(filteredGenerics, it.name)!!.cppName
+                    } + ">"
+                } catch (exception: KotlinNullPointerException) {
+                    // This is really bad. We just hope CPP compiler can infer the generics. Otherwise we are screwed.
+                    ""
+                }
             } else ""
         }
     }

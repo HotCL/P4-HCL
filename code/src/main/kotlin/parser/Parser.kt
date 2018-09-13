@@ -1,6 +1,5 @@
 package parser
 
-import builtins.HclBuiltinFunctions
 import parser.typechecker.ITypeChecker
 import parser.typechecker.TypeChecker
 import lexer.ILexer
@@ -11,6 +10,7 @@ import parser.symboltable.ISymbolTable
 import parser.symboltable.SymbolTable
 import utils.BufferedLaabStream
 import utils.IBufferedLaabStream
+import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Implementation of IParser interface
@@ -21,29 +21,16 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
         IBufferedLaabStream<PositionalToken> by BufferedLaabStream(lexer.getTokenSequence()) {
     // Used for recursive calls
     private var currentFunctionName: String? = null
-    override fun generateAbstractSyntaxTree() = AbstractSyntaxTree().apply {
-        // Add builtin functions
-        HclBuiltinFunctions.functions.forEach {
-            children.add(it)
-            enterSymbol(it.identifier.name, it.expression!!.type)
-        }
-        enterSymbol("RETURN_CODE", AstNode.Type.Number)
-
-        enterSymbol("+", AstNode.Type.Func(listOf(AstNode.Type.Text, AstNode.Type.Text),
-            AstNode.Type.Text))
-
-        enterSymbol("loop", AstNode.Type.Func(listOf(AstNode.Type.Func(listOf(), AstNode.Type.None)),
-            AstNode.Type.None))
-
+    override fun commandSequence() = buildSequence {
         // Parse
         while (hasNext()) {
-            if (current.token != Token.SpecialChar.EndOfLine) {
-                children.add(parseCommand())
+            if (current.token !in listOf(Token.SpecialChar.EndOfLine, Token.SpecialChar.EndOfFile)) {
+                yield(parseCommand())
             } else moveNext()
         }
     }
 
-    protected fun parseCommand(): AstNode.Command {
+    private fun parseCommand(): AstNode.Command {
         flushNewLine(false)
         val command = when (current.token) {
             is Token.Type -> parseDeclaration()
@@ -84,8 +71,9 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
 
     private fun flushNewLine(requireNewLine: Boolean = true) {
         if (hasNext() && requireNewLine) accept<Token.SpecialChar.EndOfLine>()
-        while (current.token == Token.SpecialChar.EndOfLine && hasNext())
+        while (current.token == Token.SpecialChar.EndOfLine && hasNext()) {
             accept<Token.SpecialChar.EndOfLine>()
+        }
     }
 
     private fun acceptIdentifier(type: AstNode.Type) =
@@ -380,7 +368,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                         }
                         val argTypes = listOf(expression!!.type) + secondaryArguments.map { it.type }
                         val declaration = funcDecls.getTypeDeclaration(argTypes)
-                        if (declaration == null) undeclaredError(token)
+                        if (declaration == null) unknownFunctionOverload(token, argTypes)
                         else AstNode.Command.Expression.FunctionCall(
                                 AstNode.Command.Expression.Value.Identifier(token.value,
                                         getTypeOnFuncCall(declaration, argTypes)),
@@ -460,7 +448,7 @@ open class Parser(val lexer: ILexer) : IParser, ITypeChecker by TypeChecker(), I
                 else -> { }
             }
             null
-        }, { false }, 1)?.let { it } ?: lackingParenthesis()
+        }, { it.token == Token.SpecialChar.EndOfLine }, 1)?.let { it } ?: lackingParenthesis()
     }
 
     private fun parseTupleExpression() =

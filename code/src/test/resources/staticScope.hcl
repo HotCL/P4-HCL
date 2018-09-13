@@ -2,8 +2,7 @@
 
 num x
 
-var xPlus = (): none { x = x + 3
-}
+var xPlus = (): none { x = x + 3 }
 var call_xPlus = (): none { xPlus }
 
 var f = (): none {

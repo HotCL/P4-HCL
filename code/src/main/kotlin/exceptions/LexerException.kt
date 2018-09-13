@@ -5,6 +5,7 @@ package exceptions
  */
 abstract class LexerException(
     lineIndex: Int,
+    fileName: String,
     lineNumber: Int,
     lineText: String
-) : CompilationException(lineNumber, lineIndex, lineText)
+) : CompilationException(lineNumber, fileName, lineIndex, lineText)

@@ -8,6 +8,7 @@ package exceptions
  */
 abstract class CompilationException(
     val lineNumber: Int,
+    val fileName: String,
     val lineIndex: Int,
     val lineText: String
 ) : Exception() {

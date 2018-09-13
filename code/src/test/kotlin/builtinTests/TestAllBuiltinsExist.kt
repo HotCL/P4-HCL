@@ -4,13 +4,13 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.given
 import org.jetbrains.spek.api.dsl.it
 import parser.AstNode
-import parser.Parser
+import parser.cpp.CppParser
 import parserTests.DummyLexer
 import kotlin.test.assertTrue
 
 object TestAllBuiltinsExist : Spek({
     given("HCL Builtin functions") {
-        val ast = Parser(DummyLexer(listOf())).generateAbstractSyntaxTree()
+        val ast = CppParser(DummyLexer(listOf())).cppAst()
         val expectedBuiltinFunctions = listOf(
                 "+",
                 "-",

@@ -8,11 +8,12 @@ import lexer.Token
  */
 class WrongTokenTypeError(
     lineNumber: Int,
+    fileName: String,
     lineIndex: Int,
     lineText: String,
     expectedTokenType: String?,
     private val actualToken: Token
-) : ParserException(lineNumber, lineIndex, lineText) {
+) : ParserException(lineNumber, fileName, lineIndex, lineText) {
     override val errorMessage = "Expected Token of type '$expectedTokenType', but found Token of type '$actualToken'"
     override val helpText = "Are you using the right type of token?"
 }

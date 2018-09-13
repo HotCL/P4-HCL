@@ -1,0 +1,1 @@
+1 to 10 where { value mod 2 equals 0 } map { value * 5 } print

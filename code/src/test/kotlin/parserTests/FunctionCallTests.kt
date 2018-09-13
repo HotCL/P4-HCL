@@ -1,13 +1,13 @@
 package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
-import exceptions.UndeclaredError
+import exceptions.UnknownFunctionOverload
 import exceptions.WrongTokenTypeError
 import hclTestFramework.lexer.buildTokenSequence
 import hclTestFramework.parser.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
-import parser.ParserWithoutBuiltins
+import parser.Parser
 
 class FunctionCallTests {
     @Test
@@ -95,7 +95,7 @@ class FunctionCallTests {
 
             .colon.identifier("myTextFunc").identifier("myFunc").newLine
         })
-        assertThrows(UndeclaredError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(UnknownFunctionOverload::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -107,7 +107,7 @@ class FunctionCallTests {
             .identifier("myFunc").newLine
         })
         // TODO use less generic error
-        assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(Exception::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -119,7 +119,7 @@ class FunctionCallTests {
             .number(5.0).identifier("myFunc").number(5.0).newLine
         })
 
-        assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -148,7 +148,7 @@ class FunctionCallTests {
 
             .number(5.0).identifier("myFunc").identifier("myFunc").number(5.0).newLine
         })
-        assertThrows(Exception::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(Exception::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test
@@ -181,7 +181,7 @@ class FunctionCallTests {
 
             .number(5.0).identifier("myFunc").number(5.0).text("hej").newLine
         })
-        assertThrows(WrongTokenTypeError::class.java) { ParserWithoutBuiltins(lexer).generateAbstractSyntaxTree() }
+        assertThrows(WrongTokenTypeError::class.java) { Parser(lexer).commandSequence().toList() }
     }
 
     @Test

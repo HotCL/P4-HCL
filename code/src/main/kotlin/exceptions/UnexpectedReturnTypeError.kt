@@ -7,12 +7,13 @@ package exceptions
  */
 class UnexpectedReturnTypeError(
     lineNumber: Int,
+    fileName: String,
     lineIndex: Int,
     lineText: String,
     expectedType: String,
     actualType: String
 )
-    : ParserException(lineNumber, lineIndex, lineText) {
+    : ParserException(lineNumber, fileName, lineIndex, lineText) {
     override val errorMessage = "Return type of '$actualType' was not expected. '$expectedType' was."
     override val helpText = "Fix return type"
 }

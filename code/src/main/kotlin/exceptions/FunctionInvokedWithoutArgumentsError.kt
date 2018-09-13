@@ -6,11 +6,12 @@ package exceptions
  */
 class FunctionInvokedWithoutArgumentsError(
     lineNumber: Int,
+    fileName: String,
     lineIndex: Int,
     lineText: String,
     private val nameOfFunc: String
 )
-    : ParserException(lineNumber, lineIndex, lineText) {
+    : ParserException(lineNumber, fileName, lineIndex, lineText) {
     override val errorMessage = "Function $nameOfFunc cannot be called with 0 arguments!"
     override val helpText = "Make sure you are calling the correct function."
 }

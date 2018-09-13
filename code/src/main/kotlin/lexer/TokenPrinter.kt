@@ -22,6 +22,7 @@ fun formatToken(token: Token) = when (token) {
     Token.SpecialChar.SquareBracketEnd -> "]"
     Token.SpecialChar.SquareBracketStart -> "["
     Token.SpecialChar.EndOfLine -> "\n"
+    Token.SpecialChar.EndOfFile -> "$"
     Token.SpecialChar.Equals -> "="
     Token.SpecialChar.BlockEnd -> "}"
     Token.SpecialChar.BlockStart -> "{"

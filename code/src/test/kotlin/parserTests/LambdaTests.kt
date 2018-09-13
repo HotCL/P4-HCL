@@ -2,8 +2,8 @@ package parserTests
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import exceptions.UndeclaredError
 import exceptions.UnexpectedReturnTypeError
+import exceptions.UnknownFunctionOverload
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -138,7 +138,7 @@ class LambdaTests {
         assertTrue(parseExpectException("var x = (func[num] f, num y): num { f }\n" +
         "var x = (func[bool] f, txt z): bool { f }\n" +
         "var a = { true } x 5\n" +
-        "var b = { 7.0 } x \"hej\"") is UndeclaredError)
+        "var b = { 7.0 } x \"hej\"") is UnknownFunctionOverload)
     }
 
     @Test
@@ -197,6 +197,6 @@ class LambdaTests {
         assertTrue(parseExpectException("var x = (func[num] f): num { f }\n" +
         "var x = (func[bool] f): bool { f }\n" +
         "var a = { \"hej\" } x\n" +
-        "var b = { 7.0 } x") is UndeclaredError)
+        "var b = { 7.0 } x") is UnknownFunctionOverload)
     }
 }
